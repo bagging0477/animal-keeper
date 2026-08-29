@@ -8,6 +8,16 @@ public class TruckSceneUI : MonoBehaviour
 
     private void Start()
     {
+        Refresh();
+    }
+
+    private void Update()
+    {
+        Refresh();
+    }
+
+    private void Refresh()
+    {
         int day = GameManager.Instance != null ? GameManager.Instance.Day : 1;
         int target = GameManager.Instance != null ? GameManager.Instance.TargetCount : 3;
         int rescued = GameManager.Instance != null ? GameManager.Instance.RescuedCount : 0;

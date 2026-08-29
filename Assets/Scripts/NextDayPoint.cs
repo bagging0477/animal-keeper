@@ -1,13 +1,10 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class TruckStartPoint : MonoBehaviour
+public class NextDayPoint : MonoBehaviour
 {
     [SerializeField] private float interactionRange = 1.2f;
-    [SerializeField] private string villageSceneName = "VillageScene";
-    [SerializeField] private string shelterSceneName = "ShelterScene";
     [SerializeField] private Text promptText;
 
     private Transform player;
@@ -25,13 +22,15 @@ public class TruckStartPoint : MonoBehaviour
         }
 
         if (promptText != null) promptText.gameObject.SetActive(false);
+
+        RefreshActive();
     }
 
     private void Update()
     {
+        RefreshActive();
+        if (!gameObject.activeSelf) return;
         if (player == null) return;
-
-        bool isShelterDay = GameManager.Instance != null && GameManager.Instance.Day >= GameManager.MaxDay;
 
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactionRange;
@@ -39,10 +38,7 @@ public class TruckStartPoint : MonoBehaviour
         if (promptText != null)
         {
             promptText.gameObject.SetActive(inRange);
-            if (inRange)
-            {
-                promptText.text = isShelterDay ? "E를 눌러 보호소로 이동" : "E를 눌러 구조 시작";
-            }
+            if (inRange) promptText.text = "E를 눌러 다음날로";
         }
 
         if (!inRange) return;
@@ -50,6 +46,16 @@ public class TruckStartPoint : MonoBehaviour
         Keyboard kb = Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;
 
-        SceneManager.LoadScene(isShelterDay ? shelterSceneName : villageSceneName);
+        GameManager.Instance?.AdvanceDay();
+    }
+
+    private void RefreshActive()
+    {
+        bool shouldBeActive = GameManager.Instance == null || GameManager.Instance.Day < GameManager.MaxDay;
+        if (gameObject.activeSelf != shouldBeActive)
+        {
+            gameObject.SetActive(shouldBeActive);
+            if (!shouldBeActive && promptText != null) promptText.gameObject.SetActive(false);
+        }
     }
 }

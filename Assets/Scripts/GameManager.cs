@@ -5,6 +5,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    public const int MaxDay = 3;
+
     [SerializeField] private int day = 1;
     [SerializeField] private int targetCount = 3;
 
@@ -29,6 +31,12 @@ public class GameManager : MonoBehaviour
     {
         cargoWeights.Add(weight);
         RescuedCount++;
+    }
+
+    public void AdvanceDay()
+    {
+        if (day >= MaxDay) return;
+        day++;
     }
 
     private void Awake()
