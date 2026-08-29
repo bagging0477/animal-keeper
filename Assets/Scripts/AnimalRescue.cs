@@ -8,8 +8,14 @@ public class AnimalRescue : MonoBehaviour
 
     public bool IsHeld { get; private set; }
     public bool IsCompleted { get; private set; }
+    public int Weight { get; private set; }
 
     private Transform player;
+
+    private void Awake()
+    {
+        Weight = Random.Range(1, 11); // 1~10 inclusive
+    }
 
     private void Start()
     {
