@@ -4,8 +4,10 @@ using UnityEngine.InputSystem;
 public class AnimalRescue : MonoBehaviour
 {
     [SerializeField] private float interactionRange = 1.2f;
+    [SerializeField] private Vector2 heldOffset = new Vector2(0.4f, 0.4f);
 
-    public bool IsRescued { get; private set; }
+    public bool IsHeld { get; private set; }
+    public bool IsCompleted { get; private set; }
 
     private Transform player;
 
@@ -24,22 +26,42 @@ public class AnimalRescue : MonoBehaviour
 
     private void Update()
     {
-        if (IsRescued || player == null) return;
+        if (player == null) return;
 
-        float distance = Vector2.Distance(transform.position, player.position);
-        if (distance > interactionRange) return;
-
-        Keyboard kb = Keyboard.current;
-        if (kb != null && kb.eKey.wasPressedThisFrame)
+        if (!IsHeld)
         {
-            Rescue();
+            float distance = Vector2.Distance(transform.position, player.position);
+            if (distance > interactionRange) return;
+
+            Keyboard kb = Keyboard.current;
+            if (kb != null && kb.eKey.wasPressedThisFrame)
+            {
+                PickUp();
+            }
         }
     }
 
-    private void Rescue()
+    private void LateUpdate()
     {
-        IsRescued = true;
-        Debug.Log($"{name}: 구조 완료");
+        if (IsHeld && player != null)
+        {
+            transform.position = (Vector2)player.position + heldOffset;
+        }
+    }
+
+    private void PickUp()
+    {
+        IsHeld = true;
+        Debug.Log($"{name}: 플레이어가 동물을 들었다");
+    }
+
+    public void CompleteRescue()
+    {
+        if (IsCompleted || !IsHeld) return;
+
+        IsCompleted = true;
+        IsHeld = false;
+        Debug.Log("구조 성공");
         gameObject.SetActive(false);
     }
 }
