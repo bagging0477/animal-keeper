@@ -89,8 +89,8 @@ public class MonsterAI : MonoBehaviour
             {
                 if (!caughtLogged)
                 {
-                    Debug.Log("플레이어가 몬스터에게 잡혔다!");
                     caughtLogged = true;
+                    HandleCatch();
                 }
             }
             else
@@ -122,4 +122,20 @@ public class MonsterAI : MonoBehaviour
 
     private Vector2 GamePosition => new Vector2(transform.position.x, transform.position.z);
     private Vector2 PlayerGamePosition => new Vector2(player.position.x, player.position.y);
+
+    private void HandleCatch()
+    {
+        AnimalRescue[] animals = Object.FindObjectsByType<AnimalRescue>(FindObjectsSortMode.None);
+        foreach (AnimalRescue animal in animals)
+        {
+            if (animal.IsHeld)
+            {
+                animal.Drop();
+                Debug.Log("잡혔다! 동물을 놓쳤다");
+                return;
+            }
+        }
+
+        Debug.Log("플레이어가 몬스터에게 잡혔다!");
+    }
 }

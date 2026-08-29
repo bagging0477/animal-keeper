@@ -64,4 +64,11 @@ public class AnimalRescue : MonoBehaviour
         Debug.Log("구조 성공");
         gameObject.SetActive(false);
     }
+
+    public void Drop()
+    {
+        if (!IsHeld) return;
+
+        IsHeld = false;
+    }
 }
