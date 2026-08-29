@@ -17,6 +17,12 @@ public class GameManager : MonoBehaviour
     private readonly List<int> cargoWeights = new List<int>();
     public IReadOnlyList<int> CargoWeights => cargoWeights;
 
+    private readonly HashSet<string> rescuedAnimalIdsToday = new HashSet<string>();
+
+    public bool IsAnimalRescuedToday(string animalId) => rescuedAnimalIdsToday.Contains(animalId);
+
+    public void MarkAnimalRescuedToday(string animalId) => rescuedAnimalIdsToday.Add(animalId);
+
     public int TotalWeight
     {
         get
@@ -37,6 +43,55 @@ public class GameManager : MonoBehaviour
     {
         if (day >= MaxDay) return;
         day++;
+        rescuedAnimalIdsToday.Clear();
+    }
+
+    public void ResetDay()
+    {
+        day = 1;
+        rescuedAnimalIdsToday.Clear();
+    }
+
+    public int Mileage { get; private set; }
+
+    public struct SettlementResult
+    {
+        public int TotalWeight;
+        public int PricePerWeight;
+        public int BaseMileage;
+        public bool BonusApplied;
+        public int BonusMileage;
+        public int TotalMileage;
+    }
+
+    public SettlementResult SettleCargo(int pricePerWeight, int bonusMileage)
+    {
+        int totalWeight = TotalWeight;
+        int baseMileage = totalWeight * pricePerWeight;
+        bool bonusApplied = RescuedCount >= targetCount;
+        int bonus = bonusApplied ? bonusMileage : 0;
+        int total = baseMileage + bonus;
+
+        Mileage += total;
+        cargoWeights.Clear();
+        RescuedCount = 0;
+
+        return new SettlementResult
+        {
+            TotalWeight = totalWeight,
+            PricePerWeight = pricePerWeight,
+            BaseMileage = baseMileage,
+            BonusApplied = bonusApplied,
+            BonusMileage = bonus,
+            TotalMileage = total
+        };
+    }
+
+    public bool TrySpendMileage(int amount)
+    {
+        if (amount > Mileage) return false;
+        Mileage -= amount;
+        return true;
     }
 
     private void Awake()

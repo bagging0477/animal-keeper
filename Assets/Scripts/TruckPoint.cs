@@ -72,11 +72,13 @@ public class TruckPoint : MonoBehaviour
     private void DeliverAnimal(AnimalRescue animal)
     {
         int weight = animal.Weight;
+        string animalId = animal.name;
         animal.CompleteRescue();
 
         if (GameManager.Instance != null)
         {
             GameManager.Instance.AddCargo(weight);
+            GameManager.Instance.MarkAnimalRescuedToday(animalId);
         }
         else
         {

@@ -15,6 +15,11 @@ public class AnimalRescue : MonoBehaviour
     private void Awake()
     {
         Weight = Random.Range(1, 11); // 1~10 inclusive
+
+        if (GameManager.Instance != null && GameManager.Instance.IsAnimalRescuedToday(name))
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     private void Start()
