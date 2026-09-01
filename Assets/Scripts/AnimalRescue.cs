@@ -5,6 +5,8 @@ public class AnimalRescue : MonoBehaviour
 {
     [SerializeField] private float interactionRange = 1.2f;
     [SerializeField] private Vector2 heldOffset = new Vector2(0.4f, 0.4f);
+    [SerializeField] private int minWeight = 1;
+    [SerializeField] private int maxWeight = 10;
 
     public bool IsHeld { get; private set; }
     public bool IsCompleted { get; private set; }
@@ -14,7 +16,7 @@ public class AnimalRescue : MonoBehaviour
 
     private void Awake()
     {
-        Weight = Random.Range(1, 11); // 1~10 inclusive
+        Weight = Random.Range(minWeight, maxWeight + 1); // inclusive
 
         if (GameManager.Instance != null && GameManager.Instance.IsAnimalRescuedToday(name))
         {
