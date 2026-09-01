@@ -62,6 +62,7 @@ public class AnimalFlee : MonoBehaviour
                 if (alertTimer <= 0f)
                 {
                     state = State.Fleeing;
+                    OnStartFleeing();
                 }
                 break;
 
@@ -108,5 +109,9 @@ public class AnimalFlee : MonoBehaviour
     private bool IsBlocked(Vector2 direction)
     {
         return Physics2D.Raycast(transform.position, direction, wallLookahead, obstacleMask).collider != null;
+    }
+
+    protected virtual void OnStartFleeing()
+    {
     }
 }
