@@ -28,6 +28,8 @@ public class SoundReactiveMonsterAI : MonoBehaviour
 
     [Header("Capture")]
     [SerializeField] private float catchRange = 0.7f;
+    [SerializeField] private string monsterTypeName = "소리반응형";
+    [SerializeField] private int damage = 34;
 
     private NavMeshAgent agent;
     private Transform player;
@@ -192,17 +194,6 @@ public class SoundReactiveMonsterAI : MonoBehaviour
 
     private void HandleCatch()
     {
-        AnimalRescue[] animals = Object.FindObjectsByType<AnimalRescue>(FindObjectsInactive.Exclude);
-        foreach (AnimalRescue animal in animals)
-        {
-            if (animal.IsHeld)
-            {
-                animal.Drop();
-                Debug.Log("잡혔다! 동물을 놓쳤다");
-                return;
-            }
-        }
-
-        Debug.Log("플레이어가 몬스터에게 잡혔다!");
+        GameManager.Instance?.TakeDamage(damage, monsterTypeName);
     }
 }

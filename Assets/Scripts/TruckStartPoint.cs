@@ -31,6 +31,7 @@ public class TruckStartPoint : MonoBehaviour
     {
         if (player == null) return;
 
+        bool isDown = GameManager.Instance != null && GameManager.Instance.Health <= 0;
         bool isShelterDay = GameManager.Instance != null && GameManager.Instance.Day >= GameManager.MaxDay;
 
         float distance = Vector2.Distance(transform.position, player.position);
@@ -41,11 +42,13 @@ public class TruckStartPoint : MonoBehaviour
             promptText.gameObject.SetActive(inRange);
             if (inRange)
             {
-                promptText.text = isShelterDay ? "E를 눌러 보호소로 이동" : "E를 눌러 구조 시작";
+                promptText.text = isDown
+                    ? "부상으로 이동할 수 없습니다. 다음 날로 이동해주세요"
+                    : (isShelterDay ? "E를 눌러 보호소로 이동" : "E를 눌러 구조 시작");
             }
         }
 
-        if (!inRange) return;
+        if (!inRange || isDown) return;
 
         Keyboard kb = Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;

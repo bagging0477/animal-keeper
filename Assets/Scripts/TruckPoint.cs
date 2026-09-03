@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -33,15 +34,10 @@ public class TruckPoint : MonoBehaviour
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactionRange;
 
-        AnimalRescue heldAnimal = inRange ? FindHeldAnimal() : null;
-
         if (promptText != null)
         {
             promptText.gameObject.SetActive(inRange);
-            if (inRange)
-            {
-                promptText.text = heldAnimal != null ? "E를 눌러 동물 구조하기" : "E를 눌러 트럭에 타기";
-            }
+            if (inRange) promptText.text = "E를 눌러 트럭에 타기";
         }
 
         if (!inRange) return;
@@ -49,24 +45,23 @@ public class TruckPoint : MonoBehaviour
         Keyboard kb = Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;
 
-        if (heldAnimal != null)
+        foreach (AnimalRescue heldAnimal in FindHeldAnimals())
         {
             DeliverAnimal(heldAnimal);
         }
-        else
-        {
-            SceneManager.LoadScene(truckSceneName);
-        }
+
+        SceneManager.LoadScene(truckSceneName);
     }
 
-    private AnimalRescue FindHeldAnimal()
+    private AnimalRescue[] FindHeldAnimals()
     {
         AnimalRescue[] animals = Object.FindObjectsByType<AnimalRescue>(FindObjectsInactive.Exclude);
+        List<AnimalRescue> held = new List<AnimalRescue>();
         foreach (AnimalRescue animal in animals)
         {
-            if (animal.IsHeld) return animal;
+            if (animal.IsHeld) held.Add(animal);
         }
-        return null;
+        return held.ToArray();
     }
 
     private void DeliverAnimal(AnimalRescue animal)
