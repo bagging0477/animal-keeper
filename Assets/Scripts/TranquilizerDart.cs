@@ -34,15 +34,25 @@ public class TranquilizerDart : MonoBehaviour
         }
 
         Vector2 position = transform.position;
+
         foreach (MonsterHealth monster in FindObjectsByType<MonsterHealth>(FindObjectsInactive.Exclude))
         {
             if (monster.IsDead) continue;
-            if (Vector2.Distance(position, monster.GamePosition) <= hitRadius)
-            {
-                monster.PutToSleep(sleepDelay, sleepDuration);
-                Destroy(gameObject);
-                return;
-            }
+            if (TryHit(monster, position)) return;
         }
+
+        foreach (AnimalSleep animal in FindObjectsByType<AnimalSleep>(FindObjectsInactive.Exclude))
+        {
+            if (TryHit(animal, position)) return;
+        }
+    }
+
+    private bool TryHit(ISleepable target, Vector2 dartPosition)
+    {
+        if (Vector2.Distance(dartPosition, target.GamePosition) > hitRadius) return false;
+
+        target.PutToSleep(sleepDelay, sleepDuration);
+        Destroy(gameObject);
+        return true;
     }
 }

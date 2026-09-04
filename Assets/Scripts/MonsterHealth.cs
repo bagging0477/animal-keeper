@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class MonsterHealth : MonoBehaviour
+public class MonsterHealth : MonoBehaviour, ISleepable
 {
     [SerializeField] private int maxHealth = 3;
     [SerializeField] private Color deadColor = new Color(0.35f, 0.35f, 0.35f, 1f);

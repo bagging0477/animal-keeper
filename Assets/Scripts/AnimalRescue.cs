@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(AnimalSleep))]
 public class AnimalRescue : MonoBehaviour
 {
     private const int MaxHeldAnimals = 4;

@@ -15,11 +15,13 @@ public class AnimalFlee : MonoBehaviour
     private State state = State.Idle;
     private Transform player;
     private AnimalRescue rescue;
+    private AnimalSleep sleep;
     private float alertTimer;
 
     private void Awake()
     {
         rescue = GetComponent<AnimalRescue>();
+        sleep = GetComponent<AnimalSleep>();
     }
 
     private void Start()
@@ -38,6 +40,7 @@ public class AnimalFlee : MonoBehaviour
     private void Update()
     {
         if (player == null) return;
+        if (sleep.IsAsleep) return;
 
         if (rescue.IsHeld || rescue.IsCompleted)
         {
