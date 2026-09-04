@@ -125,6 +125,28 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    private readonly HashSet<WeaponType> ownedWeapons = new HashSet<WeaponType>();
+    public WeaponType EquippedWeapon { get; private set; } = WeaponType.None;
+
+    public bool OwnsWeapon(WeaponType type) => ownedWeapons.Contains(type);
+
+    public bool PurchaseWeapon(WeaponType type, int price)
+    {
+        if (type == WeaponType.None || ownedWeapons.Contains(type)) return false;
+        if (!TrySpendMileage(price)) return false;
+
+        ownedWeapons.Add(type);
+        return true;
+    }
+
+    public bool TryEquipWeapon(WeaponType type)
+    {
+        if (type != WeaponType.None && !ownedWeapons.Contains(type)) return false;
+
+        EquippedWeapon = type;
+        return true;
+    }
+
     private void Awake()
     {
         if (Instance != null && Instance != this)

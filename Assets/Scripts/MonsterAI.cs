@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(NavMeshAgent), typeof(MonsterHealth))]
 public class MonsterAI : MonoBehaviour
 {
     private enum State { Patrol, Chase }
@@ -30,6 +30,7 @@ public class MonsterAI : MonoBehaviour
     [SerializeField] private int damage = 34;
 
     private NavMeshAgent agent;
+    private MonsterHealth health;
     private Transform player;
     private Vector3[] waypoints;
     private int targetIndex;
@@ -39,6 +40,7 @@ public class MonsterAI : MonoBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        health = GetComponent<MonsterHealth>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
         agent.speed = patrolSpeed;
@@ -72,6 +74,8 @@ public class MonsterAI : MonoBehaviour
 
     private void Update()
     {
+        if (health != null && health.IsIncapacitated) return;
+
         if (player != null)
         {
             float distanceToPlayer = Vector2.Distance(GamePosition, PlayerGamePosition);

@@ -679,7 +679,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalRescue
   interactionRange: 1.2
-  heldOffset: {x: 0.4, y: 0.4}
   minWeight: 8
   maxWeight: 19
 --- !u!212 &692369798
@@ -861,6 +860,7 @@ GameObject:
   - component: {fileID: 1011791159}
   - component: {fileID: 1011791163}
   - component: {fileID: 1011791164}
+  - component: {fileID: 1011791165}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -881,6 +881,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 5
+  aimTransform: {fileID: 0}
+  spriteAngleOffset: -90
+  aimCamera: {fileID: 0}
 --- !u!50 &1011791160
 Rigidbody2D:
   serializedVersion: 5
@@ -1043,6 +1046,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VillageSpawnPoint
   truckPointObjectName: TruckPoint
   spawnOffset: {x: 0, y: -1}
+--- !u!114 &1011791165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1011791158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b73ed16e9a6b0b4c8988f6c3ea69788, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerWeaponController
+  netRange: 2
+  netAngle: 90
+  netDamage: 1
+  netStunDuration: 0.4
+  netCooldown: 0.5
+  dartPrefab: {fileID: 1007327826499193375, guid: 2a51acd31a5bf9640b12da630c898b89, type: 3}
+  dartSpeed: 12
+  sleepDelay: 1
+  sleepDuration: 5
 --- !u!1 &1065367908
 GameObject:
   m_ObjectHideFlags: 0
@@ -1095,7 +1119,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalRescue
   interactionRange: 1.2
-  heldOffset: {x: 0.4, y: 0.4}
   minWeight: 10
   maxWeight: 20
 --- !u!212 &1065367911
@@ -1800,7 +1823,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalRescue
   interactionRange: 1.2
-  heldOffset: {x: 0.4, y: 0.4}
   minWeight: 1
   maxWeight: 10
 --- !u!212 &1377923956
@@ -2017,7 +2039,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalRescue
   interactionRange: 1.2
-  heldOffset: {x: 0.4, y: 0.4}
   minWeight: 1
   maxWeight: 10
 --- !u!212 &1770549934
@@ -3061,6 +3082,7 @@ GameObject:
   - component: {fileID: 1955211585}
   - component: {fileID: 1955211584}
   - component: {fileID: 1955211583}
+  - component: {fileID: 1955211586}
   m_Layer: 0
   m_Name: MonsterAgent
   m_TagString: Untagged
@@ -3130,6 +3152,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1955211586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1955211582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a261b1550d561704daae1a4b81d164a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterHealth
+  maxHealth: 3
 --- !u!1 &1973456740
 GameObject:
   m_ObjectHideFlags: 0
@@ -3300,7 +3335,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalRescue
   interactionRange: 1.2
-  heldOffset: {x: 0.4, y: 0.4}
   minWeight: 8
   maxWeight: 19
 --- !u!212 &1984799098
@@ -3484,7 +3518,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalRescue
   interactionRange: 1.2
-  heldOffset: {x: 0.4, y: 0.4}
   minWeight: 1
   maxWeight: 10
 --- !u!1 &2007866258

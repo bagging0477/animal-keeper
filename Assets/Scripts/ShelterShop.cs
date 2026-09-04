@@ -10,6 +10,7 @@ public class ShelterShop : MonoBehaviour
         public string itemName;
         public int price;
         public Button button;
+        public WeaponType weaponType = WeaponType.None;
     }
 
     [SerializeField] private ShopItem[] items;
@@ -31,7 +32,11 @@ public class ShelterShop : MonoBehaviour
     {
         if (GameManager.Instance == null) return;
 
-        if (GameManager.Instance.TrySpendMileage(item.price))
+        bool success = item.weaponType != WeaponType.None
+            ? GameManager.Instance.PurchaseWeapon(item.weaponType, item.price)
+            : GameManager.Instance.TrySpendMileage(item.price);
+
+        if (success)
         {
             Debug.Log($"{item.itemName} 구매 완료 (-{item.price} 마일리지)");
         }
@@ -46,7 +51,13 @@ public class ShelterShop : MonoBehaviour
 
         foreach (ShopItem item in items)
         {
-            if (item.button != null) item.button.interactable = mileage >= item.price;
+            if (item.button == null) continue;
+
+            bool alreadyOwned = item.weaponType != WeaponType.None
+                && GameManager.Instance != null
+                && GameManager.Instance.OwnsWeapon(item.weaponType);
+
+            item.button.interactable = !alreadyOwned && mileage >= item.price;
         }
     }
 }

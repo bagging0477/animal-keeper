@@ -7,10 +7,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
 
     [Header("Aim")]
-    [Tooltip("회전시킬 대상. 비워두면 이 오브젝트 자신을 회전시킵니다.")]
-    [SerializeField] private Transform aimTransform;
-    [Tooltip("스프라이트가 기본적으로 위쪽(Y+)을 바라보고 있다면 -90, 오른쪽(X+)을 바라보고 있다면 0으로 설정하세요.")]
-    [SerializeField] private float spriteAngleOffset = -90f;
     [SerializeField] private Camera aimCamera;
 
     private Rigidbody2D rb;
@@ -30,7 +26,6 @@ public class PlayerMovement : MonoBehaviour
         // 벽 콜라이더 모서리를 스칠 때 마찰로 인해 미세하게 걸리는(corner-catching) 떨림을 없애기 위해 무마찰 재질을 사용한다.
         rb.sharedMaterial = new PhysicsMaterial2D("PlayerNoFriction") { friction = 0f, bounciness = 0f };
 
-        if (aimTransform == null) aimTransform = transform;
         if (aimCamera == null) aimCamera = Camera.main;
     }
 
@@ -63,9 +58,6 @@ public class PlayerMovement : MonoBehaviour
         if (direction.sqrMagnitude < 0.0001f) return;
 
         LookDirection = direction.normalized;
-
-        float angle = Mathf.Atan2(LookDirection.y, LookDirection.x) * Mathf.Rad2Deg;
-        aimTransform.rotation = Quaternion.Euler(0f, 0f, angle + spriteAngleOffset);
     }
 
     private void FixedUpdate()

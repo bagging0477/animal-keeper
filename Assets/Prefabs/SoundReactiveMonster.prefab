@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 7368892453286277405}
   - component: {fileID: 3620270898512992539}
   - component: {fileID: 8804958515107421916}
+  - component: {fileID: 6996777279432024342}
   m_Layer: 0
   m_Name: SoundReactiveMonster
   m_TagString: Untagged
@@ -173,3 +174,18 @@ MonoBehaviour:
   loseRange: 2.5
   chaseSpeed: 4.5
   catchRange: 0.7
+  monsterTypeName: "\uC18C\uB9AC\uBC18\uC751\uD615"
+  damage: 34
+--- !u!114 &6996777279432024342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5382451385581636795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a261b1550d561704daae1a4b81d164a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterHealth
+  maxHealth: 3

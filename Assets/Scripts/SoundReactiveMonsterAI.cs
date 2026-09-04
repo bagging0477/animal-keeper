@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(NavMeshAgent), typeof(MonsterHealth))]
 public class SoundReactiveMonsterAI : MonoBehaviour
 {
     private enum State { Wander, Investigate, Chase }
@@ -32,6 +32,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     [SerializeField] private int damage = 34;
 
     private NavMeshAgent agent;
+    private MonsterHealth health;
     private Transform player;
     private Vector3 origin;
     private State state = State.Wander;
@@ -43,6 +44,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        health = GetComponent<MonsterHealth>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
         agent.speed = wanderSpeed;
@@ -77,6 +79,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private void HandleSoundEmitted(Vector3 soundPosition)
     {
         if (state == State.Chase) return;
+        if (health != null && health.IsIncapacitated) return;
 
         Vector2 soundGamePos = new Vector2(soundPosition.x, soundPosition.y);
         if (Vector2.Distance(GamePosition, soundGamePos) > soundHearRange) return;
@@ -93,6 +96,8 @@ public class SoundReactiveMonsterAI : MonoBehaviour
 
     private void Update()
     {
+        if (health != null && health.IsIncapacitated) return;
+
         if (player != null)
         {
             float distanceToPlayer = Vector2.Distance(GamePosition, PlayerGamePosition);
