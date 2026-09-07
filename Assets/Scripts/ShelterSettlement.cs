@@ -23,6 +23,12 @@ public class ShelterSettlement : MonoBehaviour
             string text = $"기본 정산: {resultValue.BaseMileage}마일리지";
             if (resultValue.BonusApplied) text += $" + 목표 달성 보너스: {resultValue.BonusMileage}마일리지";
             text += $" = 총 {resultValue.TotalMileage}";
+
+            if (GameManager.Instance.IsGameOver)
+            {
+                text += "\n목표를 달성하지 못해 보호소 운영이 어려워졌습니다. 게임 오버";
+            }
+
             settlementText.text = text;
         }
     }

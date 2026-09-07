@@ -30,7 +30,7 @@ public class ShelterShop : MonoBehaviour
 
     private void Purchase(ShopItem item)
     {
-        if (GameManager.Instance == null) return;
+        if (GameManager.Instance == null || GameManager.Instance.IsGameOver) return;
 
         bool success = item.weaponType != WeaponType.None
             ? GameManager.Instance.PurchaseWeapon(item.weaponType, item.price)
@@ -47,6 +47,7 @@ public class ShelterShop : MonoBehaviour
     private void RefreshUI()
     {
         int mileage = GameManager.Instance != null ? GameManager.Instance.Mileage : 0;
+        bool gameOver = GameManager.Instance != null && GameManager.Instance.IsGameOver;
         if (mileageText != null) mileageText.text = $"보유 마일리지: {mileage}";
 
         foreach (ShopItem item in items)
@@ -57,7 +58,7 @@ public class ShelterShop : MonoBehaviour
                 && GameManager.Instance != null
                 && GameManager.Instance.OwnsWeapon(item.weaponType);
 
-            item.button.interactable = !alreadyOwned && mileage >= item.price;
+            item.button.interactable = !gameOver && !alreadyOwned && mileage >= item.price;
         }
     }
 }
