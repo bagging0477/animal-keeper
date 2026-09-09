@@ -20,10 +20,15 @@ public class ShelterSettlement : MonoBehaviour
 
         if (settlementText != null)
         {
-            string text = $"기본 정산: {resultValue.BaseMileage}마일리지";
-            if (resultValue.BonusApplied) text += $" + 목표 달성 보너스: {resultValue.BonusMileage}마일리지";
-            text += $" = 총 {resultValue.TotalMileage}";
-            settlementText.text = text;
+            string bonusLine = resultValue.BonusApplied
+                ? $"목표 달성 보너스   <color=#FFD54F>+{resultValue.BonusMileage}</color>"
+                : "목표 달성 보너스   +0 (미달성)";
+
+            settlementText.text =
+                $"기본 정산 ({resultValue.TotalWeight}kg × {resultValue.PricePerWeight})   {resultValue.BaseMileage}\n" +
+                $"{bonusLine}\n" +
+                $"────────────────\n" +
+                $"<b><color=#8BC34A>합계   {resultValue.TotalMileage} 마일리지</color></b>";
         }
     }
 }

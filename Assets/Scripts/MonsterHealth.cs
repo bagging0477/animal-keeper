@@ -55,6 +55,8 @@ public class MonsterHealth : MonoBehaviour, ISleepable
         if (IsDead || Health <= 0) return;
 
         Health -= amount;
+        Debug.Log($"{gameObject.name} 몬스터가 피격당함! 데미지: {amount}, 남은 체력: {Mathf.Max(Health, 0)}/{maxHealth}");
+
         if (Health <= 0) Die();
     }
 
@@ -78,5 +80,7 @@ public class MonsterHealth : MonoBehaviour, ISleepable
         IsDead = true;
         if (spriteRenderer != null) spriteRenderer.color = deadColor;
         if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
+
+        Debug.Log($"{gameObject.name} 몬스터 사망!");
     }
 }
