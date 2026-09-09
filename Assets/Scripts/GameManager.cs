@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     public int TargetCount => targetCount;
     public int RescuedCount { get; private set; }
     public int Health { get; private set; } = MaxHealth;
+    public bool IsGameOver { get; private set; }
 
     private readonly List<int> cargoWeights = new List<int>();
     public IReadOnlyList<int> CargoWeights => cargoWeights;
@@ -56,6 +57,19 @@ public class GameManager : MonoBehaviour
         day = 1;
         rescuedAnimalIdsToday.Clear();
         Health = MaxHealth;
+    }
+
+    public void ResetGame()
+    {
+        day = 1;
+        rescuedAnimalIdsToday.Clear();
+        Health = MaxHealth;
+        Mileage = 0;
+        cargoWeights.Clear();
+        RescuedCount = 0;
+        ownedWeapons.Clear();
+        EquippedWeapon = WeaponType.None;
+        IsGameOver = false;
     }
 
     public void TakeDamage(int amount, string monsterTypeName)
@@ -106,6 +120,11 @@ public class GameManager : MonoBehaviour
         Mileage += total;
         cargoWeights.Clear();
         RescuedCount = 0;
+
+        if (day >= MaxDay)
+        {
+            IsGameOver = !bonusApplied;
+        }
 
         return new SettlementResult
         {

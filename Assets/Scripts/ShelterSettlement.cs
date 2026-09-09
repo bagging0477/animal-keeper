@@ -24,11 +24,18 @@ public class ShelterSettlement : MonoBehaviour
                 ? $"목표 달성 보너스   <color=#FFD54F>+{resultValue.BonusMileage}</color>"
                 : "목표 달성 보너스   +0 (미달성)";
 
-            settlementText.text =
+            string text =
                 $"기본 정산 ({resultValue.TotalWeight}kg × {resultValue.PricePerWeight})   {resultValue.BaseMileage}\n" +
                 $"{bonusLine}\n" +
                 $"────────────────\n" +
                 $"<b><color=#8BC34A>합계   {resultValue.TotalMileage} 마일리지</color></b>";
+
+            if (GameManager.Instance.IsGameOver)
+            {
+                text += "\n\n<b><color=#E53935>목표를 달성하지 못해 보호소 운영이 어려워졌습니다. 게임 오버</color></b>";
+            }
+
+            settlementText.text = text;
         }
     }
 }
