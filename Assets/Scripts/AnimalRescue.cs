@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(AnimalSleep))]
 public class AnimalRescue : MonoBehaviour
@@ -17,6 +18,7 @@ public class AnimalRescue : MonoBehaviour
     [SerializeField] private float interactionRange = 1.2f;
     [SerializeField] private int minWeight = 1;
     [SerializeField] private int maxWeight = 10;
+    [SerializeField] private Text promptText;
 
     public bool IsHeld { get; private set; }
     public bool IsCompleted { get; private set; }
@@ -52,16 +54,22 @@ public class AnimalRescue : MonoBehaviour
     {
         if (player == null) return;
 
-        if (!IsHeld)
-        {
-            float distance = Vector2.Distance(transform.position, player.position);
-            if (distance > interactionRange) return;
+        SharedPrompt.BeginFrameIfNeeded(promptText);
 
-            Keyboard kb = Keyboard.current;
-            if (kb != null && kb.eKey.wasPressedThisFrame && CountHeldAnimals() < MaxHeldAnimals)
-            {
-                PickUp();
-            }
+        if (IsHeld) return;
+
+        float distance = Vector2.Distance(transform.position, player.position);
+        bool inRange = distance <= interactionRange;
+        bool canPickUp = inRange && CountHeldAnimals() < MaxHeldAnimals;
+
+        if (canPickUp) SharedPrompt.Show(promptText, "E를 눌러 구조하세요");
+
+        if (!inRange) return;
+
+        Keyboard kb = Keyboard.current;
+        if (kb != null && kb.eKey.wasPressedThisFrame && CountHeldAnimals() < MaxHeldAnimals)
+        {
+            PickUp();
         }
     }
 
@@ -87,6 +95,7 @@ public class AnimalRescue : MonoBehaviour
     {
         heldSlot = CountHeldAnimals();
         IsHeld = true;
+        AudioManager.Instance?.PlayPickup();
         Debug.Log($"{name}: 플레이어가 동물을 들었다 ({heldSlot + 1}/{MaxHeldAnimals})");
     }
 

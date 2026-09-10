@@ -103,6 +103,7 @@ public class PlayerWeaponController : MonoBehaviour
     {
         if (netCooldownTimer > 0f) return;
         netCooldownTimer = netCooldown;
+        AudioManager.Instance?.PlayNetSwing();
 
         Vector2 origin = transform.position;
         Vector2 aimDirection = playerMovement.LookDirection;
@@ -126,5 +127,6 @@ public class PlayerWeaponController : MonoBehaviour
 
         TranquilizerDart dart = Instantiate(dartPrefab, transform.position, Quaternion.identity);
         dart.Launch(playerMovement.LookDirection, dartSpeed, sleepDelay, sleepDuration);
+        AudioManager.Instance?.PlayTranquilizerShot();
     }
 }

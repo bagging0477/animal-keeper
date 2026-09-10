@@ -76,6 +76,7 @@ public class GameManager : MonoBehaviour
     {
         if (Health <= 0) return;
 
+        AudioManager.Instance?.PlayHit();
         Health = Mathf.Max(0, Health - amount);
         Debug.Log($"{monsterTypeName} 몬스터에게 당함! 데미지: {amount}%, 남은 체력: {Health}%");
 

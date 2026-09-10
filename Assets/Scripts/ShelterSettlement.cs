@@ -42,10 +42,12 @@ public class ShelterSettlement : MonoBehaviour
 
         if (GameManager.Instance.IsGameOver)
         {
+            AudioManager.Instance?.PlayDayFail();
             if (gameOverPanel != null) gameOverPanel.Show();
         }
         else if (GameManager.Instance.Day >= GameManager.MaxDay && resultValue.BonusApplied)
         {
+            AudioManager.Instance?.PlayDaySuccess();
             if (dayClearPanel != null) dayClearPanel.Show("Day 클리어!");
         }
     }

@@ -105,6 +105,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
             if (state != State.Chase && distanceToPlayer <= detectRange)
             {
                 state = State.Chase;
+                AudioManager.Instance?.PlayMonsterChaseAlert();
             }
             else if (state == State.Chase && distanceToPlayer > loseRange)
             {

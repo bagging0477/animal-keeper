@@ -83,6 +83,7 @@ public class MonsterAI : MonoBehaviour
             if (state == State.Patrol && distanceToPlayer <= detectRange)
             {
                 state = State.Chase;
+                AudioManager.Instance?.PlayMonsterChaseAlert();
             }
             else if (state == State.Chase && distanceToPlayer > loseRange)
             {

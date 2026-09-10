@@ -31,14 +31,12 @@ public class TruckPoint : MonoBehaviour
     {
         if (player == null) return;
 
+        SharedPrompt.BeginFrameIfNeeded(promptText);
+
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactionRange;
 
-        if (promptText != null)
-        {
-            promptText.gameObject.SetActive(inRange);
-            if (inRange) promptText.text = "E를 눌러 트럭에 타기";
-        }
+        if (inRange) SharedPrompt.Show(promptText, "E를 눌러 트럭에 타기");
 
         if (!inRange) return;
 
