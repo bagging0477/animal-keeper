@@ -6,6 +6,8 @@ public class ShelterSettlement : MonoBehaviour
     [SerializeField] private int pricePerWeight = 10;
     [SerializeField] private int bonusMileage = 50;
     [SerializeField] private Text settlementText;
+    [SerializeField] private GameOverPanel gameOverPanel;
+    [SerializeField] private DayClearPanel dayClearPanel;
 
     public static GameManager.SettlementResult LastResult { get; private set; }
     public static bool HasSettled { get; private set; }
@@ -36,6 +38,15 @@ public class ShelterSettlement : MonoBehaviour
             }
 
             settlementText.text = text;
+        }
+
+        if (GameManager.Instance.IsGameOver)
+        {
+            if (gameOverPanel != null) gameOverPanel.Show();
+        }
+        else if (GameManager.Instance.Day >= GameManager.MaxDay && resultValue.BonusApplied)
+        {
+            if (dayClearPanel != null) dayClearPanel.Show("Day 클리어!");
         }
     }
 }
