@@ -84,6 +84,8 @@ public class SoundReactiveMonsterAI : MonoBehaviour
         Vector2 soundGamePos = new Vector2(soundPosition.x, soundPosition.y);
         if (Vector2.Distance(GamePosition, soundGamePos) > soundHearRange) return;
 
+        if (!agent.isOnNavMesh) return;
+
         Vector3 navTarget = new Vector3(soundPosition.x, 0f, soundPosition.y);
         if (NavMesh.SamplePosition(navTarget, out NavMeshHit hit, 2f, NavMesh.AllAreas))
         {
@@ -126,41 +128,44 @@ public class SoundReactiveMonsterAI : MonoBehaviour
             }
         }
 
-        switch (state)
+        if (agent.isOnNavMesh) // not yet placed on a baked NavMesh (e.g. spawned before the map's NavMesh is baked) - skip pathing this frame
         {
-            case State.Chase:
-                if (player != null)
-                {
-                    agent.speed = chaseSpeed;
-                    Vector3 targetPoint = new Vector3(player.position.x, 0f, player.position.y);
-                    if (NavMesh.SamplePosition(targetPoint, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+            switch (state)
+            {
+                case State.Chase:
+                    if (player != null)
                     {
-                        agent.SetDestination(hit.position);
+                        agent.speed = chaseSpeed;
+                        Vector3 targetPoint = new Vector3(player.position.x, 0f, player.position.y);
+                        if (NavMesh.SamplePosition(targetPoint, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+                        {
+                            agent.SetDestination(hit.position);
+                        }
                     }
-                }
-                break;
+                    break;
 
-            case State.Investigate:
-                if (!agent.pathPending && agent.remainingDistance <= waypointStopDistance)
-                {
-                    lookAroundTimer += Time.deltaTime;
-                    if (lookAroundTimer >= lookAroundDuration)
+                case State.Investigate:
+                    if (!agent.pathPending && agent.remainingDistance <= waypointStopDistance)
                     {
-                        ReturnToWander();
+                        lookAroundTimer += Time.deltaTime;
+                        if (lookAroundTimer >= lookAroundDuration)
+                        {
+                            ReturnToWander();
+                        }
                     }
-                }
-                break;
+                    break;
 
-            case State.Wander:
-                if (!agent.pathPending && agent.remainingDistance <= waypointStopDistance)
-                {
-                    wanderWaitTimer += Time.deltaTime;
-                    if (wanderWaitTimer >= wanderWaitDuration)
+                case State.Wander:
+                    if (!agent.pathPending && agent.remainingDistance <= waypointStopDistance)
                     {
-                        PickNewWanderDestination();
+                        wanderWaitTimer += Time.deltaTime;
+                        if (wanderWaitTimer >= wanderWaitDuration)
+                        {
+                            PickNewWanderDestination();
+                        }
                     }
-                }
-                break;
+                    break;
+            }
         }
 
         if (visual != null)
@@ -177,6 +182,8 @@ public class SoundReactiveMonsterAI : MonoBehaviour
 
     private void PickNewWanderDestination()
     {
+        if (!agent.isOnNavMesh) return;
+
         agent.speed = wanderSpeed;
         wanderWaitTimer = 0f;
         wanderWaitDuration = Random.Range(wanderWaitMin, wanderWaitMax);

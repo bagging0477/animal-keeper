@@ -66,7 +66,7 @@ public class MonsterAI : MonoBehaviour
             Debug.LogWarning($"{name}: no GameObject tagged 'Player' found in the scene.");
         }
 
-        if (waypoints.Length > 0)
+        if (waypoints.Length > 0 && agent.isOnNavMesh)
         {
             agent.SetDestination(waypoints[targetIndex]);
         }
@@ -89,7 +89,7 @@ public class MonsterAI : MonoBehaviour
             {
                 state = State.Patrol;
                 agent.speed = patrolSpeed;
-                agent.SetDestination(waypoints[targetIndex]);
+                if (waypoints.Length > 0 && agent.isOnNavMesh) agent.SetDestination(waypoints[targetIndex]);
             }
 
             if (distanceToPlayer <= catchRange)
@@ -106,7 +106,11 @@ public class MonsterAI : MonoBehaviour
             }
         }
 
-        if (state == State.Chase && player != null)
+        if (!agent.isOnNavMesh)
+        {
+            // not yet placed on a baked NavMesh (e.g. spawned before the map's NavMesh is baked) - skip pathing this frame
+        }
+        else if (state == State.Chase && player != null)
         {
             agent.speed = chaseSpeed;
             Vector3 targetPoint = new Vector3(player.position.x, 0f, player.position.y);

@@ -40,7 +40,7 @@ public class AnimalFlee : MonoBehaviour
     private void Update()
     {
         if (player == null) return;
-        if (sleep.IsAsleep) return;
+        if (sleep != null && sleep.IsAsleep) return;
 
         if (rescue.IsHeld || rescue.IsCompleted)
         {

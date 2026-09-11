@@ -24,17 +24,32 @@ public class AnimalRescue : MonoBehaviour
     public bool IsCompleted { get; private set; }
     public int Weight { get; private set; }
 
+    /// <summary>계층 경로 기반 안정적 식별자. GameObject.name만 쓰면 서로 다른 부모 아래
+    /// 이름이 같은 동물(맵에 그룹별로 복제 배치할 때 흔함)이 서로의 구조 기록을 덮어쓸 수 있다.</summary>
+    public string Id { get; private set; }
+
     private Transform player;
     private int heldSlot;
 
     private void Awake()
     {
+        Id = BuildHierarchyId();
         Weight = Random.Range(minWeight, maxWeight + 1); // inclusive
 
-        if (GameManager.Instance != null && GameManager.Instance.IsAnimalRescuedToday(name))
+        if (GameManager.Instance != null && GameManager.Instance.IsAnimalRescuedToday(Id))
         {
             gameObject.SetActive(false);
         }
+    }
+
+    private string BuildHierarchyId()
+    {
+        var path = new System.Text.StringBuilder(name);
+        for (Transform t = transform.parent; t != null; t = t.parent)
+        {
+            path.Insert(0, "/").Insert(0, t.name);
+        }
+        return path.ToString();
     }
 
     private void Start()
