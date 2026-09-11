@@ -167,6 +167,23 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    private int gameSessionSeed;
+    private bool gameSessionSeedInitialized;
+
+    /// <summary>같은 Day 안에서는 VillageScene을 몇 번을 다시 들어가도 같은 시드를 돌려줘서
+    /// 똑같은 맵이 나오게 한다. Day가 바뀌면 자동으로 다른 값이 나온다.
+    /// (Random.Range(int.MinValue, int.MaxValue)는 내부 범위 계산에서 오버플로가 나는지
+    /// 항상 같은 값을 반환해서 Day가 바뀌어도 맵이 안 바뀌는 버그가 있었다 - Guid 기반으로 교체.)</summary>
+    public int GetVillageMapSeedForToday()
+    {
+        if (!gameSessionSeedInitialized)
+        {
+            gameSessionSeedInitialized = true;
+            gameSessionSeed = System.Guid.NewGuid().GetHashCode();
+        }
+        return gameSessionSeed + day * 7919;
+    }
+
     private void Awake()
     {
         if (Instance != null && Instance != this)

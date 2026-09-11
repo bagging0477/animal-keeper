@@ -63,6 +63,14 @@ public class AnimalRescue : MonoBehaviour
         {
             Debug.LogWarning($"{name}: no GameObject tagged 'Player' found in the scene.");
         }
+
+        // Procedurally spawned animals aren't wired to the scene's shared prompt Text in the
+        // Inspector, so fall back to finding it by name.
+        if (promptText == null)
+        {
+            GameObject promptObj = GameObject.Find("PromptText");
+            if (promptObj != null) promptText = promptObj.GetComponent<Text>();
+        }
     }
 
     private void Update()
