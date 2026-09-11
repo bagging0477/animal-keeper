@@ -540,9 +540,14 @@ public class VillageMapGenerator : MonoBehaviour
     private static Vector2Int PickInteriorCell(RoomInstance room)
     {
         HashSet<Vector2Int> floorSet = new HashSet<Vector2Int>(room.FloorCells);
+        HashSet<Vector2Int> obstacleCells = ObstacleCellsByRoom.TryGetValue(room.PrefabName, out Vector2Int[] obs)
+            ? new HashSet<Vector2Int>(obs)
+            : new HashSet<Vector2Int>();
+
         List<Vector2Int> interior = new List<Vector2Int>();
         foreach (Vector2Int c in room.FloorCells)
         {
+            if (obstacleCells.Contains(c)) continue;
             if (floorSet.Contains(c + Vector2Int.up) && floorSet.Contains(c + Vector2Int.down) &&
                 floorSet.Contains(c + Vector2Int.left) && floorSet.Contains(c + Vector2Int.right))
             {

@@ -791,7 +791,6 @@ GameObject:
   - component: {fileID: 1011791160}
   - component: {fileID: 1011791159}
   - component: {fileID: 1011791163}
-  - component: {fileID: 1011791164}
   - component: {fileID: 1011791165}
   m_Layer: 0
   m_Name: Player
@@ -962,20 +961,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &1011791164
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1011791158}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f166fdddc95cce642bdd3b4d5fa594aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VillageSpawnPoint
-  truckPointObjectName: TruckPoint
-  spawnOffset: {x: 0, y: -1}
 --- !u!114 &1011791165
 MonoBehaviour:
   m_ObjectHideFlags: 0

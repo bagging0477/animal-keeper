@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour
         day = 1;
         rescuedAnimalIdsToday.Clear();
         Health = MaxHealth;
+        gameSessionSeedInitialized = false;
     }
 
     public void ResetGame()
@@ -70,6 +71,7 @@ public class GameManager : MonoBehaviour
         ownedWeapons.Clear();
         EquippedWeapon = WeaponType.None;
         IsGameOver = false;
+        gameSessionSeedInitialized = false;
     }
 
     public void TakeDamage(int amount, string monsterTypeName)
