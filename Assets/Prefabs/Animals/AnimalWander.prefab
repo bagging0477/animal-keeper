@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2068930949397097927}
   - component: {fileID: 1190001293907862239}
   - component: {fileID: 1997256715118540482}
-  - component: {fileID: 628103587987654641}
   - component: {fileID: 740077487230975585}
   m_Layer: 0
   m_Name: AnimalWander
@@ -124,18 +123,6 @@ MonoBehaviour:
   minWeight: 1
   maxWeight: 10
   promptText: {fileID: 0}
---- !u!114 &628103587987654641
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8620217539038921367}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84876a3928a3ebc4bad55b5eac83816e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AnimalSleep
 --- !u!114 &740077487230975585
 MonoBehaviour:
   m_ObjectHideFlags: 0

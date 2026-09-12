@@ -443,7 +443,6 @@ MonoBehaviour:
   - {fileID: 8453516254361774462, guid: a369de8a6938edb45a8c07c800314236, type: 3}
   - {fileID: 233379151328233148, guid: aee08adaa603e8848945fd379da60d6c, type: 3}
   - {fileID: 4987092796169242363, guid: 670f755404a187b4d86d314119b8dc28, type: 3}
-  - {fileID: 4987092796169242363, guid: 670f755404a187b4d86d314119b8dc28, type: 3}
   minRoomCount: 3
   maxRoomCount: 4
   animalPrefabs:
