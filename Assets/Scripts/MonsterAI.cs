@@ -16,13 +16,11 @@ public class MonsterAI : MonoBehaviour
         new Vector2(0f, 1.5f),
         new Vector2(1.5f, 0f)
     };
-    [SerializeField] private float patrolSpeed = 2f;
     [SerializeField] private float waypointStopDistance = 0.2f;
 
     [Header("Chase")]
     [SerializeField] private float detectRange = 3f;
     [SerializeField] private float loseRange = 4f;
-    [SerializeField] private float chaseSpeed = 3.5f;
 
     [Header("Capture")]
     [SerializeField] private float catchRange = 0.7f;
@@ -37,13 +35,16 @@ public class MonsterAI : MonoBehaviour
     private State state = State.Patrol;
     private bool caughtLogged;
 
+    private float PatrolSpeed => config != null ? config.patrolMonsterPatrolSpeed : 1.6f;
+    private float ChaseSpeed => config != null ? config.MonsterChaseSpeed : 4.3f;
+
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         health = GetComponent<MonsterHealth>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
-        agent.speed = patrolSpeed;
+        agent.speed = PatrolSpeed;
 
         waypoints = new Vector3[patrolOffsets.Length];
         Vector3 origin = transform.position;
@@ -88,7 +89,7 @@ public class MonsterAI : MonoBehaviour
             else if (state == State.Chase && distanceToPlayer > loseRange)
             {
                 state = State.Patrol;
-                agent.speed = patrolSpeed;
+                agent.speed = PatrolSpeed;
                 if (waypoints.Length > 0 && agent.isOnNavMesh) agent.SetDestination(waypoints[targetIndex]);
             }
 
@@ -112,7 +113,7 @@ public class MonsterAI : MonoBehaviour
         }
         else if (state == State.Chase && player != null)
         {
-            agent.speed = chaseSpeed;
+            agent.speed = ChaseSpeed;
             Vector3 targetPoint = new Vector3(player.position.x, 0f, player.position.y);
             if (NavMesh.SamplePosition(targetPoint, out NavMeshHit hit, 2f, NavMesh.AllAreas))
             {

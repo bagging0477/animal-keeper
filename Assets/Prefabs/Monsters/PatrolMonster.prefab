@@ -180,11 +180,9 @@ MonoBehaviour:
   - {x: -1.5, y: 0}
   - {x: 0, y: 1.5}
   - {x: 1.5, y: 0}
-  patrolSpeed: 2
   waypointStopDistance: 0.2
   detectRange: 3
   loseRange: 4
-  chaseSpeed: 3.5
   catchRange: 0.7
   monsterTypeName: "\uC21C\uCC30\uD615"
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}

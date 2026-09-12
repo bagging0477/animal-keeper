@@ -11,7 +11,6 @@ public class SoundReactiveMonsterAI : MonoBehaviour
 
     [Header("Wander")]
     [SerializeField] private float wanderRadius = 5f;
-    [SerializeField] private float wanderSpeed = 1.5f;
     [SerializeField] private float wanderWaitMin = 1f;
     [SerializeField] private float wanderWaitMax = 3f;
     [SerializeField] private float waypointStopDistance = 0.2f;
@@ -24,7 +23,6 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     [Header("Chase")]
     [SerializeField] private float detectRange = 3f;
     [SerializeField] private float loseRange = 4f;
-    [SerializeField] private float chaseSpeed = 3.5f;
 
     [Header("Capture")]
     [SerializeField] private float catchRange = 0.7f;
@@ -41,13 +39,16 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private float lookAroundTimer;
     private bool caughtLogged;
 
+    private float WanderSpeed => config != null ? config.soundReactiveMonsterWanderSpeed : 2.4f;
+    private float ChaseSpeed => config != null ? config.MonsterChaseSpeed : 4.3f;
+
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         health = GetComponent<MonsterHealth>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
-        agent.speed = wanderSpeed;
+        agent.speed = WanderSpeed;
         origin = transform.position;
     }
 
@@ -135,7 +136,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
                 case State.Chase:
                     if (player != null)
                     {
-                        agent.speed = chaseSpeed;
+                        agent.speed = ChaseSpeed;
                         Vector3 targetPoint = new Vector3(player.position.x, 0f, player.position.y);
                         if (NavMesh.SamplePosition(targetPoint, out NavMeshHit hit, 2f, NavMesh.AllAreas))
                         {
@@ -184,7 +185,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     {
         if (!agent.isOnNavMesh) return;
 
-        agent.speed = wanderSpeed;
+        agent.speed = WanderSpeed;
         wanderWaitTimer = 0f;
         wanderWaitDuration = Random.Range(wanderWaitMin, wanderWaitMax);
 

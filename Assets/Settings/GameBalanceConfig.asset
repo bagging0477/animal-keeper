@@ -19,6 +19,15 @@ MonoBehaviour:
   sleepDelay: 1
   sleepDuration: 5
   playerMaxHealth: 100
+  playerMoveSpeed: 3.75
+  patrolMonsterPatrolSpeed: 1.6
+  soundReactiveMonsterWanderSpeed: 2.4
+  monsterChaseSpeedMultiplier: 1.15
+  playerSprintSpeedMultiplier: 1.25
+  maxStamina: 100
+  sprintStaminaDrainPerSecond: 25
+  staminaRegenPerSecond: 15
+  staminaExhaustionCooldown: 1.5
   targetRescueCount: 3
   mileagePerWeight: 10
   targetBonusMileage: 50
