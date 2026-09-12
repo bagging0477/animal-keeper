@@ -82,8 +82,11 @@ public class VillageMapGenerator : MonoBehaviour
 
         foreach (RoomInstance room in placedRooms)
         {
-            SpawnAnimal(room, mapRoot.transform);
-            SpawnMonster(room, mapRoot.transform);
+            // Parented under each room (not the shared mapRoot) so AnimalRescue's hierarchy-path Id
+            // stays unique per room - rooms never repeat a prefab, but animalPrefabs can be picked
+            // for more than one room, and a shared parent would give those clones identical Ids.
+            SpawnAnimal(room, room.Root.transform);
+            SpawnMonster(room, room.Root.transform);
         }
     }
 
@@ -629,6 +632,12 @@ public class VillageMapGenerator : MonoBehaviour
     // how the collection mode was configured. Building the sources by hand with the lower-level
     // NavMeshBuilder API sidesteps that entirely: each room's NavGround mesh is handed to the
     // baker directly, so nothing needs to be "found" by the auto-collector.
+    // NavMesh.AddNavMeshData returns a handle that Unity never cleans up on its own - not even when
+    // the GameObjects that triggered the bake are destroyed on scene unload. Without tracking and
+    // removing the previous instance here, every re-entry into VillageScene (a normal truck
+    // round-trip) would stack another full room layout's NavMesh on top of the old one forever.
+    private static NavMeshDataInstance activeNavMeshDataInstance;
+
     private static void BakeNavMesh(GameObject mapRoot, List<MeshFilter> navGroundMeshes)
     {
         Bounds bounds = default;
@@ -658,9 +667,11 @@ public class VillageMapGenerator : MonoBehaviour
         if (!any) return;
         bounds.Expand(2f);
 
+        if (activeNavMeshDataInstance.valid) NavMesh.RemoveNavMeshData(activeNavMeshDataInstance);
+
         NavMeshBuildSettings settings = NavMesh.GetSettingsByID(0);
         NavMeshData data = NavMeshBuilder.BuildNavMeshData(settings, sources, bounds, Vector3.zero, Quaternion.identity);
-        NavMesh.AddNavMeshData(data);
+        activeNavMeshDataInstance = NavMesh.AddNavMeshData(data);
     }
 
     private static void Shuffle<T>(List<T> list)
