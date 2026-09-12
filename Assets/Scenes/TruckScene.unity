@@ -744,9 +744,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6f2d7ec6b26a3f4cb492944b3929cb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
   truckSceneName: TruckScene
   day: 1
-  targetCount: 3
 --- !u!4 &430561412
 Transform:
   m_ObjectHideFlags: 0

@@ -3,8 +3,7 @@ using UnityEngine.UI;
 
 public class ShelterSettlement : MonoBehaviour
 {
-    [SerializeField] private int pricePerWeight = 10;
-    [SerializeField] private int bonusMileage = 50;
+    [SerializeField] private GameBalanceConfig config;
     [SerializeField] private Text settlementText;
     [SerializeField] private GameOverPanel gameOverPanel;
     [SerializeField] private DayClearPanel dayClearPanel;
@@ -16,6 +15,8 @@ public class ShelterSettlement : MonoBehaviour
     {
         if (GameManager.Instance == null) return;
 
+        int pricePerWeight = config != null ? config.mileagePerWeight : 10;
+        int bonusMileage = config != null ? config.targetBonusMileage : 50;
         GameManager.SettlementResult resultValue = GameManager.Instance.SettleCargo(pricePerWeight, bonusMileage);
         LastResult = resultValue;
         HasSettled = true;

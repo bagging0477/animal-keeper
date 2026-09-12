@@ -973,15 +973,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b73ed16e9a6b0b4c8988f6c3ea69788, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerWeaponController
-  netRange: 2
-  netAngle: 90
-  netDamage: 1
-  netStunDuration: 0.4
-  netCooldown: 0.5
+  config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
   dartPrefab: {fileID: 1007327826499193375, guid: 2a51acd31a5bf9640b12da630c898b89, type: 3}
   dartSpeed: 12
-  sleepDelay: 1
-  sleepDuration: 5
   weaponVisual: {fileID: 0}
   weaponVisualScale: 0.25
   weaponVisualDistance: 0.4

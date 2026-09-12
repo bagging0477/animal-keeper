@@ -8,13 +8,15 @@ public class ShelterShop : MonoBehaviour
     public class ShopItem
     {
         public string itemName;
-        public int price;
         public Button button;
         public WeaponType weaponType = WeaponType.None;
     }
 
+    [SerializeField] private GameBalanceConfig config;
     [SerializeField] private ShopItem[] items;
     [SerializeField] private Text mileageText;
+
+    private int GetPrice(ShopItem item) => config != null ? config.GetShopItemPrice(item.itemName) : 0;
 
     private void Start()
     {
@@ -32,13 +34,14 @@ public class ShelterShop : MonoBehaviour
     {
         if (GameManager.Instance == null || GameManager.Instance.IsGameOver) return;
 
+        int price = GetPrice(item);
         bool success = item.weaponType != WeaponType.None
-            ? GameManager.Instance.PurchaseWeapon(item.weaponType, item.price)
-            : GameManager.Instance.TrySpendMileage(item.price);
+            ? GameManager.Instance.PurchaseWeapon(item.weaponType, price)
+            : GameManager.Instance.TrySpendMileage(price);
 
         if (success)
         {
-            Debug.Log($"{item.itemName} 구매 완료 (-{item.price} 마일리지)");
+            Debug.Log($"{item.itemName} 구매 완료 (-{price} 마일리지)");
         }
 
         RefreshUI();
@@ -58,7 +61,7 @@ public class ShelterShop : MonoBehaviour
                 && GameManager.Instance != null
                 && GameManager.Instance.OwnsWeapon(item.weaponType);
 
-            item.button.interactable = !gameOver && !alreadyOwned && mileage >= item.price;
+            item.button.interactable = !gameOver && !alreadyOwned && mileage >= GetPrice(item);
         }
     }
 }

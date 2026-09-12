@@ -7,16 +7,20 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public const int MaxDay = 3;
-    public const int MaxHealth = 100;
 
+    /// <summary>config가 아직 연결되지 않았을 때만 쓰이는 안전장치용 기본값.</summary>
+    private const int FallbackMaxHealth = 100;
+
+    public static int MaxHealth => Instance != null && Instance.config != null ? Instance.config.playerMaxHealth : FallbackMaxHealth;
+
+    [SerializeField] private GameBalanceConfig config;
     [SerializeField] private string truckSceneName = "TruckScene";
     [SerializeField] private int day = 1;
-    [SerializeField] private int targetCount = 3;
 
     public int Day => day;
-    public int TargetCount => targetCount;
+    public int TargetCount => config != null ? config.targetRescueCount : 3;
     public int RescuedCount { get; private set; }
-    public int Health { get; private set; } = MaxHealth;
+    public int Health { get; private set; }
     public bool IsGameOver { get; private set; }
 
     private readonly List<int> cargoWeights = new List<int>();
@@ -116,7 +120,7 @@ public class GameManager : MonoBehaviour
     {
         int totalWeight = TotalWeight;
         int baseMileage = totalWeight * pricePerWeight;
-        bool bonusApplied = RescuedCount >= targetCount;
+        bool bonusApplied = RescuedCount >= TargetCount;
         int bonus = bonusApplied ? bonusMileage : 0;
         int total = baseMileage + bonus;
 
@@ -196,5 +200,6 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        Health = MaxHealth;
     }
 }

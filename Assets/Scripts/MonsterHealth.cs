@@ -3,7 +3,7 @@ using UnityEngine.AI;
 
 public class MonsterHealth : MonoBehaviour, ISleepable
 {
-    [SerializeField] private int maxHealth = 3;
+    [SerializeField] private GameBalanceConfig config;
     [SerializeField] private Color deadColor = new Color(0.35f, 0.35f, 0.35f, 1f);
 
     private NavMeshAgent agent;
@@ -20,6 +20,8 @@ public class MonsterHealth : MonoBehaviour, ISleepable
     public bool IsAsleep => asleepTimer > 0f;
     public bool IsIncapacitated => IsDead || IsStunned || IsAsleep;
 
+    private int MaxHealth => config != null ? config.monsterMaxHealth : 3;
+
     /// <summary>플레이어와 동일한 2D 좌표계로 변환한 몬스터 위치. 몬스터는 NavMesh(x,z 평면)로 움직이고 x,z를 2D x,y로 매핑해서 렌더링한다.</summary>
     public Vector2 GamePosition => new Vector2(transform.position.x, transform.position.z);
 
@@ -27,7 +29,7 @@ public class MonsterHealth : MonoBehaviour, ISleepable
     {
         agent = GetComponent<NavMeshAgent>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        Health = maxHealth;
+        Health = MaxHealth;
     }
 
     private void Update()
@@ -55,7 +57,7 @@ public class MonsterHealth : MonoBehaviour, ISleepable
         if (IsDead || Health <= 0) return;
 
         Health -= amount;
-        Debug.Log($"{gameObject.name} 몬스터가 피격당함! 데미지: {amount}, 남은 체력: {Mathf.Max(Health, 0)}/{maxHealth}");
+        Debug.Log($"{gameObject.name} 몬스터가 피격당함! 데미지: {amount}, 남은 체력: {Mathf.Max(Health, 0)}/{MaxHealth}");
 
         if (Health <= 0) Die();
     }

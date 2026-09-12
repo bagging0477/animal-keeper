@@ -29,7 +29,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     [Header("Capture")]
     [SerializeField] private float catchRange = 0.7f;
     [SerializeField] private string monsterTypeName = "소리반응형";
-    [SerializeField] private int damage = 34;
+    [SerializeField] private GameBalanceConfig config;
 
     private NavMeshAgent agent;
     private MonsterHealth health;
@@ -207,6 +207,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
 
     private void HandleCatch()
     {
+        int damage = config != null ? config.soundReactiveMonsterDamage : 34;
         GameManager.Instance?.TakeDamage(damage, monsterTypeName);
     }
 }

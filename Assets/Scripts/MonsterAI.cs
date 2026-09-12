@@ -27,7 +27,7 @@ public class MonsterAI : MonoBehaviour
     [Header("Capture")]
     [SerializeField] private float catchRange = 0.7f;
     [SerializeField] private string monsterTypeName = "순찰형";
-    [SerializeField] private int damage = 34;
+    [SerializeField] private GameBalanceConfig config;
 
     private NavMeshAgent agent;
     private MonsterHealth health;
@@ -136,6 +136,7 @@ public class MonsterAI : MonoBehaviour
 
     private void HandleCatch()
     {
+        int damage = config != null ? config.patrolMonsterDamage : 34;
         GameManager.Instance?.TakeDamage(damage, monsterTypeName);
     }
 }

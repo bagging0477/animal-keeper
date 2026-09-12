@@ -1337,25 +1337,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b5749646c3ffbf449b313178fb0720c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShelterShop
+  config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
   items:
   - itemName: "\uC0AC\uB8CC"
-    price: 30
     button: {fileID: 1585388009}
     weaponType: 0
   - itemName: "\uC57D\uD488"
-    price: 50
     button: {fileID: 1150289518}
     weaponType: 0
   - itemName: "\uC7A5\uBE44"
-    price: 80
     button: {fileID: 105858280}
     weaponType: 0
   - itemName: "\uD3EC\uD68D\uB9DD"
-    price: 60
     button: {fileID: 1301694460}
     weaponType: 1
   - itemName: "\uB9C8\uCDE8\uCD1D"
-    price: 120
     button: {fileID: 321901866}
     weaponType: 2
   mileageText: {fileID: 798162395}
@@ -1371,8 +1367,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 238a261042d66014ba9ad40f61087bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShelterSettlement
-  pricePerWeight: 10
-  bonusMileage: 50
+  config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
   settlementText: {fileID: 1764359041}
   gameOverPanel: {fileID: 660945550}
   dayClearPanel: {fileID: 949652531}

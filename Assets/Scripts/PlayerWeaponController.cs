@@ -4,18 +4,12 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerWeaponController : MonoBehaviour
 {
-    [Header("포획망 (근접)")]
-    [SerializeField] private float netRange = 2f;
-    [SerializeField] private float netAngle = 90f;
-    [SerializeField] private int netDamage = 1;
-    [SerializeField] private float netStunDuration = 0.4f;
-    [SerializeField] private float netCooldown = 0.5f;
+    [Header("밸런스 설정")]
+    [SerializeField] private GameBalanceConfig config;
 
     [Header("마취총 (원거리)")]
     [SerializeField] private TranquilizerDart dartPrefab;
     [SerializeField] private float dartSpeed = 12f;
-    [SerializeField] private float sleepDelay = 1f;
-    [SerializeField] private float sleepDuration = 5f;
 
     [Header("장착 무기 표시")]
     [SerializeField] private SpriteRenderer weaponVisual;
@@ -102,8 +96,13 @@ public class PlayerWeaponController : MonoBehaviour
     private void SwingNet()
     {
         if (netCooldownTimer > 0f) return;
-        netCooldownTimer = netCooldown;
+        netCooldownTimer = config != null ? config.netCooldown : 0.5f;
         AudioManager.Instance?.PlayNetSwing();
+
+        float netRange = config != null ? config.netRange : 2f;
+        float netAngle = config != null ? config.netAngle : 90f;
+        int netDamage = config != null ? config.netDamage : 1;
+        float netStunDuration = config != null ? config.stunDuration : 0.4f;
 
         Vector2 origin = transform.position;
         Vector2 aimDirection = playerMovement.LookDirection;
@@ -124,6 +123,9 @@ public class PlayerWeaponController : MonoBehaviour
     private void FireTranquilizerGun()
     {
         if (dartPrefab == null) return;
+
+        float sleepDelay = config != null ? config.sleepDelay : 1f;
+        float sleepDuration = config != null ? config.sleepDuration : 5f;
 
         TranquilizerDart dart = Instantiate(dartPrefab, transform.position, Quaternion.identity);
         dart.Launch(playerMovement.LookDirection, dartSpeed, sleepDelay, sleepDuration);

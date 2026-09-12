@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98c2ef6239ae26f4fa8afe283672aff9, type: 3}
+  m_Name: GameBalanceConfig
+  m_EditorClassIdentifier: Assembly-CSharp::GameBalanceConfig
+  patrolMonsterDamage: 34
+  soundReactiveMonsterDamage: 34
+  monsterMaxHealth: 3
+  stunDuration: 0.4
+  sleepDelay: 1
+  sleepDuration: 5
+  playerMaxHealth: 100
+  targetRescueCount: 3
+  mileagePerWeight: 10
+  targetBonusMileage: 50
+  netDamage: 1
+  netRange: 2
+  netAngle: 90
+  netCooldown: 0.5
+  shopItemPrices:
+  - itemName: "\uC0AC\uB8CC"
+    price: 30
+  - itemName: "\uC57D\uD488"
+    price: 50
+  - itemName: "\uC7A5\uBE44"
+    price: 80
+  - itemName: "\uD3EC\uD68D\uB9DD"
+    price: 60
+  - itemName: "\uB9C8\uCDE8\uCD1D"
+    price: 120
