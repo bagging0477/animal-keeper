@@ -12,14 +12,33 @@ public class GameBalanceConfig : ScriptableObject
 {
     [Header("몬스터 - 데미지")]
     [Tooltip("순찰형 몬스터(MonsterAI)가 플레이어를 붙잡았을 때 주는 데미지(%)")]
-    public int patrolMonsterDamage = 34;
+    public int patrolMonsterDamage = 47;
 
     [Tooltip("소리반응형 몬스터(SoundReactiveMonsterAI)가 플레이어를 붙잡았을 때 주는 데미지(%)")]
-    public int soundReactiveMonsterDamage = 34;
+    public int soundReactiveMonsterDamage = 47;
 
     [Header("몬스터 - 체력")]
-    [Tooltip("모든 몬스터(MonsterHealth)의 최대 체력")]
-    public int monsterMaxHealth = 3;
+    [Tooltip("모든 몬스터(MonsterHealth)의 최대 체력. 정수가 아니어도 되며 실제 체력은 반올림해서 적용된다.")]
+    public float monsterMaxHealth = 4.5f;
+
+    [Header("몬스터 - 감지")]
+    [Tooltip("순찰형 몬스터가 플레이어를 발견하는 거리")]
+    public float patrolMonsterDetectRange = 4.05f;
+
+    [Tooltip("순찰형 몬스터가 추격을 포기하기 시작하는(수색 상태로 전환되는) 거리")]
+    public float patrolMonsterLoseRange = 5.4f;
+
+    [Tooltip("소리반응형 몬스터가 플레이어를 발견하는 거리")]
+    public float soundReactiveMonsterDetectRange = 2.03f;
+
+    [Tooltip("소리반응형 몬스터가 추격을 포기하기 시작하는(수색 상태로 전환되는) 거리")]
+    public float soundReactiveMonsterLoseRange = 3.38f;
+
+    [Tooltip("소리반응형 몬스터가 동물 소리를 듣고 반응하는 거리")]
+    public float soundReactiveMonsterHearRange = 10.4f;
+
+    [Tooltip("몬스터가 시야에서 플레이어를 놓친 뒤, 완전히 포기하고 순찰/배회로 돌아가기 전까지 마지막으로 본 위치 근처에서 수색하는 시간(초)")]
+    public float monsterSearchDuration = 3f;
 
     [Header("상태이상 - 포획망 스턴 / 마취총 수면")]
     [Tooltip("포획망에 맞은 몬스터가 스턴 상태가 되는 시간(초)")]
@@ -29,11 +48,21 @@ public class GameBalanceConfig : ScriptableObject
     public float sleepDelay = 1f;
 
     [Tooltip("잠든 상태가 유지되는 시간(초) - 몬스터와 동물 모두에게 적용")]
-    public float sleepDuration = 5f;
+    public float sleepDuration = 3.5f;
 
     [Header("플레이어")]
     [Tooltip("플레이어 최대 체력(%)")]
     public int playerMaxHealth = 100;
+
+    [Header("플레이어 시야 (VillageScene 전용)")]
+    [Tooltip("항상 켜져 있는 기본 원형 시야(Ambient Vision)의 반경")]
+    public float ambientVisionRadius = 3f;
+
+    [Tooltip("바라보는 방향으로 밝혀지는 부채꼴 시야(Focused Vision)의 반경")]
+    public float focusedVisionRadius = 7.2f;
+
+    [Tooltip("부채꼴 시야(Focused Vision)의 각도(도)")]
+    public float focusedVisionAngle = 80f;
 
     [Header("이동 속도")]
     [Tooltip("플레이어 기본(걷기) 이동속도")]
@@ -59,13 +88,13 @@ public class GameBalanceConfig : ScriptableObject
 
     [Header("스태미나")]
     [Tooltip("최대 스태미나")]
-    public float maxStamina = 100f;
+    public float maxStamina = 70f;
 
     [Tooltip("스프린트 중 초당 소모되는 스태미나")]
     public float sprintStaminaDrainPerSecond = 25f;
 
     [Tooltip("스프린트를 하지 않을 때 초당 회복되는 스태미나")]
-    public float staminaRegenPerSecond = 15f;
+    public float staminaRegenPerSecond = 12f;
 
     [Tooltip("스태미나가 0이 된 직후 스프린트를 다시 쓸 수 없는 탈진 시간(초)")]
     public float staminaExhaustionCooldown = 1.5f;
@@ -92,7 +121,7 @@ public class GameBalanceConfig : ScriptableObject
     public float netAngle = 90f;
 
     [Tooltip("포획망을 다시 휘두르기까지 걸리는 쿨다운(초)")]
-    public float netCooldown = 0.5f;
+    public float netCooldown = 0.75f;
 
     [Header("상점 아이템 가격")]
     [Tooltip("ShelterShop의 각 아이템 이름과 가격. itemName은 ShelterShop 인스펙터의 항목 이름과 정확히 일치해야 한다.")]

@@ -4,7 +4,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent), typeof(MonsterHealth))]
 public class SoundReactiveMonsterAI : MonoBehaviour
 {
-    private enum State { Wander, Investigate, Chase }
+    private enum State { Wander, Investigate, Chase, Search }
 
     [Header("Visual (2D sprite object this brain drives)")]
     [SerializeField] private Transform visual;
@@ -16,13 +16,8 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     [SerializeField] private float waypointStopDistance = 0.2f;
 
     [Header("Investigate")]
-    [SerializeField] private float soundHearRange = 5f;
     [SerializeField] private float investigateSpeed = 2f;
     [SerializeField] private float lookAroundDuration = 2f;
-
-    [Header("Chase")]
-    [SerializeField] private float detectRange = 3f;
-    [SerializeField] private float loseRange = 4f;
 
     [Header("Capture")]
     [SerializeField] private float catchRange = 0.7f;
@@ -38,9 +33,15 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private float wanderWaitDuration;
     private float lookAroundTimer;
     private bool caughtLogged;
+    private Vector3 lastKnownPlayerPosition;
+    private float searchTimer;
 
     private float WanderSpeed => config != null ? config.soundReactiveMonsterWanderSpeed : 2.4f;
     private float ChaseSpeed => config != null ? config.MonsterChaseSpeed : 4.3f;
+    private float DetectRange => config != null ? config.soundReactiveMonsterDetectRange : 2.03f;
+    private float LoseRange => config != null ? config.soundReactiveMonsterLoseRange : 3.38f;
+    private float SoundHearRange => config != null ? config.soundReactiveMonsterHearRange : 10.4f;
+    private float SearchDuration => config != null ? config.monsterSearchDuration : 3f;
 
     private void Awake()
     {
@@ -83,7 +84,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
         if (health != null && health.IsIncapacitated) return;
 
         Vector2 soundGamePos = new Vector2(soundPosition.x, soundPosition.y);
-        if (Vector2.Distance(GamePosition, soundGamePos) > soundHearRange) return;
+        if (Vector2.Distance(GamePosition, soundGamePos) > SoundHearRange) return;
 
         if (!agent.isOnNavMesh) return;
 
@@ -105,14 +106,30 @@ public class SoundReactiveMonsterAI : MonoBehaviour
         {
             float distanceToPlayer = Vector2.Distance(GamePosition, PlayerGamePosition);
 
-            if (state != State.Chase && distanceToPlayer <= detectRange)
+            if (state != State.Chase && distanceToPlayer <= DetectRange)
             {
                 state = State.Chase;
                 AudioManager.Instance?.PlayMonsterChaseAlert();
             }
-            else if (state == State.Chase && distanceToPlayer > loseRange)
+            else if (state == State.Chase && distanceToPlayer > LoseRange)
             {
-                ReturnToWander();
+                // 시야에서 놓쳐도 바로 포기하지 않고, 마지막으로 본 위치로 가서 잠시 수색한다.
+                state = State.Search;
+                searchTimer = 0f;
+                lastKnownPlayerPosition = new Vector3(player.position.x, 0f, player.position.y);
+                if (agent.isOnNavMesh && NavMesh.SamplePosition(lastKnownPlayerPosition, out NavMeshHit searchHit, 2f, NavMesh.AllAreas))
+                {
+                    agent.speed = ChaseSpeed;
+                    agent.SetDestination(searchHit.position);
+                }
+            }
+            else if (state == State.Search)
+            {
+                searchTimer += Time.deltaTime;
+                if (searchTimer >= SearchDuration)
+                {
+                    ReturnToWander();
+                }
             }
 
             if (distanceToPlayer <= catchRange)

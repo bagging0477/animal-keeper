@@ -166,11 +166,8 @@ MonoBehaviour:
   wanderWaitMin: 1
   wanderWaitMax: 3
   waypointStopDistance: 0.2
-  soundHearRange: 8
   investigateSpeed: 3.5
   lookAroundDuration: 2
-  detectRange: 1.5
-  loseRange: 2.5
   catchRange: 0.7
   monsterTypeName: "\uC18C\uB9AC\uBC18\uC751\uD615"
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}

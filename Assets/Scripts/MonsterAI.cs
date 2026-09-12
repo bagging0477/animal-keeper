@@ -4,7 +4,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent), typeof(MonsterHealth))]
 public class MonsterAI : MonoBehaviour
 {
-    private enum State { Patrol, Chase }
+    private enum State { Patrol, Chase, Search }
 
     [Header("Visual (2D sprite object this brain drives)")]
     [SerializeField] private Transform visual;
@@ -18,10 +18,6 @@ public class MonsterAI : MonoBehaviour
     };
     [SerializeField] private float waypointStopDistance = 0.2f;
 
-    [Header("Chase")]
-    [SerializeField] private float detectRange = 3f;
-    [SerializeField] private float loseRange = 4f;
-
     [Header("Capture")]
     [SerializeField] private float catchRange = 0.7f;
     [SerializeField] private string monsterTypeName = "순찰형";
@@ -34,9 +30,14 @@ public class MonsterAI : MonoBehaviour
     private int targetIndex;
     private State state = State.Patrol;
     private bool caughtLogged;
+    private Vector3 lastKnownPlayerPosition;
+    private float searchTimer;
 
     private float PatrolSpeed => config != null ? config.patrolMonsterPatrolSpeed : 1.6f;
     private float ChaseSpeed => config != null ? config.MonsterChaseSpeed : 4.3f;
+    private float DetectRange => config != null ? config.patrolMonsterDetectRange : 4.05f;
+    private float LoseRange => config != null ? config.patrolMonsterLoseRange : 5.4f;
+    private float SearchDuration => config != null ? config.monsterSearchDuration : 3f;
 
     private void Awake()
     {
@@ -81,16 +82,31 @@ public class MonsterAI : MonoBehaviour
         {
             float distanceToPlayer = Vector2.Distance(GamePosition, PlayerGamePosition);
 
-            if (state == State.Patrol && distanceToPlayer <= detectRange)
+            if (state != State.Chase && distanceToPlayer <= DetectRange)
             {
                 state = State.Chase;
                 AudioManager.Instance?.PlayMonsterChaseAlert();
             }
-            else if (state == State.Chase && distanceToPlayer > loseRange)
+            else if (state == State.Chase && distanceToPlayer > LoseRange)
             {
-                state = State.Patrol;
-                agent.speed = PatrolSpeed;
-                if (waypoints.Length > 0 && agent.isOnNavMesh) agent.SetDestination(waypoints[targetIndex]);
+                // 시야에서 놓쳐도 바로 포기하지 않고, 마지막으로 본 위치로 가서 잠시 수색한다.
+                state = State.Search;
+                searchTimer = 0f;
+                lastKnownPlayerPosition = new Vector3(player.position.x, 0f, player.position.y);
+                if (agent.isOnNavMesh && NavMesh.SamplePosition(lastKnownPlayerPosition, out NavMeshHit searchHit, 2f, NavMesh.AllAreas))
+                {
+                    agent.SetDestination(searchHit.position);
+                }
+            }
+            else if (state == State.Search)
+            {
+                searchTimer += Time.deltaTime;
+                if (searchTimer >= SearchDuration)
+                {
+                    state = State.Patrol;
+                    agent.speed = PatrolSpeed;
+                    if (waypoints.Length > 0 && agent.isOnNavMesh) agent.SetDestination(waypoints[targetIndex]);
+                }
             }
 
             if (distanceToPlayer <= catchRange)
@@ -119,6 +135,10 @@ public class MonsterAI : MonoBehaviour
             {
                 agent.SetDestination(hit.position);
             }
+        }
+        else if (state == State.Search)
+        {
+            agent.speed = ChaseSpeed;
         }
         else if (waypoints.Length > 0 && !agent.pathPending && agent.remainingDistance <= waypointStopDistance)
         {

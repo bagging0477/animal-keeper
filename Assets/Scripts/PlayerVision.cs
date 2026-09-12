@@ -10,6 +10,8 @@ using UnityEngine.Rendering.Universal;
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerVision : MonoBehaviour
 {
+    [SerializeField] private GameBalanceConfig config;
+    [SerializeField] private Light2D ambientVisionLight;
     [SerializeField] private Light2D focusedVisionLight;
 
     private PlayerMovement playerMovement;
@@ -17,6 +19,23 @@ public class PlayerVision : MonoBehaviour
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
+        ApplyVisionRanges();
+    }
+
+    private void ApplyVisionRanges()
+    {
+        if (config == null) return;
+
+        if (ambientVisionLight != null)
+        {
+            ambientVisionLight.pointLightOuterRadius = config.ambientVisionRadius;
+        }
+
+        if (focusedVisionLight != null)
+        {
+            focusedVisionLight.pointLightOuterRadius = config.focusedVisionRadius;
+            focusedVisionLight.pointLightOuterAngle = config.focusedVisionAngle;
+        }
     }
 
     private void LateUpdate()

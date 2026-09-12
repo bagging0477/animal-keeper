@@ -20,7 +20,10 @@ public class MonsterHealth : MonoBehaviour, ISleepable
     public bool IsAsleep => asleepTimer > 0f;
     public bool IsIncapacitated => IsDead || IsStunned || IsAsleep;
 
-    private int MaxHealth => config != null ? config.monsterMaxHealth : 3;
+    // 반올림(RoundToInt)은 .5 값을 짝수로 내림(banker's rounding)하기 때문에, 예를 들어 3 * 1.5 = 4.5가
+    // 의도한 "1.5배"보다 적은 4로 내려가 버릴 수 있다. 올림을 써서 배율 상향 의도가 항상 최소한
+    // 그대로 반영되게 한다.
+    private int MaxHealth => Mathf.CeilToInt(config != null ? config.monsterMaxHealth : 3f);
 
     /// <summary>플레이어와 동일한 2D 좌표계로 변환한 몬스터 위치. 몬스터는 NavMesh(x,z 평면)로 움직이고 x,z를 2D x,y로 매핑해서 렌더링한다.</summary>
     public Vector2 GamePosition => new Vector2(transform.position.x, transform.position.z);

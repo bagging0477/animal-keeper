@@ -12,21 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98c2ef6239ae26f4fa8afe283672aff9, type: 3}
   m_Name: GameBalanceConfig
   m_EditorClassIdentifier: Assembly-CSharp::GameBalanceConfig
-  patrolMonsterDamage: 34
-  soundReactiveMonsterDamage: 34
-  monsterMaxHealth: 3
+  patrolMonsterDamage: 47
+  soundReactiveMonsterDamage: 47
+  monsterMaxHealth: 4.5
+  patrolMonsterDetectRange: 3.4425004
+  patrolMonsterLoseRange: 4.59
+  soundReactiveMonsterDetectRange: 1.7255
+  soundReactiveMonsterLoseRange: 2.8730001
+  soundReactiveMonsterHearRange: 10.4
+  monsterSearchDuration: 3
   stunDuration: 0.4
-  sleepDelay: 1
-  sleepDuration: 5
+  sleepDelay: 0.6
+  sleepDuration: 3.5
   playerMaxHealth: 100
+  ambientVisionRadius: 3
+  focusedVisionRadius: 7.2
+  focusedVisionAngle: 80
   playerMoveSpeed: 3.75
   patrolMonsterPatrolSpeed: 1.6
   soundReactiveMonsterWanderSpeed: 2.4
   monsterChaseSpeedMultiplier: 1.15
   playerSprintSpeedMultiplier: 1.25
-  maxStamina: 100
+  maxStamina: 70
   sprintStaminaDrainPerSecond: 25
-  staminaRegenPerSecond: 15
+  staminaRegenPerSecond: 12
   staminaExhaustionCooldown: 1.5
   targetRescueCount: 3
   mileagePerWeight: 10
@@ -34,7 +43,7 @@ MonoBehaviour:
   netDamage: 1
   netRange: 2
   netAngle: 90
-  netCooldown: 0.5
+  netCooldown: 0.75
   shopItemPrices:
   - itemName: "\uC0AC\uB8CC"
     price: 30
