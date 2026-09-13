@@ -30,6 +30,9 @@ public class AudioManager : MonoBehaviour
     [Tooltip("트럭 씬 배경음 원본 파일 자체가 다른 트랙보다 커서, musicVolume에 곱해서 따로 낮춰준다.")]
     [SerializeField, Range(0f, 1f)] private float truckMusicVolumeScale = 0.4f;
 
+    [Tooltip("피격음(damage grunt) 원본 파일 자체가 다른 효과음보다 작아서, sfxVolume에 곱해서 따로 키워준다. 1보다 크게 설정 가능.")]
+    [SerializeField, Range(0f, 3f)] private float hitVolumeScale = 2f;
+
     private AudioSource sfxSource;
     private AudioSource musicSource;
     private string currentMusicScene;
@@ -102,18 +105,40 @@ public class AudioManager : MonoBehaviour
     }
 
     public void PlayPickup() => PlaySfx(pickupClip);
-    public void PlayHit() => PlaySfx(hitClip);
+    public void PlayHit() => PlaySfx(hitClip, hitVolumeScale);
     public void PlayNetSwing() => PlaySfx(netSwingClip);
     public void PlayTranquilizerShot() => PlaySfx(tranquilizerShotClip);
     public void PlayMonsterChaseAlert() => PlaySfx(monsterChaseClip);
     public void PlayDaySuccess() => PlaySfx(daySuccessClip);
     public void PlayDayFail() => PlaySfx(dayFailClip);
 
-    private void PlaySfx(AudioClip clip)
+    /// <summary>동물별 개별 픽업음처럼, 미리 정의된 슬롯이 없는 임의의 클립을 재생할 때 사용.</summary>
+    public void PlaySfx(AudioClip clip, float volumeScale = 1f)
     {
         if (clip == null || sfxSource == null) return;
-        sfxSource.PlayOneShot(clip, sfxVolume);
+        sfxSource.PlayOneShot(clip, sfxVolume * volumeScale);
     }
+
+    /// <summary>
+    /// 파일 전체가 아니라 [startTime, endTime) 구간만 잘라서 재생한다. PlayOneShot은
+    /// AudioSource.time으로 시작 지점을 지정할 수 없어서, 대신 sfxSource의 clip을 직접
+    /// 지정해 재생한 뒤 구간 길이만큼 뒤에 Stop()을 예약하는 방식을 쓴다.
+    /// </summary>
+    public void PlaySfxSegment(AudioClip clip, float startTime, float endTime, float volumeScale = 1f)
+    {
+        if (clip == null || sfxSource == null) return;
+
+        CancelInvoke(nameof(StopSfxSegment));
+
+        sfxSource.clip = clip;
+        sfxSource.volume = sfxVolume * volumeScale;
+        sfxSource.time = Mathf.Clamp(startTime, 0f, clip.length);
+        sfxSource.Play();
+
+        Invoke(nameof(StopSfxSegment), Mathf.Max(0f, endTime - startTime));
+    }
+
+    private void StopSfxSegment() => sfxSource.Stop();
 
     private void EnsurePlaceholderClips()
     {

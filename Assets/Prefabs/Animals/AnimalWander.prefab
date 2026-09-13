@@ -123,6 +123,7 @@ MonoBehaviour:
   minWeight: 1
   maxWeight: 10
   promptText: {fileID: 0}
+  pickupSound: {fileID: 8300000, guid: 210b0d727c48b54409b3fce3f07f8429, type: 3}
 --- !u!114 &740077487230975585
 MonoBehaviour:
   m_ObjectHideFlags: 0

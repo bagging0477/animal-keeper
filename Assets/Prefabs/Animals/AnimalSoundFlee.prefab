@@ -123,6 +123,10 @@ MonoBehaviour:
   minWeight: 1
   maxWeight: 10
   promptText: {fileID: 0}
+  pickupSound: {fileID: 0}
+  playPickupSoundSegment: 1
+  pickupSoundStartTime: 7
+  pickupSoundEndTime: 8
 --- !u!114 &7673956236020887244
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -20,6 +20,14 @@ public class AnimalRescue : MonoBehaviour
     [SerializeField] private int maxWeight = 10;
     [SerializeField] private Text promptText;
 
+    [Tooltip("이 동물을 구조할 때 재생할 픽업음. 비워두면 AudioManager의 기본 픽업음을 사용한다.")]
+    [SerializeField] private AudioClip pickupSound;
+
+    [Tooltip("체크하면 pickupSound 전체가 아니라 아래 구간만 잘라서 재생한다.")]
+    [SerializeField] private bool playPickupSoundSegment;
+    [SerializeField] private float pickupSoundStartTime = 7f;
+    [SerializeField] private float pickupSoundEndTime = 8f;
+
     public bool IsHeld { get; private set; }
     public bool IsCompleted { get; private set; }
     public int Weight { get; private set; }
@@ -118,7 +126,18 @@ public class AnimalRescue : MonoBehaviour
     {
         heldSlot = CountHeldAnimals();
         IsHeld = true;
-        AudioManager.Instance?.PlayPickup();
+        if (pickupSound == null)
+        {
+            AudioManager.Instance?.PlayPickup();
+        }
+        else if (playPickupSoundSegment)
+        {
+            AudioManager.Instance?.PlaySfxSegment(pickupSound, pickupSoundStartTime, pickupSoundEndTime);
+        }
+        else
+        {
+            AudioManager.Instance?.PlaySfx(pickupSound);
+        }
         Debug.Log($"{name}: 플레이어가 동물을 들었다 ({heldSlot + 1}/{MaxHeldAnimals})");
     }
 
