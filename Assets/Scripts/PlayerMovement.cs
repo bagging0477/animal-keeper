@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>LookDirection을 각도(degrees, atan2 기준)로 표현한 값.</summary>
     public float LookAngle => Mathf.Atan2(LookDirection.y, LookDirection.x) * Mathf.Rad2Deg;
 
-    public float MaxStamina => config != null ? config.maxStamina : 100f;
+    public float MaxStamina => config != null ? config.maxStamina : 70f;
     public float Stamina { get; private set; }
     public bool IsSprinting { get; private set; }
 
@@ -77,7 +77,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            float regenPerSecond = config != null ? config.staminaRegenPerSecond : 15f;
+            float regenPerSecond = config != null ? config.staminaRegenPerSecond : 12f;
             Stamina = Mathf.Min(MaxStamina, Stamina + regenPerSecond * Time.deltaTime);
         }
 

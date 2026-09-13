@@ -34,7 +34,7 @@ public class MonsterAI : MonoBehaviour
     private float searchTimer;
 
     private float PatrolSpeed => config != null ? config.patrolMonsterPatrolSpeed : 1.6f;
-    private float ChaseSpeed => config != null ? config.MonsterChaseSpeed : 4.3f;
+    private float ChaseSpeed => config != null ? config.MonsterChaseSpeed : 4.3125f;
     private float DetectRange => config != null ? config.patrolMonsterDetectRange : 4.05f;
     private float LoseRange => config != null ? config.patrolMonsterLoseRange : 5.4f;
     private float SearchDuration => config != null ? config.monsterSearchDuration : 3f;
@@ -93,9 +93,12 @@ public class MonsterAI : MonoBehaviour
                 state = State.Search;
                 searchTimer = 0f;
                 lastKnownPlayerPosition = new Vector3(player.position.x, 0f, player.position.y);
-                if (agent.isOnNavMesh && NavMesh.SamplePosition(lastKnownPlayerPosition, out NavMeshHit searchHit, 2f, NavMesh.AllAreas))
+                if (agent.isOnNavMesh)
                 {
-                    agent.SetDestination(searchHit.position);
+                    Vector3 destination = NavMesh.SamplePosition(lastKnownPlayerPosition, out NavMeshHit searchHit, 2f, NavMesh.AllAreas)
+                        ? searchHit.position
+                        : lastKnownPlayerPosition;
+                    agent.SetDestination(destination);
                 }
             }
             else if (state == State.Search)
@@ -157,7 +160,7 @@ public class MonsterAI : MonoBehaviour
 
     private void HandleCatch()
     {
-        int damage = config != null ? config.patrolMonsterDamage : 34;
+        int damage = config != null ? config.patrolMonsterDamage : 47;
         GameManager.Instance?.TakeDamage(damage, monsterTypeName);
     }
 }

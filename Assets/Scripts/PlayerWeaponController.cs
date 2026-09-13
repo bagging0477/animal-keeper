@@ -96,7 +96,7 @@ public class PlayerWeaponController : MonoBehaviour
     private void SwingNet()
     {
         if (netCooldownTimer > 0f) return;
-        netCooldownTimer = config != null ? config.netCooldown : 0.5f;
+        netCooldownTimer = config != null ? config.netCooldown : 0.75f;
         AudioManager.Instance?.PlayNetSwing();
 
         float netRange = config != null ? config.netRange : 2f;
@@ -125,7 +125,7 @@ public class PlayerWeaponController : MonoBehaviour
         if (dartPrefab == null) return;
 
         float sleepDelay = config != null ? config.sleepDelay : 1f;
-        float sleepDuration = config != null ? config.sleepDuration : 5f;
+        float sleepDuration = config != null ? config.sleepDuration : 3.5f;
 
         TranquilizerDart dart = Instantiate(dartPrefab, transform.position, Quaternion.identity);
         dart.Launch(playerMovement.LookDirection, dartSpeed, sleepDelay, sleepDuration);

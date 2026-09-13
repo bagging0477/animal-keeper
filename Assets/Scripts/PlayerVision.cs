@@ -19,7 +19,6 @@ public class PlayerVision : MonoBehaviour
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
-        ApplyVisionRanges();
     }
 
     private void ApplyVisionRanges()
@@ -40,6 +39,9 @@ public class PlayerVision : MonoBehaviour
 
     private void LateUpdate()
     {
+        // 매 프레임 다시 적용해서, 플레이 모드 중 GameBalanceConfig 값을 조정해도 즉시 반영되게 한다.
+        ApplyVisionRanges();
+
         if (focusedVisionLight == null) return;
 
         // Point Light 2D의 부채꼴은 회전 0도일 때 로컬 +Y(위쪽)를 향하므로, atan2 기준

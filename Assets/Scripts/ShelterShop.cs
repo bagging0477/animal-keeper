@@ -16,7 +16,13 @@ public class ShelterShop : MonoBehaviour
     [SerializeField] private ShopItem[] items;
     [SerializeField] private Text mileageText;
 
-    private int GetPrice(ShopItem item) => config != null ? config.GetShopItemPrice(item.itemName) : 0;
+    private int GetPrice(ShopItem item)
+    {
+        if (config != null) return config.GetShopItemPrice(item.itemName);
+
+        Debug.LogWarning($"{name}: GameBalanceConfig not assigned; '{item.itemName}' price defaults to 0.");
+        return 0;
+    }
 
     private void Start()
     {

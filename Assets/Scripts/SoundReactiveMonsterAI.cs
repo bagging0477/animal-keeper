@@ -37,7 +37,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private float searchTimer;
 
     private float WanderSpeed => config != null ? config.soundReactiveMonsterWanderSpeed : 2.4f;
-    private float ChaseSpeed => config != null ? config.MonsterChaseSpeed : 4.3f;
+    private float ChaseSpeed => config != null ? config.MonsterChaseSpeed : 4.3125f;
     private float DetectRange => config != null ? config.soundReactiveMonsterDetectRange : 2.03f;
     private float LoseRange => config != null ? config.soundReactiveMonsterLoseRange : 3.38f;
     private float SoundHearRange => config != null ? config.soundReactiveMonsterHearRange : 10.4f;
@@ -117,10 +117,13 @@ public class SoundReactiveMonsterAI : MonoBehaviour
                 state = State.Search;
                 searchTimer = 0f;
                 lastKnownPlayerPosition = new Vector3(player.position.x, 0f, player.position.y);
-                if (agent.isOnNavMesh && NavMesh.SamplePosition(lastKnownPlayerPosition, out NavMeshHit searchHit, 2f, NavMesh.AllAreas))
+                if (agent.isOnNavMesh)
                 {
                     agent.speed = ChaseSpeed;
-                    agent.SetDestination(searchHit.position);
+                    Vector3 destination = NavMesh.SamplePosition(lastKnownPlayerPosition, out NavMeshHit searchHit, 2f, NavMesh.AllAreas)
+                        ? searchHit.position
+                        : lastKnownPlayerPosition;
+                    agent.SetDestination(destination);
                 }
             }
             else if (state == State.Search)
@@ -225,7 +228,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
 
     private void HandleCatch()
     {
-        int damage = config != null ? config.soundReactiveMonsterDamage : 34;
+        int damage = config != null ? config.soundReactiveMonsterDamage : 47;
         GameManager.Instance?.TakeDamage(damage, monsterTypeName);
     }
 }
