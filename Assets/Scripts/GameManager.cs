@@ -74,6 +74,7 @@ public class GameManager : MonoBehaviour
         RescuedCount = 0;
         ownedWeapons.Clear();
         EquippedWeapon = WeaponType.None;
+        TranquilizerAmmo = 0;
         IsGameOver = false;
         gameSessionSeedInitialized = false;
     }
@@ -156,12 +157,37 @@ public class GameManager : MonoBehaviour
 
     public bool OwnsWeapon(WeaponType type) => ownedWeapons.Contains(type);
 
+    public int TranquilizerAmmo { get; private set; }
+    public int MaxTranquilizerAmmo => config != null ? config.tranquilizerMaxAmmo : 10;
+
     public bool PurchaseWeapon(WeaponType type, int price)
     {
         if (type == WeaponType.None || ownedWeapons.Contains(type)) return false;
         if (!TrySpendMileage(price)) return false;
 
         ownedWeapons.Add(type);
+
+        if (type == WeaponType.TranquilizerGun)
+        {
+            int startingAmmo = config != null ? config.tranquilizerStartingAmmo : 3;
+            TranquilizerAmmo = Mathf.Min(startingAmmo, MaxTranquilizerAmmo);
+        }
+
+        return true;
+    }
+
+    public bool TryConsumeTranquilizerAmmo()
+    {
+        if (TranquilizerAmmo <= 0) return false;
+        TranquilizerAmmo--;
+        return true;
+    }
+
+    public bool TryPurchaseTranquilizerAmmo(int price, int refillAmount)
+    {
+        if (!TrySpendMileage(price)) return false;
+
+        TranquilizerAmmo = Mathf.Min(TranquilizerAmmo + refillAmount, MaxTranquilizerAmmo);
         return true;
     }
 

@@ -13,8 +13,15 @@ public class EquippedWeaponUI : MonoBehaviour
         weaponText.text = equipped switch
         {
             WeaponType.Net => "장착: 포획망 (1)",
-            WeaponType.TranquilizerGun => "장착: 마취총 (2)",
+            WeaponType.TranquilizerGun => BuildTranquilizerAmmoText(),
             _ => "장착: 없음"
         };
+    }
+
+    private static string BuildTranquilizerAmmoText()
+    {
+        int ammo = GameManager.Instance != null ? GameManager.Instance.TranquilizerAmmo : 0;
+        int max = GameManager.Instance != null ? GameManager.Instance.MaxTranquilizerAmmo : 10;
+        return $"마취총: {ammo}/{max} (2)";
     }
 }

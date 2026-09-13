@@ -44,6 +44,9 @@ MonoBehaviour:
   netRange: 2
   netAngle: 90
   netCooldown: 0.75
+  tranquilizerStartingAmmo: 3
+  tranquilizerMaxAmmo: 10
+  tranquilizerAmmoRefillAmount: 5
   shopItemPrices:
   - itemName: "\uC0AC\uB8CC"
     price: 30
@@ -55,3 +58,5 @@ MonoBehaviour:
     price: 60
   - itemName: "\uB9C8\uCDE8\uCD1D"
     price: 120
+  - itemName: "\uB9C8\uCDE8\uCD1D \uD0C4\uC57D"
+    price: 30

@@ -123,6 +123,16 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("포획망을 다시 휘두르기까지 걸리는 쿨다운(초)")]
     public float netCooldown = 0.75f;
 
+    [Header("무기 - 마취총 탄약")]
+    [Tooltip("마취총을 상점에서 처음 구매했을 때 함께 지급되는 시작 탄약 수")]
+    public int tranquilizerStartingAmmo = 3;
+
+    [Tooltip("마취총 탄약의 최대 소지 개수")]
+    public int tranquilizerMaxAmmo = 10;
+
+    [Tooltip("상점에서 '마취총 탄약' 아이템을 구매했을 때 한 번에 충전되는 탄약 수")]
+    public int tranquilizerAmmoRefillAmount = 5;
+
     [Header("상점 아이템 가격")]
     [Tooltip("ShelterShop의 각 아이템 이름과 가격. itemName은 ShelterShop 인스펙터의 항목 이름과 정확히 일치해야 한다.")]
     public List<ShopItemPrice> shopItemPrices = new List<ShopItemPrice>
@@ -132,6 +142,7 @@ public class GameBalanceConfig : ScriptableObject
         new ShopItemPrice { itemName = "장비", price = 80 },
         new ShopItemPrice { itemName = "포획망", price = 60 },
         new ShopItemPrice { itemName = "마취총", price = 120 },
+        new ShopItemPrice { itemName = "마취총 탄약", price = 30 },
     };
 
     [Serializable]

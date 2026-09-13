@@ -124,6 +124,12 @@ public class PlayerWeaponController : MonoBehaviour
     {
         if (dartPrefab == null) return;
 
+        if (GameManager.Instance == null || !GameManager.Instance.TryConsumeTranquilizerAmmo())
+        {
+            Debug.Log("탄약이 없습니다");
+            return;
+        }
+
         float sleepDelay = config != null ? config.sleepDelay : 1f;
         float sleepDuration = config != null ? config.sleepDuration : 3.5f;
 

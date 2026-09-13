@@ -10,6 +10,8 @@ public class ShelterShop : MonoBehaviour
         public string itemName;
         public Button button;
         public WeaponType weaponType = WeaponType.None;
+        [Tooltip("체크하면 무기 구매가 아니라 마취총 탄약을 충전하는 소모품으로 취급된다.")]
+        public bool isTranquilizerAmmoRefill = false;
     }
 
     [SerializeField] private GameBalanceConfig config;
@@ -41,9 +43,20 @@ public class ShelterShop : MonoBehaviour
         if (GameManager.Instance == null || GameManager.Instance.IsGameOver) return;
 
         int price = GetPrice(item);
-        bool success = item.weaponType != WeaponType.None
-            ? GameManager.Instance.PurchaseWeapon(item.weaponType, price)
-            : GameManager.Instance.TrySpendMileage(price);
+        bool success;
+        if (item.isTranquilizerAmmoRefill)
+        {
+            int refillAmount = config != null ? config.tranquilizerAmmoRefillAmount : 5;
+            success = GameManager.Instance.TryPurchaseTranquilizerAmmo(price, refillAmount);
+        }
+        else if (item.weaponType != WeaponType.None)
+        {
+            success = GameManager.Instance.PurchaseWeapon(item.weaponType, price);
+        }
+        else
+        {
+            success = GameManager.Instance.TrySpendMileage(price);
+        }
 
         if (success)
         {
@@ -67,7 +80,11 @@ public class ShelterShop : MonoBehaviour
                 && GameManager.Instance != null
                 && GameManager.Instance.OwnsWeapon(item.weaponType);
 
-            item.button.interactable = !gameOver && !alreadyOwned && mileage >= GetPrice(item);
+            bool ammoFull = item.isTranquilizerAmmoRefill
+                && GameManager.Instance != null
+                && GameManager.Instance.TranquilizerAmmo >= GameManager.Instance.MaxTranquilizerAmmo;
+
+            item.button.interactable = !gameOver && !alreadyOwned && !ammoFull && mileage >= GetPrice(item);
         }
     }
 }
