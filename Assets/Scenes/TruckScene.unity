@@ -504,16 +504,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
   pickupClip: {fileID: 0}
-  hitClip: {fileID: 0}
-  netSwingClip: {fileID: 0}
-  tranquilizerShotClip: {fileID: 0}
-  monsterChaseClip: {fileID: 0}
-  daySuccessClip: {fileID: 0}
-  dayFailClip: {fileID: 0}
-  truckMusicClip: {fileID: 0}
-  villageMusicClip: {fileID: 0}
-  sfxVolume: 0
-  musicVolume: 0
+  hitClip: {fileID: 8300000, guid: ed81729fe3464804aab12593feecf617, type: 3}
+  netSwingClip: {fileID: 8300000, guid: e72d311dae0b2704384056cd85d3ca40, type: 3}
+  tranquilizerShotClip: {fileID: 8300000, guid: ce00b0950c3b27d44a9d089f9dec37e1, type: 3}
+  monsterChaseClip: {fileID: 8300000, guid: 448abe687ce09de47b4bdd5effa93a96, type: 3}
+  daySuccessClip: {fileID: 8300000, guid: 01a39061bec7bb24c955e616f51d1289, type: 3}
+  dayFailClip: {fileID: 8300000, guid: 9b1f4b47dc84c6a4eac85773b0e42b5c, type: 3}
+  truckMusicClip: {fileID: 8300000, guid: ad4ec7ad1723afe4d9317be895f10afc, type: 3}
+  villageMusicClip: {fileID: 8300000, guid: 8987cf16a6e3214448e044ce50d85443, type: 3}
+  sfxVolume: 1
+  musicVolume: 0.5
 --- !u!4 &189033480
 Transform:
   m_ObjectHideFlags: 0

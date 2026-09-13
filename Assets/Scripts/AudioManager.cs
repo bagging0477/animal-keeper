@@ -27,6 +27,9 @@ public class AudioManager : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float sfxVolume = 0f;
     [SerializeField, Range(0f, 1f)] private float musicVolume = 0f;
 
+    [Tooltip("트럭 씬 배경음 원본 파일 자체가 다른 트랙보다 커서, musicVolume에 곱해서 따로 낮춰준다.")]
+    [SerializeField, Range(0f, 1f)] private float truckMusicVolumeScale = 0.4f;
+
     private AudioSource sfxSource;
     private AudioSource musicSource;
     private string currentMusicScene;
@@ -77,10 +80,12 @@ public class AudioManager : MonoBehaviour
         if (sceneName == currentMusicScene) return;
         currentMusicScene = sceneName;
 
+        // 셸터 씬은 우선 마을 배경음을 그대로 재생한다. 트럭 씬은 예전처럼
+        // 자기 전용 트랙(truckMusicClip)을 그대로 쓴다.
         AudioClip track = sceneName switch
         {
             "TruckScene" => truckMusicClip,
-            "VillageScene" => villageMusicClip,
+            "VillageScene" or "ShelterScene" => villageMusicClip,
             _ => null
         };
 
@@ -90,8 +95,9 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
+        float volumeScale = sceneName == "TruckScene" ? truckMusicVolumeScale : 1f;
         musicSource.clip = track;
-        musicSource.volume = musicVolume;
+        musicSource.volume = musicVolume * volumeScale;
         musicSource.Play();
     }
 
