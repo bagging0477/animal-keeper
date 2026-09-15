@@ -26,19 +26,34 @@ public class GameBalanceConfig : ScriptableObject
     public float patrolMonsterDetectRange = 4.05f;
 
     [Tooltip("순찰형 몬스터가 추격을 포기하기 시작하는(수색 상태로 전환되는) 거리")]
-    public float patrolMonsterLoseRange = 5.4f;
+    public float patrolMonsterLoseRange = 10f;
 
     [Tooltip("소리반응형 몬스터가 플레이어를 발견하는 거리")]
     public float soundReactiveMonsterDetectRange = 2.03f;
 
     [Tooltip("소리반응형 몬스터가 추격을 포기하기 시작하는(수색 상태로 전환되는) 거리")]
-    public float soundReactiveMonsterLoseRange = 3.38f;
+    public float soundReactiveMonsterLoseRange = 9f;
 
     [Tooltip("소리반응형 몬스터가 동물 소리를 듣고 반응하는 거리")]
     public float soundReactiveMonsterHearRange = 10.4f;
 
     [Tooltip("몬스터가 시야에서 플레이어를 놓친 뒤, 완전히 포기하고 순찰/배회로 돌아가기 전까지 마지막으로 본 위치 근처에서 수색하는 시간(초)")]
     public float monsterSearchDuration = 3f;
+
+    [Header("몬스터 - 추격 포기 / 반응성")]
+    [Tooltip("Chase 중 플레이어와의 거리가 위의 LoseRange를 넘거나(벽/장애물에 가려 Linecast가 막혀도 같은 취급) " +
+        "완전히 시야를 놓친 상태가 이 시간(초) 이상 '연속으로' 유지되어야 추격을 포기하고 Search로 전환한다. " +
+        "한순간 스치듯 놓친 것만으로는 포기하지 않아서, 코너 뒤로 잠깐 숨었다가 다시 보이면 계속 쫓아온다.")]
+    public float chaseGiveUpSightLostDuration = 2f;
+
+    [Tooltip("Chase 중 몬스터가 플레이어의 최신 위치로 목적지(SetDestination)를 다시 잡는 주기(초). " +
+        "0보다 크게 두면 플레이어가 급하게 코너를 꺾었을 때 몬스터가 살짝 늦게 반응하는 느낌을 준다 - 매 프레임 완벽하게 추적하지 않는다.")]
+    public float chaseDirectionUpdateInterval = 0.25f;
+
+    [Header("몬스터 - 스폰 (VillageScene 절차적 생성 전용)")]
+    [Tooltip("몬스터가 스폰될 때 플레이어 스폰 위치로부터 최소 이 거리 이상 떨어진 곳에만 생성되도록 시도한다. " +
+        "스폰 시점에만 적용되며, 스폰 이후 순찰/배회로 이 범위 안에 들어오는 것은 막지 않는다.")]
+    public float monsterMinSpawnDistanceFromPlayer = 6f;
 
     [Header("상태이상 - 포획망 스턴 / 마취총 수면")]
     [Tooltip("포획망에 맞은 몬스터가 스턴 상태가 되는 시간(초)")]
@@ -56,10 +71,10 @@ public class GameBalanceConfig : ScriptableObject
 
     [Header("플레이어 시야 (VillageScene 전용)")]
     [Tooltip("항상 켜져 있는 기본 원형 시야(Ambient Vision)의 반경")]
-    public float ambientVisionRadius = 3f;
+    public float ambientVisionRadius = 5.4f;
 
     [Tooltip("바라보는 방향으로 밝혀지는 부채꼴 시야(Focused Vision)의 반경")]
-    public float focusedVisionRadius = 7.2f;
+    public float focusedVisionRadius = 13f;
 
     [Tooltip("부채꼴 시야(Focused Vision)의 각도(도)")]
     public float focusedVisionAngle = 80f;
@@ -88,13 +103,13 @@ public class GameBalanceConfig : ScriptableObject
 
     [Header("스태미나")]
     [Tooltip("최대 스태미나")]
-    public float maxStamina = 70f;
+    public float maxStamina = 85f;
 
     [Tooltip("스프린트 중 초당 소모되는 스태미나")]
-    public float sprintStaminaDrainPerSecond = 25f;
+    public float sprintStaminaDrainPerSecond = 18f;
 
     [Tooltip("스프린트를 하지 않을 때 초당 회복되는 스태미나")]
-    public float staminaRegenPerSecond = 12f;
+    public float staminaRegenPerSecond = 15f;
 
     [Tooltip("스태미나가 0이 된 직후 스프린트를 다시 쓸 수 없는 탈진 시간(초)")]
     public float staminaExhaustionCooldown = 1.5f;

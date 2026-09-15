@@ -555,6 +555,7 @@ MonoBehaviour:
   - {fileID: 5382451385581636795, guid: 17d880809c3e527428af5414eb32f690, type: 3}
   playerObjectName: Player
   truckPointObjectName: TruckPoint
+  config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
 --- !u!4 &485346730
 Transform:
   m_ObjectHideFlags: 0

@@ -16,26 +16,29 @@ MonoBehaviour:
   soundReactiveMonsterDamage: 47
   monsterMaxHealth: 4.5
   patrolMonsterDetectRange: 3.4425004
-  patrolMonsterLoseRange: 4.59
+  patrolMonsterLoseRange: 10
   soundReactiveMonsterDetectRange: 1.7255
-  soundReactiveMonsterLoseRange: 2.8730001
+  soundReactiveMonsterLoseRange: 9
   soundReactiveMonsterHearRange: 10.4
   monsterSearchDuration: 3
+  chaseGiveUpSightLostDuration: 2
+  chaseDirectionUpdateInterval: 0.25
+  monsterMinSpawnDistanceFromPlayer: 6
   stunDuration: 0.4
   sleepDelay: 0.6
   sleepDuration: 3.5
   playerMaxHealth: 100
-  ambientVisionRadius: 3
-  focusedVisionRadius: 7.2
+  ambientVisionRadius: 5.4
+  focusedVisionRadius: 13
   focusedVisionAngle: 80
   playerMoveSpeed: 3.75
   patrolMonsterPatrolSpeed: 1.6
   soundReactiveMonsterWanderSpeed: 2.4
   monsterChaseSpeedMultiplier: 1.15
   playerSprintSpeedMultiplier: 1.25
-  maxStamina: 70
-  sprintStaminaDrainPerSecond: 25
-  staminaRegenPerSecond: 12
+  maxStamina: 85
+  sprintStaminaDrainPerSecond: 18
+  staminaRegenPerSecond: 15
   staminaExhaustionCooldown: 1.5
   targetRescueCount: 3
   mileagePerWeight: 10

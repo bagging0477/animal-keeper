@@ -27,6 +27,11 @@ public class VillageMapGenerator : MonoBehaviour
     [SerializeField] private string playerObjectName = "Player";
     [SerializeField] private string truckPointObjectName = "TruckPoint";
 
+    [Header("밸런스 설정")]
+    [SerializeField] private GameBalanceConfig config;
+
+    private float MonsterMinSpawnDistanceFromPlayer => config != null ? config.monsterMinSpawnDistanceFromPlayer : 6f;
+
     private class RoomInstance
     {
         public GameObject Root;
@@ -80,13 +85,20 @@ public class VillageMapGenerator : MonoBehaviour
         Vector2 truckXY = ToWorldXY(centerRoom, truckCell);
         PositionExistingObject(truckPointObjectName, new Vector3(truckXY.x, truckXY.y, 0f));
 
+        // 플레이어/트럭 지점이 이미 차지한 칸에는 몬스터나 동물이 겹쳐서 스폰되지 않도록 제외한다.
+        // (센터룸에서만 의미가 있다 - 다른 방에는 플레이어/트럭이 놓이지 않는다.)
+        HashSet<Vector2Int> centerRoomExclusions = new HashSet<Vector2Int> { spawnCell, truckCell };
+        Vector2 playerSpawnWorldXY = ToWorldXY(centerRoom, spawnCell);
+
         foreach (RoomInstance room in placedRooms)
         {
+            HashSet<Vector2Int> exclusions = room == centerRoom ? centerRoomExclusions : null;
+
             // Parented under each room (not the shared mapRoot) so AnimalRescue's hierarchy-path Id
             // stays unique per room - rooms never repeat a prefab, but animalPrefabs can be picked
             // for more than one room, and a shared parent would give those clones identical Ids.
-            SpawnAnimal(room, room.Root.transform);
-            SpawnMonster(room, room.Root.transform);
+            SpawnAnimal(room, room.Root.transform, exclusions);
+            SpawnMonster(room, room.Root.transform, playerSpawnWorldXY, exclusions);
         }
     }
 
@@ -97,23 +109,23 @@ public class VillageMapGenerator : MonoBehaviour
     {
         ["RoomA_Corridor"] = new[]
         {
-            new Vector2Int(-1, 0), new Vector2Int(-1, 1), new Vector2Int(-1, 2),
-            new Vector2Int(16, 0), new Vector2Int(16, 1), new Vector2Int(16, 2),
+            new Vector2Int(-1, 0), new Vector2Int(-1, 1), new Vector2Int(-1, 2), new Vector2Int(-1, 3), new Vector2Int(-1, 4),
+            new Vector2Int(28, 0), new Vector2Int(28, 1), new Vector2Int(28, 2), new Vector2Int(28, 3), new Vector2Int(28, 4),
         },
         ["RoomB_Square"] = new[]
         {
-            new Vector2Int(5, -1), new Vector2Int(6, -1),
-            new Vector2Int(12, 4), new Vector2Int(12, 5),
+            new Vector2Int(9, -1), new Vector2Int(10, -1), new Vector2Int(11, -1), new Vector2Int(12, -1),
+            new Vector2Int(22, 7), new Vector2Int(22, 8), new Vector2Int(22, 9), new Vector2Int(22, 10),
         },
         ["RoomC_LShape"] = new[]
         {
-            new Vector2Int(2, -1), new Vector2Int(3, -1),
-            new Vector2Int(1, 10), new Vector2Int(2, 10),
+            new Vector2Int(3, -1), new Vector2Int(4, -1), new Vector2Int(5, -1), new Vector2Int(6, -1),
+            new Vector2Int(2, 18), new Vector2Int(3, 18), new Vector2Int(4, 18),
         },
         ["RoomD_Connected"] = new[]
         {
-            new Vector2Int(-1, 1), new Vector2Int(-1, 2),
-            new Vector2Int(8, 11), new Vector2Int(9, 11),
+            new Vector2Int(-1, 2), new Vector2Int(-1, 3),
+            new Vector2Int(14, 19), new Vector2Int(15, 19),
         },
     };
 
@@ -122,14 +134,26 @@ public class VillageMapGenerator : MonoBehaviour
     // NavMeshAgent(몬스터) 경로에서도 실제로 피해 다녀야 할 장애물이 된다.
     private static readonly Dictionary<string, Vector2Int[]> ObstacleCellsByRoom = new Dictionary<string, Vector2Int[]>
     {
-        ["RoomA_Corridor"] = new[] { new Vector2Int(4, 0), new Vector2Int(11, 2) },
+        ["RoomA_Corridor"] = new[]
+        {
+            new Vector2Int(5, 0), new Vector2Int(10, 4), new Vector2Int(14, 0),
+            new Vector2Int(18, 4), new Vector2Int(22, 0), new Vector2Int(25, 4),
+        },
         ["RoomB_Square"] = new[]
         {
-            new Vector2Int(4, 4), new Vector2Int(5, 4), new Vector2Int(4, 5), new Vector2Int(5, 5),
-            new Vector2Int(8, 3), new Vector2Int(8, 6),
+            new Vector2Int(7, 7), new Vector2Int(9, 7), new Vector2Int(7, 9), new Vector2Int(9, 9),
+            new Vector2Int(14, 5), new Vector2Int(14, 11), new Vector2Int(4, 14), new Vector2Int(17, 3),
+            new Vector2Int(12, 15), new Vector2Int(18, 8), new Vector2Int(3, 4),
         },
-        ["RoomC_LShape"] = new[] { new Vector2Int(5, 4) },
-        ["RoomD_Connected"] = new Vector2Int[0],
+        ["RoomC_LShape"] = new[]
+        {
+            new Vector2Int(9, 7), new Vector2Int(13, 3), new Vector2Int(3, 12),
+            new Vector2Int(15, 7), new Vector2Int(6, 15),
+        },
+        ["RoomD_Connected"] = new[]
+        {
+            new Vector2Int(3, 3), new Vector2Int(16, 2), new Vector2Int(15, 15), new Vector2Int(10, 4),
+        },
     };
 
     private struct IntRect
@@ -499,21 +523,46 @@ public class VillageMapGenerator : MonoBehaviour
         go.transform.position = worldPosition;
     }
 
-    private void SpawnAnimal(RoomInstance room, Transform parent)
+    private void SpawnAnimal(RoomInstance room, Transform parent, HashSet<Vector2Int> excludedCells = null)
     {
         if (animalPrefabs == null || animalPrefabs.Length == 0 || room.FloorCells.Count == 0) return;
 
         GameObject prefab = animalPrefabs[Random.Range(0, animalPrefabs.Length)];
-        Vector2Int cell = PickInteriorCell(room);
+        Vector2Int cell = PickInteriorCell(room, excludedCells);
         Instantiate(prefab, ToSpritePosition(room, cell), Quaternion.identity, parent);
     }
 
-    private void SpawnMonster(RoomInstance room, Transform parent)
+    private const int MonsterSpawnDistanceRetryCount = 10;
+
+    // 스폰 순간에만 플레이어와의 거리를 강제한다 - 스폰 이후 순찰/배회로 이 범위 안에
+    // 들어오는 건 정상적인 몬스터 AI 동작이므로 막지 않는다. minDistance를 만족하는 칸을
+    // 찾을 때까지(최대 MonsterSpawnDistanceRetryCount번) 다시 뽑고, 끝내 못 찾으면 그동안
+    // 시도한 후보 중 가장 멀리 떨어진 칸에 배치한다(완전히 스폰을 포기하지 않는다).
+    private static Vector2Int PickMonsterSpawnCell(RoomInstance room, HashSet<Vector2Int> excludedCells, Vector2 playerSpawnWorldXY, float minDistance)
+    {
+        Vector2Int bestCell = PickInteriorCell(room, excludedCells);
+        float bestDistance = Vector2.Distance(ToWorldXY(room, bestCell), playerSpawnWorldXY);
+
+        for (int attempt = 1; attempt < MonsterSpawnDistanceRetryCount && bestDistance < minDistance; attempt++)
+        {
+            Vector2Int candidate = PickInteriorCell(room, excludedCells);
+            float distance = Vector2.Distance(ToWorldXY(room, candidate), playerSpawnWorldXY);
+            if (distance > bestDistance)
+            {
+                bestDistance = distance;
+                bestCell = candidate;
+            }
+        }
+
+        return bestCell;
+    }
+
+    private void SpawnMonster(RoomInstance room, Transform parent, Vector2 playerSpawnWorldXY, HashSet<Vector2Int> excludedCells = null)
     {
         if (monsterPrefabs == null || monsterPrefabs.Length == 0 || room.FloorCells.Count == 0) return;
 
         GameObject prefab = monsterPrefabs[Random.Range(0, monsterPrefabs.Length)];
-        Vector2Int cell = PickInteriorCell(room);
+        Vector2Int cell = PickMonsterSpawnCell(room, excludedCells, playerSpawnWorldXY, MonsterMinSpawnDistanceFromPlayer);
         Vector3 desired = ToNavPosition(room, cell);
 
         // NavMesh baking erodes walkable area inward from walls by the agent radius, so even an
@@ -540,7 +589,7 @@ public class VillageMapGenerator : MonoBehaviour
         return x >= bounds.MinX - 0.5f && x <= bounds.MaxX + 1.5f && y >= bounds.MinY - 0.5f && y <= bounds.MaxY + 1.5f;
     }
 
-    private static Vector2Int PickInteriorCell(RoomInstance room)
+    private static Vector2Int PickInteriorCell(RoomInstance room, HashSet<Vector2Int> excludedCells = null)
     {
         HashSet<Vector2Int> floorSet = new HashSet<Vector2Int>(room.FloorCells);
         HashSet<Vector2Int> obstacleCells = ObstacleCellsByRoom.TryGetValue(room.PrefabName, out Vector2Int[] obs)
@@ -551,6 +600,7 @@ public class VillageMapGenerator : MonoBehaviour
         foreach (Vector2Int c in room.FloorCells)
         {
             if (obstacleCells.Contains(c)) continue;
+            if (excludedCells != null && excludedCells.Contains(c)) continue;
             if (floorSet.Contains(c + Vector2Int.up) && floorSet.Contains(c + Vector2Int.down) &&
                 floorSet.Contains(c + Vector2Int.left) && floorSet.Contains(c + Vector2Int.right))
             {
@@ -559,7 +609,18 @@ public class VillageMapGenerator : MonoBehaviour
         }
 
         if (interior.Count > 0) return interior[Random.Range(0, interior.Count)];
-        return PickCentralCell(room);
+
+        // 제외할 칸(플레이어/트럭 위치)만 아니라면 굳이 완전히 안쪽(interior)이 아니어도 받아들인다 -
+        // 방이 아주 작아 interior 후보가 하나도 없는 극단적인 경우의 대비책.
+        Vector2Int central = PickCentralCell(room);
+        if (excludedCells == null || !excludedCells.Contains(central)) return central;
+
+        foreach (Vector2Int c in room.FloorCells)
+        {
+            if (!obstacleCells.Contains(c) && !excludedCells.Contains(c)) return c;
+        }
+
+        return central; // 이 방의 바닥 전체가 제외 대상뿐인 경우 - 선택의 여지가 없다.
     }
 
     // 각 장애물 칸 자리에 보이지 않는 NavMeshObstacle을 심어서, 구워둔 NavMesh 위에
