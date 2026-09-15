@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
 
 /// <summary>
@@ -57,6 +58,14 @@ public class VillageMapGenerator : MonoBehaviour
         GameObject mapRoot = new GameObject("GeneratedMap");
         List<RoomInstance> placedRooms = BuildRoomChain(mapRoot.transform);
         if (placedRooms.Count == 0) return;
+
+        // Doorway carving can split a room's wall ring into more than one disconnected piece
+        // (e.g. a doorway cutting straight through what used to be one connected run of wall
+        // tiles). Do this now that every room's wall tiles are in their final, post-carving shape.
+        foreach (RoomInstance room in placedRooms)
+        {
+            RebuildWallShadowCasters(room);
+        }
 
         List<MeshFilter> navGroundMeshes = new List<MeshFilter>();
         foreach (RoomInstance room in placedRooms)
@@ -252,6 +261,82 @@ public class VillageMapGenerator : MonoBehaviour
         walls.RefreshAllTiles();
         CompositeCollider2D composite = walls.GetComponent<CompositeCollider2D>();
         if (composite != null) composite.GenerateGeometry();
+    }
+
+    // A room's Walls GameObject carries one prefab-authored ShadowCaster2D sourced from its
+    // CompositeCollider2D. That collider's Outlines-mode geometry works fine for physics, but a
+    // wall ring with a doorway gap becomes a shape with a hole in it, which CompositeCollider2D
+    // represents as an outer boundary "slit-connected" to the inner (hole) boundary rather than a
+    // simple convex polygon - feeding that raw path into ShadowCaster2D confused its fill logic,
+    // so parts of it either failed to block light at all, or (worse) filled in the doorway/interior
+    // area as if it were solid wall. Sidestep all of that by reading the actual wall TILES directly
+    // and greedily merging them into simple axis-aligned rectangles (a classic maximal-rectangle
+    // tiling) - each rectangle is a trivially valid, never-self-intersecting box, using the exact
+    // same BoxCollider2D + ShadowCaster2D shape-from-collider mechanism already proven correct for
+    // obstacles. This guarantees every wall tile blocks light and nothing else (like a carved
+    // doorway) ever does, regardless of how doorway carving happened to shape the walls this Day.
+    private static void RebuildWallShadowCasters(RoomInstance room)
+    {
+        Transform wallsT = room.Root.transform.Find("Walls");
+        if (wallsT == null) return;
+
+        Tilemap wallsTilemap = wallsT.GetComponent<Tilemap>();
+        if (wallsTilemap == null) return;
+
+        ShadowCaster2D prefabShadowCaster = wallsT.GetComponent<ShadowCaster2D>();
+        if (prefabShadowCaster != null) Destroy(prefabShadowCaster);
+
+        HashSet<Vector2Int> remaining = new HashSet<Vector2Int>();
+        foreach (Vector3Int pos in wallsTilemap.cellBounds.allPositionsWithin)
+        {
+            if (wallsTilemap.HasTile(pos)) remaining.Add(new Vector2Int(pos.x, pos.y));
+        }
+
+        List<Vector2Int> sortedCells = new List<Vector2Int>(remaining);
+        sortedCells.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
+
+        int rectIndex = 0;
+        foreach (Vector2Int start in sortedCells)
+        {
+            if (!remaining.Contains(start)) continue; // already absorbed into an earlier rectangle
+
+            int width = 1;
+            while (remaining.Contains(start + new Vector2Int(width, 0))) width++;
+
+            int height = 1;
+            bool rowFull = true;
+            while (rowFull)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (!remaining.Contains(start + new Vector2Int(x, height))) { rowFull = false; break; }
+                }
+                if (rowFull) height++;
+            }
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    remaining.Remove(start + new Vector2Int(x, y));
+                }
+            }
+
+            GameObject shadowGO = new GameObject($"WallShadowCaster_{rectIndex++}");
+            shadowGO.transform.SetParent(wallsT, false);
+            shadowGO.transform.localPosition = new Vector3(start.x + width * 0.5f, start.y + height * 0.5f, 0f);
+
+            // Trigger-only: physical blocking is already handled by Walls' own CompositeCollider2D -
+            // this collider exists purely so ShadowCaster2D has a simple shape to read.
+            BoxCollider2D box = shadowGO.AddComponent<BoxCollider2D>();
+            box.isTrigger = true;
+            box.size = new Vector2(width, height);
+
+            ShadowCaster2D shadow = shadowGO.AddComponent<ShadowCaster2D>();
+            shadow.useRendererSilhouette = false;
+            shadow.castsShadows = true;
+            shadow.selfShadows = false;
+        }
     }
 
     private static IntRect GetFloorBoundsLocal(List<Vector2Int> cells)

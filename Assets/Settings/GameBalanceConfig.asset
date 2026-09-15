@@ -28,9 +28,11 @@ MonoBehaviour:
   sleepDelay: 0.6
   sleepDuration: 3.5
   playerMaxHealth: 100
-  ambientVisionRadius: 5.4
+  ambientVisionRadius: 3
+  ambientVisionIgnoresShadows: 1
   focusedVisionRadius: 13
   focusedVisionAngle: 80
+  focusedVisionShadowSoftness: 0.5
   playerMoveSpeed: 3.75
   patrolMonsterPatrolSpeed: 1.6
   soundReactiveMonsterWanderSpeed: 2.4

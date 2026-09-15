@@ -28,12 +28,16 @@ public class PlayerVision : MonoBehaviour
         if (ambientVisionLight != null)
         {
             ambientVisionLight.pointLightOuterRadius = config.ambientVisionRadius;
+            // 바로 옆인데 벽 때문에 기본 시야가 뚝 끊겨 보이는 이질감을 없애기 위해, 기본 원형 시야는
+            // 기본적으로 그림자(벽/장애물 가림)를 무시하고 범위 안을 항상 전부 보여준다.
+            ambientVisionLight.shadowsEnabled = !config.ambientVisionIgnoresShadows;
         }
 
         if (focusedVisionLight != null)
         {
             focusedVisionLight.pointLightOuterRadius = config.focusedVisionRadius;
             focusedVisionLight.pointLightOuterAngle = config.focusedVisionAngle;
+            focusedVisionLight.shadowSoftness = config.focusedVisionShadowSoftness;
         }
     }
 

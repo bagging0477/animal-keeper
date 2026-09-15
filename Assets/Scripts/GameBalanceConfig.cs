@@ -71,13 +71,23 @@ public class GameBalanceConfig : ScriptableObject
 
     [Header("플레이어 시야 (VillageScene 전용)")]
     [Tooltip("항상 켜져 있는 기본 원형 시야(Ambient Vision)의 반경")]
-    public float ambientVisionRadius = 5.4f;
+    public float ambientVisionRadius = 3f;
+
+    [Tooltip("체크하면 기본 원형 시야(Ambient Vision) 범위 안은 벽/장애물 그림자를 무시하고 항상 전부 보인다. " +
+        "바로 옆에 있는데 벽 때문에 시야가 뚝 끊겨 보이는 이질감을 없애기 위한 옵션 - 부채꼴 시야(Focused Vision)는 " +
+        "이 옵션과 무관하게 항상 벽에 가려진다(스텔스의 핵심이라 그대로 둔다).")]
+    public bool ambientVisionIgnoresShadows = true;
 
     [Tooltip("바라보는 방향으로 밝혀지는 부채꼴 시야(Focused Vision)의 반경")]
     public float focusedVisionRadius = 13f;
 
     [Tooltip("부채꼴 시야(Focused Vision)의 각도(도)")]
     public float focusedVisionAngle = 80f;
+
+    [Tooltip("부채꼴 시야가 벽/장애물에 가려질 때 그림자 경계를 얼마나 부드럽게 처리할지 (0 = 칼같이 딱 끊김, 1 = 최대한 부드럽게). " +
+        "너무 딱딱하게 끊기면 이질감이 들어서 기본값을 약간 부드럽게 뒀다.")]
+    [Range(0f, 1f)]
+    public float focusedVisionShadowSoftness = 0.5f;
 
     [Header("이동 속도")]
     [Tooltip("플레이어 기본(걷기) 이동속도")]
