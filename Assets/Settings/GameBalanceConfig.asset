@@ -30,7 +30,7 @@ MonoBehaviour:
   playerMaxHealth: 100
   ambientVisionRadius: 3
   ambientVisionIgnoresShadows: 1
-  focusedVisionRadius: 13
+  focusedVisionRadius: 11
   focusedVisionAngle: 80
   focusedVisionShadowSoftness: 0.5
   playerMoveSpeed: 3.75
