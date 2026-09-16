@@ -86,6 +86,7 @@ public class GameManager : MonoBehaviour
         gameSessionSeedInitialized = false;
         MineCount = config != null ? config.debugStartingMineCount : 2;
         BombCount = config != null ? config.debugStartingBombCount : 1;
+        ShelterSettlement.ResetSettlementState();
     }
 
     public void TakeDamage(int amount, string monsterTypeName)
@@ -241,6 +242,9 @@ public class GameManager : MonoBehaviour
         BombCount--;
         return true;
     }
+
+    public void AddMine(int amount) => MineCount += amount;
+    public void AddBomb(int amount) => BombCount += amount;
 
     private int gameSessionSeed;
     private bool gameSessionSeedInitialized;

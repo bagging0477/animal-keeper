@@ -514,6 +514,8 @@ MonoBehaviour:
   villageMusicClip: {fileID: 8300000, guid: 8987cf16a6e3214448e044ce50d85443, type: 3}
   sfxVolume: 1
   musicVolume: 0.5
+  truckMusicVolumeScale: 0.4
+  hitVolumeScale: 2
 --- !u!4 &189033480
 Transform:
   m_ObjectHideFlags: 0
