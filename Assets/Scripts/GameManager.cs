@@ -31,7 +31,6 @@ public class GameManager : MonoBehaviour
     }
 
     private readonly List<int> cargoWeights = new List<int>();
-    public IReadOnlyList<int> CargoWeights => cargoWeights;
 
     private readonly HashSet<string> rescuedAnimalIdsToday = new HashSet<string>();
 
@@ -179,8 +178,13 @@ public class GameManager : MonoBehaviour
     private readonly HashSet<PlayerClass> unlockedClasses = new HashSet<PlayerClass>();
     public PlayerClass CurrentClass { get; private set; } = PlayerClass.Scout;
 
-    /// <summary>클래스별 고정 무기. 스카우트는 무기 없음, 트래퍼는 근접(포획망), 아처는 원거리(마취화살)만 쓴다.</summary>
-    public WeaponType EquippedWeapon => CurrentClass switch
+    /// <summary>현재 장착 중인 클래스의 고정 무기.</summary>
+    public WeaponType EquippedWeapon => GetWeaponForClass(CurrentClass);
+
+    /// <summary>클래스별 고정 무기. 스카우트는 무기 없음, 트래퍼는 근접(포획망), 아처는 원거리(마취화살)만 쓴다.
+    /// static이라 ClassInteractPoint 같은 곳에서 아직 장착하지 않은(현재 클래스가 아닌) 다른 클래스의
+    /// 무기를 미리 보여줄 때도 이 한 곳의 매핑을 그대로 재사용할 수 있다.</summary>
+    public static WeaponType GetWeaponForClass(PlayerClass playerClass) => playerClass switch
     {
         PlayerClass.Trapper => WeaponType.Net,
         PlayerClass.Archer => WeaponType.TranquilizerGun,

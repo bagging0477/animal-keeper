@@ -165,12 +165,13 @@ MonoBehaviour:
   wanderRadius: 5
   wanderWaitMin: 1
   wanderWaitMax: 3
-  waypointStopDistance: 0.2
   investigateSpeed: 3.5
   lookAroundDuration: 2
-  catchRange: 0.7
   monsterTypeName: "\uC18C\uB9AC\uBC18\uC751\uD615"
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
+  sightBlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &6996777279432024342
 MonoBehaviour:
   m_ObjectHideFlags: 0

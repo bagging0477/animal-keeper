@@ -16,10 +16,8 @@ public class MonsterAI : MonoBehaviour
         new Vector2(0f, 1.5f),
         new Vector2(1.5f, 0f)
     };
-    [SerializeField] private float waypointStopDistance = 0.2f;
 
     [Header("Capture")]
-    [SerializeField] private float catchRange = 0.7f;
     [SerializeField] private string monsterTypeName = "순찰형";
     [SerializeField] private GameBalanceConfig config;
 
@@ -46,6 +44,8 @@ public class MonsterAI : MonoBehaviour
     private float SearchDuration => config != null ? config.monsterSearchDuration : 3f;
     private float ChaseGiveUpSightLostDuration => config != null ? config.chaseGiveUpSightLostDuration : 2f;
     private float ChaseDirectionUpdateInterval => config != null ? config.chaseDirectionUpdateInterval : 0.25f;
+    private float CatchRange => config != null ? config.patrolMonsterCatchRange : 0.7f;
+    private float WaypointStopDistance => config != null ? config.monsterWaypointStopDistance : 0.2f;
 
     private void Awake()
     {
@@ -133,7 +133,7 @@ public class MonsterAI : MonoBehaviour
                 }
             }
 
-            if (distanceToPlayer <= catchRange)
+            if (distanceToPlayer <= CatchRange)
             {
                 if (!caughtLogged)
                 {
@@ -178,7 +178,7 @@ public class MonsterAI : MonoBehaviour
         {
             agent.speed = ChaseSpeed;
         }
-        else if (waypoints.Length > 0 && !agent.pathPending && agent.remainingDistance <= waypointStopDistance)
+        else if (waypoints.Length > 0 && !agent.pathPending && agent.remainingDistance <= WaypointStopDistance)
         {
             targetIndex = (targetIndex + 1) % waypoints.Length;
             agent.SetDestination(waypoints[targetIndex]);

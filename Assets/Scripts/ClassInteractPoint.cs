@@ -87,10 +87,10 @@ public class ClassInteractPoint : MonoBehaviour
         string speedLine = Mathf.Approximately(speedMultiplier, 1f)
             ? "이동속도: 평균"
             : $"이동속도: 평균의 {speedMultiplier:0.##}배";
-        string weaponLine = pc switch
+        string weaponLine = GameManager.GetWeaponForClass(pc) switch
         {
-            PlayerClass.Trapper => "무기: 근접 (포획망)",
-            PlayerClass.Archer => "무기: 원거리 (마취화살)",
+            WeaponType.Net => "무기: 근접 (포획망)",
+            WeaponType.TranquilizerGun => "무기: 원거리 (마취화살)",
             _ => "무기: 없음"
         };
 

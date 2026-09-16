@@ -53,7 +53,9 @@ public class PlayerGadgetController : MonoBehaviour
         float radius = config != null ? config.bombRadius : 3f;
         Vector2 origin = transform.position;
 
-        BombExplosionEffect.Spawn(transform.position, radius);
+        float effectDuration = config != null ? config.bombEffectDisplayDuration : 0.35f;
+        Color effectColor = config != null ? config.bombEffectColor : new Color(1f, 0f, 0f, 0.5f);
+        BombExplosionEffect.Spawn(transform.position, radius, effectDuration, effectColor);
 
         foreach (MonsterHealth monster in FindObjectsByType<MonsterHealth>(FindObjectsInactive.Exclude))
         {

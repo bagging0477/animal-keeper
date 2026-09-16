@@ -40,6 +40,16 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("몬스터가 시야에서 플레이어를 놓친 뒤, 완전히 포기하고 순찰/배회로 돌아가기 전까지 마지막으로 본 위치 근처에서 수색하는 시간(초)")]
     public float monsterSearchDuration = 3f;
 
+    [Header("몬스터 - 포획 판정")]
+    [Tooltip("순찰형 몬스터가 이 거리 안으로 들어오면 플레이어를 붙잡은 것으로 판정한다")]
+    public float patrolMonsterCatchRange = 0.7f;
+
+    [Tooltip("소리반응형 몬스터가 이 거리 안으로 들어오면 플레이어를 붙잡은 것으로 판정한다")]
+    public float soundReactiveMonsterCatchRange = 0.7f;
+
+    [Tooltip("몬스터가 목적지(순찰 웨이포인트/배회 지점 등)에 도착했다고 판정하는 거리 - 두 몬스터 타입이 공통으로 쓴다")]
+    public float monsterWaypointStopDistance = 0.2f;
+
     [Header("몬스터 - 추격 포기 / 반응성")]
     [Tooltip("Chase 중 플레이어와의 거리가 위의 LoseRange를 넘거나(벽/장애물에 가려 Linecast가 막혀도 같은 취급) " +
         "완전히 시야를 놓친 상태가 이 시간(초) 이상 '연속으로' 유지되어야 추격을 포기하고 Search로 전환한다. " +
@@ -201,6 +211,12 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("R키로 폭탄을 사용했을 때 플레이어 위치를 중심으로 피해를 주는 반경")]
     public float bombRadius = 3f;
 
+    [Tooltip("폭탄 사용 시 피해 범위를 보여주는 빨간 원 연출이 유지되는 시간(초)")]
+    public float bombEffectDisplayDuration = 0.35f;
+
+    [Tooltip("폭탄 범위 연출의 색상(알파값이 투명도)")]
+    public Color bombEffectColor = new Color(1f, 0f, 0f, 0.5f);
+
     [Header("소모품 - 디버그 시작 보유량")]
     [Tooltip("디버그용으로 게임 시작 시 기본으로 지급되는 지뢰 개수 (상점 구매 로직 완성 전 테스트용)")]
     public int debugStartingMineCount = 2;
@@ -209,14 +225,13 @@ public class GameBalanceConfig : ScriptableObject
     public int debugStartingBombCount = 1;
 
     [Header("상점 아이템 가격")]
-    [Tooltip("ShelterShop의 각 아이템 이름과 가격. itemName은 ShelterShop 인스펙터의 항목 이름과 정확히 일치해야 한다. " +
-        "클래스 해금 아이템(트래퍼/아처)의 가격은 여기가 아니라 위의 trapperUnlockPrice/archerUnlockPrice로 조정한다.")]
+    [Tooltip("ShelterScene의 각 상점 아이템(ShopItemInteractPoint) 이름과 가격. itemName은 ShopItemInteractPoint.GetPrice()가 " +
+        "찾는 이름과 정확히 일치해야 한다. 클래스 해금 가격(트래퍼/아처)은 여기가 아니라 위의 trapperUnlockPrice/archerUnlockPrice로 조정한다.")]
     public List<ShopItemPrice> shopItemPrices = new List<ShopItemPrice>
     {
-        new ShopItemPrice { itemName = "사료", price = 30 },
-        new ShopItemPrice { itemName = "약품", price = 50 },
-        new ShopItemPrice { itemName = "장비", price = 80 },
         new ShopItemPrice { itemName = "마취화살 탄약", price = 30 },
+        new ShopItemPrice { itemName = "지뢰", price = 40 },
+        new ShopItemPrice { itemName = "폭탄", price = 70 },
     };
 
     [Serializable]

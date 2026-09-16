@@ -13,14 +13,12 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     [SerializeField] private float wanderRadius = 5f;
     [SerializeField] private float wanderWaitMin = 1f;
     [SerializeField] private float wanderWaitMax = 3f;
-    [SerializeField] private float waypointStopDistance = 0.2f;
 
     [Header("Investigate")]
     [SerializeField] private float investigateSpeed = 2f;
     [SerializeField] private float lookAroundDuration = 2f;
 
     [Header("Capture")]
-    [SerializeField] private float catchRange = 0.7f;
     [SerializeField] private string monsterTypeName = "소리반응형";
     [SerializeField] private GameBalanceConfig config;
 
@@ -50,6 +48,8 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private float SearchDuration => config != null ? config.monsterSearchDuration : 3f;
     private float ChaseGiveUpSightLostDuration => config != null ? config.chaseGiveUpSightLostDuration : 2f;
     private float ChaseDirectionUpdateInterval => config != null ? config.chaseDirectionUpdateInterval : 0.25f;
+    private float CatchRange => config != null ? config.soundReactiveMonsterCatchRange : 0.7f;
+    private float WaypointStopDistance => config != null ? config.monsterWaypointStopDistance : 0.2f;
 
     private void Awake()
     {
@@ -156,7 +156,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
                 }
             }
 
-            if (distanceToPlayer <= catchRange)
+            if (distanceToPlayer <= CatchRange)
             {
                 if (!caughtLogged)
                 {
@@ -201,7 +201,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
                     break;
 
                 case State.Investigate:
-                    if (!agent.pathPending && agent.remainingDistance <= waypointStopDistance)
+                    if (!agent.pathPending && agent.remainingDistance <= WaypointStopDistance)
                     {
                         lookAroundTimer += Time.deltaTime;
                         if (lookAroundTimer >= lookAroundDuration)
@@ -212,7 +212,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
                     break;
 
                 case State.Wander:
-                    if (!agent.pathPending && agent.remainingDistance <= waypointStopDistance)
+                    if (!agent.pathPending && agent.remainingDistance <= WaypointStopDistance)
                     {
                         wanderWaitTimer += Time.deltaTime;
                         if (wanderWaitTimer >= wanderWaitDuration)

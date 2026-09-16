@@ -5,21 +5,19 @@ using UnityEngine;
 /// 절차적으로 만들어 쓰는 것과 같은 방식).</summary>
 public class BombExplosionEffect : MonoBehaviour
 {
-    [SerializeField] private float displayDuration = 0.35f;
-    [SerializeField] private Color color = new Color(1f, 0f, 0f, 0.5f);
-
     private static Sprite circleSprite;
 
     private SpriteRenderer spriteRenderer;
     private float timer;
+    private float displayDuration;
     private Color startColor;
 
-    /// <summary>월드 좌표 position을 중심으로 지름 radius*2인 빨간 원을 잠깐 띄운다.</summary>
-    public static void Spawn(Vector3 position, float radius)
+    /// <summary>월드 좌표 position을 중심으로 지름 radius*2인 원을 duration초 동안 color로 잠깐 띄운다.</summary>
+    public static void Spawn(Vector3 position, float radius, float duration, Color color)
     {
         GameObject go = new GameObject("BombExplosionEffect");
         go.transform.position = position;
-        go.AddComponent<BombExplosionEffect>().Show(radius);
+        go.AddComponent<BombExplosionEffect>().Show(radius, duration, color);
     }
 
     private void Awake()
@@ -29,9 +27,10 @@ public class BombExplosionEffect : MonoBehaviour
         spriteRenderer.sortingOrder = 5;
     }
 
-    private void Show(float radius)
+    private void Show(float radius, float duration, Color color)
     {
         transform.localScale = Vector3.one * (radius * 2f);
+        displayDuration = duration;
         startColor = color;
         spriteRenderer.color = startColor;
         timer = displayDuration;
