@@ -65,8 +65,11 @@ public class PlayerMovement : MonoBehaviour
 
         if (IsSprinting)
         {
-            float drainPerSecond = config != null ? config.sprintStaminaDrainPerSecond : 25f;
-            Stamina -= drainPerSecond * Time.deltaTime;
+            float baseDrainPerSecond = config != null ? config.sprintStaminaDrainPerSecond : 25f;
+            float drainMultiplier = config != null && GameManager.Instance != null
+                ? config.GetClassStaminaDrainMultiplier(GameManager.Instance.CurrentClass)
+                : 1f;
+            Stamina -= baseDrainPerSecond * drainMultiplier * Time.deltaTime;
 
             if (Stamina <= 0f)
             {

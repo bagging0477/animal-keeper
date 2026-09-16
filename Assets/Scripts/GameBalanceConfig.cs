@@ -72,8 +72,8 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("마취화살에 맞은 뒤 실제로 잠들기까지 걸리는 시간(초)")]
     public float sleepDelay = 1f;
 
-    [Tooltip("잠든 상태가 유지되는 시간(초) - 몬스터와 동물 모두에게 적용")]
-    public float sleepDuration = 3.5f;
+    [Tooltip("잠든 상태가 유지되는 시간(초) - 몬스터와 동물 모두에게 적용. 마취화살은 아처만 쏠 수 있어 사실상 아처 전용 수치다.")]
+    public float sleepDuration = 4.2f;
 
     [Header("플레이어")]
     [Tooltip("플레이어 최대 체력(%)")]
@@ -101,16 +101,20 @@ public class GameBalanceConfig : ScriptableObject
 
     [Header("클래스 - 이동속도 / 체력")]
     [Tooltip("스카우트 이동속도 배율(기본 이동속도 대비). 트래퍼/아처는 배율 1(평균)을 그대로 쓴다.")]
-    public float scoutMoveSpeedMultiplier = 1.3f;
+    public float scoutMoveSpeedMultiplier = 1.15f;
 
-    [Tooltip("스카우트 최대 체력 비율 (playerMaxHealth 대비, %)")]
-    public int scoutMaxHealthPercent = 60;
+    [Tooltip("스카우트 최대 체력 비율 (playerMaxHealth 대비, %). 체력이 가장 낮은 대신 이동속도가 빠른 컨셉.")]
+    public int scoutMaxHealthPercent = 50;
 
-    [Tooltip("트래퍼 최대 체력 비율 (playerMaxHealth 대비, %)")]
-    public int trapperMaxHealthPercent = 120;
+    [Tooltip("트래퍼 최대 체력 비율 (playerMaxHealth 대비, %). 근접전을 감당할 수 있는 확실한 맷집.")]
+    public int trapperMaxHealthPercent = 130;
 
     [Tooltip("아처 최대 체력 비율 (playerMaxHealth 대비, %) - 기준치")]
     public int archerMaxHealthPercent = 100;
+
+    [Tooltip("스카우트의 스프린트 스태미나 소모 배율(다른 클래스 대비). 체력이 낮은데 지구력까지 약해서, " +
+        "스프린트를 오래 쓰면 더 빨리 지치고 장기적으로 위험해지는 컨셉. 트래퍼/아처는 배율 1(기본)을 그대로 쓴다.")]
+    public float scoutStaminaDrainMultiplier = 1.2f;
 
     [Header("클래스 해금 가격 (마일리지, 임시값 - 추후 조정 예정)")]
     [Tooltip("트래퍼 클래스 해금 가격")]
@@ -166,8 +170,10 @@ public class GameBalanceConfig : ScriptableObject
     public int targetBonusMileage = 50;
 
     [Header("무기 - 포획망")]
-    [Tooltip("포획망 한 번 휘두를 때 몬스터에게 주는 데미지")]
-    public int netDamage = 1;
+    [Tooltip("포획망 한 번 휘두를 때 몬스터에게 주는 데미지. 근접이라 리스크가 큰 대신, 확실하게 몬스터를 " +
+        "처리할 수 있는 게 트래퍼만의 강점이 되도록 다른 클래스보다 높게 잡는다. 정수가 아니어도 되며 " +
+        "실제로 깎이는 체력에는 반올림 없이 그대로 누적된다(MonsterHealth.Health가 float).")]
+    public float netDamage = 1.2f;
 
     [Tooltip("포획망이 닿는 거리")]
     public float netRange = 2f;
@@ -187,6 +193,10 @@ public class GameBalanceConfig : ScriptableObject
 
     [Tooltip("상점에서 '마취화살 탄약' 아이템을 구매했을 때 한 번에 충전되는 탄약 수")]
     public int tranquilizerAmmoRefillAmount = 5;
+
+    [Tooltip("마취화살(TranquilizerDart)이 날아가는 최대 사거리. 안전한 거리에서 대응할 수 있다는 아처만의 " +
+        "확실한 강점이 되도록 다른 무기보다 멀리 잡는다. 다트의 실제 비행 시간은 이 값과 발사 속도(PlayerWeaponController.dartSpeed)로부터 계산된다.")]
+    public float tranquilizerRange = 43.2f;
 
     [Header("소모품 - 지뢰 (임시값)")]
     [Tooltip("지뢰가 몬스터에게 주는 데미지")]
@@ -261,6 +271,9 @@ public class GameBalanceConfig : ScriptableObject
 
     public float GetClassMoveSpeedMultiplier(PlayerClass playerClass) =>
         playerClass == PlayerClass.Scout ? scoutMoveSpeedMultiplier : 1f;
+
+    public float GetClassStaminaDrainMultiplier(PlayerClass playerClass) =>
+        playerClass == PlayerClass.Scout ? scoutStaminaDrainMultiplier : 1f;
 
     public int GetClassUnlockPrice(PlayerClass playerClass) => playerClass switch
     {

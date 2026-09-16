@@ -29,17 +29,18 @@ MonoBehaviour:
   monsterMinSpawnDistanceFromPlayer: 6
   stunDuration: 0.4
   sleepDelay: 0.6
-  sleepDuration: 3.5
+  sleepDuration: 4.2
   playerMaxHealth: 100
   ambientVisionRadius: 3
   ambientVisionIgnoresShadows: 1
   focusedVisionRadius: 11
   focusedVisionAngle: 80
   focusedVisionShadowSoftness: 0.5
-  scoutMoveSpeedMultiplier: 1.3
-  scoutMaxHealthPercent: 60
-  trapperMaxHealthPercent: 120
+  scoutMoveSpeedMultiplier: 1.15
+  scoutMaxHealthPercent: 50
+  trapperMaxHealthPercent: 130
   archerMaxHealthPercent: 100
+  scoutStaminaDrainMultiplier: 1.2
   trapperUnlockPrice: 100
   archerUnlockPrice: 200
   playerMoveSpeed: 3.75
@@ -54,13 +55,14 @@ MonoBehaviour:
   targetRescueCount: 3
   mileagePerWeight: 10
   targetBonusMileage: 50
-  netDamage: 1
+  netDamage: 1.2
   netRange: 2
   netAngle: 90
   netCooldown: 0.75
   tranquilizerStartingAmmo: 3
   tranquilizerMaxAmmo: 10
   tranquilizerAmmoRefillAmount: 5
+  tranquilizerRange: 43.2
   mineDamage: 2
   mineStunDuration: 1.5
   minePlacementDistance: 1.2

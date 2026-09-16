@@ -14,7 +14,9 @@ public class MonsterHealth : MonoBehaviour, ISleepable
     private float pendingSleepTimer;
     private float pendingSleepDuration;
 
-    public int Health { get; private set; }
+    // float인 이유: 트래퍼의 포획망 데미지(netDamage)처럼 1보다 작은 배율로 튜닝된 데미지가
+    // 매 히트마다 정수로 반올림되면서 의도한 증가분이 통째로 사라지는 걸 막기 위해서다.
+    public float Health { get; private set; }
     public bool IsDead { get; private set; }
     public bool IsStunned => stunTimer > 0f;
     public bool IsAsleep => asleepTimer > 0f;
@@ -55,12 +57,12 @@ public class MonsterHealth : MonoBehaviour, ISleepable
         if (agent != null && agent.isOnNavMesh) agent.isStopped = IsIncapacitated;
     }
 
-    public void TakeDamage(int amount)
+    public void TakeDamage(float amount)
     {
         if (IsDead || Health <= 0) return;
 
         Health -= amount;
-        Debug.Log($"{gameObject.name} 몬스터가 피격당함! 데미지: {amount}, 남은 체력: {Mathf.Max(Health, 0)}/{MaxHealth}");
+        Debug.Log($"{gameObject.name} 몬스터가 피격당함! 데미지: {amount:0.#}, 남은 체력: {Mathf.Max(Health, 0):0.#}/{MaxHealth}");
 
         if (Health <= 0) Die();
     }

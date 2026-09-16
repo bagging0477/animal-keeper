@@ -91,7 +91,7 @@ public class PlayerWeaponController : MonoBehaviour
 
         float netRange = config != null ? config.netRange : 2f;
         float netAngle = config != null ? config.netAngle : 90f;
-        int netDamage = config != null ? config.netDamage : 1;
+        float netDamage = config != null ? config.netDamage : 1f;
         float netStunDuration = config != null ? config.stunDuration : 0.4f;
 
         Vector2 origin = transform.position;
@@ -122,9 +122,10 @@ public class PlayerWeaponController : MonoBehaviour
 
         float sleepDelay = config != null ? config.sleepDelay : 1f;
         float sleepDuration = config != null ? config.sleepDuration : 3.5f;
+        float range = config != null ? config.tranquilizerRange : 36f;
 
         TranquilizerDart dart = Instantiate(dartPrefab, transform.position, Quaternion.identity);
-        dart.Launch(playerMovement.LookDirection, dartSpeed, sleepDelay, sleepDuration);
+        dart.Launch(playerMovement.LookDirection, dartSpeed, range, sleepDelay, sleepDuration);
         AudioManager.Instance?.PlayTranquilizerShot();
     }
 }

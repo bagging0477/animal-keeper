@@ -105,5 +105,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ef9d3df1863063488babe52810eb073, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TranquilizerDart
-  lifetime: 3
   hitRadius: 0.3
