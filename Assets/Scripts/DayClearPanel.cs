@@ -14,6 +14,7 @@ public class DayClearPanel : MonoBehaviour
     public void Show(string title)
     {
         if (titleText != null && !string.IsNullOrEmpty(title)) titleText.text = title;
+        transform.SetAsLastSibling();
         gameObject.SetActive(true);
     }
 

@@ -14,6 +14,7 @@ public class GameOverPanel : MonoBehaviour
 
     public void Show()
     {
+        transform.SetAsLastSibling();
         gameObject.SetActive(true);
     }
 
