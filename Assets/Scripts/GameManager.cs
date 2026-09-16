@@ -86,7 +86,8 @@ public class GameManager : MonoBehaviour
         gameSessionSeedInitialized = false;
         MineCount = config != null ? config.debugStartingMineCount : 2;
         BombCount = config != null ? config.debugStartingBombCount : 1;
-        ShelterSettlement.ResetSettlementState();
+        HasSettledCargo = false;
+        LastSettlementResult = default;
     }
 
     public void TakeDamage(int amount, string monsterTypeName)
@@ -127,6 +128,15 @@ public class GameManager : MonoBehaviour
         public int TotalMileage;
     }
 
+    /// <summary>ShelterScene에 처음 들어왔을 때 이미 정산했는지 여부. ClassSelectScene을 거쳐
+    /// ShelterScene으로 다시 돌아왔을 때 SettleCargo를 또 호출하지 않게 막는 가드로 쓰인다.
+    /// (예전에는 이 값을 ShelterSettlement의 static 필드로 뒀는데, 에디터에서 Play를 여러 번
+    /// 껐다 켜는 동안 static이 초기화되지 않고 남아있는 경우가 있어 실제 정산이 조용히 건너뛰어지는
+    /// 버그가 있었다 - DontDestroyOnLoad로 살아있는 GameManager 인스턴스 필드로 옮겨서, 매 Play마다
+    /// 새 GameManager가 만들어질 때 확실히 초기화되게 했다.)</summary>
+    public bool HasSettledCargo { get; private set; }
+    public SettlementResult LastSettlementResult { get; private set; }
+
     public SettlementResult SettleCargo(int pricePerWeight, int bonusMileage)
     {
         int totalWeight = TotalWeight;
@@ -144,7 +154,7 @@ public class GameManager : MonoBehaviour
             IsGameOver = !bonusApplied;
         }
 
-        return new SettlementResult
+        SettlementResult result = new SettlementResult
         {
             TotalWeight = totalWeight,
             PricePerWeight = pricePerWeight,
@@ -153,6 +163,10 @@ public class GameManager : MonoBehaviour
             BonusMileage = bonus,
             TotalMileage = total
         };
+
+        HasSettledCargo = true;
+        LastSettlementResult = result;
+        return result;
     }
 
     public bool TrySpendMileage(int amount)
