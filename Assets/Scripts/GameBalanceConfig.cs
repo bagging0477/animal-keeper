@@ -55,11 +55,11 @@ public class GameBalanceConfig : ScriptableObject
         "스폰 시점에만 적용되며, 스폰 이후 순찰/배회로 이 범위 안에 들어오는 것은 막지 않는다.")]
     public float monsterMinSpawnDistanceFromPlayer = 6f;
 
-    [Header("상태이상 - 포획망 스턴 / 마취총 수면")]
+    [Header("상태이상 - 포획망 스턴 / 마취화살 수면")]
     [Tooltip("포획망에 맞은 몬스터가 스턴 상태가 되는 시간(초)")]
     public float stunDuration = 0.4f;
 
-    [Tooltip("마취총에 맞은 뒤 실제로 잠들기까지 걸리는 시간(초)")]
+    [Tooltip("마취화살에 맞은 뒤 실제로 잠들기까지 걸리는 시간(초)")]
     public float sleepDelay = 1f;
 
     [Tooltip("잠든 상태가 유지되는 시간(초) - 몬스터와 동물 모두에게 적용")]
@@ -88,6 +88,26 @@ public class GameBalanceConfig : ScriptableObject
         "너무 딱딱하게 끊기면 이질감이 들어서 기본값을 약간 부드럽게 뒀다.")]
     [Range(0f, 1f)]
     public float focusedVisionShadowSoftness = 0.5f;
+
+    [Header("클래스 - 이동속도 / 체력")]
+    [Tooltip("스카우트 이동속도 배율(기본 이동속도 대비). 트래퍼/아처는 배율 1(평균)을 그대로 쓴다.")]
+    public float scoutMoveSpeedMultiplier = 1.3f;
+
+    [Tooltip("스카우트 최대 체력 비율 (playerMaxHealth 대비, %)")]
+    public int scoutMaxHealthPercent = 60;
+
+    [Tooltip("트래퍼 최대 체력 비율 (playerMaxHealth 대비, %)")]
+    public int trapperMaxHealthPercent = 120;
+
+    [Tooltip("아처 최대 체력 비율 (playerMaxHealth 대비, %) - 기준치")]
+    public int archerMaxHealthPercent = 100;
+
+    [Header("클래스 해금 가격 (마일리지, 임시값 - 추후 조정 예정)")]
+    [Tooltip("트래퍼 클래스 해금 가격")]
+    public int trapperUnlockPrice = 100;
+
+    [Tooltip("아처 클래스 해금 가격")]
+    public int archerUnlockPrice = 200;
 
     [Header("이동 속도")]
     [Tooltip("플레이어 기본(걷기) 이동속도")]
@@ -148,26 +168,25 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("포획망을 다시 휘두르기까지 걸리는 쿨다운(초)")]
     public float netCooldown = 0.75f;
 
-    [Header("무기 - 마취총 탄약")]
-    [Tooltip("마취총을 상점에서 처음 구매했을 때 함께 지급되는 시작 탄약 수")]
+    [Header("무기 - 마취화살 탄약")]
+    [Tooltip("아처 클래스를 처음 장착했을 때 함께 지급되는 시작 탄약 수")]
     public int tranquilizerStartingAmmo = 3;
 
-    [Tooltip("마취총 탄약의 최대 소지 개수")]
+    [Tooltip("마취화살 탄약의 최대 소지 개수")]
     public int tranquilizerMaxAmmo = 10;
 
-    [Tooltip("상점에서 '마취총 탄약' 아이템을 구매했을 때 한 번에 충전되는 탄약 수")]
+    [Tooltip("상점에서 '마취화살 탄약' 아이템을 구매했을 때 한 번에 충전되는 탄약 수")]
     public int tranquilizerAmmoRefillAmount = 5;
 
     [Header("상점 아이템 가격")]
-    [Tooltip("ShelterShop의 각 아이템 이름과 가격. itemName은 ShelterShop 인스펙터의 항목 이름과 정확히 일치해야 한다.")]
+    [Tooltip("ShelterShop의 각 아이템 이름과 가격. itemName은 ShelterShop 인스펙터의 항목 이름과 정확히 일치해야 한다. " +
+        "클래스 해금 아이템(트래퍼/아처)의 가격은 여기가 아니라 위의 trapperUnlockPrice/archerUnlockPrice로 조정한다.")]
     public List<ShopItemPrice> shopItemPrices = new List<ShopItemPrice>
     {
         new ShopItemPrice { itemName = "사료", price = 30 },
         new ShopItemPrice { itemName = "약품", price = 50 },
         new ShopItemPrice { itemName = "장비", price = 80 },
-        new ShopItemPrice { itemName = "포획망", price = 60 },
-        new ShopItemPrice { itemName = "마취총", price = 120 },
-        new ShopItemPrice { itemName = "마취총 탄약", price = 30 },
+        new ShopItemPrice { itemName = "마취화살 탄약", price = 30 },
     };
 
     [Serializable]
@@ -187,4 +206,21 @@ public class GameBalanceConfig : ScriptableObject
         Debug.LogWarning($"{name}: no shop price configured for '{itemName}'.");
         return 0;
     }
+
+    public int GetClassMaxHealthPercent(PlayerClass playerClass) => playerClass switch
+    {
+        PlayerClass.Scout => scoutMaxHealthPercent,
+        PlayerClass.Trapper => trapperMaxHealthPercent,
+        _ => archerMaxHealthPercent
+    };
+
+    public float GetClassMoveSpeedMultiplier(PlayerClass playerClass) =>
+        playerClass == PlayerClass.Scout ? scoutMoveSpeedMultiplier : 1f;
+
+    public int GetClassUnlockPrice(PlayerClass playerClass) => playerClass switch
+    {
+        PlayerClass.Trapper => trapperUnlockPrice,
+        PlayerClass.Archer => archerUnlockPrice,
+        _ => 0
+    };
 }

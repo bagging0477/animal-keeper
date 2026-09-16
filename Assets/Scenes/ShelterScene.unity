@@ -897,7 +897,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uB9C8\uCDE8\uCD1D \uD0C4\uC57D\n30 \uB9C8\uC77C\uB9AC\uC9C0\n<b>\uAD6C\uB9E4</b>"
+  m_Text: "\uB9C8\uCDE8\uD654\uC0B4 \uD0C4\uC57D\n30 \uB9C8\uC77C\uB9AC\uC9C0\n<b>\uAD6C\uB9E4</b>"
 --- !u!222 &621703646
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1420,28 +1420,34 @@ MonoBehaviour:
   items:
   - itemName: "\uC0AC\uB8CC"
     button: {fileID: 1585388009}
-    weaponType: 0
     isTranquilizerAmmoRefill: 0
+    isClassUnlock: 0
+    unlockClass: 0
   - itemName: "\uC57D\uD488"
     button: {fileID: 1150289518}
-    weaponType: 0
     isTranquilizerAmmoRefill: 0
+    isClassUnlock: 0
+    unlockClass: 0
   - itemName: "\uC7A5\uBE44"
     button: {fileID: 105858280}
-    weaponType: 0
     isTranquilizerAmmoRefill: 0
-  - itemName: "\uD3EC\uD68D\uB9DD"
+    isClassUnlock: 0
+    unlockClass: 0
+  - itemName: "\uD2B8\uB798\uD37C"
     button: {fileID: 1301694460}
-    weaponType: 1
     isTranquilizerAmmoRefill: 0
-  - itemName: "\uB9C8\uCDE8\uCD1D"
+    isClassUnlock: 1
+    unlockClass: 1
+  - itemName: "\uC544\uCC98"
     button: {fileID: 321901866}
-    weaponType: 2
     isTranquilizerAmmoRefill: 0
-  - itemName: "\uB9C8\uCDE8\uCD1D \uD0C4\uC57D"
+    isClassUnlock: 1
+    unlockClass: 2
+  - itemName: "\uB9C8\uCDE8\uD654\uC0B4 \uD0C4\uC57D"
     button: {fileID: 1313347818}
-    weaponType: 0
     isTranquilizerAmmoRefill: 1
+    isClassUnlock: 0
+    unlockClass: 0
   mileageText: {fileID: 798162395}
 --- !u!114 &978835628
 MonoBehaviour:
@@ -2023,7 +2029,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1.15
-  m_Text: "\uB9C8\uCDE8\uCD1D\n120 \uB9C8\uC77C\uB9AC\uC9C0\n<b>\uAD6C\uB9E4</b>"
+  m_Text: "\uC544\uCC98\n200 \uB9C8\uC77C\uB9AC\uC9C0\n<b>\uD574\uAE08</b>"
 --- !u!222 &1242416465
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2613,7 +2619,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1.15
-  m_Text: "\uD3EC\uD68D\uB9DD\n60 \uB9C8\uC77C\uB9AC\uC9C0\n<b>\uAD6C\uB9E4</b>"
+  m_Text: "\uD2B8\uB798\uD37C\n100 \uB9C8\uC77C\uB9AC\uC9C0\n<b>\uD574\uAE08</b>"
 --- !u!222 &1636646662
 CanvasRenderer:
   m_ObjectHideFlags: 0

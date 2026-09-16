@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     /// <summary>config가 아직 연결되지 않았을 때만 쓰이는 안전장치용 기본값.</summary>
     private const int FallbackMaxHealth = 100;
 
-    public static int MaxHealth => Instance != null && Instance.config != null ? Instance.config.playerMaxHealth : FallbackMaxHealth;
+    public static int MaxHealth => Instance != null ? Instance.ComputeMaxHealth() : FallbackMaxHealth;
 
     [SerializeField] private GameBalanceConfig config;
     [SerializeField] private string truckSceneName = "TruckScene";
@@ -22,6 +22,13 @@ public class GameManager : MonoBehaviour
     public int RescuedCount { get; private set; }
     public int Health { get; private set; }
     public bool IsGameOver { get; private set; }
+
+    private int ComputeMaxHealth()
+    {
+        int baseHealth = config != null ? config.playerMaxHealth : FallbackMaxHealth;
+        int percent = config != null ? config.GetClassMaxHealthPercent(CurrentClass) : 100;
+        return Mathf.Max(1, Mathf.RoundToInt(baseHealth * (percent / 100f)));
+    }
 
     private readonly List<int> cargoWeights = new List<int>();
     public IReadOnlyList<int> CargoWeights => cargoWeights;
@@ -68,12 +75,12 @@ public class GameManager : MonoBehaviour
     {
         day = 1;
         rescuedAnimalIdsToday.Clear();
-        Health = MaxHealth;
         Mileage = 0;
         cargoWeights.Clear();
         RescuedCount = 0;
-        ownedWeapons.Clear();
-        EquippedWeapon = WeaponType.None;
+        unlockedClasses.Clear();
+        CurrentClass = PlayerClass.Scout;
+        Health = MaxHealth;
         TranquilizerAmmo = 0;
         IsGameOver = false;
         gameSessionSeedInitialized = false;
@@ -152,22 +159,45 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    private readonly HashSet<WeaponType> ownedWeapons = new HashSet<WeaponType>();
-    public WeaponType EquippedWeapon { get; private set; } = WeaponType.None;
+    private readonly HashSet<PlayerClass> unlockedClasses = new HashSet<PlayerClass>();
+    public PlayerClass CurrentClass { get; private set; } = PlayerClass.Scout;
 
-    public bool OwnsWeapon(WeaponType type) => ownedWeapons.Contains(type);
+    /// <summary>클래스별 고정 무기. 스카우트는 무기 없음, 트래퍼는 근접(포획망), 아처는 원거리(마취화살)만 쓴다.</summary>
+    public WeaponType EquippedWeapon => CurrentClass switch
+    {
+        PlayerClass.Trapper => WeaponType.Net,
+        PlayerClass.Archer => WeaponType.TranquilizerGun,
+        _ => WeaponType.None
+    };
+
+    public bool IsClassUnlocked(PlayerClass playerClass) =>
+        playerClass == PlayerClass.Scout || unlockedClasses.Contains(playerClass);
 
     public int TranquilizerAmmo { get; private set; }
     public int MaxTranquilizerAmmo => config != null ? config.tranquilizerMaxAmmo : 10;
 
-    public bool PurchaseWeapon(WeaponType type, int price)
+    /// <summary>마일리지를 소모해 클래스를 해금한다(장착은 하지 않음). 스카우트는 항상 해금 상태라 대상이 될 수 없다.</summary>
+    public bool PurchaseClass(PlayerClass playerClass)
     {
-        if (type == WeaponType.None || ownedWeapons.Contains(type)) return false;
+        if (playerClass == PlayerClass.Scout || unlockedClasses.Contains(playerClass)) return false;
+
+        int price = config != null ? config.GetClassUnlockPrice(playerClass) : 0;
         if (!TrySpendMileage(price)) return false;
 
-        ownedWeapons.Add(type);
+        unlockedClasses.Add(playerClass);
+        return true;
+    }
 
-        if (type == WeaponType.TranquilizerGun)
+    /// <summary>이미 해금된 클래스를 현재 클래스로 장착한다. 체력은 새 클래스의 최대 체력으로 채워지고,
+    /// 아처를 처음 장착할 때는 마취화살 탄약을 시작 수량만큼 지급한다.</summary>
+    public bool SelectClass(PlayerClass playerClass)
+    {
+        if (!IsClassUnlocked(playerClass)) return false;
+
+        CurrentClass = playerClass;
+        Health = MaxHealth;
+
+        if (playerClass == PlayerClass.Archer && TranquilizerAmmo <= 0)
         {
             int startingAmmo = config != null ? config.tranquilizerStartingAmmo : 3;
             TranquilizerAmmo = Mathf.Min(startingAmmo, MaxTranquilizerAmmo);
@@ -188,14 +218,6 @@ public class GameManager : MonoBehaviour
         if (!TrySpendMileage(price)) return false;
 
         TranquilizerAmmo = Mathf.Min(TranquilizerAmmo + refillAmount, MaxTranquilizerAmmo);
-        return true;
-    }
-
-    public bool TryEquipWeapon(WeaponType type)
-    {
-        if (type != WeaponType.None && !ownedWeapons.Contains(type)) return false;
-
-        EquippedWeapon = type;
         return true;
     }
 

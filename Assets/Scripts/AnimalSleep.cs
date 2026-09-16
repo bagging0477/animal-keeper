@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// <summary>동물이 마취총에 맞았을 때의 수면 상태만 담당한다. 동물은 몬스터와 달리 체력 개념이 없다.</summary>
+/// <summary>동물이 마취화살에 맞았을 때의 수면 상태만 담당한다. 동물은 몬스터와 달리 체력 개념이 없다.</summary>
 public class AnimalSleep : MonoBehaviour, ISleepable
 {
     private float asleepTimer;

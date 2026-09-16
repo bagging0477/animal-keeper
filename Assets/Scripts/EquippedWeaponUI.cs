@@ -12,9 +12,9 @@ public class EquippedWeaponUI : MonoBehaviour
         WeaponType equipped = GameManager.Instance != null ? GameManager.Instance.EquippedWeapon : WeaponType.None;
         weaponText.text = equipped switch
         {
-            WeaponType.Net => "장착: 포획망 (1)",
+            WeaponType.Net => "장착: 포획망",
             WeaponType.TranquilizerGun => BuildTranquilizerAmmoText(),
-            _ => "장착: 없음"
+            _ => "장착: 없음 (스카우트)"
         };
     }
 
@@ -22,6 +22,6 @@ public class EquippedWeaponUI : MonoBehaviour
     {
         int ammo = GameManager.Instance != null ? GameManager.Instance.TranquilizerAmmo : 0;
         int max = GameManager.Instance != null ? GameManager.Instance.MaxTranquilizerAmmo : 10;
-        return $"마취총: {ammo}/{max} (2)";
+        return $"마취화살: {ammo}/{max}";
     }
 }

@@ -7,7 +7,7 @@ public class PlayerWeaponController : MonoBehaviour
     [Header("밸런스 설정")]
     [SerializeField] private GameBalanceConfig config;
 
-    [Header("마취총 (원거리)")]
+    [Header("마취화살 (원거리)")]
     [SerializeField] private TranquilizerDart dartPrefab;
     [SerializeField] private float dartSpeed = 12f;
 
@@ -41,7 +41,6 @@ public class PlayerWeaponController : MonoBehaviour
 
     private void Update()
     {
-        HandleWeaponSwitch();
         UpdateWeaponVisual();
 
         if (netCooldownTimer > 0f) netCooldownTimer -= Time.deltaTime;
@@ -67,15 +66,6 @@ public class PlayerWeaponController : MonoBehaviour
         weaponVisual.enabled = true;
         weaponVisual.color = equipped == WeaponType.Net ? netVisualColor : gunVisualColor;
         weaponVisual.transform.position = transform.position + (Vector3)(playerMovement.LookDirection * weaponVisualDistance);
-    }
-
-    private void HandleWeaponSwitch()
-    {
-        Keyboard kb = Keyboard.current;
-        if (kb == null || GameManager.Instance == null) return;
-
-        if (kb.digit1Key.wasPressedThisFrame) GameManager.Instance.TryEquipWeapon(WeaponType.Net);
-        else if (kb.digit2Key.wasPressedThisFrame) GameManager.Instance.TryEquipWeapon(WeaponType.TranquilizerGun);
     }
 
     private void Attack()
