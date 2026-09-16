@@ -84,6 +84,8 @@ public class GameManager : MonoBehaviour
         TranquilizerAmmo = 0;
         IsGameOver = false;
         gameSessionSeedInitialized = false;
+        MineCount = config != null ? config.debugStartingMineCount : 2;
+        BombCount = config != null ? config.debugStartingBombCount : 1;
     }
 
     public void TakeDamage(int amount, string monsterTypeName)
@@ -221,6 +223,25 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>지뢰/폭탄 소지 개수. 상점 구매 로직이 아직 없어서, Awake/ResetGame에서
+    /// GameBalanceConfig의 디버그 시작 보유량으로 채워 테스트할 수 있게 한다.</summary>
+    public int MineCount { get; private set; }
+    public int BombCount { get; private set; }
+
+    public bool TryConsumeMine()
+    {
+        if (MineCount <= 0) return false;
+        MineCount--;
+        return true;
+    }
+
+    public bool TryConsumeBomb()
+    {
+        if (BombCount <= 0) return false;
+        BombCount--;
+        return true;
+    }
+
     private int gameSessionSeed;
     private bool gameSessionSeedInitialized;
 
@@ -249,5 +270,7 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         Health = MaxHealth;
+        MineCount = config != null ? config.debugStartingMineCount : 2;
+        BombCount = config != null ? config.debugStartingBombCount : 1;
     }
 }

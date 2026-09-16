@@ -178,6 +178,36 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("상점에서 '마취화살 탄약' 아이템을 구매했을 때 한 번에 충전되는 탄약 수")]
     public int tranquilizerAmmoRefillAmount = 5;
 
+    [Header("소모품 - 지뢰 (임시값)")]
+    [Tooltip("지뢰가 몬스터에게 주는 데미지")]
+    public int mineDamage = 2;
+
+    [Tooltip("지뢰에 맞은 몬스터가 스턴되는 시간(초)")]
+    public float mineStunDuration = 1.5f;
+
+    [Tooltip("Q키로 지뢰를 설치할 때, 플레이어가 바라보는 방향으로 얼마나 떨어진 위치에 놓을지")]
+    public float minePlacementDistance = 1.2f;
+
+    [Tooltip("지뢰가 몬스터를 감지해 발동하는 반경")]
+    public float mineTriggerRadius = 0.4f;
+
+    [Header("소모품 - 폭탄 (임시값)")]
+    [Tooltip("폭탄이 범위 안의 각 몬스터에게 주는 데미지")]
+    public int bombDamage = 3;
+
+    [Tooltip("폭탄에 맞은 몬스터가 스턴되는 시간(초)")]
+    public float bombStunDuration = 2f;
+
+    [Tooltip("R키로 폭탄을 사용했을 때 플레이어 위치를 중심으로 피해를 주는 반경")]
+    public float bombRadius = 3f;
+
+    [Header("소모품 - 디버그 시작 보유량")]
+    [Tooltip("디버그용으로 게임 시작 시 기본으로 지급되는 지뢰 개수 (상점 구매 로직 완성 전 테스트용)")]
+    public int debugStartingMineCount = 2;
+
+    [Tooltip("디버그용으로 게임 시작 시 기본으로 지급되는 폭탄 개수 (상점 구매 로직 완성 전 테스트용)")]
+    public int debugStartingBombCount = 1;
+
     [Header("상점 아이템 가격")]
     [Tooltip("ShelterShop의 각 아이템 이름과 가격. itemName은 ShelterShop 인스펙터의 항목 이름과 정확히 일치해야 한다. " +
         "클래스 해금 아이템(트래퍼/아처)의 가격은 여기가 아니라 위의 trapperUnlockPrice/archerUnlockPrice로 조정한다.")]
