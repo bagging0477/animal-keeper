@@ -374,12 +374,12 @@ GameObject:
   - component: {fileID: 321901864}
   - component: {fileID: 321901866}
   m_Layer: 0
-  m_Name: "Item_\uB9C8\uCDE8\uCD1D"
+  m_Name: "Item_\uC544\uCC98_Unused"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &321901863
 RectTransform:
   m_ObjectHideFlags: 0
@@ -662,6 +662,7 @@ RectTransform:
   - {fileID: 974983076}
   - {fileID: 660945549}
   - {fileID: 949652530}
+  - {fileID: 1900000002}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1433,16 +1434,6 @@ MonoBehaviour:
     isTranquilizerAmmoRefill: 0
     isClassUnlock: 0
     unlockClass: 0
-  - itemName: "\uD2B8\uB798\uD37C"
-    button: {fileID: 1301694460}
-    isTranquilizerAmmoRefill: 0
-    isClassUnlock: 1
-    unlockClass: 1
-  - itemName: "\uC544\uCC98"
-    button: {fileID: 321901866}
-    isTranquilizerAmmoRefill: 0
-    isClassUnlock: 1
-    unlockClass: 2
   - itemName: "\uB9C8\uCDE8\uD654\uC0B4 \uD0C4\uC57D"
     button: {fileID: 1313347818}
     isTranquilizerAmmoRefill: 1
@@ -2051,12 +2042,12 @@ GameObject:
   - component: {fileID: 1301694458}
   - component: {fileID: 1301694460}
   m_Layer: 0
-  m_Name: "Item_\uD3EC\uD68D\uB9DD"
+  m_Name: "Item_\uD2B8\uB798\uD37C_Unused"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1301694457
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3112,6 +3103,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1986017234}
   m_CullTransparentMesh: 1
+--- !u!1 &1900000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1900000002}
+  - component: {fileID: 1900000003}
+  m_Layer: 0
+  m_Name: ClassSelectPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1900000002
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900000001}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 395484920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 116}
+  m_SizeDelta: {x: 800, y: 230}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1900000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6f70d38c3c741acab60c28d088d06d1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ClassSelectUI
+  config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
+  cardSize: {x: 230, y: 226}
+  cardSpacing: 30
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
