@@ -212,7 +212,7 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("지뢰에 맞은 몬스터가 스턴되는 시간(초)")]
     public float mineStunDuration = 1.5f;
 
-    [Tooltip("Q키로 지뢰를 설치할 때, 플레이어가 바라보는 방향으로 얼마나 떨어진 위치에 놓을지")]
+    [Tooltip("인벤토리에서 지뢰 슬롯을 선택하고 클릭해 설치할 때, 플레이어가 바라보는 방향으로 얼마나 떨어진 위치에 놓을지")]
     public float minePlacementDistance = 1.2f;
 
     [Tooltip("지뢰가 몬스터를 감지해 발동하는 반경")]
@@ -225,7 +225,7 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("폭탄에 맞은 몬스터가 스턴되는 시간(초)")]
     public float bombStunDuration = 2f;
 
-    [Tooltip("R키로 폭탄을 사용했을 때 플레이어 위치를 중심으로 피해를 주는 반경")]
+    [Tooltip("인벤토리에서 폭탄 슬롯을 선택하고 클릭해 사용했을 때 플레이어 위치를 중심으로 피해를 주는 반경")]
     public float bombRadius = 3f;
 
     [Tooltip("폭탄 사용 시 피해 범위를 보여주는 빨간 원 연출이 유지되는 시간(초)")]

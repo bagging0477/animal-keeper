@@ -1,9 +1,11 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/// <summary>VillageScene 안에서 트럭으로 돌아가는 지점. 인벤토리 내용과 무관하게 E 한 번으로
+/// 바로 TruckScene으로 넘어간다 - 구조한 동물의 실제 납품은 TruckScene 안의 케이지
+/// (AnimalDeliveryPoint)에서 슬롯을 선택해 따로 처리한다.</summary>
 public class TruckPoint : MonoBehaviour
 {
     [SerializeField] private float interactionRange = 1.8f;
@@ -43,39 +45,6 @@ public class TruckPoint : MonoBehaviour
         Keyboard kb = Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;
 
-        foreach (AnimalRescue heldAnimal in FindHeldAnimals())
-        {
-            DeliverAnimal(heldAnimal);
-        }
-
         SceneManager.LoadScene(truckSceneName);
-    }
-
-    private AnimalRescue[] FindHeldAnimals()
-    {
-        AnimalRescue[] animals = Object.FindObjectsByType<AnimalRescue>(FindObjectsInactive.Exclude);
-        List<AnimalRescue> held = new List<AnimalRescue>();
-        foreach (AnimalRescue animal in animals)
-        {
-            if (animal.IsHeld) held.Add(animal);
-        }
-        return held.ToArray();
-    }
-
-    private void DeliverAnimal(AnimalRescue animal)
-    {
-        int weight = animal.Weight;
-        string animalId = animal.Id;
-        animal.CompleteRescue();
-
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.AddCargo(weight);
-            GameManager.Instance.MarkAnimalRescuedToday(animalId);
-        }
-        else
-        {
-            Debug.LogWarning($"{name}: no GameManager instance found; cargo not recorded.");
-        }
     }
 }

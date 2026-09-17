@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public const int MaxDay = 3;
+    public const int InventorySlotCount = 5;
 
     /// <summary>config가 아직 연결되지 않았을 때만 쓰이는 안전장치용 기본값.</summary>
     private const int FallbackMaxHealth = 100;
@@ -83,8 +84,7 @@ public class GameManager : MonoBehaviour
         TranquilizerAmmo = 0;
         IsGameOver = false;
         gameSessionSeedInitialized = false;
-        MineCount = config != null ? config.debugStartingMineCount : 2;
-        BombCount = config != null ? config.debugStartingBombCount : 1;
+        ResetInventory();
         HasSettledCargo = false;
         LastSettlementResult = default;
     }
@@ -105,10 +105,12 @@ public class GameManager : MonoBehaviour
 
     private void HandlePlayerDown()
     {
-        AnimalRescue[] animals = FindObjectsByType<AnimalRescue>(FindObjectsInactive.Exclude);
-        foreach (AnimalRescue animal in animals)
+        // 부상으로 쓰러지면 그동안 주운 동물은 놓치고 돌아간다(지뢰/폭탄은 그대로 유지) -
+        // 예전에 IsHeld 동물을 전부 Drop하던 것과 같은 의도를, 이제는 인벤토리의 동물 칸만 비우는
+        // 것으로 구현한다.
+        for (int i = 0; i < inventorySlots.Length; i++)
         {
-            if (animal.IsHeld) animal.Drop();
+            if (inventorySlots[i].Type == InventoryItemType.Animal) inventorySlots[i] = InventorySlotData.Empty;
         }
 
         Debug.Log("부상으로 강제 복귀했습니다");
@@ -242,27 +244,90 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    /// <summary>지뢰/폭탄 소지 개수. 상점 구매 로직이 아직 없어서, Awake/ResetGame에서
-    /// GameBalanceConfig의 디버그 시작 보유량으로 채워 테스트할 수 있게 한다.</summary>
-    public int MineCount { get; private set; }
-    public int BombCount { get; private set; }
+    // 5칸 인벤토리: 동물/지뢰/폭탄이 전부 이 슬롯을 공유해서 나눠 쓴다. 같은 종류라도 절대
+    // 합쳐지지 않고 슬롯 하나에 1개씩만 들어가므로, 개수가 아니라 점유된 슬롯 수가 곧 소지량이다.
+    private readonly InventorySlotData[] inventorySlots = new InventorySlotData[InventorySlotCount];
 
-    public bool TryConsumeMine()
+    public int SelectedSlotIndex { get; private set; }
+
+    public InventorySlotData GetSlot(int index) => inventorySlots[index];
+
+    public bool HasInventorySpace => FindEmptySlotIndex() >= 0;
+
+    public void SelectSlot(int index)
     {
-        if (MineCount <= 0) return false;
-        MineCount--;
+        if (index >= 0 && index < InventorySlotCount) SelectedSlotIndex = index;
+    }
+
+    private int FindEmptySlotIndex()
+    {
+        for (int i = 0; i < inventorySlots.Length; i++)
+        {
+            if (inventorySlots[i].Type == InventoryItemType.None) return i;
+        }
+        return -1;
+    }
+
+    private bool TryAddItem(InventorySlotData item)
+    {
+        int index = FindEmptySlotIndex();
+        if (index < 0)
+        {
+            Debug.Log("인벤토리가 가득 찼습니다");
+            return false;
+        }
+
+        inventorySlots[index] = item;
         return true;
     }
 
-    public bool TryConsumeBomb()
+    public bool TryAddAnimal(string animalId, int weight) =>
+        TryAddItem(new InventorySlotData { Type = InventoryItemType.Animal, AnimalId = animalId, AnimalWeight = weight });
+
+    public bool TryAddMine() => TryAddItem(new InventorySlotData { Type = InventoryItemType.Mine });
+
+    public bool TryAddBomb() => TryAddItem(new InventorySlotData { Type = InventoryItemType.Bomb });
+
+    /// <summary>선택된 슬롯이 지뢰일 때만 소모한다 - 인벤토리 어딘가에 지뢰가 있어도 선택되어 있지
+    /// 않으면 아무 일도 일어나지 않는다.</summary>
+    public bool TryUseSelectedMine()
     {
-        if (BombCount <= 0) return false;
-        BombCount--;
+        if (inventorySlots[SelectedSlotIndex].Type != InventoryItemType.Mine) return false;
+        inventorySlots[SelectedSlotIndex] = InventorySlotData.Empty;
         return true;
     }
 
-    public void AddMine(int amount) => MineCount += amount;
-    public void AddBomb(int amount) => BombCount += amount;
+    /// <summary>선택된 슬롯이 폭탄일 때만 소모한다. TryUseSelectedMine과 동일한 이유.</summary>
+    public bool TryUseSelectedBomb()
+    {
+        if (inventorySlots[SelectedSlotIndex].Type != InventoryItemType.Bomb) return false;
+        inventorySlots[SelectedSlotIndex] = InventorySlotData.Empty;
+        return true;
+    }
+
+    /// <summary>선택된 슬롯이 동물일 때만 납품한다(화물 적재 + 오늘 구조 기록). 선택되지 않은
+    /// 슬롯에 동물이 있어도 납품되지 않는다 - 지뢰/폭탄과 동일하게 "선택해야 사용 가능" 규칙을 따른다.</summary>
+    public bool TryDeliverSelectedAnimal()
+    {
+        InventorySlotData slot = inventorySlots[SelectedSlotIndex];
+        if (slot.Type != InventoryItemType.Animal) return false;
+
+        AddCargo(slot.AnimalWeight);
+        MarkAnimalRescuedToday(slot.AnimalId);
+        inventorySlots[SelectedSlotIndex] = InventorySlotData.Empty;
+        return true;
+    }
+
+    private void ResetInventory()
+    {
+        for (int i = 0; i < inventorySlots.Length; i++) inventorySlots[i] = InventorySlotData.Empty;
+        SelectedSlotIndex = 0;
+
+        int startingMines = config != null ? config.debugStartingMineCount : 2;
+        int startingBombs = config != null ? config.debugStartingBombCount : 1;
+        for (int i = 0; i < startingMines; i++) TryAddMine();
+        for (int i = 0; i < startingBombs; i++) TryAddBomb();
+    }
 
     private int gameSessionSeed;
     private bool gameSessionSeedInitialized;
@@ -292,7 +357,6 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         Health = MaxHealth;
-        MineCount = config != null ? config.debugStartingMineCount : 2;
-        BombCount = config != null ? config.debugStartingBombCount : 1;
+        ResetInventory();
     }
 }

@@ -57,11 +57,19 @@ public class ShopItemInteractPoint : MonoBehaviour
             return;
         }
 
+        // 먼저 돈을 낼 수 있는지부터 확인한다 - 그래야 아래에서 지뢰/폭탄 슬롯을 먼저 확보한
+        // 뒤 돈을 뗄 때 잔액 부족으로 실패할 일이 없다(인벤토리 슬롯만 공짜로 차지하는 버그 방지).
+        if (gm.Mileage < price)
+        {
+            Debug.Log("마일리지가 부족합니다");
+            return;
+        }
+
         bool success = itemKind switch
         {
             ShopItemKind.TranquilizerAmmo => gm.TryPurchaseTranquilizerAmmo(price, config != null ? config.tranquilizerAmmoRefillAmount : 5),
-            ShopItemKind.Mine => TrySpendAnd(gm, price, () => gm.AddMine(1)),
-            ShopItemKind.Bomb => TrySpendAnd(gm, price, () => gm.AddBomb(1)),
+            ShopItemKind.Mine => TrySpendAnd(gm, price, gm.TryAddMine),
+            ShopItemKind.Bomb => TrySpendAnd(gm, price, gm.TryAddBomb),
             _ => false
         };
 
@@ -69,16 +77,12 @@ public class ShopItemInteractPoint : MonoBehaviour
         {
             Debug.Log($"{GetDisplayName()} 구매 완료 (-{price} 마일리지)");
         }
-        else
-        {
-            Debug.Log("마일리지가 부족합니다");
-        }
     }
 
-    private static bool TrySpendAnd(GameManager gm, int price, System.Action onSuccess)
+    private static bool TrySpendAnd(GameManager gm, int price, System.Func<bool> tryGiveItem)
     {
-        if (!gm.TrySpendMileage(price)) return false;
-        onSuccess();
+        if (!tryGiveItem()) return false;
+        gm.TrySpendMileage(price);
         return true;
     }
 
@@ -99,8 +103,8 @@ public class ShopItemInteractPoint : MonoBehaviour
             ? $"밟으면 데미지 {config.mineDamage} + {config.mineStunDuration:0.#}초 스턴 (1회용)"
             : "밟으면 데미지 + 스턴 (1회용)",
         ShopItemKind.Bomb => config != null
-            ? $"R키로 사용, 범위 {config.bombRadius:0.#} 안 몬스터에게 데미지 {config.bombDamage} + {config.bombStunDuration:0.#}초 스턴 (1회용)"
-            : "R키로 사용, 범위 피해 + 스턴 (1회용)",
+            ? $"인벤토리에서 선택 후 클릭으로 사용, 범위 {config.bombRadius:0.#} 안 몬스터에게 데미지 {config.bombDamage} + {config.bombStunDuration:0.#}초 스턴 (1회용)"
+            : "인벤토리에서 선택 후 클릭으로 사용, 범위 피해 + 스턴 (1회용)",
         _ => ""
     };
 

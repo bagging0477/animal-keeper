@@ -5,16 +5,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(AnimalSleep))]
 public class AnimalRescue : MonoBehaviour
 {
-    private const int MaxHeldAnimals = 4;
-
-    private static readonly Vector2[] SlotOffsets =
-    {
-        new Vector2(0.4f, 0.4f),
-        new Vector2(-0.4f, 0.4f),
-        new Vector2(0.4f, -0.4f),
-        new Vector2(-0.4f, -0.4f),
-    };
-
     [SerializeField] private float interactionRange = 1.2f;
     [SerializeField] private int minWeight = 1;
     [SerializeField] private int maxWeight = 10;
@@ -28,8 +18,6 @@ public class AnimalRescue : MonoBehaviour
     [SerializeField] private float pickupSoundStartTime = 7f;
     [SerializeField] private float pickupSoundEndTime = 8f;
 
-    public bool IsHeld { get; private set; }
-    public bool IsCompleted { get; private set; }
     public int Weight { get; private set; }
 
     /// <summary>계층 경로 기반 안정적 식별자. GameObject.name만 쓰면 서로 다른 부모 아래
@@ -37,14 +25,9 @@ public class AnimalRescue : MonoBehaviour
     public string Id { get; private set; }
 
     private Transform player;
-    private Rigidbody2D rb;
-    private Collider2D col;
-    private int heldSlot;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        col = GetComponent<Collider2D>();
         Id = BuildHierarchyId();
         Weight = Random.Range(minWeight, maxWeight + 1); // inclusive
 
@@ -87,52 +70,28 @@ public class AnimalRescue : MonoBehaviour
 
     private void Update()
     {
-        if (player == null) return;
+        if (player == null || GameManager.Instance == null) return;
 
         SharedPrompt.BeginFrameIfNeeded(promptText);
 
-        if (IsHeld) return;
-
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactionRange;
-        bool canPickUp = inRange && CountHeldAnimals() < MaxHeldAnimals;
 
-        if (canPickUp) SharedPrompt.Show(promptText, "E를 눌러 구조하세요");
+        if (inRange && GameManager.Instance.HasInventorySpace) SharedPrompt.Show(promptText, "E를 눌러 구조하세요");
 
         if (!inRange) return;
 
         Keyboard kb = Keyboard.current;
-        if (kb != null && kb.eKey.wasPressedThisFrame && CountHeldAnimals() < MaxHeldAnimals)
+        if (kb != null && kb.eKey.wasPressedThisFrame)
         {
             PickUp();
         }
     }
 
-    private static int CountHeldAnimals()
-    {
-        int count = 0;
-        foreach (AnimalRescue animal in FindObjectsByType<AnimalRescue>(FindObjectsInactive.Exclude))
-        {
-            if (animal.IsHeld) count++;
-        }
-        return count;
-    }
-
-    private void LateUpdate()
-    {
-        if (IsHeld && player != null)
-        {
-            transform.position = (Vector2)player.position + SlotOffsets[heldSlot];
-        }
-    }
-
     private void PickUp()
     {
-        heldSlot = CountHeldAnimals();
-        IsHeld = true;
-        // 플레이어에게 들려서 이동하는 동안에는 벽/다른 동물과 물리적으로 부딪히면 안 되므로
-        // 콜라이더를 꺼둔다 - 좁은 문틈으로 옮길 때 걸려서 못 지나가는 것을 방지한다.
-        if (col != null) col.enabled = false;
+        if (!GameManager.Instance.TryAddAnimal(Id, Weight)) return; // 인벤토리가 가득 찼을 때의 로그는 GameManager가 찍는다.
+
         if (pickupSound == null)
         {
             AudioManager.Instance?.PlayPickup();
@@ -145,25 +104,9 @@ public class AnimalRescue : MonoBehaviour
         {
             AudioManager.Instance?.PlaySfx(pickupSound);
         }
-        Debug.Log($"{name}: 플레이어가 동물을 들었다 ({heldSlot + 1}/{MaxHeldAnimals})");
-    }
+        Debug.Log($"{name}: 인벤토리에 동물을 담았다");
 
-    public void CompleteRescue()
-    {
-        if (IsCompleted || !IsHeld) return;
-
-        IsCompleted = true;
-        IsHeld = false;
-        Debug.Log("구조 성공");
+        // 인벤토리에 데이터(무게, Id)만 옮겨졌으므로 원본 오브젝트는 더 이상 필요 없다 - 세계에서 치운다.
         gameObject.SetActive(false);
-    }
-
-    public void Drop()
-    {
-        if (!IsHeld) return;
-
-        IsHeld = false;
-        if (col != null) col.enabled = true;
-        if (rb != null) rb.linearVelocity = Vector2.zero;
     }
 }

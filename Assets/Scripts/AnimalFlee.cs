@@ -15,7 +15,6 @@ public class AnimalFlee : MonoBehaviour
 
     private State state = State.Idle;
     private Transform player;
-    private AnimalRescue rescue;
     private AnimalSleep sleep;
     private Rigidbody2D rb;
     private float alertTimer;
@@ -23,7 +22,6 @@ public class AnimalFlee : MonoBehaviour
 
     private void Awake()
     {
-        rescue = GetComponent<AnimalRescue>();
         sleep = GetComponent<AnimalSleep>();
         rb = GetComponent<Rigidbody2D>();
         // 벽 콜라이더 모서리를 스칠 때 마찰로 걸리는 떨림을 없애기 위해 플레이어와 동일하게 무마찰 재질을 쓴다.
@@ -49,12 +47,6 @@ public class AnimalFlee : MonoBehaviour
 
         if (player == null) return;
         if (sleep != null && sleep.IsAsleep) return;
-
-        if (rescue.IsHeld || rescue.IsCompleted)
-        {
-            state = State.Idle;
-            return;
-        }
 
         float distance = Vector2.Distance(rb.position, player.position);
 

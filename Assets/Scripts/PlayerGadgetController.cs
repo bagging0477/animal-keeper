@@ -2,7 +2,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>상점에서 구매하는(현재는 디버그로 기본 지급되는) 1회용 소모품 - 지뢰/폭탄 - 의
-/// 설치/사용을 담당한다. 무기(PlayerWeaponController)와 별개로, 클래스와 상관없이 누구나 쓸 수 있다.</summary>
+/// 설치/사용을 담당한다. 무기(PlayerWeaponController)와 별개로, 클래스와 상관없이 누구나 쓸 수 있다.
+/// 숫자키 1~5로 인벤토리 슬롯을 고른 뒤, 마우스 클릭으로 그 슬롯의 지뢰/폭탄을 사용한다 - 선택된
+/// 슬롯이 지뢰/폭탄이 아니면(동물이거나 빈 칸이면) 클릭해도 아무 일도 일어나지 않는다.</summary>
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerGadgetController : MonoBehaviour
 {
@@ -18,22 +20,27 @@ public class PlayerGadgetController : MonoBehaviour
 
     private void Update()
     {
-        Keyboard kb = Keyboard.current;
-        if (kb == null) return;
+        Mouse mouse = Mouse.current;
+        if (mouse == null || !mouse.leftButton.wasPressedThisFrame) return;
+        if (GameManager.Instance == null) return;
 
-        if (kb.qKey.wasPressedThisFrame) PlaceMine();
-        if (kb.rKey.wasPressedThisFrame) UseBomb();
+        // 클릭은 전투(PlayerWeaponController)에도 쓰이는 흔한 입력이라, 선택된 슬롯이 지뢰/폭탄이
+        // 아닐 때마다 실패 로그를 찍으면 콘솔이 도배된다 - 미리 슬롯 종류를 보고 맞을 때만 시도한다.
+        switch (GameManager.Instance.GetSlot(GameManager.Instance.SelectedSlotIndex).Type)
+        {
+            case InventoryItemType.Mine:
+                PlaceMine();
+                break;
+            case InventoryItemType.Bomb:
+                UseBomb();
+                break;
+        }
     }
 
     private void PlaceMine()
     {
         if (minePrefab == null) return;
-
-        if (GameManager.Instance == null || !GameManager.Instance.TryConsumeMine())
-        {
-            Debug.Log("지뢰가 없습니다");
-            return;
-        }
+        if (!GameManager.Instance.TryUseSelectedMine()) return;
 
         float distance = config != null ? config.minePlacementDistance : 1.2f;
         Vector3 position = transform.position + (Vector3)(playerMovement.LookDirection * distance);
@@ -42,11 +49,7 @@ public class PlayerGadgetController : MonoBehaviour
 
     private void UseBomb()
     {
-        if (GameManager.Instance == null || !GameManager.Instance.TryConsumeBomb())
-        {
-            Debug.Log("폭탄이 없습니다");
-            return;
-        }
+        if (!GameManager.Instance.TryUseSelectedBomb()) return;
 
         int damage = config != null ? config.bombDamage : 3;
         float stunDuration = config != null ? config.bombStunDuration : 2f;

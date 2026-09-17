@@ -1,0 +1,53 @@
+using UnityEngine;
+using UnityEngine.UI;
+
+/// <summary>인벤토리 슬롯 하나의 화면 표시 요소 3개(테두리/배경/라벨) 묶음.</summary>
+[System.Serializable]
+public class InventorySlotUI
+{
+    public Image frame;
+    public Image fill;
+    public Text label;
+}
+
+/// <summary>5칸 인벤토리를 화면에 그린다. 선택된 슬롯은 테두리(frame) 색이 강조색으로 바뀌어
+/// 구분되고, 각 슬롯의 라벨은 내용물(동물/지뢰/폭탄/빈칸)에 맞는 텍스트로 갱신된다.</summary>
+public class InventoryUI : MonoBehaviour
+{
+    [SerializeField] private InventorySlotUI[] slots = new InventorySlotUI[GameManager.InventorySlotCount];
+
+    [SerializeField] private Color selectedFrameColor = new Color(1f, 0.85f, 0.3f, 1f);
+    [SerializeField] private Color unselectedFrameColor = new Color(0.25f, 0.25f, 0.28f, 0.9f);
+    [SerializeField] private Color emptyFillColor = new Color(0f, 0f, 0f, 0.55f);
+    [SerializeField] private Color occupiedFillColor = new Color(0.2f, 0.2f, 0.22f, 0.9f);
+
+    private void Update()
+    {
+        if (GameManager.Instance == null) return;
+
+        int selected = GameManager.Instance.SelectedSlotIndex;
+        for (int i = 0; i < slots.Length; i++)
+        {
+            InventorySlotUI slot = slots[i];
+            if (slot == null) continue;
+
+            InventorySlotData data = GameManager.Instance.GetSlot(i);
+
+            if (slot.frame != null) slot.frame.color = i == selected ? selectedFrameColor : unselectedFrameColor;
+            if (slot.fill != null) slot.fill.color = data.Type == InventoryItemType.None ? emptyFillColor : occupiedFillColor;
+            if (slot.label != null) slot.label.text = BuildLabel(i, data);
+        }
+    }
+
+    private static string BuildLabel(int index, InventorySlotData data)
+    {
+        string number = $"{index + 1}";
+        return data.Type switch
+        {
+            InventoryItemType.Animal => $"{number}\n동물\n{data.AnimalWeight}kg",
+            InventoryItemType.Mine => $"{number}\n지뢰",
+            InventoryItemType.Bomb => $"{number}\n폭탄",
+            _ => number
+        };
+    }
+}

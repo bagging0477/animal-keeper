@@ -10,7 +10,6 @@ public class AnimalWander : MonoBehaviour
     [SerializeField] private float waitMax = 3f;
     [SerializeField] private float stopDistance = 0.1f;
 
-    private AnimalRescue rescue;
     private AnimalSleep sleep;
     private Rigidbody2D rb;
     private Vector2 origin;
@@ -21,7 +20,6 @@ public class AnimalWander : MonoBehaviour
 
     private void Awake()
     {
-        rescue = GetComponent<AnimalRescue>();
         sleep = GetComponent<AnimalSleep>();
         rb = GetComponent<Rigidbody2D>();
         // 벽 콜라이더 모서리를 스칠 때 마찰로 걸리는 떨림을 없애기 위해 플레이어와 동일하게 무마찰 재질을 쓴다.
@@ -38,7 +36,6 @@ public class AnimalWander : MonoBehaviour
     {
         moveDirection = Vector2.zero;
 
-        if (rescue.IsHeld || rescue.IsCompleted) return;
         if (sleep != null && sleep.IsAsleep) return;
 
         if (waiting)
