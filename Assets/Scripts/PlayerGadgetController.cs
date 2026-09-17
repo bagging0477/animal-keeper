@@ -24,8 +24,12 @@ public class PlayerGadgetController : MonoBehaviour
         if (mouse == null || !mouse.leftButton.wasPressedThisFrame) return;
         if (GameManager.Instance == null) return;
 
-        // 클릭은 전투(PlayerWeaponController)에도 쓰이는 흔한 입력이라, 선택된 슬롯이 지뢰/폭탄이
-        // 아닐 때마다 실패 로그를 찍으면 콘솔이 도배된다 - 미리 슬롯 종류를 보고 맞을 때만 시도한다.
+        // Q로 무기 슬롯이 선택된 동안에는 클릭이 무기 공격(PlayerWeaponController) 쪽으로만
+        // 가야 한다 - 무기 모드와 아이템 모드는 서로 배타적이다.
+        if (GameManager.Instance.IsWeaponSelected) return;
+
+        // 클릭은 전투에도 쓰이는 흔한 입력이라, 선택된 슬롯이 지뢰/폭탄이 아닐 때마다 실패
+        // 로그를 찍으면 콘솔이 도배된다 - 미리 슬롯 종류를 보고 맞을 때만 시도한다.
         switch (GameManager.Instance.GetSlot(GameManager.Instance.SelectedSlotIndex).Type)
         {
             case InventoryItemType.Mine:

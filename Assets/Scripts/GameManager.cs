@@ -250,13 +250,26 @@ public class GameManager : MonoBehaviour
 
     public int SelectedSlotIndex { get; private set; }
 
+    /// <summary>true면 클래스 고정 무기(트래퍼 포획망/아처 마취화살)가 "장착되어 사용 가능한" 상태다.
+    /// 숫자 슬롯 선택과 서로 배타적이다 - 무기를 선택하면 숫자 슬롯 아이템은 클릭해도 반응하지
+    /// 않고, 숫자키를 누르면 다시 무기가 비활성화된다. SelectedSlotIndex 자체는 그대로 남아있어서,
+    /// 무기를 쓰다가 숫자키 없이 돌아와도 G로 버릴 대상(직전에 고르던 일반 슬롯)을 기억한다.</summary>
+    public bool IsWeaponSelected { get; private set; }
+
     public InventorySlotData GetSlot(int index) => inventorySlots[index];
 
     public bool HasInventorySpace => FindEmptySlotIndex() >= 0;
 
     public void SelectSlot(int index)
     {
-        if (index >= 0 && index < InventorySlotCount) SelectedSlotIndex = index;
+        if (index < 0 || index >= InventorySlotCount) return;
+        SelectedSlotIndex = index;
+        IsWeaponSelected = false;
+    }
+
+    public void SelectWeapon()
+    {
+        IsWeaponSelected = true;
     }
 
     private int FindEmptySlotIndex()
@@ -281,8 +294,8 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    public bool TryAddAnimal(string animalId, int weight) =>
-        TryAddItem(new InventorySlotData { Type = InventoryItemType.Animal, AnimalId = animalId, AnimalWeight = weight });
+    public bool TryAddAnimal(string animalId, int weight, AnimalBehaviorKind kind) =>
+        TryAddItem(new InventorySlotData { Type = InventoryItemType.Animal, AnimalId = animalId, AnimalWeight = weight, AnimalKind = kind });
 
     public bool TryAddMine() => TryAddItem(new InventorySlotData { Type = InventoryItemType.Mine });
 
@@ -318,10 +331,22 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>현재 선택된 "일반" 슬롯(1~5)의 아이템을 꺼내 슬롯을 비운다. 무기 슬롯은 이 배열에
+    /// 아예 들어있지 않으므로(클래스에 고정된 별도 장비) G로는 절대 버릴 수 없다.</summary>
+    public bool TryDropSelectedItem(out InventorySlotData dropped)
+    {
+        dropped = inventorySlots[SelectedSlotIndex];
+        if (dropped.Type == InventoryItemType.None) return false;
+
+        inventorySlots[SelectedSlotIndex] = InventorySlotData.Empty;
+        return true;
+    }
+
     private void ResetInventory()
     {
         for (int i = 0; i < inventorySlots.Length; i++) inventorySlots[i] = InventorySlotData.Empty;
         SelectedSlotIndex = 0;
+        IsWeaponSelected = false;
 
         int startingMines = config != null ? config.debugStartingMineCount : 2;
         int startingBombs = config != null ? config.debugStartingBombCount : 1;

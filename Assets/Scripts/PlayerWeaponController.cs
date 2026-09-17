@@ -45,8 +45,11 @@ public class PlayerWeaponController : MonoBehaviour
 
         if (netCooldownTimer > 0f) netCooldownTimer -= Time.deltaTime;
 
+        // Q로 무기 슬롯을 선택했을 때만 클릭이 공격으로 이어진다 - 숫자 슬롯(아이템)이 선택된
+        // 동안에는 무기가 "장착 해제"된 것으로 취급해 클릭이 PlayerGadgetController 쪽으로만 간다.
         Mouse mouse = Mouse.current;
-        if (mouse != null && mouse.leftButton.wasPressedThisFrame)
+        if (mouse != null && mouse.leftButton.wasPressedThisFrame &&
+            GameManager.Instance != null && GameManager.Instance.IsWeaponSelected)
         {
             Attack();
         }

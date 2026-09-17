@@ -20,9 +20,18 @@ public class AnimalRescue : MonoBehaviour
 
     public int Weight { get; private set; }
 
+    /// <summary>G키로 인벤토리에서 다시 꺼내 바닥에 내려놓을 때, 원래 갖고 있던 무게를 그대로
+    /// 물려준다 - 이게 없으면 Awake에서 새로 무작위 굴림을 해서 내려놓을 때마다 무게가 바뀐다.</summary>
+    public void SetWeight(int weight) => Weight = weight;
+
     /// <summary>계층 경로 기반 안정적 식별자. GameObject.name만 쓰면 서로 다른 부모 아래
     /// 이름이 같은 동물(맵에 그룹별로 복제 배치할 때 흔함)이 서로의 구조 기록을 덮어쓸 수 있다.</summary>
     public string Id { get; private set; }
+
+    /// <summary>이 동물이 원래 어떤 행동 프리팹이었는지. 인벤토리에 담을 때 함께 기록해둬야
+    /// G로 다시 꺼낼 때 같은 종류(도망/소리 반응 등)로 되살릴 수 있다 - AnimalSoundFlee가
+    /// AnimalFlee를 상속하므로 더 구체적인 타입부터 확인한다.</summary>
+    public AnimalBehaviorKind BehaviorKind { get; private set; }
 
     private Transform player;
 
@@ -30,6 +39,9 @@ public class AnimalRescue : MonoBehaviour
     {
         Id = BuildHierarchyId();
         Weight = Random.Range(minWeight, maxWeight + 1); // inclusive
+        BehaviorKind = GetComponent<AnimalSoundFlee>() != null ? AnimalBehaviorKind.SoundFlee
+            : GetComponent<AnimalFlee>() != null ? AnimalBehaviorKind.Flee
+            : AnimalBehaviorKind.Wander;
 
         if (GameManager.Instance != null && GameManager.Instance.IsAnimalRescuedToday(Id))
         {
@@ -90,7 +102,7 @@ public class AnimalRescue : MonoBehaviour
 
     private void PickUp()
     {
-        if (!GameManager.Instance.TryAddAnimal(Id, Weight)) return; // 인벤토리가 가득 찼을 때의 로그는 GameManager가 찍는다.
+        if (!GameManager.Instance.TryAddAnimal(Id, Weight, BehaviorKind)) return; // 인벤토리가 가득 찼을 때의 로그는 GameManager가 찍는다.
 
         if (pickupSound == null)
         {

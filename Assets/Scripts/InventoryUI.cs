@@ -10,11 +10,17 @@ public class InventorySlotUI
     public Text label;
 }
 
-/// <summary>5칸 인벤토리를 화면에 그린다. 선택된 슬롯은 테두리(frame) 색이 강조색으로 바뀌어
-/// 구분되고, 각 슬롯의 라벨은 내용물(동물/지뢰/폭탄/빈칸)에 맞는 텍스트로 갱신된다.</summary>
+/// <summary>5칸 인벤토리 + 클래스 고정 무기 슬롯을 화면에 그린다. 선택된 슬롯은 테두리(frame) 색이
+/// 강조색으로 바뀌어 구분되고, 각 슬롯의 라벨은 내용물(동물/지뢰/폭탄/빈칸/무기)에 맞는 텍스트로
+/// 갱신된다. 무기 슬롯과 숫자 슬롯은 서로 배타적으로만 강조되므로(GameManager.IsWeaponSelected)
+/// 항상 둘 중 하나만 강조된 채로 보인다.</summary>
 public class InventoryUI : MonoBehaviour
 {
     [SerializeField] private InventorySlotUI[] slots = new InventorySlotUI[GameManager.InventorySlotCount];
+
+    [Header("클래스 고정 무기 슬롯 (스카우트는 무기가 없어 자동으로 숨겨짐)")]
+    [SerializeField] private GameObject weaponSlotRoot;
+    [SerializeField] private InventorySlotUI weaponSlot;
 
     [SerializeField] private Color selectedFrameColor = new Color(1f, 0.85f, 0.3f, 1f);
     [SerializeField] private Color unselectedFrameColor = new Color(0.25f, 0.25f, 0.28f, 0.9f);
@@ -25,6 +31,7 @@ public class InventoryUI : MonoBehaviour
     {
         if (GameManager.Instance == null) return;
 
+        bool weaponSelected = GameManager.Instance.IsWeaponSelected;
         int selected = GameManager.Instance.SelectedSlotIndex;
         for (int i = 0; i < slots.Length; i++)
         {
@@ -33,10 +40,23 @@ public class InventoryUI : MonoBehaviour
 
             InventorySlotData data = GameManager.Instance.GetSlot(i);
 
-            if (slot.frame != null) slot.frame.color = i == selected ? selectedFrameColor : unselectedFrameColor;
+            if (slot.frame != null) slot.frame.color = !weaponSelected && i == selected ? selectedFrameColor : unselectedFrameColor;
             if (slot.fill != null) slot.fill.color = data.Type == InventoryItemType.None ? emptyFillColor : occupiedFillColor;
             if (slot.label != null) slot.label.text = BuildLabel(i, data);
         }
+
+        UpdateWeaponSlot(weaponSelected);
+    }
+
+    private void UpdateWeaponSlot(bool weaponSelected)
+    {
+        WeaponType equipped = GameManager.Instance.EquippedWeapon;
+        if (weaponSlotRoot != null) weaponSlotRoot.SetActive(equipped != WeaponType.None);
+        if (equipped == WeaponType.None || weaponSlot == null) return;
+
+        if (weaponSlot.frame != null) weaponSlot.frame.color = weaponSelected ? selectedFrameColor : unselectedFrameColor;
+        if (weaponSlot.fill != null) weaponSlot.fill.color = occupiedFillColor;
+        if (weaponSlot.label != null) weaponSlot.label.text = equipped == WeaponType.Net ? "Q\n포획망" : "Q\n마취화살";
     }
 
     private static string BuildLabel(int index, InventorySlotData data)
