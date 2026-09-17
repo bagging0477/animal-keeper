@@ -27,6 +27,11 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private Color emptyFillColor = new Color(0f, 0f, 0f, 0.55f);
     [SerializeField] private Color occupiedFillColor = new Color(0.2f, 0.2f, 0.22f, 0.9f);
 
+    [Header("아이템 종류별 슬롯 색상 (스프라이트 없이도 한눈에 구분되도록)")]
+    [SerializeField] private Color animalFillColor = new Color(0.35f, 0.55f, 0.25f, 0.9f);
+    [SerializeField] private Color mineFillColor = new Color(0.6f, 0.45f, 0.1f, 0.9f);
+    [SerializeField] private Color bombFillColor = new Color(0.55f, 0.15f, 0.15f, 0.9f);
+
     private void Update()
     {
         if (GameManager.Instance == null) return;
@@ -41,7 +46,7 @@ public class InventoryUI : MonoBehaviour
             InventorySlotData data = GameManager.Instance.GetSlot(i);
 
             if (slot.frame != null) slot.frame.color = !weaponSelected && i == selected ? selectedFrameColor : unselectedFrameColor;
-            if (slot.fill != null) slot.fill.color = data.Type == InventoryItemType.None ? emptyFillColor : occupiedFillColor;
+            if (slot.fill != null) slot.fill.color = FillColorFor(data.Type);
             if (slot.label != null) slot.label.text = BuildLabel(i, data);
         }
 
@@ -58,6 +63,14 @@ public class InventoryUI : MonoBehaviour
         if (weaponSlot.fill != null) weaponSlot.fill.color = occupiedFillColor;
         if (weaponSlot.label != null) weaponSlot.label.text = equipped == WeaponType.Net ? "Q\n포획망" : "Q\n마취화살";
     }
+
+    private Color FillColorFor(InventoryItemType type) => type switch
+    {
+        InventoryItemType.Animal => animalFillColor,
+        InventoryItemType.Mine => mineFillColor,
+        InventoryItemType.Bomb => bombFillColor,
+        _ => emptyFillColor
+    };
 
     private static string BuildLabel(int index, InventorySlotData data)
     {
