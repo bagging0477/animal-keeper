@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(AnimalRescue))]
+[RequireComponent(typeof(Rigidbody2D))]
 public class AnimalFlee : MonoBehaviour
 {
     private enum State { Idle, Alert, Fleeing }
@@ -16,12 +17,17 @@ public class AnimalFlee : MonoBehaviour
     private Transform player;
     private AnimalRescue rescue;
     private AnimalSleep sleep;
+    private Rigidbody2D rb;
     private float alertTimer;
+    private Vector2 fleeDirection;
 
     private void Awake()
     {
         rescue = GetComponent<AnimalRescue>();
         sleep = GetComponent<AnimalSleep>();
+        rb = GetComponent<Rigidbody2D>();
+        // 벽 콜라이더 모서리를 스칠 때 마찰로 걸리는 떨림을 없애기 위해 플레이어와 동일하게 무마찰 재질을 쓴다.
+        rb.sharedMaterial = new PhysicsMaterial2D("AnimalNoFriction") { friction = 0f, bounciness = 0f };
     }
 
     private void Start()
@@ -39,6 +45,8 @@ public class AnimalFlee : MonoBehaviour
 
     private void Update()
     {
+        fleeDirection = Vector2.zero;
+
         if (player == null) return;
         if (sleep != null && sleep.IsAsleep) return;
 
@@ -48,7 +56,7 @@ public class AnimalFlee : MonoBehaviour
             return;
         }
 
-        float distance = Vector2.Distance(transform.position, player.position);
+        float distance = Vector2.Distance(rb.position, player.position);
 
         switch (state)
         {
@@ -80,15 +88,18 @@ public class AnimalFlee : MonoBehaviour
         }
     }
 
+    private void FixedUpdate()
+    {
+        if (fleeDirection == Vector2.zero) return;
+        rb.MovePosition(rb.position + fleeDirection * fleeSpeed * Time.fixedDeltaTime);
+    }
+
     private void Flee()
     {
-        Vector2 awayFromPlayer = ((Vector2)transform.position - (Vector2)player.position).normalized;
+        Vector2 awayFromPlayer = (rb.position - (Vector2)player.position).normalized;
         if (awayFromPlayer == Vector2.zero) awayFromPlayer = Random.insideUnitCircle.normalized;
 
-        Vector2 direction = FindClearDirection(awayFromPlayer);
-        if (direction == Vector2.zero) return; // boxed in, stay put this frame
-
-        transform.position += (Vector3)(direction * fleeSpeed * Time.deltaTime);
+        fleeDirection = FindClearDirection(awayFromPlayer); // stays zero if boxed in
     }
 
     // Tries the desired direction first, then increasingly wider angles to
@@ -109,9 +120,12 @@ public class AnimalFlee : MonoBehaviour
         return Vector2.zero;
     }
 
+    // Physics2D.Raycast (queriesStartInColliders 켜짐)는 이 동물 자신의 콜라이더에도 거리 0으로
+    // 맞기 때문에, 자기 자신은 제외하고 판정한다.
     private bool IsBlocked(Vector2 direction)
     {
-        return Physics2D.Raycast(transform.position, direction, wallLookahead, obstacleMask).collider != null;
+        RaycastHit2D hit = Physics2D.Raycast(rb.position, direction, wallLookahead, obstacleMask);
+        return hit.collider != null && hit.transform != transform;
     }
 
     protected virtual void OnStartFleeing()

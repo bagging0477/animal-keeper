@@ -37,10 +37,14 @@ public class AnimalRescue : MonoBehaviour
     public string Id { get; private set; }
 
     private Transform player;
+    private Rigidbody2D rb;
+    private Collider2D col;
     private int heldSlot;
 
     private void Awake()
     {
+        rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<Collider2D>();
         Id = BuildHierarchyId();
         Weight = Random.Range(minWeight, maxWeight + 1); // inclusive
 
@@ -126,6 +130,9 @@ public class AnimalRescue : MonoBehaviour
     {
         heldSlot = CountHeldAnimals();
         IsHeld = true;
+        // 플레이어에게 들려서 이동하는 동안에는 벽/다른 동물과 물리적으로 부딪히면 안 되므로
+        // 콜라이더를 꺼둔다 - 좁은 문틈으로 옮길 때 걸려서 못 지나가는 것을 방지한다.
+        if (col != null) col.enabled = false;
         if (pickupSound == null)
         {
             AudioManager.Instance?.PlayPickup();
@@ -156,5 +163,7 @@ public class AnimalRescue : MonoBehaviour
         if (!IsHeld) return;
 
         IsHeld = false;
+        if (col != null) col.enabled = true;
+        if (rb != null) rb.linearVelocity = Vector2.zero;
     }
 }
