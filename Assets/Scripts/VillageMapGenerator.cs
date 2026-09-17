@@ -356,6 +356,11 @@ public class VillageMapGenerator : MonoBehaviour
     // same BoxCollider2D + ShadowCaster2D shape-from-collider mechanism already proven correct for
     // obstacles. This guarantees every wall tile blocks light and nothing else (like a carved
     // doorway) ever does, regardless of how doorway carving happened to shape the walls this Day.
+
+    // How far each generated wall shadow rectangle overlaps its neighbors, in world units. See the
+    // comment on box.size below for why this needs to be greater than zero.
+    private const float WallShadowOverlap = 0.08f;
+
     private static void RebuildWallShadowCasters(RoomInstance room)
     {
         Transform wallsT = room.Root.transform.Find("Walls");
@@ -411,12 +416,23 @@ public class VillageMapGenerator : MonoBehaviour
             // this collider exists purely so ShadowCaster2D has a simple shape to read.
             BoxCollider2D box = shadowGO.AddComponent<BoxCollider2D>();
             box.isTrigger = true;
-            box.size = new Vector2(width, height);
+            // Two adjacent rectangles from this tiling always share an exact border (zero overlap),
+            // which URP 2D's shadow mesh doesn't stitch together seamlessly - a hairline gap right at
+            // that shared edge lets the ambient/global light leak through, seen as an occasional bright
+            // seam wherever the greedy tiling happens to split a wall run (varies with each procedurally
+            // generated room layout, hence "sometimes"). Padding every rectangle to overlap its
+            // neighbors by WallShadowOverlap closes that gap; the sliver of extra shadow this casts
+            // just outside the wall footprint is imperceptible.
+            box.size = new Vector2(width + WallShadowOverlap, height + WallShadowOverlap);
 
             ShadowCaster2D shadow = shadowGO.AddComponent<ShadowCaster2D>();
             shadow.useRendererSilhouette = false;
             shadow.castsShadows = true;
-            shadow.selfShadows = false;
+            // Self Shadows off leaves each shape's own silhouette edge outside the shadow it casts,
+            // which can show as a thin bright rim right at that edge (most visible along the seams
+            // above). Self-shadowing this trigger-only shape doesn't affect how anything looks (it has
+            // no renderer), so there's no downside to leaving it on.
+            shadow.selfShadows = true;
         }
     }
 
