@@ -16,6 +16,20 @@ public class PlayerVision : MonoBehaviour
 
     private PlayerMovement playerMovement;
 
+    // Light2D의 반경/각도/그림자 소프트니스 같은 "모양"에 영향을 주는 속성은 대입할 때마다 값이
+    // 바뀌었는지와 무관하게 URP 2D 렌더러가 그 라이트의 메시/그림자를 다시 계산한다. 이전에는
+    // LateUpdate마다 매 프레임 무조건 재대입해서(GameBalanceConfig를 플레이 중에도 바로 반영하려는
+    // 의도였다) 값이 그대로인 대부분의 프레임에도 계속 다시 계산이 일어났고, 방마다 여러 개씩 있는
+    // ShadowCaster2D와 맞물려 전체적인 프레임 저하로 이어져 몬스터 이동까지 버벅이는 것처럼 보이게
+    // 했다. 마지막으로 적용한 값을 기억해두고 실제로 바뀐 경우에만 다시 대입한다 - 플레이 중
+    // Inspector에서 값을 조정하면 여전히 즉시 반영되지만, 값이 그대로인 프레임에는 아무 비용도 들지 않는다.
+    private bool visionRangesApplied;
+    private float lastAmbientRadius;
+    private bool lastAmbientIgnoresShadows;
+    private float lastFocusedRadius;
+    private float lastFocusedAngle;
+    private float lastFocusedShadowSoftness;
+
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
@@ -25,20 +39,31 @@ public class PlayerVision : MonoBehaviour
     {
         if (config == null) return;
 
-        if (ambientVisionLight != null)
+        if (ambientVisionLight != null &&
+            (!visionRangesApplied || lastAmbientRadius != config.ambientVisionRadius ||
+             lastAmbientIgnoresShadows != config.ambientVisionIgnoresShadows))
         {
             ambientVisionLight.pointLightOuterRadius = config.ambientVisionRadius;
             // 바로 옆인데 벽 때문에 기본 시야가 뚝 끊겨 보이는 이질감을 없애기 위해, 기본 원형 시야는
             // 기본적으로 그림자(벽/장애물 가림)를 무시하고 범위 안을 항상 전부 보여준다.
             ambientVisionLight.shadowsEnabled = !config.ambientVisionIgnoresShadows;
+            lastAmbientRadius = config.ambientVisionRadius;
+            lastAmbientIgnoresShadows = config.ambientVisionIgnoresShadows;
         }
 
-        if (focusedVisionLight != null)
+        if (focusedVisionLight != null &&
+            (!visionRangesApplied || lastFocusedRadius != config.focusedVisionRadius ||
+             lastFocusedAngle != config.focusedVisionAngle || lastFocusedShadowSoftness != config.focusedVisionShadowSoftness))
         {
             focusedVisionLight.pointLightOuterRadius = config.focusedVisionRadius;
             focusedVisionLight.pointLightOuterAngle = config.focusedVisionAngle;
             focusedVisionLight.shadowSoftness = config.focusedVisionShadowSoftness;
+            lastFocusedRadius = config.focusedVisionRadius;
+            lastFocusedAngle = config.focusedVisionAngle;
+            lastFocusedShadowSoftness = config.focusedVisionShadowSoftness;
         }
+
+        visionRangesApplied = true;
     }
 
     private void LateUpdate()

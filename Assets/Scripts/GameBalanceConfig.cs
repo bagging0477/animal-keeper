@@ -100,8 +100,12 @@ public class GameBalanceConfig : ScriptableObject
     public float focusedVisionShadowSoftness = 0.5f;
 
     [Header("클래스 - 이동속도 / 체력")]
-    [Tooltip("스카우트 이동속도 배율(기본 이동속도 대비). 트래퍼/아처는 배율 1(평균)을 그대로 쓴다.")]
-    public float scoutMoveSpeedMultiplier = 1.15f;
+    [Tooltip("스카우트 기본(걷기) 이동속도 배율 - 몬스터 추격 속도(monsterChaseSpeed, 고정값) 대비. " +
+        "1.05~1.1 정도로 잡아서 '몬스터보다 여전히 빠르지만 차이는 크지 않은' 상태를 만든다 - 스태미나 없이 그냥 도망만 쳐도 " +
+        "서서히 거리가 벌어지긴 하지만, 추격 포기 거리(patrolMonsterLoseRange 등)까지 벌어지려면 시간이 걸린다. " +
+        "트래퍼/아처는 배율 1(기본 이동속도 그대로)을 쓴다.")]
+    [Range(1f, 1.3f)]
+    public float scoutMoveSpeedMultiplier = 1.08f;
 
     [Tooltip("스카우트 최대 체력 비율 (playerMaxHealth 대비, %). 체력이 가장 낮은 대신 이동속도가 빠른 컨셉.")]
     public int scoutMaxHealthPercent = 50;
@@ -115,6 +119,14 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("스카우트의 스프린트 스태미나 소모 배율(다른 클래스 대비). 체력이 낮은데 지구력까지 약해서, " +
         "스프린트를 오래 쓰면 더 빨리 지치고 장기적으로 위험해지는 컨셉. 트래퍼/아처는 배율 1(기본)을 그대로 쓴다.")]
     public float scoutStaminaDrainMultiplier = 1.2f;
+
+    [Tooltip("스카우트의 스프린트 추가 가속 배율 (스카우트 자신의 기본 이동속도 대비). 평소에 이미 몬스터보다 살짝 빠른 " +
+        "대신, 위기 상황에서 폭발적으로 더 빨라지지는 못하는 컨셉이라 트래퍼/아처보다 낮게 잡는다.")]
+    public float scoutSprintSpeedMultiplier = 1.1f;
+
+    [Tooltip("트래퍼/아처의 스프린트 추가 가속 배율 (각자의 기본 이동속도 대비). 평소엔 스카우트보다 느리지만, " +
+        "위기 상황에서는 폭발적으로 가속해 벗어날 수 있다.")]
+    public float trapperArcherSprintSpeedMultiplier = 1.3f;
 
     [Header("클래스 해금 가격 (마일리지, 임시값 - 추후 조정 예정)")]
     [Tooltip("트래퍼 클래스 해금 가격")]
@@ -133,17 +145,12 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("소리반응형 몬스터(SoundReactiveMonsterAI)의 배회 이동속도")]
     public float soundReactiveMonsterWanderSpeed = 2.4f;
 
-    [Tooltip("몬스터 추격 속도 = 플레이어 기본 이동속도 × 이 배수. 두 몬스터 타입 공통으로 적용된다.")]
-    public float monsterChaseSpeedMultiplier = 1.15f;
+    [Tooltip("몬스터 추격 속도(고정값). playerMoveSpeed 등 다른 수치가 바뀌어도 함께 변하지 않는 독립된 절대 수치다. " +
+        "두 몬스터 타입(MonsterAI/SoundReactiveMonsterAI) 공통으로 적용된다.")]
+    public float monsterChaseSpeed = 4.3125f;
 
-    [Tooltip("플레이어 스프린트 이동속도 = 몬스터 추격 속도 × 이 배수")]
-    public float playerSprintSpeedMultiplier = 1.25f;
-
-    /// <summary>몬스터 추격 속도. playerMoveSpeed가 바뀌면 자동으로 함께 조정된다.</summary>
-    public float MonsterChaseSpeed => playerMoveSpeed * monsterChaseSpeedMultiplier;
-
-    /// <summary>플레이어 스프린트 속도. MonsterChaseSpeed가 바뀌면 자동으로 함께 조정된다.</summary>
-    public float PlayerSprintSpeed => MonsterChaseSpeed * playerSprintSpeedMultiplier;
+    /// <summary>스카우트의 기본(걷기) 이동속도. 몬스터 추격 속도(고정값)에 scoutMoveSpeedMultiplier를 곱해 구한다.</summary>
+    public float ScoutMoveSpeed => monsterChaseSpeed * scoutMoveSpeedMultiplier;
 
     [Header("스태미나")]
     [Tooltip("최대 스태미나")]
@@ -269,8 +276,16 @@ public class GameBalanceConfig : ScriptableObject
         _ => archerMaxHealthPercent
     };
 
+    /// <summary>playerMoveSpeed 대비 클래스별 기본(걷기) 이동속도 배율. 스카우트는 ScoutMoveSpeed(몬스터 추격 속도 기준)를
+    /// playerMoveSpeed로 환산한 값을, 트래퍼/아처는 1(기본 이동속도 그대로)을 반환한다.</summary>
     public float GetClassMoveSpeedMultiplier(PlayerClass playerClass) =>
-        playerClass == PlayerClass.Scout ? scoutMoveSpeedMultiplier : 1f;
+        playerClass == PlayerClass.Scout ? ScoutMoveSpeed / playerMoveSpeed : 1f;
+
+    /// <summary>클래스별 스프린트 추가 가속 배율(각 클래스 자신의 기본 이동속도 대비). 스카우트는 낮게, 트래퍼/아처는 높게 잡아서
+    /// "스카우트는 평소에 살짝 빠르지만 위기 시 폭발적으로 빨라지지 못하고, 트래퍼/아처는 평소엔 느리지만 위기 시 폭발적으로
+    /// 가속하는" 구조를 만든다.</summary>
+    public float GetClassSprintSpeedMultiplier(PlayerClass playerClass) =>
+        playerClass == PlayerClass.Scout ? scoutSprintSpeedMultiplier : trapperArcherSprintSpeedMultiplier;
 
     public float GetClassStaminaDrainMultiplier(PlayerClass playerClass) =>
         playerClass == PlayerClass.Scout ? scoutStaminaDrainMultiplier : 1f;

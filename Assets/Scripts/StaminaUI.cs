@@ -14,6 +14,7 @@ public class StaminaUI : MonoBehaviour
     private PlayerMovement player;
     private float displayedRatio = 1f;
     private bool initialized;
+    private int lastDisplayedStamina = int.MinValue;
 
     private void Update()
     {
@@ -43,6 +44,13 @@ public class StaminaUI : MonoBehaviour
             fillImage.color = player != null && player.IsSprinting ? sprintingColor : normalColor;
         }
 
-        if (staminaText != null) staminaText.text = $"{Mathf.CeilToInt(stamina)}";
+        // Text.text 대입은 값이 그대로여도 캔버스 리빌드를 유발하므로, 표시 정수가 실제로
+        // 바뀌었을 때만 다시 대입한다(HealthUI와 동일한 이유).
+        int displayedStamina = Mathf.CeilToInt(stamina);
+        if (staminaText != null && displayedStamina != lastDisplayedStamina)
+        {
+            staminaText.text = $"{displayedStamina}";
+            lastDisplayedStamina = displayedStamina;
+        }
     }
 }

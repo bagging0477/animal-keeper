@@ -180,11 +180,12 @@ public class VillageMapGenerator : MonoBehaviour
         Shuffle(pool);
 
         int count = Mathf.Clamp(Random.Range(minRoomCount, maxRoomCount + 1), 1, pool.Count);
+        List<GameObject> chain = OrderForDoorwayCompatibility(pool.GetRange(0, count));
         List<RoomInstance> placed = new List<RoomInstance>();
 
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < chain.Count; i++)
         {
-            GameObject prefab = pool[i];
+            GameObject prefab = chain[i];
             string prefabName = prefab.name;
 
             GameObject instance = Instantiate(prefab, Vector3.zero, Quaternion.identity, mapRoot);
@@ -207,6 +208,86 @@ public class VillageMapGenerator : MonoBehaviour
         }
 
         return placed;
+    }
+
+    // NavMesh는 벽에서 에이전트 반경(NavMeshAreas의 agentRadius, 기본 0.5)만큼 안쪽으로 침식되므로,
+    // 문이 2줄 이하로만 뚫리면 침식 후 실제 통행 가능한 폭이 1.0 이하로 남아 몬스터가 그 연결부를
+    // 절대 못 넘어가는 경우가 생긴다(ㄱ자/분리된 방처럼 가장자리 바닥 모양이 서로 잘 안 맞는 조합일
+    // 때 특히 그렇다). 무작위로 고른 방들을 순서 그대로 이어붙이기 전에, 실제로 마주보는 가장자리끼리
+    // 가장 넓게 겹치는 순서로 그리디하게 다시 배열해서 이런 조합이 이웃하지 않게 최대한 피한다.
+    private const int MinSafeDoorwayWidth = 3;
+
+    private static List<GameObject> OrderForDoorwayCompatibility(List<GameObject> rooms)
+    {
+        if (rooms.Count <= 1) return rooms;
+
+        List<GameObject> remaining = new List<GameObject>(rooms);
+        List<GameObject> ordered = new List<GameObject> { remaining[0] };
+        remaining.RemoveAt(0);
+
+        while (remaining.Count > 0)
+        {
+            GameObject last = ordered[ordered.Count - 1];
+            int bestIndex = 0;
+            int bestOverlap = -1;
+            for (int i = 0; i < remaining.Count; i++)
+            {
+                int overlap = BestEdgeOverlap(last, remaining[i]);
+                if (overlap > bestOverlap)
+                {
+                    bestOverlap = overlap;
+                    bestIndex = i;
+                }
+            }
+
+            if (bestOverlap < MinSafeDoorwayWidth)
+            {
+                Debug.LogWarning($"VillageMapGenerator: could not find a doorway-compatible next room for " +
+                    $"'{last.name}' among the remaining pool (best possible overlap: {bestOverlap} tile(s)). " +
+                    "Using the best available match - this connector may be too narrow to cross reliably.");
+            }
+
+            ordered.Add(remaining[bestIndex]);
+            remaining.RemoveAt(bestIndex);
+        }
+
+        return ordered;
+    }
+
+    // 아직 배치하지 않은 두 프리팹(원본 에셋 참조)만으로, 실제로 동-서로 이어붙였을 때 두 가장자리가
+    // 겹칠 수 있는 최대 줄 수를 미리 계산한다. Ground 타일맵 모양은 인스턴스화하거나 배치해도 바뀌지
+    // 않으므로(문 카빙은 배치 이후에만 일어난다), 이 값은 실제로 이어붙였을 때 CarveDoorway가 뚫을
+    // 줄 수와 정확히 같다.
+    private static int BestEdgeOverlap(GameObject prevPrefab, GameObject nextPrefab)
+    {
+        List<Vector2Int> prevCells = GetFloorCells(prevPrefab);
+        List<Vector2Int> nextCells = GetFloorCells(nextPrefab);
+        if (prevCells.Count == 0 || nextCells.Count == 0) return 0;
+
+        IntRect prevBounds = GetFloorBoundsLocal(prevCells);
+        IntRect nextBounds = GetFloorBoundsLocal(nextCells);
+
+        List<int> prevEdgeYs = GetEdgeRows(prevCells, prevBounds.MaxX);
+        List<int> nextEdgeYs = GetEdgeRows(nextCells, nextBounds.MinX);
+
+        HashSet<int> prevSet = new HashSet<int>(prevEdgeYs);
+        HashSet<int> candidateOffsets = new HashSet<int>();
+        foreach (int py in prevEdgeYs)
+        {
+            foreach (int ny in nextEdgeYs) candidateOffsets.Add(py - ny);
+        }
+
+        int best = 0;
+        foreach (int offset in candidateOffsets)
+        {
+            int overlap = 0;
+            foreach (int ny in nextEdgeYs)
+            {
+                if (prevSet.Contains(ny + offset)) overlap++;
+            }
+            if (overlap > best) best = overlap;
+        }
+        return best;
     }
 
     // 전체 맵(모든 방을 합친 가로 범위)의 한가운데에 가장 가까운 방을 시작 지점으로 고른다.
@@ -468,6 +549,7 @@ public class VillageMapGenerator : MonoBehaviour
         int borderXForA = boundsA.MaxX + 1;
         int borderXForB = boundsB.MinX - 1;
 
+        int openedRows = 0;
         for (int y = overlapMinY; y <= overlapMaxY; y++)
         {
             Vector2Int aEdgeCellLocal = new Vector2Int(boundsA.MaxX - offsetA.x, y - offsetA.y);
@@ -476,6 +558,25 @@ public class VillageMapGenerator : MonoBehaviour
 
             OpenCell(wallsA, groundA, floorTile, new Vector2Int(borderXForA, y) - offsetA);
             OpenCell(wallsB, groundB, floorTile, new Vector2Int(borderXForB, y) - offsetB);
+            openedRows++;
+        }
+
+        // NavMesh는 벽에서 에이전트 반경(NavMeshAreas의 agentRadius, 기본 0.5)만큼 안쪽으로
+        // 침식(erode)되므로, 문이 실제로는 몇 칸 뚫려 있어도 침식 후 남는 통행 가능 폭은
+        // (뚫린 줄 수 - 1.0)에 불과하다. 2줄 이하로 뚫리면 침식 후 폭이 1.0 이하로 남아
+        // 몬스터(반지름 0.4, 지름 0.8)가 겨우 지나가거나 아예 못 지나갈 수 있다 - 두 방의
+        // 모양이 이 경계에서 서로 잘 안 맞물릴 때 생기는 문제라 코드로 자동 복구하기보다
+        // 어떤 방 조합에서 발생하는지 바로 알아볼 수 있게 경고만 남긴다.
+        if (openedRows > 0 && openedRows < 3)
+        {
+            Debug.LogWarning($"VillageMapGenerator: doorway between {a.Root.name} and {b.Root.name} is only " +
+                $"{openedRows} tile(s) wide after alignment - monsters may get stuck or clip through it. " +
+                "두 방의 맞닿는 가장자리 바닥 모양이 서로 잘 겹치지 않는다는 뜻이니 해당 방 프리팹의 Ground 타일맵을 확인해보세요.");
+        }
+        else if (openedRows == 0)
+        {
+            Debug.LogWarning($"VillageMapGenerator: no overlapping floor row found between {a.Root.name} and {b.Root.name} - " +
+                "이 두 방은 연결부가 전혀 뚫리지 않았습니다.");
         }
 
         RefreshWallCollider(wallsA);
@@ -724,7 +825,11 @@ public class VillageMapGenerator : MonoBehaviour
             NavMeshObstacle obstacle = carver.AddComponent<NavMeshObstacle>();
             obstacle.shape = NavMeshObstacleShape.Box;
             obstacle.size = new Vector3(1f, 1f, 1f);
-            obstacle.carveOnlyStationary = false;
+            // 이 카버는 스폰된 뒤 다시는 움직이지 않는다. carveOnlyStationary를 켜두면 "정지 상태일
+            // 때만 카빙"으로 취급해 한 번 카빙한 뒤로는 매 프레임 다시 계산하지 않는다 - false로 두면
+            // 매 프레임 "혹시 움직였는지" 다시 확인하며 재계산해서 근처의 좁은 통로(문틈)의 삼각분할이
+            // 프레임마다 미세하게 흔들려 몬스터가 그 근처를 지날 때 버벅이는 원인이 될 수 있었다.
+            obstacle.carveOnlyStationary = true;
             obstacle.carving = true;
         }
     }

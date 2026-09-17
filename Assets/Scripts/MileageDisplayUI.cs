@@ -8,11 +8,19 @@ public class MileageDisplayUI : MonoBehaviour
 {
     [SerializeField] private Text mileageText;
 
+    private int lastMileage = int.MinValue;
+
     private void Update()
     {
         if (mileageText == null) return;
 
         int mileage = GameManager.Instance != null ? GameManager.Instance.Mileage : 0;
+
+        // 마일리지가 그대로인 프레임에는 문자열을 새로 만들지 않는다 - 매 프레임 대입은 값이
+        // 그대로여도 GC 할당과 캔버스 리빌드를 유발한다.
+        if (mileage == lastMileage) return;
+
         mileageText.text = $"보유 마일리지: {mileage}";
+        lastMileage = mileage;
     }
 }

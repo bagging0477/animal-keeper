@@ -38,7 +38,7 @@ public class MonsterAI : MonoBehaviour
     private float chaseDestinationTimer;
 
     private float PatrolSpeed => config != null ? config.patrolMonsterPatrolSpeed : 1.6f;
-    private float ChaseSpeed => config != null ? config.MonsterChaseSpeed : 4.3125f;
+    private float ChaseSpeed => config != null ? config.monsterChaseSpeed : 4.3125f;
     private float DetectRange => config != null ? config.patrolMonsterDetectRange : 4.05f;
     private float LoseRange => config != null ? config.patrolMonsterLoseRange : 10f;
     private float SearchDuration => config != null ? config.monsterSearchDuration : 3f;
@@ -95,13 +95,18 @@ public class MonsterAI : MonoBehaviour
                 state = State.Chase;
                 sightLostTimer = 0f;
                 chaseDestinationTimer = ChaseDirectionUpdateInterval; // 발견한 그 프레임에 바로 추격을 시작한다.
+                // autoBraking은 목적지에 부드럽게 도착하려고 미리 감속하는 기능이다. Chase 중에는
+                // 목적지가 플레이어 위치로 계속 갱신되는 "움직이는 표적"이라 속도를 늦출 이유가
+                // 없는데, 목적지가 하필 문처럼 좁은 통로 한가운데로 갱신되는 순간 "거의 도착"으로
+                // 오판해 감속하면서 연결부 근처에서 순간적으로 멈추는 것처럼 보였다. Chase 중에는 꺼둔다.
+                agent.autoBraking = false;
                 AudioManager.Instance?.PlayMonsterChaseAlert();
             }
             else if (state == State.Chase)
             {
                 // 거리가 너무 벌어졌거나(LoseRange 초과) 벽/장애물에 가려 시야가 막힌 상태가
                 // 이 프레임에도 계속되는지 판정한다. 둘 중 하나라도 '완전히 놓친' 상태로 친다.
-                bool blocked = Physics2D.Linecast(GamePosition, PlayerGamePosition, sightBlockingMask).collider != null;
+                bool blocked = IsSightBlocked(GamePosition, PlayerGamePosition);
                 bool sightLost = distanceToPlayer > LoseRange || blocked;
 
                 sightLostTimer = sightLost ? sightLostTimer + Time.deltaTime : 0f;
@@ -111,6 +116,7 @@ public class MonsterAI : MonoBehaviour
                     // 순간적으로 스친 정도가 아니라 일정 시간 이상 계속 놓쳤을 때만 포기하고,
                     // 마지막으로 본 위치로 가서 잠시 수색한다.
                     state = State.Search;
+                    agent.autoBraking = true; // Search는 고정된 한 지점으로 가서 서는 게 맞으므로 다시 켠다.
                     searchTimer = 0f;
                     lastKnownPlayerPosition = new Vector3(player.position.x, 0f, player.position.y);
                     if (agent.isOnNavMesh)
@@ -192,6 +198,26 @@ public class MonsterAI : MonoBehaviour
 
     private Vector2 GamePosition => new Vector2(transform.position.x, transform.position.z);
     private Vector2 PlayerGamePosition => new Vector2(player.position.x, player.position.y);
+
+    // 문처럼 폭이 좁은 연결부에서는 중심선 하나만으로 시야 차단을 판정하면, 몬스터나 플레이어가
+    // 문 한가운데에서 살짝만 벗어나 있어도 선이 문틀 모서리에 걸려 "완전히 막힌 것"으로 잘못
+    // 판정된다. 그 상태가 ChaseGiveUpSightLostDuration만큼 이어지면 문을 넘어가는 도중에 갑자기
+    // 추격을 포기하는 것처럼 보인다. 중심선 옆으로 살짝 평행하게 옮긴 보조선 두 개를 더 검사해서,
+    // 셋 중 하나라도 뚫려 있으면 아직 보인다고 판정한다 - 같은 방 안에서 장애물 뒤에 완전히
+    // 숨는 경우는 장애물이 이 보조선 간격보다 훨씬 크므로 여전히 셋 다 막혀서 스텔스에는 영향이 없다.
+    private const float SightSampleOffset = 0.3f;
+
+    private bool IsSightBlocked(Vector2 from, Vector2 to)
+    {
+        if (Physics2D.Linecast(from, to, sightBlockingMask).collider == null) return false;
+
+        Vector2 delta = to - from;
+        Vector2 offset = new Vector2(-delta.y, delta.x).normalized * SightSampleOffset;
+        if (Physics2D.Linecast(from + offset, to + offset, sightBlockingMask).collider == null) return false;
+        if (Physics2D.Linecast(from - offset, to - offset, sightBlockingMask).collider == null) return false;
+
+        return true;
+    }
 
     private void HandleCatch()
     {

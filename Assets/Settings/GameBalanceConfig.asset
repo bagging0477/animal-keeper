@@ -36,18 +36,19 @@ MonoBehaviour:
   focusedVisionRadius: 11
   focusedVisionAngle: 80
   focusedVisionShadowSoftness: 0.5
-  scoutMoveSpeedMultiplier: 1.15
+  scoutMoveSpeedMultiplier: 1.08
   scoutMaxHealthPercent: 50
   trapperMaxHealthPercent: 130
   archerMaxHealthPercent: 100
   scoutStaminaDrainMultiplier: 1.2
+  scoutSprintSpeedMultiplier: 1.1
+  trapperArcherSprintSpeedMultiplier: 1.3
   trapperUnlockPrice: 100
   archerUnlockPrice: 200
   playerMoveSpeed: 3.75
   patrolMonsterPatrolSpeed: 1.6
   soundReactiveMonsterWanderSpeed: 2.4
-  monsterChaseSpeedMultiplier: 1.15
-  playerSprintSpeedMultiplier: 1.25
+  monsterChaseSpeed: 4.3125
   maxStamina: 85
   sprintStaminaDrainPerSecond: 18
   staminaRegenPerSecond: 15

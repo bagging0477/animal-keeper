@@ -84,13 +84,16 @@ public class PlayerMovement : MonoBehaviour
             Stamina = Mathf.Min(MaxStamina, Stamina + regenPerSecond * Time.deltaTime);
         }
 
-        float classMultiplier = config != null && GameManager.Instance != null
+        float classMoveMultiplier = config != null && GameManager.Instance != null
             ? config.GetClassMoveSpeedMultiplier(GameManager.Instance.CurrentClass)
             : 1f;
+        float classSprintMultiplier = config != null && GameManager.Instance != null
+            ? config.GetClassSprintSpeedMultiplier(GameManager.Instance.CurrentClass)
+            : 1.25f;
 
-        float baseSpeed = config != null ? config.playerMoveSpeed : 3.75f;
-        float sprintSpeed = config != null ? config.PlayerSprintSpeed : baseSpeed * 1.25f;
-        currentSpeed = (IsSprinting ? sprintSpeed : baseSpeed) * classMultiplier;
+        float baseSpeed = (config != null ? config.playerMoveSpeed : 3.75f) * classMoveMultiplier;
+        float sprintSpeed = baseSpeed * classSprintMultiplier;
+        currentSpeed = IsSprinting ? sprintSpeed : baseSpeed;
     }
 
     private void UpdateLookDirection()
