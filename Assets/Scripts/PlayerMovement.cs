@@ -113,5 +113,11 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         rb.MovePosition(rb.position + moveInput * currentSpeed * Time.fixedDeltaTime);
+
+        // 몸통 스프라이트(player_base.png)가 기본적으로 +X(오른쪽) 방향을 바라보도록 그려져 있어서,
+        // atan2 기준인 LookAngle을 별도 각도 보정 없이 그대로 회전에 사용할 수 있다. WASD 이동
+        // (moveInput 기반 MovePosition)과는 완전히 분리된 값이라, 다른 방향을 바라보며 옆으로
+        // 이동하는 것도 그대로 가능하다.
+        rb.MoveRotation(LookAngle);
     }
 }
