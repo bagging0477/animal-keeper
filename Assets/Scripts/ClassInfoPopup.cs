@@ -11,14 +11,24 @@ public class ClassInfoPopup : MonoBehaviour
     [SerializeField] private Text statsText;
     [SerializeField] private Text priceText;
 
+    [Header("월드 좌표 추적 (스탠드 바로 위에 띄우기, 좌우로도 따라 움직임)")]
+    [SerializeField] private RectTransform canvasRect;
+    [SerializeField] private float worldOffsetY = 1.6f;
+
+    private RectTransform panelRectTransform;
+    private Camera mainCamera;
     private int shownFrame = -1;
 
     private void Awake()
     {
-        if (panelRoot != null) panelRoot.SetActive(false);
+        if (panelRoot != null)
+        {
+            panelRoot.SetActive(false);
+            panelRectTransform = panelRoot.GetComponent<RectTransform>();
+        }
     }
 
-    public void Show(string className, string stats, string priceLine)
+    public void Show(string className, string stats, string priceLine, Transform anchor)
     {
         shownFrame = Time.frameCount;
 
@@ -26,6 +36,26 @@ public class ClassInfoPopup : MonoBehaviour
         if (nameText != null) nameText.text = className;
         if (statsText != null) statsText.text = stats;
         if (priceText != null) priceText.text = priceLine;
+
+        PositionAbove(anchor);
+    }
+
+    // 화면 고정 위치 대신 실제로 서 있는 스탠드(anchor) 머리 위로 패널을 옮긴다 - 좌우 위치도 스탠드의
+    // 화면상 x좌표를 그대로 따라간다. Screen Space - Overlay 캔버스라 카메라를 null로 넘겨야
+    // ScreenPointToLocalPointInRectangle이 올바르게 계산된다 - panelRectTransform은 canvasRect의
+    // 직속 자식이고 앵커가 (0.5, 0.5)라서, 여기서 구한 로컬 좌표를 anchoredPosition에 그대로 대입할 수 있다.
+    private void PositionAbove(Transform anchor)
+    {
+        if (panelRectTransform == null || canvasRect == null || anchor == null) return;
+
+        if (mainCamera == null) mainCamera = Camera.main;
+
+        Vector3 worldPoint = anchor.position + Vector3.up * worldOffsetY;
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(mainCamera, worldPoint);
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPoint, null, out Vector2 localPoint))
+        {
+            panelRectTransform.anchoredPosition = localPoint;
+        }
     }
 
     private void LateUpdate()

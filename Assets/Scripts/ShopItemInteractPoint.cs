@@ -37,7 +37,7 @@ public class ShopItemInteractPoint : MonoBehaviour
 
         if (popup != null)
         {
-            popup.Show(GetDisplayName(), GetDescription(), $"{price} 마일리지 - E를 눌러 구매");
+            popup.Show(GetDisplayName(), GetDescription(), $"{price} 마일리지 - E를 눌러 구매", transform);
         }
 
         Keyboard kb = Keyboard.current;

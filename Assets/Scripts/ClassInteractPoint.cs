@@ -49,7 +49,7 @@ public class ClassInteractPoint : MonoBehaviour
             string priceLine = !unlocked
                 ? $"{price} 마일리지 - E를 눌러 구매 후 장착"
                 : (selected ? "현재 장착 중" : "해금됨 - E를 눌러 장착");
-            popup.Show(GetClassDisplayName(playerClass), BuildStatsText(playerClass), priceLine);
+            popup.Show(GetClassDisplayName(playerClass), BuildStatsText(playerClass), priceLine, transform);
         }
 
         Keyboard kb = Keyboard.current;
