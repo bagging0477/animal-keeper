@@ -13,7 +13,7 @@ public class ClassInfoPopup : MonoBehaviour
 
     [Header("월드 좌표 추적 (스탠드 바로 위에 띄우기, 좌우로도 따라 움직임)")]
     [SerializeField] private RectTransform canvasRect;
-    [SerializeField] private float worldOffsetY = 1.3f;
+    [SerializeField] private float worldOffsetY = 1.0f;
 
     private RectTransform panelRectTransform;
     private Camera mainCamera;

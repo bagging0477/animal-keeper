@@ -1647,7 +1647,7 @@ MonoBehaviour:
   statsText: {fileID: 1399065618}
   priceText: {fileID: 426487799}
   canvasRect: {fileID: 513204297}
-  worldOffsetY: 1.3
+  worldOffsetY: 1
 --- !u!4 &1725396601
 Transform:
   m_ObjectHideFlags: 0
