@@ -99,6 +99,17 @@ public class GameBalanceConfig : ScriptableObject
     [Range(0f, 1f)]
     public float focusedVisionShadowSoftness = 0.5f;
 
+    [Header("클래스 - 시야 범위 배율 (기준치 대비, %) - 100이면 기준치(위 ambientVisionRadius 등) 그대로")]
+    [Tooltip("스카우트 시야 범위 배율. 기본 원형 시야 반경과 부채꼴 시야의 반경/각도 모두에 곱해진다.")]
+    public int scoutVisionRangePercent = 100;
+
+    [Tooltip("트래퍼 시야 범위 배율. 기본 원형 시야 반경과 부채꼴 시야의 반경/각도 모두에 곱해진다.")]
+    public int trapperVisionRangePercent = 100;
+
+    [Tooltip("아처 시야 범위 배율. 기본 원형 시야 반경과 부채꼴 시야의 반경/각도 모두에 곱해진다 - " +
+        "체력이 낮은 대신 더 멀리, 더 넓게 보고 안전한 거리에서 대응할 수 있는 컨셉.")]
+    public int archerVisionRangePercent = 125;
+
     [Header("클래스 - 이동속도 / 체력")]
     [Tooltip("스카우트 기본(걷기) 이동속도 배율 - 몬스터 추격 속도(monsterChaseSpeed, 고정값) 대비. " +
         "1.05~1.1 정도로 잡아서 '몬스터보다 여전히 빠르지만 차이는 크지 않은' 상태를 만든다 - 스태미나 없이 그냥 도망만 쳐도 " +
@@ -107,14 +118,14 @@ public class GameBalanceConfig : ScriptableObject
     [Range(1f, 1.3f)]
     public float scoutMoveSpeedMultiplier = 1.08f;
 
-    [Tooltip("스카우트 최대 체력 비율 (playerMaxHealth 대비, %). 체력이 가장 낮은 대신 이동속도가 빠른 컨셉.")]
-    public int scoutMaxHealthPercent = 50;
+    [Tooltip("스카우트 최대 체력 비율 (playerMaxHealth 대비, %) - 기준치. 이동속도가 빠른 대신 시야는 다른 클래스와 동일한 컨셉.")]
+    public int scoutMaxHealthPercent = 100;
 
     [Tooltip("트래퍼 최대 체력 비율 (playerMaxHealth 대비, %). 근접전을 감당할 수 있는 확실한 맷집.")]
     public int trapperMaxHealthPercent = 130;
 
-    [Tooltip("아처 최대 체력 비율 (playerMaxHealth 대비, %) - 기준치")]
-    public int archerMaxHealthPercent = 100;
+    [Tooltip("아처 최대 체력 비율 (playerMaxHealth 대비, %). 체력이 가장 낮은 대신 넓은 시야로 안전한 거리를 두고 싸우는 컨셉.")]
+    public int archerMaxHealthPercent = 50;
 
     [Tooltip("스카우트의 스프린트 스태미나 소모 배율(다른 클래스 대비). 체력이 낮은데 지구력까지 약해서, " +
         "스프린트를 오래 쓰면 더 빨리 지치고 장기적으로 위험해지는 컨셉. 트래퍼/아처는 배율 1(기본)을 그대로 쓴다.")]
@@ -275,6 +286,20 @@ public class GameBalanceConfig : ScriptableObject
         PlayerClass.Trapper => trapperMaxHealthPercent,
         _ => archerMaxHealthPercent
     };
+
+    private float GetClassVisionRangeMultiplier(PlayerClass playerClass) => playerClass switch
+    {
+        PlayerClass.Scout => scoutVisionRangePercent / 100f,
+        PlayerClass.Trapper => trapperVisionRangePercent / 100f,
+        PlayerClass.Archer => archerVisionRangePercent / 100f,
+        _ => 1f
+    };
+
+    public float GetClassAmbientVisionRadius(PlayerClass playerClass) => ambientVisionRadius * GetClassVisionRangeMultiplier(playerClass);
+
+    public float GetClassFocusedVisionRadius(PlayerClass playerClass) => focusedVisionRadius * GetClassVisionRangeMultiplier(playerClass);
+
+    public float GetClassFocusedVisionAngle(PlayerClass playerClass) => focusedVisionAngle * GetClassVisionRangeMultiplier(playerClass);
 
     /// <summary>playerMoveSpeed 대비 클래스별 기본(걷기) 이동속도 배율. 스카우트는 ScoutMoveSpeed(몬스터 추격 속도 기준)를
     /// playerMoveSpeed로 환산한 값을, 트래퍼/아처는 1(기본 이동속도 그대로)을 반환한다.</summary>

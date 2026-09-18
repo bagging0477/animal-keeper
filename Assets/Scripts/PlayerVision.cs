@@ -24,6 +24,7 @@ public class PlayerVision : MonoBehaviour
     // 했다. 마지막으로 적용한 값을 기억해두고 실제로 바뀐 경우에만 다시 대입한다 - 플레이 중
     // Inspector에서 값을 조정하면 여전히 즉시 반영되지만, 값이 그대로인 프레임에는 아무 비용도 들지 않는다.
     private bool visionRangesApplied;
+    private PlayerClass lastClass;
     private float lastAmbientRadius;
     private bool lastAmbientIgnoresShadows;
     private float lastFocusedRadius;
@@ -39,30 +40,39 @@ public class PlayerVision : MonoBehaviour
     {
         if (config == null) return;
 
+        // 시야 범위는 클래스마다 다르다(아처는 더 넓게) - GameBalanceConfig의 클래스별 배율을 거친
+        // 값을 기준치로 쓴다. VillageScene 진입 전 ClassSelectScene에서 클래스가 정해지므로 보통
+        // 한 세션 동안 안 바뀌지만, lastClass도 함께 캐싱해서 클래스가 바뀌는 경우에도 즉시 반영한다.
+        PlayerClass currentClass = GameManager.Instance != null ? GameManager.Instance.CurrentClass : PlayerClass.Scout;
+        float targetAmbientRadius = config.GetClassAmbientVisionRadius(currentClass);
+        float targetFocusedRadius = config.GetClassFocusedVisionRadius(currentClass);
+        float targetFocusedAngle = config.GetClassFocusedVisionAngle(currentClass);
+
         if (ambientVisionLight != null &&
-            (!visionRangesApplied || lastAmbientRadius != config.ambientVisionRadius ||
+            (!visionRangesApplied || lastClass != currentClass || lastAmbientRadius != targetAmbientRadius ||
              lastAmbientIgnoresShadows != config.ambientVisionIgnoresShadows))
         {
-            ambientVisionLight.pointLightOuterRadius = config.ambientVisionRadius;
+            ambientVisionLight.pointLightOuterRadius = targetAmbientRadius;
             // 바로 옆인데 벽 때문에 기본 시야가 뚝 끊겨 보이는 이질감을 없애기 위해, 기본 원형 시야는
             // 기본적으로 그림자(벽/장애물 가림)를 무시하고 범위 안을 항상 전부 보여준다.
             ambientVisionLight.shadowsEnabled = !config.ambientVisionIgnoresShadows;
-            lastAmbientRadius = config.ambientVisionRadius;
+            lastAmbientRadius = targetAmbientRadius;
             lastAmbientIgnoresShadows = config.ambientVisionIgnoresShadows;
         }
 
         if (focusedVisionLight != null &&
-            (!visionRangesApplied || lastFocusedRadius != config.focusedVisionRadius ||
-             lastFocusedAngle != config.focusedVisionAngle || lastFocusedShadowSoftness != config.focusedVisionShadowSoftness))
+            (!visionRangesApplied || lastClass != currentClass || lastFocusedRadius != targetFocusedRadius ||
+             lastFocusedAngle != targetFocusedAngle || lastFocusedShadowSoftness != config.focusedVisionShadowSoftness))
         {
-            focusedVisionLight.pointLightOuterRadius = config.focusedVisionRadius;
-            focusedVisionLight.pointLightOuterAngle = config.focusedVisionAngle;
+            focusedVisionLight.pointLightOuterRadius = targetFocusedRadius;
+            focusedVisionLight.pointLightOuterAngle = targetFocusedAngle;
             focusedVisionLight.shadowSoftness = config.focusedVisionShadowSoftness;
-            lastFocusedRadius = config.focusedVisionRadius;
-            lastFocusedAngle = config.focusedVisionAngle;
+            lastFocusedRadius = targetFocusedRadius;
+            lastFocusedAngle = targetFocusedAngle;
             lastFocusedShadowSoftness = config.focusedVisionShadowSoftness;
         }
 
+        lastClass = currentClass;
         visionRangesApplied = true;
     }
 
