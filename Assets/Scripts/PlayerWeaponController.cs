@@ -10,6 +10,7 @@ public class PlayerWeaponController : MonoBehaviour
     [Header("마취총 (원거리)")]
     [SerializeField] private TranquilizerDart dartPrefab;
     [SerializeField] private float dartSpeed = 12f;
+    [SerializeField] private Transform muzzlePoint;
 
     private PlayerMovement playerMovement;
     private float netCooldownTimer;
@@ -89,7 +90,10 @@ public class PlayerWeaponController : MonoBehaviour
         float sleepDuration = config != null ? config.sleepDuration : 3.5f;
         float range = config != null ? config.tranquilizerRange : 36f;
 
-        TranquilizerDart dart = Instantiate(dartPrefab, transform.position, Quaternion.identity);
+        // 총구(MuzzlePoint)는 플레이어 회전을 따라가는 자식 트랜스폼이라, 그 월드 위치가 곧
+        // "현재 총구가 향한 방향의 총구 끝"이다 - 미할당 시에만 플레이어 중심으로 대체한다.
+        Vector3 spawnPosition = muzzlePoint != null ? muzzlePoint.position : transform.position;
+        TranquilizerDart dart = Instantiate(dartPrefab, spawnPosition, Quaternion.identity);
         dart.Launch(playerMovement.LookDirection, dartSpeed, range, sleepDelay, sleepDuration);
         AudioManager.Instance?.PlayTranquilizerShot();
     }
