@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>ClassSelectScene에 놓인 직업(스카우트/트래퍼/아처) 스탠드 하나를 담당한다.
+/// <summary>ClassSelectScene에 놓인 직업(스카우트/트래퍼/거너) 스탠드 하나를 담당한다.
 /// 플레이어가 가까이 오면 공유 팝업(ClassInfoPopup)에 스탯/가격을 띄우고, E키로 해금(+즉시 장착) 또는
 /// 재장착을 처리한다. 현재 장착 중인 클래스는 몸체 스프라이트가 깜빡이는 색으로 표시된다.</summary>
 public class ClassInteractPoint : MonoBehaviour
@@ -98,7 +98,7 @@ public class ClassInteractPoint : MonoBehaviour
         string weaponLine = GameManager.GetWeaponForClass(pc) switch
         {
             WeaponType.Net => "무기: 근접 (포획망)",
-            WeaponType.TranquilizerGun => "무기: 원거리 (마취화살)",
+            WeaponType.TranquilizerGun => "무기: 원거리 (마취총)",
             _ => "무기: 없음"
         };
 
@@ -109,7 +109,7 @@ public class ClassInteractPoint : MonoBehaviour
     {
         PlayerClass.Scout => "스카우트",
         PlayerClass.Trapper => "트래퍼",
-        PlayerClass.Archer => "아처",
+        PlayerClass.Gunner => "거너",
         _ => pc.ToString()
     };
 }

@@ -2954,6 +2954,7 @@ GameObject:
   - component: {fileID: 1965509322}
   - component: {fileID: 1965509321}
   - component: {fileID: 1965509320}
+  - component: {fileID: 1965509330}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -3062,6 +3063,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &1965509330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965509319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2138852e04d1c7f4576d7cda283f121, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerClassAppearance
+  scoutSprite: {fileID: 21300000, guid: 7870dc22fe8a381499692953bdca87cb, type: 3}
+  gunnerSprite: {fileID: 21300000, guid: c67d63129b2a84053fbe46118e431043, type: 3}
 --- !u!4 &1965509323
 Transform:
   m_ObjectHideFlags: 0

@@ -65,14 +65,14 @@ public class GameBalanceConfig : ScriptableObject
         "스폰 시점에만 적용되며, 스폰 이후 순찰/배회로 이 범위 안에 들어오는 것은 막지 않는다.")]
     public float monsterMinSpawnDistanceFromPlayer = 6f;
 
-    [Header("상태이상 - 포획망 스턴 / 마취화살 수면")]
+    [Header("상태이상 - 포획망 스턴 / 마취총 수면")]
     [Tooltip("포획망에 맞은 몬스터가 스턴 상태가 되는 시간(초)")]
     public float stunDuration = 0.4f;
 
-    [Tooltip("마취화살에 맞은 뒤 실제로 잠들기까지 걸리는 시간(초)")]
+    [Tooltip("마취총에 맞은 뒤 실제로 잠들기까지 걸리는 시간(초)")]
     public float sleepDelay = 1f;
 
-    [Tooltip("잠든 상태가 유지되는 시간(초) - 몬스터와 동물 모두에게 적용. 마취화살은 아처만 쏠 수 있어 사실상 아처 전용 수치다.")]
+    [Tooltip("잠든 상태가 유지되는 시간(초) - 몬스터와 동물 모두에게 적용. 마취총은 거너만 쏠 수 있어 사실상 거너 전용 수치다.")]
     public float sleepDuration = 4.2f;
 
     [Header("플레이어")]
@@ -107,9 +107,9 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("트래퍼 기본 원형 시야(Ambient Vision) 반경 배율.")]
     public int trapperAmbientVisionRangePercent = 100;
 
-    [Tooltip("아처 기본 원형 시야(Ambient Vision) 반경 배율 - 부채꼴 시야보다도 더 넓게 잡아서, " +
+    [Tooltip("거너 기본 원형 시야(Ambient Vision) 반경 배율 - 부채꼴 시야보다도 더 넓게 잡아서, " +
         "바로 근처에서도 다른 클래스보다 확실히 더 잘 보이게 한다.")]
-    public int archerAmbientVisionRangePercent = 150;
+    public int gunnerAmbientVisionRangePercent = 150;
 
     [Tooltip("스카우트 부채꼴 시야(Focused Vision)의 반경/각도 배율.")]
     public int scoutFocusedVisionRangePercent = 100;
@@ -117,15 +117,15 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("트래퍼 부채꼴 시야(Focused Vision)의 반경/각도 배율.")]
     public int trapperFocusedVisionRangePercent = 100;
 
-    [Tooltip("아처 부채꼴 시야(Focused Vision)의 반경/각도 배율 - " +
+    [Tooltip("거너 부채꼴 시야(Focused Vision)의 반경/각도 배율 - " +
         "체력이 낮은 대신 더 멀리, 더 넓게 보고 안전한 거리에서 대응할 수 있는 컨셉.")]
-    public int archerFocusedVisionRangePercent = 125;
+    public int gunnerFocusedVisionRangePercent = 125;
 
     [Header("클래스 - 이동속도 / 체력")]
     [Tooltip("스카우트 기본(걷기) 이동속도 배율 - 몬스터 추격 속도(monsterChaseSpeed, 고정값) 대비. " +
         "1.05~1.1 정도로 잡아서 '몬스터보다 여전히 빠르지만 차이는 크지 않은' 상태를 만든다 - 스태미나 없이 그냥 도망만 쳐도 " +
         "서서히 거리가 벌어지긴 하지만, 추격 포기 거리(patrolMonsterLoseRange 등)까지 벌어지려면 시간이 걸린다. " +
-        "트래퍼/아처는 배율 1(기본 이동속도 그대로)을 쓴다.")]
+        "트래퍼/거너는 배율 1(기본 이동속도 그대로)을 쓴다.")]
     [Range(1f, 1.3f)]
     public float scoutMoveSpeedMultiplier = 1.08f;
 
@@ -135,20 +135,20 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("트래퍼 최대 체력 비율 (playerMaxHealth 대비, %). 근접전을 감당할 수 있는 확실한 맷집.")]
     public int trapperMaxHealthPercent = 130;
 
-    [Tooltip("아처 최대 체력 비율 (playerMaxHealth 대비, %). 체력이 가장 낮은 대신 넓은 시야로 안전한 거리를 두고 싸우는 컨셉.")]
-    public int archerMaxHealthPercent = 50;
+    [Tooltip("거너 최대 체력 비율 (playerMaxHealth 대비, %). 체력이 가장 낮은 대신 넓은 시야로 안전한 거리를 두고 싸우는 컨셉.")]
+    public int gunnerMaxHealthPercent = 50;
 
     [Tooltip("스카우트의 스프린트 스태미나 소모 배율(다른 클래스 대비). 체력이 낮은데 지구력까지 약해서, " +
-        "스프린트를 오래 쓰면 더 빨리 지치고 장기적으로 위험해지는 컨셉. 트래퍼/아처는 배율 1(기본)을 그대로 쓴다.")]
+        "스프린트를 오래 쓰면 더 빨리 지치고 장기적으로 위험해지는 컨셉. 트래퍼/거너는 배율 1(기본)을 그대로 쓴다.")]
     public float scoutStaminaDrainMultiplier = 1.2f;
 
     [Tooltip("스카우트의 스프린트 추가 가속 배율 (스카우트 자신의 기본 이동속도 대비). 평소에 이미 몬스터보다 살짝 빠른 " +
-        "대신, 위기 상황에서 폭발적으로 더 빨라지지는 못하는 컨셉이라 트래퍼/아처보다 낮게 잡는다.")]
+        "대신, 위기 상황에서 폭발적으로 더 빨라지지는 못하는 컨셉이라 트래퍼/거너보다 낮게 잡는다.")]
     public float scoutSprintSpeedMultiplier = 1.1f;
 
-    [Tooltip("트래퍼/아처의 스프린트 추가 가속 배율 (각자의 기본 이동속도 대비). 평소엔 스카우트보다 느리지만, " +
+    [Tooltip("트래퍼/거너의 스프린트 추가 가속 배율 (각자의 기본 이동속도 대비). 평소엔 스카우트보다 느리지만, " +
         "위기 상황에서는 폭발적으로 가속해 벗어날 수 있다.")]
-    public float trapperArcherSprintSpeedMultiplier = 1.3f;
+    public float trapperGunnerSprintSpeedMultiplier = 1.3f;
 
     [Header("클래스 해금 가격 (마일리지) - 게임 시작 시 무료로 선택한 클래스는 이미 해금된 상태라 여기 가격과 " +
         "무관하게 장착만 하면 되고, 나머지 두 클래스만 여기 가격으로 구매해야 한다.")]
@@ -158,8 +158,8 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("트래퍼 클래스 해금 가격 (시작 시 무료로 고르지 않았을 경우)")]
     public int trapperUnlockPrice = 200;
 
-    [Tooltip("아처 클래스 해금 가격 (시작 시 무료로 고르지 않았을 경우)")]
-    public int archerUnlockPrice = 200;
+    [Tooltip("거너 클래스 해금 가격 (시작 시 무료로 고르지 않았을 경우)")]
+    public int gunnerUnlockPrice = 200;
 
     [Header("이동 속도")]
     [Tooltip("플레이어 기본(걷기) 이동속도")]
@@ -217,17 +217,17 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("포획망을 다시 휘두르기까지 걸리는 쿨다운(초)")]
     public float netCooldown = 0.75f;
 
-    [Header("무기 - 마취화살 탄약")]
-    [Tooltip("아처 클래스를 처음 장착했을 때 함께 지급되는 시작 탄약 수")]
+    [Header("무기 - 마취총 탄약")]
+    [Tooltip("거너 클래스를 처음 장착했을 때 함께 지급되는 시작 탄약 수")]
     public int tranquilizerStartingAmmo = 3;
 
-    [Tooltip("마취화살 탄약의 최대 소지 개수")]
+    [Tooltip("마취총 탄약의 최대 소지 개수")]
     public int tranquilizerMaxAmmo = 10;
 
-    [Tooltip("상점에서 '마취화살 탄약' 아이템을 구매했을 때 한 번에 충전되는 탄약 수")]
+    [Tooltip("상점에서 '마취총 탄약' 아이템을 구매했을 때 한 번에 충전되는 탄약 수")]
     public int tranquilizerAmmoRefillAmount = 5;
 
-    [Tooltip("마취화살(TranquilizerDart)이 날아가는 최대 사거리. 안전한 거리에서 대응할 수 있다는 아처만의 " +
+    [Tooltip("마취총(TranquilizerDart)이 날아가는 최대 사거리. 안전한 거리에서 대응할 수 있다는 거너만의 " +
         "확실한 강점이 되도록 다른 무기보다 멀리 잡는다. 다트의 실제 비행 시간은 이 값과 발사 속도(PlayerWeaponController.dartSpeed)로부터 계산된다.")]
     public float tranquilizerRange = 43.2f;
 
@@ -269,10 +269,10 @@ public class GameBalanceConfig : ScriptableObject
 
     [Header("상점 아이템 가격")]
     [Tooltip("ShelterScene의 각 상점 아이템(ShopItemInteractPoint) 이름과 가격. itemName은 ShopItemInteractPoint.GetPrice()가 " +
-        "찾는 이름과 정확히 일치해야 한다. 클래스 해금 가격은 여기가 아니라 위의 scoutUnlockPrice/trapperUnlockPrice/archerUnlockPrice로 조정한다.")]
+        "찾는 이름과 정확히 일치해야 한다. 클래스 해금 가격은 여기가 아니라 위의 scoutUnlockPrice/trapperUnlockPrice/gunnerUnlockPrice로 조정한다.")]
     public List<ShopItemPrice> shopItemPrices = new List<ShopItemPrice>
     {
-        new ShopItemPrice { itemName = "마취화살 탄약", price = 30 },
+        new ShopItemPrice { itemName = "마취총 탄약", price = 30 },
         new ShopItemPrice { itemName = "지뢰", price = 40 },
         new ShopItemPrice { itemName = "폭탄", price = 70 },
     };
@@ -299,14 +299,14 @@ public class GameBalanceConfig : ScriptableObject
     {
         PlayerClass.Scout => scoutMaxHealthPercent,
         PlayerClass.Trapper => trapperMaxHealthPercent,
-        _ => archerMaxHealthPercent
+        _ => gunnerMaxHealthPercent
     };
 
     private float GetClassAmbientVisionRangeMultiplier(PlayerClass playerClass) => playerClass switch
     {
         PlayerClass.Scout => scoutAmbientVisionRangePercent / 100f,
         PlayerClass.Trapper => trapperAmbientVisionRangePercent / 100f,
-        PlayerClass.Archer => archerAmbientVisionRangePercent / 100f,
+        PlayerClass.Gunner => gunnerAmbientVisionRangePercent / 100f,
         _ => 1f
     };
 
@@ -314,7 +314,7 @@ public class GameBalanceConfig : ScriptableObject
     {
         PlayerClass.Scout => scoutFocusedVisionRangePercent / 100f,
         PlayerClass.Trapper => trapperFocusedVisionRangePercent / 100f,
-        PlayerClass.Archer => archerFocusedVisionRangePercent / 100f,
+        PlayerClass.Gunner => gunnerFocusedVisionRangePercent / 100f,
         _ => 1f
     };
 
@@ -325,15 +325,15 @@ public class GameBalanceConfig : ScriptableObject
     public float GetClassFocusedVisionAngle(PlayerClass playerClass) => focusedVisionAngle * GetClassFocusedVisionRangeMultiplier(playerClass);
 
     /// <summary>playerMoveSpeed 대비 클래스별 기본(걷기) 이동속도 배율. 스카우트는 ScoutMoveSpeed(몬스터 추격 속도 기준)를
-    /// playerMoveSpeed로 환산한 값을, 트래퍼/아처는 1(기본 이동속도 그대로)을 반환한다.</summary>
+    /// playerMoveSpeed로 환산한 값을, 트래퍼/거너는 1(기본 이동속도 그대로)을 반환한다.</summary>
     public float GetClassMoveSpeedMultiplier(PlayerClass playerClass) =>
         playerClass == PlayerClass.Scout ? ScoutMoveSpeed / playerMoveSpeed : 1f;
 
-    /// <summary>클래스별 스프린트 추가 가속 배율(각 클래스 자신의 기본 이동속도 대비). 스카우트는 낮게, 트래퍼/아처는 높게 잡아서
-    /// "스카우트는 평소에 살짝 빠르지만 위기 시 폭발적으로 빨라지지 못하고, 트래퍼/아처는 평소엔 느리지만 위기 시 폭발적으로
+    /// <summary>클래스별 스프린트 추가 가속 배율(각 클래스 자신의 기본 이동속도 대비). 스카우트는 낮게, 트래퍼/거너는 높게 잡아서
+    /// "스카우트는 평소에 살짝 빠르지만 위기 시 폭발적으로 빨라지지 못하고, 트래퍼/거너는 평소엔 느리지만 위기 시 폭발적으로
     /// 가속하는" 구조를 만든다.</summary>
     public float GetClassSprintSpeedMultiplier(PlayerClass playerClass) =>
-        playerClass == PlayerClass.Scout ? scoutSprintSpeedMultiplier : trapperArcherSprintSpeedMultiplier;
+        playerClass == PlayerClass.Scout ? scoutSprintSpeedMultiplier : trapperGunnerSprintSpeedMultiplier;
 
     public float GetClassStaminaDrainMultiplier(PlayerClass playerClass) =>
         playerClass == PlayerClass.Scout ? scoutStaminaDrainMultiplier : 1f;
@@ -342,7 +342,7 @@ public class GameBalanceConfig : ScriptableObject
     {
         PlayerClass.Scout => scoutUnlockPrice,
         PlayerClass.Trapper => trapperUnlockPrice,
-        PlayerClass.Archer => archerUnlockPrice,
+        PlayerClass.Gunner => gunnerUnlockPrice,
         _ => 0
     };
 }

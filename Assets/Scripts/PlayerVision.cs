@@ -40,7 +40,7 @@ public class PlayerVision : MonoBehaviour
     {
         if (config == null) return;
 
-        // 시야 범위는 클래스마다 다르다(아처는 더 넓게) - GameBalanceConfig의 클래스별 배율을 거친
+        // 시야 범위는 클래스마다 다르다(거너는 더 넓게) - GameBalanceConfig의 클래스별 배율을 거친
         // 값을 기준치로 쓴다. VillageScene 진입 전 ClassSelectScene에서 클래스가 정해지므로 보통
         // 한 세션 동안 안 바뀌지만, lastClass도 함께 캐싱해서 클래스가 바뀌는 경우에도 즉시 반영한다.
         PlayerClass currentClass = GameManager.Instance != null ? GameManager.Instance.CurrentClass : PlayerClass.Scout;

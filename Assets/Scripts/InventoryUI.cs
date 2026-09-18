@@ -61,7 +61,7 @@ public class InventoryUI : MonoBehaviour
 
         if (weaponSlot.frame != null) weaponSlot.frame.color = weaponSelected ? selectedFrameColor : unselectedFrameColor;
         if (weaponSlot.fill != null) weaponSlot.fill.color = occupiedFillColor;
-        if (weaponSlot.label != null) weaponSlot.label.text = equipped == WeaponType.Net ? "Q\n포획망" : "Q\n마취화살";
+        if (weaponSlot.label != null) weaponSlot.label.text = equipped == WeaponType.Net ? "Q\n포획망" : "Q\n마취총";
     }
 
     private Color FillColorFor(InventoryItemType type) => type switch

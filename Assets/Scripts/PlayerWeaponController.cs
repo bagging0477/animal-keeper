@@ -7,16 +7,9 @@ public class PlayerWeaponController : MonoBehaviour
     [Header("밸런스 설정")]
     [SerializeField] private GameBalanceConfig config;
 
-    [Header("마취화살 (원거리)")]
+    [Header("마취총 (원거리)")]
     [SerializeField] private TranquilizerDart dartPrefab;
     [SerializeField] private float dartSpeed = 12f;
-
-    [Header("장착 무기 표시")]
-    [SerializeField] private SpriteRenderer weaponVisual;
-    [SerializeField] private float weaponVisualScale = 0.25f;
-    [SerializeField] private float weaponVisualDistance = 0.4f;
-    [SerializeField] private Color netVisualColor = new Color(0.8f, 0.8f, 0.8f, 1f);
-    [SerializeField] private Color gunVisualColor = new Color(0.2f, 0.55f, 0.3f, 1f);
 
     private PlayerMovement playerMovement;
     private float netCooldownTimer;
@@ -24,25 +17,10 @@ public class PlayerWeaponController : MonoBehaviour
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
-
-        if (weaponVisual == null)
-        {
-            GameObject visualObj = new GameObject("WeaponVisual");
-            visualObj.transform.SetParent(transform, false);
-            visualObj.transform.localScale = Vector3.one * weaponVisualScale;
-
-            weaponVisual = visualObj.AddComponent<SpriteRenderer>();
-            SpriteRenderer playerSprite = GetComponent<SpriteRenderer>();
-            weaponVisual.sprite = playerSprite != null ? playerSprite.sprite : null;
-            weaponVisual.sortingOrder = (playerSprite != null ? playerSprite.sortingOrder : 0) + 1;
-            weaponVisual.enabled = false;
-        }
     }
 
     private void Update()
     {
-        UpdateWeaponVisual();
-
         if (netCooldownTimer > 0f) netCooldownTimer -= Time.deltaTime;
 
         // Q로 무기 슬롯을 선택했을 때만 클릭이 공격으로 이어진다 - 숫자 슬롯(아이템)이 선택된
@@ -53,22 +31,6 @@ public class PlayerWeaponController : MonoBehaviour
         {
             Attack();
         }
-    }
-
-    private void UpdateWeaponVisual()
-    {
-        if (weaponVisual == null || GameManager.Instance == null) return;
-
-        WeaponType equipped = GameManager.Instance.EquippedWeapon;
-        if (equipped == WeaponType.None)
-        {
-            weaponVisual.enabled = false;
-            return;
-        }
-
-        weaponVisual.enabled = true;
-        weaponVisual.color = equipped == WeaponType.Net ? netVisualColor : gunVisualColor;
-        weaponVisual.transform.position = transform.position + (Vector3)(playerMovement.LookDirection * weaponVisualDistance);
     }
 
     private void Attack()

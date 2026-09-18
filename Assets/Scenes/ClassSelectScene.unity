@@ -392,7 +392,7 @@ GameObject:
   - component: {fileID: 321690044}
   - component: {fileID: 321690043}
   m_Layer: 0
-  m_Name: ArcherStand
+  m_Name: GunnerStand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1360,6 +1360,7 @@ GameObject:
   - component: {fileID: 1459060932}
   - component: {fileID: 1459060931}
   - component: {fileID: 1459060930}
+  - component: {fileID: 1459060940}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1468,6 +1469,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &1459060940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1459060929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2138852e04d1c7f4576d7cda283f121, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerClassAppearance
+  scoutSprite: {fileID: 21300000, guid: 7870dc22fe8a381499692953bdca87cb, type: 3}
+  gunnerSprite: {fileID: 21300000, guid: c67d63129b2a84053fbe46118e431043, type: 3}
 --- !u!4 &1459060933
 Transform:
   m_ObjectHideFlags: 0

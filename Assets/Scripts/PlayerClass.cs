@@ -10,6 +10,6 @@ public enum PlayerClass
     /// <summary>마일리지로 해금. 근접(포획망) 전용, 이동속도 평균, 체력 높음.</summary>
     Trapper,
 
-    /// <summary>마일리지로 해금. 원거리(마취화살) 전용, 이동속도 평균, 체력 평균.</summary>
-    Archer
+    /// <summary>마일리지로 해금. 원거리(마취총) 전용, 이동속도 평균, 체력 평균.</summary>
+    Gunner
 }

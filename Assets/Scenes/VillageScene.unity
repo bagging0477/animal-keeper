@@ -1197,6 +1197,7 @@ GameObject:
   - component: {fileID: 1011791167}
   - component: {fileID: 9100000000000000063}
   - component: {fileID: 9100000000000000064}
+  - component: {fileID: 1011791170}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1305,6 +1306,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &1011791170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1011791158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2138852e04d1c7f4576d7cda283f121, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerClassAppearance
+  scoutSprite: {fileID: 21300000, guid: 7870dc22fe8a381499692953bdca87cb, type: 3}
+  gunnerSprite: {fileID: 21300000, guid: c67d63129b2a84053fbe46118e431043, type: 3}
 --- !u!4 &1011791162
 Transform:
   m_ObjectHideFlags: 0
@@ -1383,11 +1398,6 @@ MonoBehaviour:
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
   dartPrefab: {fileID: 1007327826499193375, guid: 2a51acd31a5bf9640b12da630c898b89, type: 3}
   dartSpeed: 12
-  weaponVisual: {fileID: 0}
-  weaponVisualScale: 0.25
-  weaponVisualDistance: 0.4
-  netVisualColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
-  gunVisualColor: {r: 0.2, g: 0.55, b: 0.3, a: 1}
 --- !u!114 &1011791166
 MonoBehaviour:
   m_ObjectHideFlags: 0

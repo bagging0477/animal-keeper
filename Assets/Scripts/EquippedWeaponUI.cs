@@ -35,6 +35,6 @@ public class EquippedWeaponUI : MonoBehaviour
     {
         int ammo = GameManager.Instance != null ? GameManager.Instance.TranquilizerAmmo : 0;
         int max = GameManager.Instance != null ? GameManager.Instance.MaxTranquilizerAmmo : 10;
-        return $"마취화살: {ammo}/{max}";
+        return $"마취총: {ammo}/{max}";
     }
 }

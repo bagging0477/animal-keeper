@@ -199,13 +199,13 @@ public class GameManager : MonoBehaviour
     /// <summary>현재 장착 중인 클래스의 고정 무기.</summary>
     public WeaponType EquippedWeapon => GetWeaponForClass(CurrentClass);
 
-    /// <summary>클래스별 고정 무기. 스카우트는 무기 없음, 트래퍼는 근접(포획망), 아처는 원거리(마취화살)만 쓴다.
+    /// <summary>클래스별 고정 무기. 스카우트는 무기 없음, 트래퍼는 근접(포획망), 거너는 원거리(마취총)만 쓴다.
     /// static이라 ClassInteractPoint 같은 곳에서 아직 장착하지 않은(현재 클래스가 아닌) 다른 클래스의
     /// 무기를 미리 보여줄 때도 이 한 곳의 매핑을 그대로 재사용할 수 있다.</summary>
     public static WeaponType GetWeaponForClass(PlayerClass playerClass) => playerClass switch
     {
         PlayerClass.Trapper => WeaponType.Net,
-        PlayerClass.Archer => WeaponType.TranquilizerGun,
+        PlayerClass.Gunner => WeaponType.TranquilizerGun,
         _ => WeaponType.None
     };
 
@@ -238,7 +238,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>이미 해금된 클래스를 현재 클래스로 장착한다. 체력은 새 클래스의 최대 체력으로 채워지고,
-    /// 아처를 처음 장착할 때는 마취화살 탄약을 시작 수량만큼 지급한다.</summary>
+    /// 거너를 처음 장착할 때는 마취총 탄약을 시작 수량만큼 지급한다.</summary>
     public bool SelectClass(PlayerClass playerClass)
     {
         if (!IsClassUnlocked(playerClass)) return false;
@@ -246,7 +246,7 @@ public class GameManager : MonoBehaviour
         CurrentClass = playerClass;
         Health = MaxHealth;
 
-        if (playerClass == PlayerClass.Archer && TranquilizerAmmo <= 0)
+        if (playerClass == PlayerClass.Gunner && TranquilizerAmmo <= 0)
         {
             int startingAmmo = config != null ? config.tranquilizerStartingAmmo : 3;
             TranquilizerAmmo = Mathf.Min(startingAmmo, MaxTranquilizerAmmo);
@@ -276,7 +276,7 @@ public class GameManager : MonoBehaviour
 
     public int SelectedSlotIndex { get; private set; }
 
-    /// <summary>true면 클래스 고정 무기(트래퍼 포획망/아처 마취화살)가 "장착되어 사용 가능한" 상태다.
+    /// <summary>true면 클래스 고정 무기(트래퍼 포획망/거너 마취총)가 "장착되어 사용 가능한" 상태다.
     /// 숫자 슬롯 선택과 서로 배타적이다 - 무기를 선택하면 숫자 슬롯 아이템은 클릭해도 반응하지
     /// 않고, 숫자키를 누르면 다시 무기가 비활성화된다. SelectedSlotIndex 자체는 그대로 남아있어서,
     /// 무기를 쓰다가 숫자키 없이 돌아와도 G로 버릴 대상(직전에 고르던 일반 슬롯)을 기억한다.</summary>
