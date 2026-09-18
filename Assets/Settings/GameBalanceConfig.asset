@@ -49,7 +49,8 @@ MonoBehaviour:
   scoutStaminaDrainMultiplier: 1.2
   scoutSprintSpeedMultiplier: 1.1
   trapperArcherSprintSpeedMultiplier: 1.3
-  trapperUnlockPrice: 100
+  scoutUnlockPrice: 200
+  trapperUnlockPrice: 200
   archerUnlockPrice: 200
   playerMoveSpeed: 3.75
   patrolMonsterPatrolSpeed: 1.6

@@ -96,7 +96,14 @@ public class GameManager : MonoBehaviour
     /// 않는다 - 이미 고른 클래스를 잃지 않으므로 다시 고를 필요가 없다.</summary>
     public bool NeedsStartingClassSelection { get; private set; } = true;
 
-    public void CompleteStartingClassSelection() => NeedsStartingClassSelection = false;
+    /// <summary>시작 시 무료 선택을 마친다. 이 시점의 CurrentClass(스탠드를 하나도 안 골랐다면 기본값인
+    /// 스카우트)를 그대로 무료 해금 처리해서, 어떤 클래스를 골랐든(혹은 아무것도 안 골랐든) 그 클래스는
+    /// 이후 다시 값을 지불하지 않고 계속 쓸 수 있게 한다.</summary>
+    public void CompleteStartingClassSelection()
+    {
+        unlockedClasses.Add(CurrentClass);
+        NeedsStartingClassSelection = false;
+    }
 
     public void TakeDamage(int amount, string monsterTypeName)
     {
@@ -202,16 +209,16 @@ public class GameManager : MonoBehaviour
         _ => WeaponType.None
     };
 
-    public bool IsClassUnlocked(PlayerClass playerClass) =>
-        playerClass == PlayerClass.Scout || unlockedClasses.Contains(playerClass);
+    public bool IsClassUnlocked(PlayerClass playerClass) => unlockedClasses.Contains(playerClass);
 
     public int TranquilizerAmmo { get; private set; }
     public int MaxTranquilizerAmmo => config != null ? config.tranquilizerMaxAmmo : 10;
 
-    /// <summary>마일리지를 소모해 클래스를 해금한다(장착은 하지 않음). 스카우트는 항상 해금 상태라 대상이 될 수 없다.</summary>
+    /// <summary>마일리지를 소모해 클래스를 해금한다(장착은 하지 않음). 이미 해금된 클래스(시작 시 무료로
+    /// 고른 클래스 포함)는 대상이 될 수 없다.</summary>
     public bool PurchaseClass(PlayerClass playerClass)
     {
-        if (playerClass == PlayerClass.Scout || unlockedClasses.Contains(playerClass)) return false;
+        if (unlockedClasses.Contains(playerClass)) return false;
 
         int price = config != null ? config.GetClassUnlockPrice(playerClass) : 0;
         if (!TrySpendMileage(price)) return false;
@@ -224,7 +231,7 @@ public class GameManager : MonoBehaviour
     /// 건드리지 않고 바로 해금한다. PurchaseClass와 달리 가격 확인/차감이 없다.</summary>
     public bool UnlockClassFree(PlayerClass playerClass)
     {
-        if (playerClass == PlayerClass.Scout || unlockedClasses.Contains(playerClass)) return false;
+        if (unlockedClasses.Contains(playerClass)) return false;
 
         unlockedClasses.Add(playerClass);
         return true;

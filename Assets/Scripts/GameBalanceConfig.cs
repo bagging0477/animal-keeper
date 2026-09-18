@@ -150,11 +150,15 @@ public class GameBalanceConfig : ScriptableObject
         "위기 상황에서는 폭발적으로 가속해 벗어날 수 있다.")]
     public float trapperArcherSprintSpeedMultiplier = 1.3f;
 
-    [Header("클래스 해금 가격 (마일리지, 임시값 - 추후 조정 예정)")]
-    [Tooltip("트래퍼 클래스 해금 가격")]
-    public int trapperUnlockPrice = 100;
+    [Header("클래스 해금 가격 (마일리지) - 게임 시작 시 무료로 선택한 클래스는 이미 해금된 상태라 여기 가격과 " +
+        "무관하게 장착만 하면 되고, 나머지 두 클래스만 여기 가격으로 구매해야 한다.")]
+    [Tooltip("스카우트 클래스 해금 가격 (시작 시 무료로 고르지 않았을 경우)")]
+    public int scoutUnlockPrice = 200;
 
-    [Tooltip("아처 클래스 해금 가격")]
+    [Tooltip("트래퍼 클래스 해금 가격 (시작 시 무료로 고르지 않았을 경우)")]
+    public int trapperUnlockPrice = 200;
+
+    [Tooltip("아처 클래스 해금 가격 (시작 시 무료로 고르지 않았을 경우)")]
     public int archerUnlockPrice = 200;
 
     [Header("이동 속도")]
@@ -265,7 +269,7 @@ public class GameBalanceConfig : ScriptableObject
 
     [Header("상점 아이템 가격")]
     [Tooltip("ShelterScene의 각 상점 아이템(ShopItemInteractPoint) 이름과 가격. itemName은 ShopItemInteractPoint.GetPrice()가 " +
-        "찾는 이름과 정확히 일치해야 한다. 클래스 해금 가격(트래퍼/아처)은 여기가 아니라 위의 trapperUnlockPrice/archerUnlockPrice로 조정한다.")]
+        "찾는 이름과 정확히 일치해야 한다. 클래스 해금 가격은 여기가 아니라 위의 scoutUnlockPrice/trapperUnlockPrice/archerUnlockPrice로 조정한다.")]
     public List<ShopItemPrice> shopItemPrices = new List<ShopItemPrice>
     {
         new ShopItemPrice { itemName = "마취화살 탄약", price = 30 },
@@ -336,6 +340,7 @@ public class GameBalanceConfig : ScriptableObject
 
     public int GetClassUnlockPrice(PlayerClass playerClass) => playerClass switch
     {
+        PlayerClass.Scout => scoutUnlockPrice,
         PlayerClass.Trapper => trapperUnlockPrice,
         PlayerClass.Archer => archerUnlockPrice,
         _ => 0
