@@ -36,9 +36,12 @@ MonoBehaviour:
   focusedVisionRadius: 11
   focusedVisionAngle: 80
   focusedVisionShadowSoftness: 0.5
-  scoutVisionRangePercent: 100
-  trapperVisionRangePercent: 100
-  archerVisionRangePercent: 125
+  scoutAmbientVisionRangePercent: 100
+  trapperAmbientVisionRangePercent: 100
+  archerAmbientVisionRangePercent: 150
+  scoutFocusedVisionRangePercent: 100
+  trapperFocusedVisionRangePercent: 100
+  archerFocusedVisionRangePercent: 125
   scoutMoveSpeedMultiplier: 1.08
   scoutMaxHealthPercent: 100
   trapperMaxHealthPercent: 130

@@ -99,16 +99,27 @@ public class GameBalanceConfig : ScriptableObject
     [Range(0f, 1f)]
     public float focusedVisionShadowSoftness = 0.5f;
 
-    [Header("클래스 - 시야 범위 배율 (기준치 대비, %) - 100이면 기준치(위 ambientVisionRadius 등) 그대로")]
-    [Tooltip("스카우트 시야 범위 배율. 기본 원형 시야 반경과 부채꼴 시야의 반경/각도 모두에 곱해진다.")]
-    public int scoutVisionRangePercent = 100;
+    [Header("클래스 - 시야 범위 배율 (기준치 대비, %) - 100이면 기준치(위 ambientVisionRadius 등) 그대로. " +
+        "원형 시야(Ambient)와 부채꼴 시야(Focused)를 따로 조절할 수 있다.")]
+    [Tooltip("스카우트 기본 원형 시야(Ambient Vision) 반경 배율.")]
+    public int scoutAmbientVisionRangePercent = 100;
 
-    [Tooltip("트래퍼 시야 범위 배율. 기본 원형 시야 반경과 부채꼴 시야의 반경/각도 모두에 곱해진다.")]
-    public int trapperVisionRangePercent = 100;
+    [Tooltip("트래퍼 기본 원형 시야(Ambient Vision) 반경 배율.")]
+    public int trapperAmbientVisionRangePercent = 100;
 
-    [Tooltip("아처 시야 범위 배율. 기본 원형 시야 반경과 부채꼴 시야의 반경/각도 모두에 곱해진다 - " +
+    [Tooltip("아처 기본 원형 시야(Ambient Vision) 반경 배율 - 부채꼴 시야보다도 더 넓게 잡아서, " +
+        "바로 근처에서도 다른 클래스보다 확실히 더 잘 보이게 한다.")]
+    public int archerAmbientVisionRangePercent = 150;
+
+    [Tooltip("스카우트 부채꼴 시야(Focused Vision)의 반경/각도 배율.")]
+    public int scoutFocusedVisionRangePercent = 100;
+
+    [Tooltip("트래퍼 부채꼴 시야(Focused Vision)의 반경/각도 배율.")]
+    public int trapperFocusedVisionRangePercent = 100;
+
+    [Tooltip("아처 부채꼴 시야(Focused Vision)의 반경/각도 배율 - " +
         "체력이 낮은 대신 더 멀리, 더 넓게 보고 안전한 거리에서 대응할 수 있는 컨셉.")]
-    public int archerVisionRangePercent = 125;
+    public int archerFocusedVisionRangePercent = 125;
 
     [Header("클래스 - 이동속도 / 체력")]
     [Tooltip("스카우트 기본(걷기) 이동속도 배율 - 몬스터 추격 속도(monsterChaseSpeed, 고정값) 대비. " +
@@ -287,19 +298,27 @@ public class GameBalanceConfig : ScriptableObject
         _ => archerMaxHealthPercent
     };
 
-    private float GetClassVisionRangeMultiplier(PlayerClass playerClass) => playerClass switch
+    private float GetClassAmbientVisionRangeMultiplier(PlayerClass playerClass) => playerClass switch
     {
-        PlayerClass.Scout => scoutVisionRangePercent / 100f,
-        PlayerClass.Trapper => trapperVisionRangePercent / 100f,
-        PlayerClass.Archer => archerVisionRangePercent / 100f,
+        PlayerClass.Scout => scoutAmbientVisionRangePercent / 100f,
+        PlayerClass.Trapper => trapperAmbientVisionRangePercent / 100f,
+        PlayerClass.Archer => archerAmbientVisionRangePercent / 100f,
         _ => 1f
     };
 
-    public float GetClassAmbientVisionRadius(PlayerClass playerClass) => ambientVisionRadius * GetClassVisionRangeMultiplier(playerClass);
+    private float GetClassFocusedVisionRangeMultiplier(PlayerClass playerClass) => playerClass switch
+    {
+        PlayerClass.Scout => scoutFocusedVisionRangePercent / 100f,
+        PlayerClass.Trapper => trapperFocusedVisionRangePercent / 100f,
+        PlayerClass.Archer => archerFocusedVisionRangePercent / 100f,
+        _ => 1f
+    };
 
-    public float GetClassFocusedVisionRadius(PlayerClass playerClass) => focusedVisionRadius * GetClassVisionRangeMultiplier(playerClass);
+    public float GetClassAmbientVisionRadius(PlayerClass playerClass) => ambientVisionRadius * GetClassAmbientVisionRangeMultiplier(playerClass);
 
-    public float GetClassFocusedVisionAngle(PlayerClass playerClass) => focusedVisionAngle * GetClassVisionRangeMultiplier(playerClass);
+    public float GetClassFocusedVisionRadius(PlayerClass playerClass) => focusedVisionRadius * GetClassFocusedVisionRangeMultiplier(playerClass);
+
+    public float GetClassFocusedVisionAngle(PlayerClass playerClass) => focusedVisionAngle * GetClassFocusedVisionRangeMultiplier(playerClass);
 
     /// <summary>playerMoveSpeed 대비 클래스별 기본(걷기) 이동속도 배율. 스카우트는 ScoutMoveSpeed(몬스터 추격 속도 기준)를
     /// playerMoveSpeed로 환산한 값을, 트래퍼/아처는 1(기본 이동속도 그대로)을 반환한다.</summary>
