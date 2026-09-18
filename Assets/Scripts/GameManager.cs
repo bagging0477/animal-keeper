@@ -87,7 +87,16 @@ public class GameManager : MonoBehaviour
         ResetInventory();
         HasSettledCargo = false;
         LastSettlementResult = default;
+        NeedsStartingClassSelection = true;
     }
+
+    /// <summary>true면 TruckScene(Day 1)에 들어가기 전에 반드시 ClassSelectScene에서 시작 클래스를
+    /// 골라야 한다 - 새 게임을 막 시작했거나 ResetGame()으로 재시작한 직후에만 켜진다. ResetDay()(Day
+    /// 클리어 후 "다음 날로")는 마일리지/해금 클래스를 그대로 유지하는 소프트 리셋이라 여기 포함되지
+    /// 않는다 - 이미 고른 클래스를 잃지 않으므로 다시 고를 필요가 없다.</summary>
+    public bool NeedsStartingClassSelection { get; private set; } = true;
+
+    public void CompleteStartingClassSelection() => NeedsStartingClassSelection = false;
 
     public void TakeDamage(int amount, string monsterTypeName)
     {
@@ -206,6 +215,16 @@ public class GameManager : MonoBehaviour
 
         int price = config != null ? config.GetClassUnlockPrice(playerClass) : 0;
         if (!TrySpendMileage(price)) return false;
+
+        unlockedClasses.Add(playerClass);
+        return true;
+    }
+
+    /// <summary>시작 시 무료 클래스 선택(NeedsStartingClassSelection)에서만 쓰인다 - 마일리지를 전혀
+    /// 건드리지 않고 바로 해금한다. PurchaseClass와 달리 가격 확인/차감이 없다.</summary>
+    public bool UnlockClassFree(PlayerClass playerClass)
+    {
+        if (playerClass == PlayerClass.Scout || unlockedClasses.Contains(playerClass)) return false;
 
         unlockedClasses.Add(playerClass);
         return true;

@@ -42,13 +42,20 @@ public class ClassInteractPoint : MonoBehaviour
         GameManager gm = GameManager.Instance;
         bool unlocked = gm != null && gm.IsClassUnlocked(playerClass);
         bool selected = gm != null && gm.CurrentClass == playerClass;
+        bool freeSelection = gm != null && gm.NeedsStartingClassSelection;
         int price = config != null ? config.GetClassUnlockPrice(playerClass) : 0;
 
         if (popup != null)
         {
-            string priceLine = !unlocked
-                ? $"{price} 마일리지 - E를 눌러 구매 후 장착"
-                : (selected ? "현재 장착 중" : "해금됨 - E를 눌러 장착");
+            string priceLine;
+            if (!unlocked)
+            {
+                priceLine = freeSelection ? "E를 눌러 선택 (무료)" : $"{price} 마일리지 - E를 눌러 구매 후 장착";
+            }
+            else
+            {
+                priceLine = selected ? "현재 장착 중" : "해금됨 - E를 눌러 장착";
+            }
             popup.Show(GetClassDisplayName(playerClass), BuildStatsText(playerClass), priceLine, transform);
         }
 
@@ -57,7 +64,8 @@ public class ClassInteractPoint : MonoBehaviour
 
         if (!unlocked)
         {
-            if (gm.PurchaseClass(playerClass)) gm.SelectClass(playerClass);
+            bool acquired = freeSelection ? gm.UnlockClassFree(playerClass) : gm.PurchaseClass(playerClass);
+            if (acquired) gm.SelectClass(playerClass);
         }
         else if (!selected)
         {
