@@ -1479,6 +1479,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerClassAppearance
   scoutSprite: {fileID: 21300000, guid: 7870dc22fe8a381499692953bdca87cb, type: 3}
+  trapperSprite: {fileID: 21300000, guid: 008d6ddab8692bac01eda0e5cb6de329, type: 3}
   gunnerSprite: {fileID: 21300000, guid: c67d63129b2a84053fbe46118e431043, type: 3}
   gunnerArmedSprite: {fileID: 21300000, guid: f6b7fcba91c96f708cef460433898ebf, type: 3}
 --- !u!4 &1062585038
