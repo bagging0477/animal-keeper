@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 740077487230975585}
   - component: {fileID: 8620217539038921401}
   - component: {fileID: 8620217539038921402}
+  - component: {fileID: 8620217539038921410}
   m_Layer: 0
   m_Name: AnimalWander
   m_TagString: Untagged
@@ -204,3 +205,28 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_Radius: 0.35
   m_Offset: {x: 0, y: 0}
+--- !u!114 &8620217539038921410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8620217539038921367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad4a0cab5c599fe5b6d1c68d86631298, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteSheetAnimator
+  sheet: {fileID: 2800000, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
+  frameSize: 32
+  pixelsPerUnit: 16
+  frameRate: 8
+  idleRow: 0
+  idleStartColumn: 2
+  idleFrameCount: 1
+  alertRow: 0
+  alertStartColumn: 0
+  alertFrameCount: 0
+  movementRow: 0
+  movementStartColumn: 0
+  movementFrameCount: 0

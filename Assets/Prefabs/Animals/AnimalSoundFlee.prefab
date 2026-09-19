@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7673956236020887244}
   - component: {fileID: 6992825298821530901}
   - component: {fileID: 6992825298821530902}
+  - component: {fileID: 6992825298821530910}
   m_Layer: 0
   m_Name: AnimalSoundFlee
   m_TagString: Untagged
@@ -210,3 +211,28 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_Radius: 0.35
   m_Offset: {x: 0, y: 0}
+--- !u!114 &6992825298821530910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6992825298821530945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad4a0cab5c599fe5b6d1c68d86631298, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteSheetAnimator
+  sheet: {fileID: 2800000, guid: 57d369c9a5e371cc8eadc6f8bc058692, type: 3}
+  frameSize: 32
+  pixelsPerUnit: 16
+  frameRate: 8
+  idleRow: 0
+  idleStartColumn: 0
+  idleFrameCount: 6
+  alertRow: 3
+  alertStartColumn: 0
+  alertFrameCount: 4
+  movementRow: 2
+  movementStartColumn: 0
+  movementFrameCount: 4

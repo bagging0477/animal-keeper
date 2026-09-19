@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5220942028165541938}
   - component: {fileID: 5701105146326097001}
   - component: {fileID: 5701105146326097002}
+  - component: {fileID: 5701105146326097010}
   m_Layer: 0
   m_Name: AnimalFlee
   m_TagString: Untagged
@@ -207,3 +208,28 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_Radius: 0.35
   m_Offset: {x: 0, y: 0}
+--- !u!114 &5701105146326097010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 570110514632718333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad4a0cab5c599fe5b6d1c68d86631298, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteSheetAnimator
+  sheet: {fileID: 2800000, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  frameSize: 32
+  pixelsPerUnit: 16
+  frameRate: 8
+  idleRow: 0
+  idleStartColumn: 0
+  idleFrameCount: 8
+  alertRow: 0
+  alertStartColumn: 0
+  alertFrameCount: 0
+  movementRow: 7
+  movementStartColumn: 0
+  movementFrameCount: 8
