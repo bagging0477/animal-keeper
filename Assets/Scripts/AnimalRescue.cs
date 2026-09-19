@@ -65,6 +65,16 @@ public class AnimalRescue : MonoBehaviour
         if (playerObj != null)
         {
             player = playerObj.transform;
+
+            // 플레이어가 동물과 부딪혀 밀어내지 않고 그냥 겹쳐 지나갈 수 있게, 이 둘의 콜라이더끼리만
+            // 물리 충돌을 끈다(레이어 전체를 끄는 게 아니라 이 쌍만 - 동물은 벽/장애물과는 여전히
+            // 충돌해야 한다). AnimalRescue는 세 동물 프리팹 모두에 붙어있어 한 곳에서 처리하기 좋다.
+            Collider2D myCollider = GetComponent<Collider2D>();
+            Collider2D playerCollider = playerObj.GetComponent<Collider2D>();
+            if (myCollider != null && playerCollider != null)
+            {
+                Physics2D.IgnoreCollision(myCollider, playerCollider, true);
+            }
         }
         else
         {

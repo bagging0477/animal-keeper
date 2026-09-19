@@ -614,6 +614,7 @@ MonoBehaviour:
   maxRoomCount: 4
   animalPrefabs:
   - {fileID: 8620217539038921367, guid: 01f13696473ba7c4d884d8d271f17ce9, type: 3}
+  - {fileID: 8620217539038921367, guid: 01f13696473ba7c4d884d8d271f17ce9, type: 3}
   - {fileID: 570110514632718333, guid: f8dd9cb84f076d34fac29b7bcd135584, type: 3}
   - {fileID: 6992825298821530945, guid: 16bae85f36edc594d946c87bdfa9d872, type: 3}
   monsterPrefabs:

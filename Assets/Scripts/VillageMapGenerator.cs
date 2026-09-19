@@ -20,8 +20,9 @@ public class VillageMapGenerator : MonoBehaviour
     [SerializeField] private int minRoomCount = 3;
     [SerializeField] private int maxRoomCount = 4;
 
-    [Header("방마다 하나씩 무작위 배치할 동물/몬스터")]
+    [Header("방마다 무작위 배치할 동물/몬스터")]
     [SerializeField] private GameObject[] animalPrefabs;
+    [SerializeField] private int animalsPerRoom = 2;
     [SerializeField] private GameObject[] monsterPrefabs;
 
     [Header("기존 씬 오브젝트 (재배치할 대상)")]
@@ -729,9 +730,18 @@ public class VillageMapGenerator : MonoBehaviour
     {
         if (animalPrefabs == null || animalPrefabs.Length == 0 || room.FloorCells.Count == 0) return;
 
-        GameObject prefab = animalPrefabs[Random.Range(0, animalPrefabs.Length)];
-        Vector2Int cell = PickInteriorCell(room, excludedCells);
-        Instantiate(prefab, ToSpritePosition(room, cell), Quaternion.identity, parent);
+        // 방 하나에 animalsPerRoom마리를 뽑는 동안, 이미 뽑은 칸은 다음 마리를 위해 제외 목록에
+        // 더해서 같은 자리에 여러 마리가 겹쳐 스폰되지 않게 한다. excludedCells(플레이어/트럭 위치)는
+        // 호출자가 다른 곳(SpawnMonster)에서도 재사용하므로 원본을 건드리지 않고 복사해서 쓴다.
+        HashSet<Vector2Int> usedCells = excludedCells != null ? new HashSet<Vector2Int>(excludedCells) : new HashSet<Vector2Int>();
+
+        for (int i = 0; i < animalsPerRoom; i++)
+        {
+            GameObject prefab = animalPrefabs[Random.Range(0, animalPrefabs.Length)];
+            Vector2Int cell = PickInteriorCell(room, usedCells);
+            Instantiate(prefab, ToSpritePosition(room, cell), Quaternion.identity, parent);
+            usedCells.Add(cell);
+        }
     }
 
     private const int MonsterSpawnDistanceRetryCount = 10;

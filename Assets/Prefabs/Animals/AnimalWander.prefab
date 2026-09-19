@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 740077487230975585}
   - component: {fileID: 8620217539038921401}
   - component: {fileID: 8620217539038921402}
-  - component: {fileID: 8620217539038921410}
+  - component: {fileID: 7718787691181264448}
   m_Layer: 0
   m_Name: AnimalWander
   m_TagString: Untagged
@@ -33,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -87,7 +87,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 02cf47261be3c48469d3fa35ee5b5d4c, type: 3}
+  m_Sprite: {fileID: -1073623083, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -127,6 +127,9 @@ MonoBehaviour:
   maxWeight: 10
   promptText: {fileID: 0}
   pickupSound: {fileID: 8300000, guid: 210b0d727c48b54409b3fce3f07f8429, type: 3}
+  playPickupSoundSegment: 0
+  pickupSoundStartTime: 7
+  pickupSoundEndTime: 8
 --- !u!114 &740077487230975585
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,6 +149,7 @@ MonoBehaviour:
   stopDistance: 0.1
 --- !u!50 &8620217539038921401
 Rigidbody2D:
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -203,9 +207,10 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
-  m_Radius: 0.35
+  m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
---- !u!114 &8620217539038921410
+  m_Radius: 0.35
+--- !u!114 &7718787691181264448
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -214,19 +219,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 8620217539038921367}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad4a0cab5c599fe5b6d1c68d86631298, type: 3}
+  m_Script: {fileID: 11500000, guid: e120aaf446e0b38981e9251d03a98734, type: 3}
   m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::SpriteSheetAnimator
-  sheet: {fileID: 2800000, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
-  frameSize: 32
-  pixelsPerUnit: 16
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleFrameAnimator
+  idleSprite: {fileID: -1073623083, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
+  walkFrames:
+  - {fileID: -1073623083, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
+  - {fileID: 716651403, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
+  - {fileID: 1819678762, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
+  - {fileID: -1083502863, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
+  - {fileID: -123028918, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
+  - {fileID: 653729013, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
   frameRate: 8
-  idleRow: 0
-  idleStartColumn: 2
-  idleFrameCount: 1
-  alertRow: 0
-  alertStartColumn: 0
-  alertFrameCount: 0
-  movementRow: 0
-  movementStartColumn: 0
-  movementFrameCount: 0
