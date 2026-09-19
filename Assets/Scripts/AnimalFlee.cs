@@ -18,6 +18,7 @@ public class AnimalFlee : MonoBehaviour
     private AnimalSleep sleep;
     private Rigidbody2D rb;
     private SpriteSheetAnimator spriteAnimator;
+    private AnimalFacingFlipper facingFlipper;
     private float alertTimer;
     private Vector2 fleeDirection;
 
@@ -26,6 +27,7 @@ public class AnimalFlee : MonoBehaviour
         sleep = GetComponent<AnimalSleep>();
         rb = GetComponent<Rigidbody2D>();
         spriteAnimator = GetComponent<SpriteSheetAnimator>();
+        facingFlipper = GetComponent<AnimalFacingFlipper>();
         // 벽 콜라이더 모서리를 스칠 때 마찰로 걸리는 떨림을 없애기 위해 플레이어와 동일하게 무마찰 재질을 쓴다.
         rb.sharedMaterial = new PhysicsMaterial2D("AnimalNoFriction") { friction = 0f, bounciness = 0f };
     }
@@ -90,6 +92,8 @@ public class AnimalFlee : MonoBehaviour
                 _ => AnimalAnimState.Idle
             };
         }
+
+        if (facingFlipper != null) facingFlipper.SetMoveDirection(fleeDirection);
     }
 
     private void FixedUpdate()

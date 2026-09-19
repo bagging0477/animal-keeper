@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 6992825298821530901}
   - component: {fileID: 6992825298821530902}
   - component: {fileID: 6992825298821530910}
+  - component: {fileID: 6992825298821530920}
   m_Layer: 0
   m_Name: AnimalSoundFlee
   m_TagString: Untagged
@@ -236,3 +237,16 @@ MonoBehaviour:
   movementRow: 2
   movementStartColumn: 0
   movementFrameCount: 4
+--- !u!114 &6992825298821530920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6992825298821530945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f7b8426135743f44b1b960324be89e9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalFacingFlipper
+  horizontalDeadzone: 0.01

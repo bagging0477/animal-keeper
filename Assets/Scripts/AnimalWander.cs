@@ -13,6 +13,7 @@ public class AnimalWander : MonoBehaviour
     private AnimalSleep sleep;
     private Rigidbody2D rb;
     private SimpleFrameAnimator frameAnimator;
+    private AnimalFacingFlipper facingFlipper;
     private Vector2 origin;
     private Vector2 destination;
     private Vector2 moveDirection;
@@ -24,6 +25,7 @@ public class AnimalWander : MonoBehaviour
         sleep = GetComponent<AnimalSleep>();
         rb = GetComponent<Rigidbody2D>();
         frameAnimator = GetComponent<SimpleFrameAnimator>();
+        facingFlipper = GetComponent<AnimalFacingFlipper>();
         // 벽 콜라이더 모서리를 스칠 때 마찰로 걸리는 떨림을 없애기 위해 플레이어와 동일하게 무마찰 재질을 쓴다.
         rb.sharedMaterial = new PhysicsMaterial2D("AnimalNoFriction") { friction = 0f, bounciness = 0f };
         origin = transform.position;
@@ -68,6 +70,7 @@ public class AnimalWander : MonoBehaviour
     private void UpdateAnimator()
     {
         if (frameAnimator != null) frameAnimator.IsMoving = moveDirection != Vector2.zero;
+        if (facingFlipper != null) facingFlipper.SetMoveDirection(moveDirection);
     }
 
     private void FixedUpdate()
