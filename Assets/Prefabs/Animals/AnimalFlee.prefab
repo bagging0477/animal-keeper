@@ -15,8 +15,8 @@ GameObject:
   - component: {fileID: 5220942028165541938}
   - component: {fileID: 5701105146326097001}
   - component: {fileID: 5701105146326097002}
-  - component: {fileID: 5701105146326097010}
   - component: {fileID: 5701105146326097020}
+  - component: {fileID: -3206118690895255046}
   m_Layer: 0
   m_Name: AnimalFlee
   m_TagString: Untagged
@@ -34,7 +34,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -88,7 +88,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 2625263710783351339, guid: be1bb79d0909c5a48a4acabe6ebfc53e, type: 3}
+  m_Sprite: {fileID: -1766235454, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -128,6 +128,10 @@ MonoBehaviour:
   maxWeight: 10
   promptText: {fileID: 0}
   pickupSound: {fileID: 8300000, guid: bef158e49cf76bc43a024c7dc290df42, type: 3}
+  playPickupSoundSegment: 0
+  pickupSoundStartTime: 7
+  pickupSoundEndTime: 8
+  inventoryIcon: {fileID: 0}
 --- !u!114 &5220942028165541938
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,16 +144,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7642319bc419b64b843382efb32b024, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalFlee
+  config: {fileID: 0}
+  wanderRadius: 1.5
+  waitMin: 1
+  waitMax: 3
+  wanderStopDistance: 0.1
   alertRange: 3
   loseRange: 5
   alertDuration: 0.5
-  fleeSpeed: 2.5
   wallLookahead: 0.6
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4294967295
 --- !u!50 &5701105146326097001
 Rigidbody2D:
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -207,33 +216,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
-  m_Radius: 0.35
+  m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
---- !u!114 &5701105146326097010
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 570110514632718333}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad4a0cab5c599fe5b6d1c68d86631298, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::SpriteSheetAnimator
-  sheet: {fileID: 2800000, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
-  frameSize: 32
-  pixelsPerUnit: 16
-  frameRate: 8
-  idleRow: 0
-  idleStartColumn: 0
-  idleFrameCount: 8
-  alertRow: 0
-  alertStartColumn: 0
-  alertFrameCount: 0
-  movementRow: 7
-  movementStartColumn: 0
-  movementFrameCount: 8
+  m_Radius: 0.35
 --- !u!114 &5701105146326097020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -244,6 +229,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f7b8426135743f44b1b960324be89e9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalFacingFlipper
   horizontalDeadzone: 0.01
+--- !u!114 &-3206118690895255046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 570110514632718333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e120aaf446e0b38981e9251d03a98734, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleFrameAnimator
+  idleSprite: {fileID: -1766235454, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  walkFrames:
+  - {fileID: 587793489, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  - {fileID: -2068113337, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  - {fileID: -1381920956, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  - {fileID: 282685937, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  - {fileID: -293944647, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  - {fileID: 1615878800, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  fleeFrames:
+  - {fileID: -1076885439, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  - {fileID: 410752287, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  - {fileID: -946712076, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  - {fileID: 716583411, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  - {fileID: -1115083027, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  - {fileID: 2019777194, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  - {fileID: 877804133, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  - {fileID: -965083657, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
+  frameRate: 10

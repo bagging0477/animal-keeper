@@ -29,7 +29,13 @@ public class AnimalFlee : MonoBehaviour
     private Transform player;
     private AnimalSleep sleep;
     private Rigidbody2D rb;
+
+    // 두 애니메이터 컴포넌트 중 이 동물 프리팹에 실제로 붙어있는 쪽만 null이 아니게 된다 -
+    // SpriteSheetAnimator(레서판다처럼 아직 안 옮긴 동물)는 그리드 슬라이싱 기반, SimpleFrameAnimator
+    // (고양이처럼 옮긴 동물)는 미리 슬라이스된 Sprite 배열 기반이다. Unity Animator/AnimatorController는
+    // 이 프로젝트에서 반복적으로(코알라, 고양이) Write Defaults/상태 전환 문제를 일으켜 쓰지 않는다.
     private SpriteSheetAnimator spriteAnimator;
+    private SimpleFrameAnimator frameAnimator;
     private AnimalFacingFlipper facingFlipper;
     private float alertTimer;
     private Vector2 moveDirection;
@@ -45,11 +51,14 @@ public class AnimalFlee : MonoBehaviour
     public bool IsAlarmed => state == State.Alert || state == State.Fleeing;
 
     /// <summary>씬 재진입 시, 나갈 때 Alert/Fleeing 중이었던 동물을 처음부터 도주 상태로 즉시
-    /// 복원한다. Wander부터 다시 플레이어를 감지하게 두면 겁먹고 있던 걸 까먹은 것처럼 보인다.</summary>
+    /// 복원한다. Wander부터 다시 플레이어를 감지하게 두면 겁먹고 있던 걸 까먹은 것처럼 보인다.
+    /// frameAnimator에도 바로 신호를 줘서, 이 호출 직후 아직 Update()가 한 번도 안 돈 프레임에도
+    /// (예: VillageMapGenerator가 스폰 직후 바로 상태를 확인하는 경우) 이미 도주 프레임으로 보인다.</summary>
     public void RestoreFleeing()
     {
         state = State.Fleeing;
         alertTimer = 0f;
+        if (frameAnimator != null) frameAnimator.IsFleeing = true;
     }
 
     private void Awake()
@@ -57,6 +66,7 @@ public class AnimalFlee : MonoBehaviour
         sleep = GetComponent<AnimalSleep>();
         rb = GetComponent<Rigidbody2D>();
         spriteAnimator = GetComponent<SpriteSheetAnimator>();
+        frameAnimator = GetComponent<SimpleFrameAnimator>();
         facingFlipper = GetComponent<AnimalFacingFlipper>();
         // 벽 콜라이더 모서리를 스칠 때 마찰로 걸리는 떨림을 없애기 위해 플레이어와 동일하게 무마찰 재질을 쓴다.
         rb.sharedMaterial = new PhysicsMaterial2D("AnimalNoFriction") { friction = 0f, bounciness = 0f };
@@ -130,6 +140,12 @@ public class AnimalFlee : MonoBehaviour
                 State.Fleeing => AnimalAnimState.Moving,
                 _ => moveDirection != Vector2.zero ? AnimalAnimState.Moving : AnimalAnimState.Idle
             };
+        }
+
+        if (frameAnimator != null)
+        {
+            frameAnimator.IsFleeing = state == State.Fleeing;
+            frameAnimator.IsMoving = state == State.Wander && moveDirection != Vector2.zero;
         }
 
         if (facingFlipper != null) facingFlipper.SetMoveDirection(moveDirection);
