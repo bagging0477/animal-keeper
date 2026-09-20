@@ -4,30 +4,48 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class AnimalFlee : MonoBehaviour
 {
-    private enum State { Idle, Alert, Fleeing }
+    private enum State { Wander, Alert, Fleeing }
 
+    [Header("밸런스 설정 (비워두면 기본값 사용)")]
+    [SerializeField] private GameBalanceConfig config;
+
+    [Header("평소 배회 (Wander) - 얌전한 동물(코알라, AnimalWander)과 같은 패턴")]
+    [SerializeField] private float wanderRadius = 1.5f;
+    [SerializeField] private float waitMin = 1f;
+    [SerializeField] private float waitMax = 3f;
+    [SerializeField] private float wanderStopDistance = 0.1f;
+
+    [Header("놀람 → 도주 감지")]
     [SerializeField] private float alertRange = 3f;
     [SerializeField] private float loseRange = 5f;
     [SerializeField] private float alertDuration = 0.5f;
-    [SerializeField] private float fleeSpeed = 2.5f;
     [SerializeField] private float wallLookahead = 0.6f;
     [SerializeField] private LayerMask obstacleMask = ~0;
 
-    private State state = State.Idle;
+    private float WanderSpeed => config != null ? config.animalWanderSpeed : 0.8f;
+    private float FleeSpeed => config != null ? config.animalFleeSpeed : 3.375f;
+
+    private State state = State.Wander;
     private Transform player;
     private AnimalSleep sleep;
     private Rigidbody2D rb;
     private SpriteSheetAnimator spriteAnimator;
     private AnimalFacingFlipper facingFlipper;
     private float alertTimer;
-    private Vector2 fleeDirection;
+    private Vector2 moveDirection;
+
+    // 평소 배회(Wander) 전용 상태 - AnimalWander(코알라)와 동일한 패턴.
+    private Vector2 origin;
+    private Vector2 wanderDestination;
+    private float waitTimer;
+    private bool waiting;
 
     /// <summary>Alert(놀람) 또는 Fleeing(도주) 중이면 true. 씬을 나가기 직전 이 동물의 "긴장 상태"를
     /// 저장했다가 돌아왔을 때 복원하는 데 쓰인다.</summary>
     public bool IsAlarmed => state == State.Alert || state == State.Fleeing;
 
     /// <summary>씬 재진입 시, 나갈 때 Alert/Fleeing 중이었던 동물을 처음부터 도주 상태로 즉시
-    /// 복원한다. Idle부터 다시 플레이어를 감지하게 두면 겁먹고 있던 걸 까먹은 것처럼 보인다.</summary>
+    /// 복원한다. Wander부터 다시 플레이어를 감지하게 두면 겁먹고 있던 걸 까먹은 것처럼 보인다.</summary>
     public void RestoreFleeing()
     {
         state = State.Fleeing;
@@ -42,6 +60,7 @@ public class AnimalFlee : MonoBehaviour
         facingFlipper = GetComponent<AnimalFacingFlipper>();
         // 벽 콜라이더 모서리를 스칠 때 마찰로 걸리는 떨림을 없애기 위해 플레이어와 동일하게 무마찰 재질을 쓴다.
         rb.sharedMaterial = new PhysicsMaterial2D("AnimalNoFriction") { friction = 0f, bounciness = 0f };
+        origin = transform.position;
     }
 
     private void Start()
@@ -55,11 +74,13 @@ public class AnimalFlee : MonoBehaviour
         {
             Debug.LogWarning($"{name}: no GameObject tagged 'Player' found in the scene.");
         }
+
+        PickNewWanderDestination();
     }
 
     private void Update()
     {
-        fleeDirection = Vector2.zero;
+        moveDirection = Vector2.zero;
 
         if (player == null) return;
         if (sleep != null && sleep.IsAsleep) return;
@@ -68,12 +89,14 @@ public class AnimalFlee : MonoBehaviour
 
         switch (state)
         {
-            case State.Idle:
+            case State.Wander:
                 if (distance <= alertRange)
                 {
                     state = State.Alert;
                     alertTimer = alertDuration;
+                    break;
                 }
+                UpdateWander();
                 break;
 
             case State.Alert:
@@ -88,7 +111,11 @@ public class AnimalFlee : MonoBehaviour
             case State.Fleeing:
                 if (distance > loseRange)
                 {
-                    state = State.Idle;
+                    state = State.Wander;
+                    // 도망친 자리 근처에서 배회를 다시 시작한다 - 원래 스폰 지점까지 먼 길을
+                    // 되돌아가게 하면 부자연스럽다.
+                    origin = rb.position;
+                    PickNewWanderDestination();
                     break;
                 }
                 Flee();
@@ -101,17 +128,44 @@ public class AnimalFlee : MonoBehaviour
             {
                 State.Alert => AnimalAnimState.Alert,
                 State.Fleeing => AnimalAnimState.Moving,
-                _ => AnimalAnimState.Idle
+                _ => moveDirection != Vector2.zero ? AnimalAnimState.Moving : AnimalAnimState.Idle
             };
         }
 
-        if (facingFlipper != null) facingFlipper.SetMoveDirection(fleeDirection);
+        if (facingFlipper != null) facingFlipper.SetMoveDirection(moveDirection);
+    }
+
+    private void UpdateWander()
+    {
+        if (waiting)
+        {
+            waitTimer -= Time.deltaTime;
+            if (waitTimer <= 0f) PickNewWanderDestination();
+            return;
+        }
+
+        Vector2 toDestination = wanderDestination - rb.position;
+        if (toDestination.magnitude <= wanderStopDistance)
+        {
+            waiting = true;
+            waitTimer = Random.Range(waitMin, waitMax);
+            return;
+        }
+
+        moveDirection = toDestination.normalized;
+    }
+
+    private void PickNewWanderDestination()
+    {
+        waiting = false;
+        wanderDestination = origin + Random.insideUnitCircle * wanderRadius;
     }
 
     private void FixedUpdate()
     {
-        if (fleeDirection == Vector2.zero) return;
-        rb.MovePosition(rb.position + fleeDirection * fleeSpeed * Time.fixedDeltaTime);
+        if (moveDirection == Vector2.zero) return;
+        float speed = state == State.Fleeing ? FleeSpeed : WanderSpeed;
+        rb.MovePosition(rb.position + moveDirection * speed * Time.fixedDeltaTime);
     }
 
     private void Flee()
@@ -119,7 +173,7 @@ public class AnimalFlee : MonoBehaviour
         Vector2 awayFromPlayer = (rb.position - (Vector2)player.position).normalized;
         if (awayFromPlayer == Vector2.zero) awayFromPlayer = Random.insideUnitCircle.normalized;
 
-        fleeDirection = FindClearDirection(awayFromPlayer); // stays zero if boxed in
+        moveDirection = FindClearDirection(awayFromPlayer); // stays zero if boxed in
     }
 
     // Tries the desired direction first, then increasingly wider angles to

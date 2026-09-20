@@ -175,6 +175,14 @@ public class GameBalanceConfig : ScriptableObject
         "두 몬스터 타입(MonsterAI/SoundReactiveMonsterAI) 공통으로 적용된다.")]
     public float monsterChaseSpeed = 4.3125f;
 
+    [Tooltip("도망가는 동물(고양이)/소리 내는 동물(레서판다, 둘 다 AnimalFlee 계열)이 평소 배회(Wander)할 때의 " +
+        "이동속도. 얌전한 동물(코알라, AnimalWander)과 같은 느낌을 주기 위해 기본값을 동일하게 맞췄다.")]
+    public float animalWanderSpeed = 0.8f;
+
+    [Tooltip("도망가는 동물/소리 내는 동물이 Alert 이후 Fleeing(도주) 상태로 전환됐을 때의 이동속도. " +
+        "평소 배회 속도와 확실히 구분되도록 기존 값(2.5)보다 35% 빠르게 잡았다.")]
+    public float animalFleeSpeed = 3.375f;
+
     /// <summary>스카우트의 기본(걷기) 이동속도. 몬스터 추격 속도(고정값)에 scoutMoveSpeedMultiplier를 곱해 구한다.</summary>
     public float ScoutMoveSpeed => monsterChaseSpeed * scoutMoveSpeedMultiplier;
 
