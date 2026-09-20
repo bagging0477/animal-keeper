@@ -39,6 +39,48 @@ public class GameManager : MonoBehaviour
 
     public void MarkAnimalRescuedToday(string animalId) => rescuedAnimalIdsToday.Add(animalId);
 
+    /// <summary>납품하지 않고 아직 인벤토리에 들고만 있는 동물인지. 트럭에 들렀다가(납품하지 않고)
+    /// 마을로 되돌아오면 VillageMapGenerator가 맵을 통째로 새로 생성하면서 같은 동물을 또 Instantiate
+    /// 하는데, rescuedAnimalIdsToday는 실제 납품(TryDeliverSelectedAnimal) 시점에만 기록되므로 이 값만
+    /// 보면 "이미 주웠지만 아직 안 판" 동물이 중복 스폰되는 것처럼 보였다 - AnimalRescue.Awake는
+    /// 이 둘을 함께 확인해야 한다.</summary>
+    public bool IsAnimalCurrentlyHeld(string animalId)
+    {
+        foreach (InventorySlotData slot in inventorySlots)
+        {
+            if (slot.Type == InventoryItemType.Animal && slot.AnimalId == animalId) return true;
+        }
+        return false;
+    }
+
+    private struct AnimalFieldState
+    {
+        public Vector3 Position;
+        public bool WasFleeing;
+    }
+
+    // 오늘 아직 못 잡은 동물이 트럭에 갔다 왔을 때도 "떠날 당시 마지막 위치"에서 이어지도록 기억해둔다.
+    // VillageMapGenerator가 같은 시드로 맵을 통째로 다시 만들 때 이 값을 찾아 스폰 위치를 덮어쓴다.
+    private readonly Dictionary<string, AnimalFieldState> animalFieldStates = new Dictionary<string, AnimalFieldState>();
+
+    /// <summary>AnimalRescue.OnDestroy에서(VillageScene이 언로드되기 직전) 호출된다 - 이 시점에는
+    /// 아직 모든 동물의 Transform이 살아있어 각자 자기 위치를 안전하게 남길 수 있다.</summary>
+    public void SaveAnimalFieldState(string animalId, Vector3 position, bool wasFleeing) =>
+        animalFieldStates[animalId] = new AnimalFieldState { Position = position, WasFleeing = wasFleeing };
+
+    public bool TryGetAnimalFieldState(string animalId, out Vector3 position, out bool wasFleeing)
+    {
+        if (animalFieldStates.TryGetValue(animalId, out AnimalFieldState saved))
+        {
+            position = saved.Position;
+            wasFleeing = saved.WasFleeing;
+            return true;
+        }
+        position = default;
+        wasFleeing = false;
+        return false;
+    }
+
     public int TotalWeight
     {
         get
@@ -60,6 +102,7 @@ public class GameManager : MonoBehaviour
         if (day >= MaxDay) return;
         day++;
         rescuedAnimalIdsToday.Clear();
+        animalFieldStates.Clear();
         Health = MaxHealth;
     }
 
@@ -67,6 +110,7 @@ public class GameManager : MonoBehaviour
     {
         day = 1;
         rescuedAnimalIdsToday.Clear();
+        animalFieldStates.Clear();
         Health = MaxHealth;
         gameSessionSeedInitialized = false;
     }
@@ -75,6 +119,7 @@ public class GameManager : MonoBehaviour
     {
         day = 1;
         rescuedAnimalIdsToday.Clear();
+        animalFieldStates.Clear();
         Mileage = 0;
         cargoWeights.Clear();
         RescuedCount = 0;
@@ -320,12 +365,12 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    public bool TryAddAnimal(string animalId, int weight, AnimalBehaviorKind kind) =>
-        TryAddItem(new InventorySlotData { Type = InventoryItemType.Animal, AnimalId = animalId, AnimalWeight = weight, AnimalKind = kind });
+    public bool TryAddAnimal(string animalId, int weight, AnimalBehaviorKind kind, Sprite icon) =>
+        TryAddItem(new InventorySlotData { Type = InventoryItemType.Animal, AnimalId = animalId, AnimalWeight = weight, AnimalKind = kind, Icon = icon });
 
-    public bool TryAddMine() => TryAddItem(new InventorySlotData { Type = InventoryItemType.Mine });
+    public bool TryAddMine(Sprite icon = null) => TryAddItem(new InventorySlotData { Type = InventoryItemType.Mine, Icon = icon });
 
-    public bool TryAddBomb() => TryAddItem(new InventorySlotData { Type = InventoryItemType.Bomb });
+    public bool TryAddBomb(Sprite icon = null) => TryAddItem(new InventorySlotData { Type = InventoryItemType.Bomb, Icon = icon });
 
     /// <summary>선택된 슬롯이 지뢰일 때만 소모한다 - 인벤토리 어딘가에 지뢰가 있어도 선택되어 있지
     /// 않으면 아무 일도 일어나지 않는다.</summary>

@@ -15,6 +15,9 @@ public class SimpleFrameAnimator : MonoBehaviour
     private int frameIndex;
     private float frameTimer;
 
+    /// <summary>Idle 스프라이트. 인벤토리 아이콘 기본값으로 쓰인다.</summary>
+    public Sprite IdleSprite => idleSprite;
+
     /// <summary>true면 walkFrames를 순환 재생하고, false면 idleSprite로 고정한다. 상태가 실제로
     /// 바뀔 때만 프레임 인덱스를 리셋해서, 매 프레임 같은 값으로 호출해도 애니메이션이 끊기지 않는다.</summary>
     public bool IsMoving

@@ -11,7 +11,11 @@ public class GadgetPickup : MonoBehaviour
     [SerializeField] private float interactionRange = 1.2f;
     [SerializeField] private Text promptText;
 
+    [Tooltip("인벤토리 슬롯에 표시할 아이콘. 비워두면 이 오브젝트의 SpriteRenderer 스프라이트를 자동으로 사용한다. 아직 아이콘이 없다면 비워두면 되고, 그 경우 슬롯은 기존처럼 색상 채움만으로 표시된다.")]
+    [SerializeField] private Sprite icon;
+
     private Transform player;
+    private Sprite resolvedIcon;
 
     private void Start()
     {
@@ -30,6 +34,9 @@ public class GadgetPickup : MonoBehaviour
             GameObject promptObj = GameObject.Find("PromptText");
             if (promptObj != null) promptText = promptObj.GetComponent<Text>();
         }
+
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        resolvedIcon = icon != null ? icon : (spriteRenderer != null ? spriteRenderer.sprite : null);
     }
 
     private void Update()
@@ -49,8 +56,8 @@ public class GadgetPickup : MonoBehaviour
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;
 
         bool picked = itemType == InventoryItemType.Mine
-            ? GameManager.Instance.TryAddMine()
-            : GameManager.Instance.TryAddBomb();
+            ? GameManager.Instance.TryAddMine(resolvedIcon)
+            : GameManager.Instance.TryAddBomb(resolvedIcon);
 
         if (picked) gameObject.SetActive(false);
     }

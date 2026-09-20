@@ -8,6 +8,11 @@ public class InventorySlotUI
     public Image frame;
     public Image fill;
     public Text label;
+
+    /// <summary>슬롯에 담긴 아이템의 실제 스프라이트(동물/지뢰/폭탄 아이콘)를 그리는 Image. 아이콘이
+    /// 없는 아이템(아직 아이콘이 지정되지 않은 지뢰/폭탄 등)이나 빈 슬롯에서는 비활성화되어, 기존의
+    /// 색상 채움(fill)만으로 표시되는 상태를 유지한다.</summary>
+    public Image icon;
 }
 
 /// <summary>5칸 인벤토리 + 클래스 고정 무기 슬롯을 화면에 그린다. 선택된 슬롯은 테두리(frame) 색이
@@ -48,6 +53,7 @@ public class InventoryUI : MonoBehaviour
             if (slot.frame != null) slot.frame.color = !weaponSelected && i == selected ? selectedFrameColor : unselectedFrameColor;
             if (slot.fill != null) slot.fill.color = FillColorFor(data.Type);
             if (slot.label != null) slot.label.text = BuildLabel(i, data);
+            UpdateIcon(slot.icon, data);
         }
 
         UpdateWeaponSlot(weaponSelected);
@@ -62,6 +68,24 @@ public class InventoryUI : MonoBehaviour
         if (weaponSlot.frame != null) weaponSlot.frame.color = weaponSelected ? selectedFrameColor : unselectedFrameColor;
         if (weaponSlot.fill != null) weaponSlot.fill.color = occupiedFillColor;
         if (weaponSlot.label != null) weaponSlot.label.text = equipped == WeaponType.Net ? "Q\n포획망" : "Q\n마취총";
+    }
+
+    /// <summary>아이콘 스프라이트가 있으면 보여주고, 없으면(빈 슬롯, 또는 아직 아이콘이 지정되지 않은
+    /// 지뢰/폭탄) 꺼서 기존의 색상 채움(fill)만 보이는 상태로 되돌린다.</summary>
+    private static void UpdateIcon(Image icon, InventorySlotData data)
+    {
+        if (icon == null) return;
+
+        if (data.Type != InventoryItemType.None && data.Icon != null)
+        {
+            icon.enabled = true;
+            icon.sprite = data.Icon;
+            icon.preserveAspect = true;
+        }
+        else
+        {
+            icon.enabled = false;
+        }
     }
 
     private Color FillColorFor(InventoryItemType type) => type switch

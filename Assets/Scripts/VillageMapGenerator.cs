@@ -34,6 +34,10 @@ public class VillageMapGenerator : MonoBehaviour
 
     private float MonsterMinSpawnDistanceFromPlayer => config != null ? config.monsterMinSpawnDistanceFromPlayer : 6f;
 
+    // AnimalRescue.Id(계층 경로 기반)를 실제로 Instantiate하기 전에 미리 계산하기 위한 맵 루트 이름.
+    // mapRoot 생성 시 이름과 반드시 같아야 한다.
+    private const string MapRootName = "GeneratedMap";
+
     private class RoomInstance
     {
         public GameObject Root;
@@ -56,7 +60,7 @@ public class VillageMapGenerator : MonoBehaviour
             return;
         }
 
-        GameObject mapRoot = new GameObject("GeneratedMap");
+        GameObject mapRoot = new GameObject(MapRootName);
         List<RoomInstance> placedRooms = BuildRoomChain(mapRoot.transform);
         if (placedRooms.Count == 0) return;
 
@@ -739,8 +743,35 @@ public class VillageMapGenerator : MonoBehaviour
         {
             GameObject prefab = animalPrefabs[Random.Range(0, animalPrefabs.Length)];
             Vector2Int cell = PickInteriorCell(room, usedCells);
-            Instantiate(prefab, ToSpritePosition(room, cell), Quaternion.identity, parent);
             usedCells.Add(cell);
+
+            // AnimalRescue.Id는 부모 체인의 GameObject 이름으로 만들어지는데, Instantiate는 이름을
+            // 자동으로 구분해주지 않아 한 방에서 같은 동물 프리팹이 두 번 뽑히면(animalsPerRoom >= 2)
+            // 두 클론이 똑같은 이름 "Prefab(Clone)"을 갖게 되어 Id가 충돌한다 - 한 마리만 납품해도
+            // 같은 Id를 가진 다른 한 마리까지 "이미 구조됨"으로 취급되어 재진입 시 함께 사라지는
+            // 버그로 이어졌다. 같은 시드에서는 i번째 반복마다 항상 같은 프리팹이 뽑히므로, 방 안에서의
+            // 인덱스를 이름에 넣으면 슬롯별로 안정적이면서도 서로 겹치지 않는 Id가 나온다.
+            string animalName = $"{prefab.name}_{i}";
+
+            // 실제로 Instantiate하기 전에, 이 동물이 받게 될 AnimalRescue.Id를 미리 계산해서(부모 체인이
+            // 결정돼 있으므로 가능) GameManager에 트럭 왕복 전 저장해둔 마지막 위치/상태가 있는지 먼저
+            // 확인한다 - 있으면 원래 스폰 칸 대신 그 자리에서 이어서 나타나게 한다.
+            string predictedId = $"{MapRootName}/{room.Root.name}/{animalName}";
+            Vector3 savedPosition = default;
+            bool wasFleeing = false;
+            bool hasFieldState = GameManager.Instance != null &&
+                GameManager.Instance.TryGetAnimalFieldState(predictedId, out savedPosition, out wasFleeing);
+
+            Vector3 spawnPosition = hasFieldState ? savedPosition : ToSpritePosition(room, cell);
+            GameObject instance = Instantiate(prefab, spawnPosition, Quaternion.identity, parent);
+            instance.name = animalName;
+            Debug.Log($"[FieldState] 조회: {predictedId}, found={hasFieldState}" + (hasFieldState ? $", pos={savedPosition}" : ""));
+
+            if (hasFieldState && wasFleeing)
+            {
+                AnimalFlee flee = instance.GetComponent<AnimalFlee>();
+                if (flee != null) flee.RestoreFleeing();
+            }
         }
     }
 

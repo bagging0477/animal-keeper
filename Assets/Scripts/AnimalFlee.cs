@@ -22,6 +22,18 @@ public class AnimalFlee : MonoBehaviour
     private float alertTimer;
     private Vector2 fleeDirection;
 
+    /// <summary>Alert(놀람) 또는 Fleeing(도주) 중이면 true. 씬을 나가기 직전 이 동물의 "긴장 상태"를
+    /// 저장했다가 돌아왔을 때 복원하는 데 쓰인다.</summary>
+    public bool IsAlarmed => state == State.Alert || state == State.Fleeing;
+
+    /// <summary>씬 재진입 시, 나갈 때 Alert/Fleeing 중이었던 동물을 처음부터 도주 상태로 즉시
+    /// 복원한다. Idle부터 다시 플레이어를 감지하게 두면 겁먹고 있던 걸 까먹은 것처럼 보인다.</summary>
+    public void RestoreFleeing()
+    {
+        state = State.Fleeing;
+        alertTimer = 0f;
+    }
+
     private void Awake()
     {
         sleep = GetComponent<AnimalSleep>();

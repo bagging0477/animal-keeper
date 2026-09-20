@@ -68,8 +68,8 @@ public class ShopItemInteractPoint : MonoBehaviour
         bool success = itemKind switch
         {
             ShopItemKind.TranquilizerAmmo => gm.TryPurchaseTranquilizerAmmo(price, config != null ? config.tranquilizerAmmoRefillAmount : 5),
-            ShopItemKind.Mine => TrySpendAnd(gm, price, gm.TryAddMine),
-            ShopItemKind.Bomb => TrySpendAnd(gm, price, gm.TryAddBomb),
+            ShopItemKind.Mine => TrySpendAnd(gm, price, () => gm.TryAddMine()),
+            ShopItemKind.Bomb => TrySpendAnd(gm, price, () => gm.TryAddBomb()),
             _ => false
         };
 
