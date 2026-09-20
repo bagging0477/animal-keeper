@@ -56,6 +56,8 @@ MonoBehaviour:
   patrolMonsterPatrolSpeed: 1.6
   soundReactiveMonsterWanderSpeed: 2.4
   monsterChaseSpeed: 4.3125
+  animalWanderSpeed: 1
+  animalFleeSpeed: 3.375
   maxStamina: 85
   sprintStaminaDrainPerSecond: 18
   staminaRegenPerSecond: 15

@@ -34,7 +34,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -131,6 +131,7 @@ MonoBehaviour:
   playPickupSoundSegment: 1
   pickupSoundStartTime: 7
   pickupSoundEndTime: 8
+  inventoryIcon: {fileID: 0}
 --- !u!114 &7673956236020887244
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,16 +144,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd587588330ec174887022cad3fe92f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalSoundFlee
+  config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
+  wanderRadius: 1.5
+  waitMin: 1
+  waitMax: 3
+  wanderStopDistance: 0.1
   alertRange: 3
   loseRange: 5
   alertDuration: 0.5
-  fleeSpeed: 2.5
   wallLookahead: 0.6
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4294967295
 --- !u!50 &6992825298821530901
 Rigidbody2D:
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -210,8 +216,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
-  m_Radius: 0.35
+  m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
+  m_Radius: 0.35
 --- !u!114 &6992825298821530910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,7 +229,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ad4a0cab5c599fe5b6d1c68d86631298, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpriteSheetAnimator
   sheet: {fileID: 2800000, guid: 57d369c9a5e371cc8eadc6f8bc058692, type: 3}
   frameSize: 32
@@ -247,6 +254,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f7b8426135743f44b1b960324be89e9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalFacingFlipper
   horizontalDeadzone: 0.01

@@ -144,7 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7642319bc419b64b843382efb32b024, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalFlee
-  config: {fileID: 0}
+  config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
   wanderRadius: 1.5
   waitMin: 1
   waitMax: 3

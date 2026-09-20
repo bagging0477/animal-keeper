@@ -176,8 +176,8 @@ public class GameBalanceConfig : ScriptableObject
     public float monsterChaseSpeed = 4.3125f;
 
     [Tooltip("도망가는 동물(고양이)/소리 내는 동물(레서판다, 둘 다 AnimalFlee 계열)이 평소 배회(Wander)할 때의 " +
-        "이동속도. 얌전한 동물(코알라, AnimalWander)과 같은 느낌을 주기 위해 기본값을 동일하게 맞췄다.")]
-    public float animalWanderSpeed = 0.8f;
+        "이동속도. 원래는 얌전한 동물(코알라, AnimalWander)과 같은 값(0.8)으로 맞췄었는데, 너무 굼떠 보여서 25% 올렸다.")]
+    public float animalWanderSpeed = 1.0f;
 
     [Tooltip("도망가는 동물/소리 내는 동물이 Alert 이후 Fleeing(도주) 상태로 전환됐을 때의 이동속도. " +
         "평소 배회 속도와 확실히 구분되도록 기존 값(2.5)보다 35% 빠르게 잡았다.")]

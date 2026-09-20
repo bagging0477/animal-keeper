@@ -22,7 +22,7 @@ public class AnimalFlee : MonoBehaviour
     [SerializeField] private float wallLookahead = 0.6f;
     [SerializeField] private LayerMask obstacleMask = ~0;
 
-    private float WanderSpeed => config != null ? config.animalWanderSpeed : 0.8f;
+    private float WanderSpeed => config != null ? config.animalWanderSpeed : 1.0f;
     private float FleeSpeed => config != null ? config.animalFleeSpeed : 3.375f;
 
     private State state = State.Wander;
