@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!29 &1
 OcclusionCullingSettings:
@@ -764,51 +764,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &920157001
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 920157003}
-  - component: {fileID: 920157002}
-  m_Layer: 0
-  m_Name: TruckSceneStartGate
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &920157002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 920157001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17d9cd207e294157aac694492f89991a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::TruckSceneStartGate
-  classSelectSceneName: ClassSelectScene
---- !u!4 &920157003
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 920157001}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &770635078
 GameObject:
   m_ObjectHideFlags: 0
@@ -1186,6 +1141,51 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &920157001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 920157003}
+  - component: {fileID: 920157002}
+  m_Layer: 0
+  m_Name: TruckSceneStartGate
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &920157002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920157001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17d9cd207e294157aac694492f89991a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TruckSceneStartGate
+  classSelectSceneName: ClassSelectScene
+--- !u!4 &920157003
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920157001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &957070672
 GameObject:
   m_ObjectHideFlags: 0
@@ -1466,22 +1466,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &1062585045
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1062585034}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2138852e04d1c7f4576d7cda283f121, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerClassAppearance
-  scoutSprite: {fileID: 21300000, guid: 7870dc22fe8a381499692953bdca87cb, type: 3}
-  trapperSprite: {fileID: 21300000, guid: 008d6ddab8692bac01eda0e5cb6de329, type: 3}
-  gunnerSprite: {fileID: 21300000, guid: c67d63129b2a84053fbe46118e431043, type: 3}
-  gunnerArmedSprite: {fileID: 21300000, guid: f6b7fcba91c96f708cef460433898ebf, type: 3}
 --- !u!4 &1062585038
 Transform:
   m_ObjectHideFlags: 0
@@ -1497,6 +1481,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1062585045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062585034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2138852e04d1c7f4576d7cda283f121, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerClassAppearance
+  scoutSprite: {fileID: 21300000, guid: 7870dc22fe8a381499692953bdca87cb, type: 3}
+  trapperSprite: {fileID: 21300000, guid: 008d6ddab8692bac01eda0e5cb6de329, type: 3}
+  gunnerSprite: {fileID: 21300000, guid: c67d63129b2a84053fbe46118e431043, type: 3}
+  gunnerArmedSprite: {fileID: 21300000, guid: f6b7fcba91c96f708cef460433898ebf, type: 3}
+  scoutScale: 0.64
+  trapperScale: 0.72
+  gunnerScale: 0.64
+  gunnerArmedScale: 0.826
 --- !u!1 &1161384579
 GameObject:
   m_ObjectHideFlags: 0
@@ -2357,27 +2361,36 @@ MonoBehaviour:
   - frame: {fileID: 9200000000000000006}
     fill: {fileID: 9200000000000000010}
     label: {fileID: 9200000000000000014}
+    icon: {fileID: 0}
   - frame: {fileID: 9200000000000000018}
     fill: {fileID: 9200000000000000022}
     label: {fileID: 9200000000000000026}
+    icon: {fileID: 0}
   - frame: {fileID: 9200000000000000030}
     fill: {fileID: 9200000000000000034}
     label: {fileID: 9200000000000000038}
+    icon: {fileID: 0}
   - frame: {fileID: 9200000000000000042}
     fill: {fileID: 9200000000000000046}
     label: {fileID: 9200000000000000050}
+    icon: {fileID: 0}
   - frame: {fileID: 9200000000000000054}
     fill: {fileID: 9200000000000000058}
     label: {fileID: 9200000000000000062}
+    icon: {fileID: 0}
   weaponSlotRoot: {fileID: 0}
   weaponSlot:
     frame: {fileID: 0}
     fill: {fileID: 0}
     label: {fileID: 0}
+    icon: {fileID: 0}
   selectedFrameColor: {r: 1, g: 0.85, b: 0.3, a: 1}
   unselectedFrameColor: {r: 0.25, g: 0.25, b: 0.28, a: 0.9}
   emptyFillColor: {r: 0, g: 0, b: 0, a: 0.55}
   occupiedFillColor: {r: 0.2, g: 0.2, b: 0.22, a: 0.9}
+  animalFillColor: {r: 0.35, g: 0.55, b: 0.25, a: 0.9}
+  mineFillColor: {r: 0.6, g: 0.45, b: 0.1, a: 0.9}
+  bombFillColor: {r: 0.55, g: 0.15, b: 0.15, a: 0.9}
 --- !u!1 &9200000000000000004
 GameObject:
   m_ObjectHideFlags: 0
@@ -3749,3 +3762,4 @@ SceneRoots:
   - {fileID: 391587955}
   - {fileID: 189033480}
   - {fileID: 9200000000000000065}
+  - {fileID: 920157003}

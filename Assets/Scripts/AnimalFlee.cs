@@ -14,6 +14,8 @@ public class AnimalFlee : MonoBehaviour
     [SerializeField] private float waitMin = 1f;
     [SerializeField] private float waitMax = 3f;
     [SerializeField] private float wanderStopDistance = 0.1f;
+    [SerializeField] private float wanderDestinationClearance = 1f;
+    [SerializeField] private int wanderDestinationAttempts = 8;
 
     [Header("놀람 → 도주 감지")]
     [SerializeField] private float alertRange = 3f;
@@ -21,6 +23,9 @@ public class AnimalFlee : MonoBehaviour
     [SerializeField] private float alertDuration = 0.5f;
     [SerializeField] private float wallLookahead = 0.6f;
     [SerializeField] private LayerMask obstacleMask = ~0;
+
+    [Header("애니메이션 - 실제로 이 속도 이상 움직이고 있을 때만 Walk/Flee 프레임을 재생한다")]
+    [SerializeField] private float minMovingSpeed = 0.05f;
 
     private float WanderSpeed => config != null ? config.animalWanderSpeed : 1.0f;
     private float FleeSpeed => config != null ? config.animalFleeSpeed : 3.375f;
@@ -45,6 +50,18 @@ public class AnimalFlee : MonoBehaviour
     private Vector2 wanderDestination;
     private float waitTimer;
     private bool waiting;
+
+    // 실제로 움직였는지 판정용. rb.MovePosition()은 Dynamic Rigidbody2D의 velocity를 갱신하지
+    // 않으므로(Unity 공식 동작) rb.linearVelocity로는 절대 감지할 수 없다 - 대신 물리 스텝
+    // (FixedUpdate) 사이 실제 위치 변화량을 직접 잰다. Update()가 아니라 FixedUpdate에서 재는 이유:
+    // Update()는 프레임마다(보통 FixedUpdate의 고정 주기 0.02초보다 훨씬 자주) 도는데, 물리는 그
+    // 사이 실제로 한 번도 안 갱신됐을 수 있어서 Update() 기준으로 재면 "이번 프레임엔 위치가 그대로네
+    // -> 안 움직이는 중"으로 매 프레임 오판해 애니메이션이 프레임 0으로 계속 리셋되며 사실상 멈춰
+    // 보였다. FixedUpdate에서 한 번만 재고 그 결과(isActuallyMoving)를 Update()는 값만 읽게 하면
+    // 물리 스텝 사이에는 값이 안정적으로 유지된다.
+    private Vector2 lastFixedPosition;
+    private bool hasLastFixedPosition;
+    private bool isActuallyMoving;
 
     /// <summary>Alert(놀람) 또는 Fleeing(도주) 중이면 true. 씬을 나가기 직전 이 동물의 "긴장 상태"를
     /// 저장했다가 돌아왔을 때 복원하는 데 쓰인다.</summary>
@@ -132,20 +149,20 @@ public class AnimalFlee : MonoBehaviour
                 break;
         }
 
+        // isActuallyMoving은 FixedUpdate가 매 물리 스텝마다 갱신해둔 값을 그대로 읽기만 한다.
         if (spriteAnimator != null)
         {
             spriteAnimator.State = state switch
             {
                 State.Alert => AnimalAnimState.Alert,
-                State.Fleeing => AnimalAnimState.Moving,
-                _ => moveDirection != Vector2.zero ? AnimalAnimState.Moving : AnimalAnimState.Idle
+                _ => isActuallyMoving ? AnimalAnimState.Moving : AnimalAnimState.Idle
             };
         }
 
         if (frameAnimator != null)
         {
-            frameAnimator.IsFleeing = state == State.Fleeing;
-            frameAnimator.IsMoving = state == State.Wander && moveDirection != Vector2.zero;
+            frameAnimator.IsFleeing = state == State.Fleeing && isActuallyMoving;
+            frameAnimator.IsMoving = state == State.Wander && isActuallyMoving;
         }
 
         if (facingFlipper != null) facingFlipper.SetMoveDirection(moveDirection);
@@ -171,14 +188,47 @@ public class AnimalFlee : MonoBehaviour
         moveDirection = toDestination.normalized;
     }
 
+    // 벽/장애물에서 wanderDestinationClearance 이상 떨어진 지점만 목적지로 고른다 - 이게 없으면
+    // 무작위 지점이 벽 바로 앞이나 벽 너머로 잡혀서, 벽에 딱 붙을 때까지 걸어가 버린다. 몇 번
+    // 시도해도 빈 자리를 못 찾으면(방이 좁거나 wanderRadius가 벽에 거의 걸쳐 있는 경우) 제자리
+    // (origin)를 목적지로 둬서 최소한 벽 쪽으로 걸어가지는 않게 한다.
     private void PickNewWanderDestination()
     {
         waiting = false;
-        wanderDestination = origin + Random.insideUnitCircle * wanderRadius;
+        wanderDestination = FindClearWanderPoint();
+    }
+
+    private Vector2 FindClearWanderPoint()
+    {
+        for (int i = 0; i < wanderDestinationAttempts; i++)
+        {
+            Vector2 candidate = origin + Random.insideUnitCircle * wanderRadius;
+            if (!IsPointBlocked(candidate)) return candidate;
+        }
+        return origin;
+    }
+
+    // Physics2D.OverlapCircle도 Raycast와 마찬가지로 이 동물 자신의 콜라이더에 맞을 수 있어서
+    // 자기 자신은 제외하고 판정한다.
+    private bool IsPointBlocked(Vector2 point)
+    {
+        Collider2D hit = Physics2D.OverlapCircle(point, wanderDestinationClearance, obstacleMask);
+        return hit != null && hit.transform != transform;
     }
 
     private void FixedUpdate()
     {
+        // 지난 물리 스텝에서 실제로 이동한 거리를 재서, 이번 스텝의 애니메이션 판정에 쓴다(한 스텝
+        // 지연되지만 물리 주기가 0.02초라 체감상 차이 없다) - MovePosition을 부른 바로 그 줄에서
+        // rb.position을 읽으면 아직 충돌 해석 전(요청한 목표 위치)을 돌려줄 수 있어서 믿을 수 없다.
+        if (hasLastFixedPosition)
+        {
+            float measuredSpeed = (rb.position - lastFixedPosition).magnitude / Time.fixedDeltaTime;
+            isActuallyMoving = moveDirection != Vector2.zero && measuredSpeed > minMovingSpeed;
+        }
+        lastFixedPosition = rb.position;
+        hasLastFixedPosition = true;
+
         if (moveDirection == Vector2.zero) return;
         float speed = state == State.Fleeing ? FleeSpeed : WanderSpeed;
         rb.MovePosition(rb.position + moveDirection * speed * Time.fixedDeltaTime);
