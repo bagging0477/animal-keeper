@@ -34,7 +34,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1.68, y: 1.68, z: 1.68}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -218,7 +218,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.35
+  m_Radius: 0.21875
 --- !u!114 &6992825298821530910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,7 +233,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpriteSheetAnimator
   sheet: {fileID: 2800000, guid: 57d369c9a5e371cc8eadc6f8bc058692, type: 3}
   frameSize: 32
-  pixelsPerUnit: 16
+  pixelsPerUnit: 32
   frameRate: 8
   idleRow: 0
   idleStartColumn: 0

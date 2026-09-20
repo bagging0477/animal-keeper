@@ -116,10 +116,10 @@ TextureImporter:
       name: player_gunner_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 4
-        width: 56
-        height: 56
+        x: 0
+        y: 0
+        width: 91
+        height: 90
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
