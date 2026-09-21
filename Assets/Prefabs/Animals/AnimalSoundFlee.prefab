@@ -150,7 +150,7 @@ MonoBehaviour:
   waitMax: 3
   wanderStopDistance: 0.1
   alertRange: 3
-  loseRange: 5
+  loseRange: 8
   alertDuration: 0.5
   wallLookahead: 0.6
   obstacleMask:
