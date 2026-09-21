@@ -21,10 +21,13 @@ public class GameClearPanel : MonoBehaviour
         if (messageText != null && !string.IsNullOrEmpty(message)) messageText.text = message;
         transform.SetAsLastSibling();
         gameObject.SetActive(true);
+        // GameOverPanel과 동일하게, 패널이 떠 있는 동안 플레이어 이동 등이 그대로 먹히지 않도록 멈춘다.
+        Time.timeScale = 0f;
     }
 
     private void OnRestart()
     {
+        Time.timeScale = 1f;
         GameManager.Instance?.ResetGame();
         SceneManager.LoadScene(truckSceneName);
     }

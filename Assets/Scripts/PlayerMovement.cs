@@ -24,13 +24,23 @@ public class PlayerMovement : MonoBehaviour
     public float Stamina { get; private set; }
     public bool IsSprinting { get; private set; }
 
+    // new PhysicsMaterial2D(...)로 매번 새로 만들면 씬을 오갈 때마다(트럭↔마을↔보호소 왕복) Player가
+    // 새로 생성될 때마다 새 네이티브 에셋이 생겨 GC가 따라잡을 때까지 누적된다. 값이 항상 동일하므로
+    // 한 번만 만들어 재사용한다.
+    private static PhysicsMaterial2D sharedNoFrictionMaterial;
+
+    private static PhysicsMaterial2D NoFrictionMaterial =>
+        sharedNoFrictionMaterial != null
+            ? sharedNoFrictionMaterial
+            : sharedNoFrictionMaterial = new PhysicsMaterial2D("PlayerNoFriction") { friction = 0f, bounciness = 0f };
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
         // 벽 콜라이더 모서리를 스칠 때 마찰로 인해 미세하게 걸리는(corner-catching) 떨림을 없애기 위해 무마찰 재질을 사용한다.
-        rb.sharedMaterial = new PhysicsMaterial2D("PlayerNoFriction") { friction = 0f, bounciness = 0f };
+        rb.sharedMaterial = NoFrictionMaterial;
 
         if (aimCamera == null) aimCamera = Camera.main;
 

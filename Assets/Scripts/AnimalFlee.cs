@@ -80,6 +80,18 @@ public class AnimalFlee : MonoBehaviour
         if (frameAnimator != null) frameAnimator.IsFleeing = true;
     }
 
+    // new PhysicsMaterial2D(...)로 매번 새로 만들면 씬을 오갈 때마다(마을 맵이 새로 생성될 때마다)
+    // 동물 수만큼 매번 새 네이티브 에셋이 생겨 GC가 따라잡을 때까지 누적된다 - 여러 사이클을 반복
+    // 플레이하면 그만큼 프레임 드랍이 쌓이는 원인이 될 수 있다. 값이 항상 동일하므로 클래스당 하나만
+    // 만들어 모든 인스턴스가 공유한다(AnimalWander와 별개 static - 서로 다른 클래스라 공유 캐시를
+    // 나눌 수 없지만, 어차피 값이 완전히 같아 문제 없다).
+    private static PhysicsMaterial2D sharedNoFrictionMaterial;
+
+    private static PhysicsMaterial2D NoFrictionMaterial =>
+        sharedNoFrictionMaterial != null
+            ? sharedNoFrictionMaterial
+            : sharedNoFrictionMaterial = new PhysicsMaterial2D("AnimalNoFriction") { friction = 0f, bounciness = 0f };
+
     private void Awake()
     {
         sleep = GetComponent<AnimalSleep>();
@@ -88,7 +100,7 @@ public class AnimalFlee : MonoBehaviour
         frameAnimator = GetComponent<SimpleFrameAnimator>();
         facingFlipper = GetComponent<AnimalFacingFlipper>();
         // 벽 콜라이더 모서리를 스칠 때 마찰로 걸리는 떨림을 없애기 위해 플레이어와 동일하게 무마찰 재질을 쓴다.
-        rb.sharedMaterial = new PhysicsMaterial2D("AnimalNoFriction") { friction = 0f, bounciness = 0f };
+        rb.sharedMaterial = NoFrictionMaterial;
         origin = transform.position;
     }
 
