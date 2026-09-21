@@ -27,6 +27,8 @@ public class GameClearPanel : MonoBehaviour
 
     private void OnRestart()
     {
+        if (!SceneTransitionGuard.TryBeginTransition()) return;
+
         Time.timeScale = 1f;
         GameManager.Instance?.ResetGame();
         SceneManager.LoadScene(truckSceneName);

@@ -61,6 +61,7 @@ public class ShelterExitPoint : MonoBehaviour
 
         if (gameEnded)
         {
+            if (!SceneTransitionGuard.TryBeginTransition()) return;
             GameManager.Instance?.ResetGame();
             SceneManager.LoadScene(truckSceneName);
             return;
@@ -72,6 +73,7 @@ public class ShelterExitPoint : MonoBehaviour
         bool canProceed = shelterSettlement == null || shelterSettlement.EvaluateCycleEnd();
         if (!canProceed) return;
 
+        if (!SceneTransitionGuard.TryBeginTransition()) return;
         SceneManager.LoadScene(truckSceneName);
     }
 }

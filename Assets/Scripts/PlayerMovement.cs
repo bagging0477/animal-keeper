@@ -94,6 +94,10 @@ public class PlayerMovement : MonoBehaviour
             Stamina = Mathf.Min(MaxStamina, Stamina + regenPerSecond * Time.deltaTime);
         }
 
+        // 위에서 이미 0/최대치로 정확히 맞춰주지만, 혹시 모를 부동소수점 오차나 향후 변경으로
+        // 범위를 벗어나는 값이 생기지 않도록 마지막에 한 번 더 강제한다.
+        Stamina = Mathf.Clamp(Stamina, 0f, MaxStamina);
+
         float classMoveMultiplier = config != null && GameManager.Instance != null
             ? config.GetClassMoveSpeedMultiplier(GameManager.Instance.CurrentClass)
             : 1f;

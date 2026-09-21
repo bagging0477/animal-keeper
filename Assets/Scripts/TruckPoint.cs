@@ -45,6 +45,7 @@ public class TruckPoint : MonoBehaviour
         Keyboard kb = Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;
 
+        if (!SceneTransitionGuard.TryBeginTransition()) return;
         SceneManager.LoadScene(truckSceneName);
     }
 }

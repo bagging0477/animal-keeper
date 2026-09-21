@@ -18,6 +18,7 @@ public class TruckSceneStartGate : MonoBehaviour
     {
         if (GameManager.Instance != null && GameManager.Instance.NeedsStartingClassSelection)
         {
+            if (!SceneTransitionGuard.TryBeginTransition()) return;
             SceneManager.LoadScene(classSelectSceneName);
         }
     }

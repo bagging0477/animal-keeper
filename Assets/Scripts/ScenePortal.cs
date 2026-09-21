@@ -45,6 +45,8 @@ public class ScenePortal : MonoBehaviour
         Keyboard kb = Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;
 
-        if (!string.IsNullOrEmpty(targetSceneName)) SceneManager.LoadScene(targetSceneName);
+        if (string.IsNullOrEmpty(targetSceneName)) return;
+        if (!SceneTransitionGuard.TryBeginTransition()) return;
+        SceneManager.LoadScene(targetSceneName);
     }
 }

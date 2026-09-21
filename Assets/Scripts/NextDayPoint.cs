@@ -66,6 +66,7 @@ public class NextDayPoint : MonoBehaviour
             return;
         }
 
+        if (!SceneTransitionGuard.TryBeginTransition()) return;
         SceneManager.LoadScene(shelterSceneName);
     }
 }

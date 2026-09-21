@@ -24,6 +24,10 @@ public class GameOverPanel : MonoBehaviour
 
     private void OnRestart()
     {
+        // 패널이 떠 있는 동안 버튼을 여러 번 눌러도(더블클릭 등) ResetGame()/LoadScene이 중복
+        // 실행되지 않게 막는다 - Time.timeScale=0이어도 UI 클릭 자체는 여러 프레임에 걸쳐 계속 들어올 수 있다.
+        if (!SceneTransitionGuard.TryBeginTransition()) return;
+
         Time.timeScale = 1f;
         GameManager.Instance?.ResetGame();
         SceneManager.LoadScene(truckSceneName);

@@ -55,6 +55,7 @@ public class StartGamePoint : MonoBehaviour
         Keyboard kb = Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame || GameManager.Instance == null) return;
 
+        if (!SceneTransitionGuard.TryBeginTransition()) return;
         GameManager.Instance.CompleteStartingClassSelection();
         SceneManager.LoadScene(truckSceneName);
     }

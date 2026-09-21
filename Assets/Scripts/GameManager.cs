@@ -168,7 +168,7 @@ public class GameManager : MonoBehaviour
         if (Health <= 0) return;
 
         AudioManager.Instance?.PlayHit();
-        Health = Mathf.Max(0, Health - amount);
+        Health = Mathf.Clamp(Health - amount, 0, MaxHealth);
         Debug.Log($"{monsterTypeName} 몬스터에게 당함! 데미지: {amount}%, 남은 체력: {Health}%");
 
         if (Health <= 0)
@@ -188,6 +188,7 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log("부상으로 강제 복귀했습니다");
+        if (!SceneTransitionGuard.TryBeginTransition()) return;
         SceneManager.LoadScene(truckSceneName);
     }
 
@@ -220,7 +221,7 @@ public class GameManager : MonoBehaviour
         int totalWeight = TotalWeight;
         int baseMileage = totalWeight * pricePerWeight;
 
-        Mileage += baseMileage;
+        Mileage = Mathf.Max(0, Mileage + baseMileage);
         cargoWeights.Clear();
         // RescuedCount는 여기서 초기화하지 않는다 - 오늘 목표 달성 여부는 하루 동안(여러 번의 정산에
         // 걸쳐) 누적 구조한 마릿수로 판정해야 하므로, FinishCycle이 하루를 마감할 때만 초기화한다.
@@ -258,7 +259,7 @@ public class GameManager : MonoBehaviour
         if (targetMet)
         {
             bonus = config != null ? config.targetBonusMileage : 50;
-            Mileage += bonus;
+            Mileage = Mathf.Max(0, Mileage + bonus);
         }
 
         // ResetDay()가 아직 돌기 전이라 CycleCount는 "지금 막 끝낸" 사이클 번호 그대로다 - 그
@@ -280,7 +281,7 @@ public class GameManager : MonoBehaviour
     public bool TrySpendMileage(int amount)
     {
         if (amount > Mileage) return false;
-        Mileage -= amount;
+        Mileage = Mathf.Max(0, Mileage - amount);
         return true;
     }
 
@@ -340,7 +341,7 @@ public class GameManager : MonoBehaviour
         if (playerClass == PlayerClass.Gunner && TranquilizerAmmo <= 0)
         {
             int startingAmmo = config != null ? config.tranquilizerStartingAmmo : 3;
-            TranquilizerAmmo = Mathf.Min(startingAmmo, MaxTranquilizerAmmo);
+            TranquilizerAmmo = Mathf.Clamp(startingAmmo, 0, MaxTranquilizerAmmo);
         }
 
         return true;
@@ -349,7 +350,7 @@ public class GameManager : MonoBehaviour
     public bool TryConsumeTranquilizerAmmo()
     {
         if (TranquilizerAmmo <= 0) return false;
-        TranquilizerAmmo--;
+        TranquilizerAmmo = Mathf.Max(0, TranquilizerAmmo - 1);
         return true;
     }
 
@@ -357,7 +358,7 @@ public class GameManager : MonoBehaviour
     {
         if (!TrySpendMileage(price)) return false;
 
-        TranquilizerAmmo = Mathf.Min(TranquilizerAmmo + refillAmount, MaxTranquilizerAmmo);
+        TranquilizerAmmo = Mathf.Clamp(TranquilizerAmmo + refillAmount, 0, MaxTranquilizerAmmo);
         return true;
     }
 
@@ -373,7 +374,15 @@ public class GameManager : MonoBehaviour
     /// 무기를 쓰다가 숫자키 없이 돌아와도 G로 버릴 대상(직전에 고르던 일반 슬롯)을 기억한다.</summary>
     public bool IsWeaponSelected { get; private set; }
 
-    public InventorySlotData GetSlot(int index) => inventorySlots[index];
+    public InventorySlotData GetSlot(int index)
+    {
+        if (index < 0 || index >= inventorySlots.Length)
+        {
+            Debug.LogWarning($"GameManager.GetSlot: index {index}가 슬롯 범위(0~{inventorySlots.Length - 1})를 벗어났습니다 - 빈 슬롯을 대신 반환합니다.");
+            return InventorySlotData.Empty;
+        }
+        return inventorySlots[index];
+    }
 
     public bool HasInventorySpace => FindEmptySlotIndex() >= 0;
 
@@ -418,10 +427,17 @@ public class GameManager : MonoBehaviour
 
     public bool TryAddBomb(Sprite icon = null) => TryAddItem(new InventorySlotData { Type = InventoryItemType.Bomb, Icon = icon });
 
+    // SelectedSlotIndex는 SelectSlot()이 이미 범위를 검증해서만 대입하므로 사실상 항상 유효하지만,
+    // 아래 네 메서드는 그 값을 그대로 배열 인덱스로 쓰는 유일한 지점들이라 각자 한 번 더 확인해둔다 -
+    // 그래야 이 값을 설정하는 경로가 나중에 하나 더 생겨도 IndexOutOfRangeException으로 게임이
+    // 죽는 대신 조용히 "아무 일도 없음"으로 처리된다.
+    private bool IsSelectedSlotIndexValid => SelectedSlotIndex >= 0 && SelectedSlotIndex < inventorySlots.Length;
+
     /// <summary>선택된 슬롯이 지뢰일 때만 소모한다 - 인벤토리 어딘가에 지뢰가 있어도 선택되어 있지
     /// 않으면 아무 일도 일어나지 않는다.</summary>
     public bool TryUseSelectedMine()
     {
+        if (!IsSelectedSlotIndexValid) return false;
         if (inventorySlots[SelectedSlotIndex].Type != InventoryItemType.Mine) return false;
         inventorySlots[SelectedSlotIndex] = InventorySlotData.Empty;
         return true;
@@ -430,6 +446,7 @@ public class GameManager : MonoBehaviour
     /// <summary>선택된 슬롯이 폭탄일 때만 소모한다. TryUseSelectedMine과 동일한 이유.</summary>
     public bool TryUseSelectedBomb()
     {
+        if (!IsSelectedSlotIndexValid) return false;
         if (inventorySlots[SelectedSlotIndex].Type != InventoryItemType.Bomb) return false;
         inventorySlots[SelectedSlotIndex] = InventorySlotData.Empty;
         return true;
@@ -439,6 +456,8 @@ public class GameManager : MonoBehaviour
     /// 슬롯에 동물이 있어도 납품되지 않는다 - 지뢰/폭탄과 동일하게 "선택해야 사용 가능" 규칙을 따른다.</summary>
     public bool TryDeliverSelectedAnimal()
     {
+        if (!IsSelectedSlotIndexValid) return false;
+
         InventorySlotData slot = inventorySlots[SelectedSlotIndex];
         if (slot.Type != InventoryItemType.Animal) return false;
 
@@ -452,6 +471,9 @@ public class GameManager : MonoBehaviour
     /// 아예 들어있지 않으므로(클래스에 고정된 별도 장비) G로는 절대 버릴 수 없다.</summary>
     public bool TryDropSelectedItem(out InventorySlotData dropped)
     {
+        dropped = InventorySlotData.Empty;
+        if (!IsSelectedSlotIndexValid) return false;
+
         dropped = inventorySlots[SelectedSlotIndex];
         if (dropped.Type == InventoryItemType.None) return false;
 
