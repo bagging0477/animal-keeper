@@ -437,7 +437,6 @@ public class VillageMapGenerator : MonoBehaviour
             box.size = new Vector2(width + WallShadowOverlap, height + WallShadowOverlap);
 
             ShadowCaster2D shadow = shadowGO.AddComponent<ShadowCaster2D>();
-            shadow.useRendererSilhouette = false;
             shadow.castsShadows = true;
             // Self Shadows off leaves each shape's own silhouette edge outside the shadow it casts,
             // which can show as a thin bright rim right at that edge (most visible along the seams

@@ -244,11 +244,13 @@ public class GameManager : MonoBehaviour
         public bool GameWon;
     }
 
-    /// <summary>"오늘"을 실제로 마감할 때(ShelterScene의 출구, ShelterExitPoint) 목표 달성 여부를 판정한다 -
-    /// 보호소에 몇 번을 들렀든 상관없이, 오늘 누적 구조한 마릿수(RescuedCount) 기준으로 딱 한 번만
-    /// 판정한다. TotalCyclesToWin번째 사이클을 목표 달성과 함께 완주했다면 게임 클리어로 끝내고
-    /// ResetDay()를 부르지 않는다(CycleCount가 그 값에 멈춰서, ResetGame() 전까지 다음 사이클로
-    /// 자동 진행되지 않는다) - 그 외에는 평소처럼 ResetDay()로 다음 사이클을 시작한다.</summary>
+    /// <summary>"오늘"을 실제로 마감할 때 목표 달성 여부를 판정한다 - 오늘 누적 구조한 마릿수(RescuedCount)
+    /// 기준으로 딱 한 번만 판정한다. 성공(목표 달성)은 ShelterScene의 출구(ShelterExitPoint, 보호소에서
+    /// 정산/쇼핑까지 마친 뒤)에서 호출되고, 실패(목표 미달)는 이미 그 시점에 확정된 결과라 보호소에
+    /// 들어가기 전인 TruckScene의 NextDayPoint에서 곧바로 호출된다. TotalCyclesToWin번째 사이클을 목표
+    /// 달성과 함께 완주했다면 게임 클리어로 끝내고 ResetDay()를 부르지 않는다(CycleCount가 그 값에
+    /// 멈춰서, ResetGame() 전까지 다음 사이클로 자동 진행되지 않는다) - 그 외에는 평소처럼 ResetDay()로
+    /// 다음 사이클을 시작한다.</summary>
     public CycleOutcome FinishCycle()
     {
         bool targetMet = RescuedCount >= TargetCount;
@@ -266,7 +268,11 @@ public class GameManager : MonoBehaviour
         IsGameOver = !targetMet;
         IsGameWon = gameWon;
 
-        if (!gameWon) ResetDay();
+        // 실패(!targetMet)했을 때는 ResetDay()를 부르지 않는다 - 이 경우 IsGameOver가 true가 되어
+        // 게임 오버 화면으로만 재개되므로(ResetGame()이 전체를 다시 초기화한다), 그 사이에 CycleCount가
+        // 조용히 넘어가거나 Health/RescuedCount가 미리 리셋되는 것은 실제로 아무 의미가 없고, "실패한
+        // 사이클인데 내부적으로는 이미 다음 사이클로 넘어가 있다"는 혼란만 남긴다.
+        if (targetMet && !gameWon) ResetDay();
 
         return new CycleOutcome { TargetMet = targetMet, BonusMileage = bonus, GameWon = gameWon };
     }

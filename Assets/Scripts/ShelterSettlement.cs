@@ -37,12 +37,13 @@ public class ShelterSettlement : MonoBehaviour
         }
     }
 
-    /// <summary>"오늘"을 실제로 마감한다 - ShelterScene의 출구(ShelterExitPoint)에서만 호출된다. 목표 달성 여부를
-    /// 판정해서 성공하면 보너스를 지급하고 사이클을 넘기며, 실패하면 게임 오버 패널을 띄우고 다음
-    /// 사이클로 넘어가지 않는다(호출자는 반환값이 false면 씬 전환을 하지 말아야 한다). 마지막 사이클
-    /// (GameBalanceConfig.totalCyclesToWin)까지 목표 달성과 함께 완주했다면 Day 클리어 대신 게임
-    /// 클리어 화면을 띄우고, 이때도 트럭씬으로 넘어가지 않는다 - 오직 그 화면의 "다시 시작" 버튼으로만
-    /// 재개된다.</summary>
+    /// <summary>"오늘"을 실제로 마감한다 - ShelterScene의 출구(ShelterExitPoint)에서만 호출된다. 목표 미달로
+    /// 인한 실패는 TruckScene의 NextDayPoint가 보호소에 들어가기 전에 이미 걸러내므로, 여기 도달하는
+    /// 시점에는 사실상 항상 목표를 달성한 상태다 - 그래도 방어적으로 !outcome.TargetMet 분기를 남겨
+    /// 게임 오버 패널을 띄우고 다음 사이클로 넘어가지 않게 한다(호출자는 반환값이 false면 씬 전환을
+    /// 하지 말아야 한다). 마지막 사이클(GameBalanceConfig.totalCyclesToWin)까지 목표 달성과 함께
+    /// 완주했다면 Day 클리어 대신 게임 클리어 화면을 띄우고, 이때도 트럭씬으로 넘어가지 않는다 - 오직
+    /// 그 화면의 "다시 시작" 버튼으로만 재개된다.</summary>
     public bool EvaluateCycleEnd()
     {
         if (GameManager.Instance == null) return true;
