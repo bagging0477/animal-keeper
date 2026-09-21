@@ -20,6 +20,9 @@ public class VillageMapGenerator : MonoBehaviour
     [SerializeField] private int minRoomCount = 3;
     [SerializeField] private int maxRoomCount = 4;
 
+    [Header("바닥 타일 시각적 변형 (이끼/얼룩 패치) - 비워두면 변형 없이 기본 바닥 타일만 쓴다")]
+    [SerializeField] private TileBase[] floorVariantTiles;
+
     [Header("방마다 무작위 배치할 동물/몬스터")]
     [SerializeField] private GameObject[] animalPrefabs;
     [SerializeField] private int animalsPerRoom = 2;
@@ -33,6 +36,8 @@ public class VillageMapGenerator : MonoBehaviour
     [SerializeField] private GameBalanceConfig config;
 
     private float MonsterMinSpawnDistanceFromPlayer => config != null ? config.monsterMinSpawnDistanceFromPlayer : 6f;
+    private float FloorPatchNoiseScale => config != null ? config.floorPatchNoiseScale : 0.15f;
+    private float FloorPatchThreshold => config != null ? config.floorPatchThreshold : 0.62f;
 
     // AnimalRescue.Id(계층 경로 기반)를 실제로 Instantiate하기 전에 미리 계산하기 위한 맵 루트 이름.
     // mapRoot 생성 시 이름과 반드시 같아야 한다.
@@ -78,6 +83,7 @@ public class VillageMapGenerator : MonoBehaviour
             // Doorways carved between rooms during chaining added floor tiles after FloorCells
             // was first captured, so re-read the tilemap now to pick those up for the NavMesh.
             room.FloorCells = GetFloorCells(room.Root);
+            ApplyFloorVariantPatches(room);
             navGroundMeshes.Add(BuildNavGround(room));
         }
         BakeNavMesh(mapRoot, navGroundMeshes);
@@ -619,6 +625,44 @@ public class VillageMapGenerator : MonoBehaviour
             if (t != null) return t;
         }
         return null;
+    }
+
+    // 바닥 전체에 변형 타일을 칸마다 독립적으로(예: 10% 확률) 뿌리면 소금을 뿌린 것처럼
+    // 지저분해 보인다. 대신 Perlin Noise 지형에서 일정 임계값(threshold) 이상인 "봉우리"
+    // 부분만 잘라내서 칠하면, 그 봉우리 주변 칸들이 자연스럽게 뭉친 패치(이끼/얼룩 덩어리)로
+    // 나타난다 - 이웃한 칸끼리는 노이즈 값이 비슷하므로 패치 경계도 매끄럽다.
+    // 변형 타일 종류가 여러 개일 때 칸마다 무작위로 종류를 섞으면 한 패치 안에서도 얼룩덜룩
+    // 섞여 보이므로, 훨씬 낮은 주파수(noiseScale의 1/4)로 샘플링하는 두 번째 노이즈 필드로
+    // "이 패치가 어떤 변형 타일을 쓸지"를 정한다 - 저주파 노이즈는 넓은 영역에 걸쳐 완만하게
+    // 변하므로, 같은 패치에 속한 칸들은 거의 항상 같은 변형 타일 종류로 통일된다.
+    // offsetX/Y는 Awake()에서 이미 이번 Day의 시드로 초기화된 Random에서 뽑으므로, 패치
+    // 위치는 매 Day(또는 방 재생성)마다 달라지고 같은 Day 안에서는 항상 같다.
+    private void ApplyFloorVariantPatches(RoomInstance room)
+    {
+        if (floorVariantTiles == null || floorVariantTiles.Length == 0) return;
+
+        Transform groundTransform = room.Root.transform.Find("Ground");
+        Tilemap ground = groundTransform != null ? groundTransform.GetComponent<Tilemap>() : null;
+        if (ground == null) return;
+
+        float noiseScale = FloorPatchNoiseScale;
+        float threshold = FloorPatchThreshold;
+        float offsetX = Random.Range(0f, 1000f);
+        float offsetY = Random.Range(0f, 1000f);
+        float variantOffsetX = Random.Range(0f, 1000f);
+        float variantOffsetY = Random.Range(0f, 1000f);
+        float variantNoiseScale = noiseScale * 0.25f;
+
+        foreach (Vector2Int cell in room.FloorCells)
+        {
+            float patchNoise = Mathf.PerlinNoise(offsetX + cell.x * noiseScale, offsetY + cell.y * noiseScale);
+            if (patchNoise < threshold) continue;
+
+            float variantNoise = Mathf.PerlinNoise(variantOffsetX + cell.x * variantNoiseScale, variantOffsetY + cell.y * variantNoiseScale);
+            int variantIndex = Mathf.Clamp(Mathf.FloorToInt(variantNoise * floorVariantTiles.Length), 0, floorVariantTiles.Length - 1);
+
+            ground.SetTile(new Vector3Int(cell.x, cell.y, 0), floorVariantTiles[variantIndex]);
+        }
     }
 
     private static List<Vector2Int> GetFloorCells(GameObject room)

@@ -60,6 +60,18 @@ public class GameBalanceConfig : ScriptableObject
         "0보다 크게 두면 플레이어가 급하게 코너를 꺾었을 때 몬스터가 살짝 늦게 반응하는 느낌을 준다 - 매 프레임 완벽하게 추적하지 않는다.")]
     public float chaseDirectionUpdateInterval = 0.25f;
 
+    [Header("바닥 타일 변형 (VillageScene 절차적 생성 전용)")]
+    [Tooltip("Perlin Noise 샘플링 좌표에 곱해지는 배율. 값이 작을수록 노이즈가 넓게 퍼져서 " +
+        "변형 타일 패치(이끼/얼룩)가 더 크고 완만하게 뭉친다. 값이 크면 패치가 잘게 쪼개져 " +
+        "지저분해 보이므로 0.1~0.2 정도의 작은 값을 권장한다.")]
+    public float floorPatchNoiseScale = 0.15f;
+
+    [Tooltip("이 값 이상인 노이즈 영역에만 변형 타일이 나타난다(0~1). 값이 클수록 패치 빈도가 " +
+        "줄어든다. 타일마다 독립적으로 확률 판정하는 대신 이 임계값으로 넓은 노이즈 지형 중 " +
+        "일부 봉우리만 잘라내므로, 패치가 소금 뿌린 것처럼 흩어지지 않고 뭉쳐서 나타난다.")]
+    [Range(0f, 1f)]
+    public float floorPatchThreshold = 0.62f;
+
     [Header("몬스터 - 스폰 (VillageScene 절차적 생성 전용)")]
     [Tooltip("몬스터가 스폰될 때 플레이어 스폰 위치로부터 최소 이 거리 이상 떨어진 곳에만 생성되도록 시도한다. " +
         "스폰 시점에만 적용되며, 스폰 이후 순찰/배회로 이 범위 안에 들어오는 것은 막지 않는다.")]
