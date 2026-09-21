@@ -12,6 +12,8 @@ public class AnimalWander : MonoBehaviour
     [SerializeField] private float wanderDestinationClearance = 1f;
     [SerializeField] private int wanderDestinationAttempts = 8;
     [SerializeField] private LayerMask obstacleMask = ~0;
+    [SerializeField] private float wallLookahead = 0.6f;
+    [SerializeField] private float stuckRepickDelay = 0.4f;
 
     [Header("애니메이션 - 실제로 이 속도 이상 움직이고 있을 때만 Walk 프레임을 재생한다")]
     [SerializeField] private float minMovingSpeed = 0.05f;
@@ -25,6 +27,7 @@ public class AnimalWander : MonoBehaviour
     private Vector2 moveDirection;
     private float waitTimer;
     private bool waiting;
+    private float stuckTimer;
 
     // 실제로 움직였는지 판정용. rb.MovePosition()은 Dynamic Rigidbody2D의 velocity를 갱신하지
     // 않으므로(Unity 공식 동작) rb.linearVelocity로는 절대 감지할 수 없다 - 대신 물리 스텝
@@ -60,12 +63,14 @@ public class AnimalWander : MonoBehaviour
 
         if (sleep != null && sleep.IsAsleep)
         {
+            stuckTimer = 0f;
             UpdateAnimator();
             return;
         }
 
         if (waiting)
         {
+            stuckTimer = 0f;
             waitTimer -= Time.deltaTime;
             if (waitTimer <= 0f) PickNewDestination();
             UpdateAnimator();
@@ -77,11 +82,27 @@ public class AnimalWander : MonoBehaviour
         {
             waiting = true;
             waitTimer = Random.Range(waitMin, waitMax);
+            stuckTimer = 0f;
             UpdateAnimator();
             return;
         }
 
-        moveDirection = toDestination.normalized;
+        moveDirection = FindClearDirection(toDestination.normalized);
+
+        // 목적지 자체는 벽에서 떨어져 있어도 거기로 가는 직선 경로 중간에 벽이 있으면 그대로
+        // 부딪혀 제자리에 갇힐 수 있다(FindClearDirection도 못 피하는 오목한 구석 등). 실제로
+        // 전진하지 못하는 상태가 일정 시간 지속되면 그 자리에서 벽을 향해 계속 시도하는 대신
+        // 새 목적지를 다시 뽑아 벗어난다.
+        if (moveDirection == Vector2.zero || !isActuallyMoving)
+        {
+            stuckTimer += Time.deltaTime;
+            if (stuckTimer >= stuckRepickDelay) PickNewDestination();
+        }
+        else
+        {
+            stuckTimer = 0f;
+        }
+
         UpdateAnimator();
     }
 
@@ -115,6 +136,7 @@ public class AnimalWander : MonoBehaviour
     private void PickNewDestination()
     {
         waiting = false;
+        stuckTimer = 0f;
         destination = FindClearWanderPoint();
     }
 
@@ -133,5 +155,31 @@ public class AnimalWander : MonoBehaviour
     {
         Collider2D hit = Physics2D.OverlapCircle(point, wanderDestinationClearance, obstacleMask);
         return hit != null && hit.transform != transform;
+    }
+
+    // 목적지를 향한 직선상에 벽이 있으면 그대로 걸어가 부딪히는 대신, 좌우로 각도를 넓혀가며
+    // 벽을 스치듯 피해 갈 방향을 찾는다(AnimalFlee.FindClearDirection과 동일한 방식).
+    private Vector2 FindClearDirection(Vector2 desired)
+    {
+        if (!IsBlocked(desired)) return desired;
+
+        for (float angle = 30f; angle <= 150f; angle += 30f)
+        {
+            Vector2 right = Quaternion.Euler(0f, 0f, -angle) * desired;
+            if (!IsBlocked(right)) return right;
+
+            Vector2 left = Quaternion.Euler(0f, 0f, angle) * desired;
+            if (!IsBlocked(left)) return left;
+        }
+
+        return Vector2.zero;
+    }
+
+    // Physics2D.Raycast (queriesStartInColliders 켜짐)는 이 동물 자신의 콜라이더에도 거리 0으로
+    // 맞기 때문에, 자기 자신은 제외하고 판정한다.
+    private bool IsBlocked(Vector2 direction)
+    {
+        RaycastHit2D hit = Physics2D.Raycast(rb.position, direction, wallLookahead, obstacleMask);
+        return hit.collider != null && hit.transform != transform;
     }
 }

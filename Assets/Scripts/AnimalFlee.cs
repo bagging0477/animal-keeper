@@ -16,6 +16,7 @@ public class AnimalFlee : MonoBehaviour
     [SerializeField] private float wanderStopDistance = 0.1f;
     [SerializeField] private float wanderDestinationClearance = 1f;
     [SerializeField] private int wanderDestinationAttempts = 8;
+    [SerializeField] private float stuckRepickDelay = 0.4f;
 
     [Header("놀람 → 도주 감지")]
     [SerializeField] private float alertRange = 3f;
@@ -50,6 +51,7 @@ public class AnimalFlee : MonoBehaviour
     private Vector2 wanderDestination;
     private float waitTimer;
     private bool waiting;
+    private float stuckTimer;
 
     // 실제로 움직였는지 판정용. rb.MovePosition()은 Dynamic Rigidbody2D의 velocity를 갱신하지
     // 않으므로(Unity 공식 동작) rb.linearVelocity로는 절대 감지할 수 없다 - 대신 물리 스텝
@@ -172,6 +174,7 @@ public class AnimalFlee : MonoBehaviour
     {
         if (waiting)
         {
+            stuckTimer = 0f;
             waitTimer -= Time.deltaTime;
             if (waitTimer <= 0f) PickNewWanderDestination();
             return;
@@ -182,10 +185,25 @@ public class AnimalFlee : MonoBehaviour
         {
             waiting = true;
             waitTimer = Random.Range(waitMin, waitMax);
+            stuckTimer = 0f;
             return;
         }
 
-        moveDirection = toDestination.normalized;
+        // 목적지 자체는 벽에서 떨어져 있어도 거기로 가는 직선 경로 중간에 벽이 있으면 그대로
+        // 부딪혀 제자리에 갇힐 수 있다 - Fleeing 때 쓰는 것과 같은 레이캐스트 회피를 재사용한다.
+        moveDirection = FindClearDirection(toDestination.normalized);
+
+        // FindClearDirection도 못 피하는 오목한 구석 등으로 실제 전진을 못 하는 상태가 일정 시간
+        // 지속되면, 그 자리에서 벽을 향해 계속 시도하는 대신 새 목적지를 다시 뽑아 벗어난다.
+        if (moveDirection == Vector2.zero || !isActuallyMoving)
+        {
+            stuckTimer += Time.deltaTime;
+            if (stuckTimer >= stuckRepickDelay) PickNewWanderDestination();
+        }
+        else
+        {
+            stuckTimer = 0f;
+        }
     }
 
     // 벽/장애물에서 wanderDestinationClearance 이상 떨어진 지점만 목적지로 고른다 - 이게 없으면
@@ -195,6 +213,7 @@ public class AnimalFlee : MonoBehaviour
     private void PickNewWanderDestination()
     {
         waiting = false;
+        stuckTimer = 0f;
         wanderDestination = FindClearWanderPoint();
     }
 
