@@ -101,9 +101,21 @@ public class VillageMapGenerator : MonoBehaviour
         Vector2Int spawnCell = PickSafeCell(centerRoom, null) ?? PickCentralCell(centerRoom);
         PositionExistingObject(playerObjectName, ToSpritePosition(centerRoom, spawnCell));
 
-        Vector2Int truckCell = PickSafeCell(centerRoom, spawnCell) ?? spawnCell;
+        // 트럭 지점은 1칸짜리 플레이어와 달리 부피가 훨씬 크므로(6배 스케일 모델), 일반 PickSafeCell의
+        // 고정된 0.9x0.9 체크로는 벽/장애물에 실제로 안 닿는다는 보장이 안 된다 - 트럭의 실제 콜라이더
+        // 크기만큼 겹치는 칸을 전부 걸러낸 뒤에 고른다. 방 한가운데에 두려는 시도는 여전히 하지만
+        // (기존과 동일하게 중심에 가까운 순으로 고름), 안 닿는 칸이 없으면 중앙에서 벗어나더라도
+        // 일반 PickSafeCell 결과로 물러난다 - 중앙 여부보다 안 닿는 것 자체가 우선이다.
+        Vector2Int truckCell = PickSafeCellForFootprint(centerRoom, spawnCell, GetTruckFootprintSize())
+            ?? PickSafeCell(centerRoom, spawnCell)
+            ?? spawnCell;
         Vector2 truckXY = ToWorldXY(centerRoom, truckCell);
         PositionExistingObject(truckPointObjectName, new Vector3(truckXY.x, truckXY.y, 0f));
+
+        // 트럭 자체만 안 겹치는 칸이어도, 바로 옆에 장애물이나 벽이 붙어있으면 플레이어가 트럭을
+        // 사이에 두고 지나다닐 틈이 없다 - 이 맵 인스턴스에 한해서 주변 장애물은 치우고, 그래도
+        // 폭이 부족하면 벽 타일 몇 개를 바닥으로 바꿔서 넓힌다(원본 방 프리팹은 그대로 둔다).
+        EnsureTruckClearance(centerRoom, truckXY, GetTruckFootprintSize());
 
         // 플레이어/트럭 지점이 이미 차지한 칸에는 몬스터나 동물이 겹쳐서 스폰되지 않도록 제외한다.
         // (센터룸에서만 의미가 있다 - 다른 방에는 플레이어/트럭이 놓이지 않는다.)
@@ -739,6 +751,142 @@ public class VillageMapGenerator : MonoBehaviour
             }
         }
         return best;
+    }
+
+    // 트럭 지점처럼 1칸을 훨씬 넘는 부피를 가진 오브젝트용 - PickSafeCell의 고정 0.9x0.9 체크 대신
+    // 실제 footprintSize만큼의 박스로 겹침을 확인한다. 그만큼 큰 박스는 벽에 바로 붙은 칸에서 자연히
+    // 겹치므로(옆 칸까지 파고들어가서), PickSafeCell처럼 "이웃 네 칸이 모두 바닥인지"를 따로 확인할
+    // 필요가 없다 - 실제 크기로 겹침만 확인하는 쪽이 이 경우엔 더 정확하다.
+    private static Vector2Int? PickSafeCellForFootprint(RoomInstance room, Vector2Int? avoid, Vector2 footprintSize)
+    {
+        List<Vector2Int> candidates = new List<Vector2Int>();
+        foreach (Vector2Int c in room.FloorCells)
+        {
+            if (avoid.HasValue && c == avoid.Value) continue;
+
+            Vector2 worldCenter = ToWorldXY(room, c);
+            if (Physics2D.OverlapBox(worldCenter, footprintSize, 0f) != null) continue;
+
+            candidates.Add(c);
+        }
+
+        if (candidates.Count == 0) return null;
+
+        Vector2 centroid = Vector2.zero;
+        foreach (Vector2Int c in room.FloorCells) centroid += new Vector2(c.x + 0.5f, c.y + 0.5f);
+        centroid /= room.FloorCells.Count;
+
+        Vector2Int best = candidates[0];
+        float bestDistanceSqr = float.MaxValue;
+        foreach (Vector2Int c in candidates)
+        {
+            float d = (new Vector2(c.x + 0.5f, c.y + 0.5f) - centroid).sqrMagnitude;
+            if (d < bestDistanceSqr)
+            {
+                bestDistanceSqr = d;
+                best = c;
+            }
+        }
+        return best;
+    }
+
+    // 트럭 지점의 실제 콜라이더 크기(스케일 반영)를 읽어와서 그 부피만큼 여유가 있는 칸에만
+    // 스폰되게 한다 - 트럭 크기나 콜라이더를 Inspector에서 나중에 또 조정해도 이 계산이 항상
+    // 실제 값을 그대로 따라가므로, 스폰 로직을 다시 손볼 필요가 없다.
+    private Vector2 GetTruckFootprintSize()
+    {
+        GameObject truckPoint = GameObject.Find(truckPointObjectName);
+        BoxCollider2D box = truckPoint != null ? truckPoint.GetComponent<BoxCollider2D>() : null;
+        if (box == null) return new Vector2(0.9f, 0.9f);
+
+        Vector2 scale = truckPoint.transform.lossyScale;
+        return new Vector2(box.size.x * Mathf.Abs(scale.x), box.size.y * Mathf.Abs(scale.y));
+    }
+
+    // 플레이어가 몸통 폭만큼 여유 있게 트럭 옆을 지나다닐 수 있도록, 트럭 자체 부피 바깥으로
+    // 한 변당 이만큼(월드 유닛) 더 확보한다.
+    private const float TruckClearanceMarginPerSide = 1.1f;
+
+    // 트럭 주변 지정된 여유 폭 안에 있는 장애물은 이 맵 인스턴스에서만 치우고(원본 방 프리팹은
+    // 그대로 유지), 그래도 벽이 너무 가까우면 그 벽 타일만 바닥으로 바꿔서 넓힌다. 방 한가운데에
+    // 두는 것보다 이렇게 실제로 지나다닐 틈을 만드는 쪽을 우선한다.
+    private static void EnsureTruckClearance(RoomInstance room, Vector2 truckWorldCenter, Vector2 truckFootprintSize)
+    {
+        Vector2 clearance = truckFootprintSize + new Vector2(TruckClearanceMarginPerSide * 2f, TruckClearanceMarginPerSide * 2f);
+
+        // 1) 여유 폭 안의 장애물(Obstacle)은 지워서 길을 낸다 - 몬스터가 그 자리를 피해 다니도록
+        // 심어둔 ObstacleNavCarver도 짝을 맞춰 같이 지운다(안 지워도 안전에는 문제없지만, 이미
+        // 치운 장애물 자리를 몬스터가 계속 없는 장애물처럼 피해 다니는 건 어색하다).
+        GameObject mapRoot = GameObject.Find(MapRootName);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(truckWorldCenter, clearance, 0f);
+        foreach (Collider2D hit in hits)
+        {
+            if (hit == null || hit.gameObject.name != "Obstacle") continue;
+
+            Vector3 obstaclePos = hit.transform.position;
+            Debug.Log($"VillageMapGenerator: 트럭 주변 통행 확보를 위해 장애물 '{hit.gameObject.name}'을(를) 이번 맵에서만 제거했습니다.");
+            Destroy(hit.gameObject);
+
+            if (mapRoot == null) continue;
+            foreach (Transform carverCandidate in mapRoot.GetComponentsInChildren<Transform>(true))
+            {
+                if (!carverCandidate.name.StartsWith("ObstacleNavCarver")) continue;
+                Vector3 carverPos = carverCandidate.position;
+                if (Mathf.Abs(carverPos.x - obstaclePos.x) < 0.1f && Mathf.Abs(carverPos.z - obstaclePos.y) < 0.1f)
+                {
+                    Destroy(carverCandidate.gameObject);
+                }
+            }
+        }
+
+        // 2) 장애물을 치우고도 벽이 여유 폭 안까지 파고들어 있으면, 그 벽 타일만 바닥으로 바꾼다.
+        Transform groundT = room.Root.transform.Find("Ground");
+        Transform wallsT = room.Root.transform.Find("Walls");
+        if (groundT == null || wallsT == null) return;
+
+        Tilemap ground = groundT.GetComponent<Tilemap>();
+        Tilemap walls = wallsT.GetComponent<Tilemap>();
+        if (ground == null || walls == null) return;
+
+        TileBase floorTile = FindAnyTile(ground);
+        if (floorTile == null) return;
+
+        Vector2 roomOffset = room.Root.transform.position;
+        Vector2 localMin = truckWorldCenter - clearance * 0.5f - roomOffset;
+        Vector2 localMax = truckWorldCenter + clearance * 0.5f - roomOffset;
+
+        int minX = Mathf.FloorToInt(localMin.x);
+        int maxX = Mathf.CeilToInt(localMax.x) - 1;
+        int minY = Mathf.FloorToInt(localMin.y);
+        int maxY = Mathf.CeilToInt(localMax.y) - 1;
+
+        bool carvedAny = false;
+        for (int y = minY; y <= maxY; y++)
+        {
+            for (int x = minX; x <= maxX; x++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+                if (walls.GetTile(pos) == null) continue;
+
+                walls.SetTile(pos, null);
+                if (ground.GetTile(pos) == null) ground.SetTile(pos, floorTile);
+                carvedAny = true;
+            }
+        }
+
+        if (!carvedAny) return;
+
+        Debug.Log($"VillageMapGenerator: 트럭 주변 통행 확보를 위해 {room.Root.name}의 벽 일부를 이번 맵에서만 바닥으로 넓혔습니다.");
+        RefreshWallCollider(walls);
+
+        // RebuildWallShadowCasters는 이전에 만든 WallShadowCaster_* 자식을 스스로 지우지 않으므로,
+        // 다시 부르기 전에 먼저 비워야 한다 - 안 그러면 방금 뚫은 자리에 예전 그림자 상자가 그대로 남는다.
+        for (int i = wallsT.childCount - 1; i >= 0; i--)
+        {
+            Transform child = wallsT.GetChild(i);
+            if (child.name.StartsWith("WallShadowCaster_")) Destroy(child.gameObject);
+        }
+        RebuildWallShadowCasters(room);
     }
 
     // 2D 게임 좌표(x, y) - 스프라이트를 쓰는 오브젝트(플레이어, 동물, 트럭 지점)용.

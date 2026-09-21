@@ -620,6 +620,7 @@ MonoBehaviour:
   - {fileID: 8620217539038921367, guid: 01f13696473ba7c4d884d8d271f17ce9, type: 3}
   - {fileID: 570110514632718333, guid: f8dd9cb84f076d34fac29b7bcd135584, type: 3}
   - {fileID: 6992825298821530945, guid: 16bae85f36edc594d946c87bdfa9d872, type: 3}
+  animalsPerRoom: 2
   monsterPrefabs:
   - {fileID: 6555077884092434632, guid: 5b86696969f0f8e48ba300b904e7fcaf, type: 3}
   - {fileID: 5382451385581636795, guid: 17d880809c3e527428af5414eb32f690, type: 3}
@@ -1310,22 +1311,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &1011791170
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1011791158}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2138852e04d1c7f4576d7cda283f121, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerClassAppearance
-  scoutSprite: {fileID: 21300000, guid: 7870dc22fe8a381499692953bdca87cb, type: 3}
-  trapperSprite: {fileID: 21300000, guid: 008d6ddab8692bac01eda0e5cb6de329, type: 3}
-  gunnerSprite: {fileID: 21300000, guid: c67d63129b2a84053fbe46118e431043, type: 3}
-  gunnerArmedSprite: {fileID: 21300000, guid: f6b7fcba91c96f708cef460433898ebf, type: 3}
 --- !u!4 &1011791162
 Transform:
   m_ObjectHideFlags: 0
@@ -1382,7 +1367,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 1.8928572, y: 1.875}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -1406,6 +1391,55 @@ MonoBehaviour:
   dartPrefab: {fileID: 1007327826499193375, guid: 2a51acd31a5bf9640b12da630c898b89, type: 3}
   dartSpeed: 12
   muzzlePoint: {fileID: 1011791181}
+--- !u!114 &1011791166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1011791158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 384595d16d218484b8a85938447e10a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVision
+  config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
+  ambientVisionLight: {fileID: 1312045387}
+  focusedVisionLight: {fileID: 300076828}
+--- !u!114 &1011791167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1011791158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 823a11ce9515dc04098784fffa09808e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerGadgetController
+  config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
+  minePrefab: {fileID: 8656619260825683585, guid: e6ed613e650a3e94e9404a1d711b5d2f, type: 3}
+--- !u!114 &1011791170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1011791158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2138852e04d1c7f4576d7cda283f121, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerClassAppearance
+  scoutSprite: {fileID: 21300000, guid: 7870dc22fe8a381499692953bdca87cb, type: 3}
+  trapperSprite: {fileID: 21300000, guid: 008d6ddab8692bac01eda0e5cb6de329, type: 3}
+  gunnerSprite: {fileID: 21300000, guid: c67d63129b2a84053fbe46118e431043, type: 3}
+  gunnerArmedSprite: {fileID: 21300000, guid: f6b7fcba91c96f708cef460433898ebf, type: 3}
+  scoutScale: 0.64
+  trapperScale: 0.72
+  gunnerScale: 0.64
+  gunnerArmedScale: 0.826
 --- !u!1 &1011791180
 GameObject:
   m_ObjectHideFlags: 0
@@ -1437,35 +1471,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1011791162}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1011791166
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1011791158}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 384595d16d218484b8a85938447e10a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerVision
-  config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
-  ambientVisionLight: {fileID: 1312045387}
-  focusedVisionLight: {fileID: 300076828}
---- !u!114 &1011791167
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1011791158}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 823a11ce9515dc04098784fffa09808e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerGadgetController
-  config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
-  minePrefab: {fileID: 8656619260825683585, guid: e6ed613e650a3e94e9404a1d711b5d2f, type: 3}
 --- !u!1 &1098059125
 GameObject:
   m_ObjectHideFlags: 0
@@ -2108,6 +2113,7 @@ GameObject:
   - component: {fileID: 1662819014}
   - component: {fileID: 1662819013}
   - component: {fileID: 1662819015}
+  - component: {fileID: 1662819016}
   m_Layer: 0
   m_Name: TruckPoint
   m_TagString: Untagged
@@ -2162,10 +2168,10 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 8519da591a3171f4da116d9ff6256f88, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 1486068514634784547, guid: 435844a03dfd3664b8199677034b8871, type: 3}
+  m_Color: {r: 0.72, g: 0.72, b: 0.72, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2185,7 +2191,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 8, y: 6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 6, y: 6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2205,6 +2211,52 @@ MonoBehaviour:
   interactionRange: 1.8
   truckSceneName: TruckScene
   promptText: {fileID: 363482550}
+--- !u!61 &1662819016
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662819011}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.4, y: 0.68}
+  m_EdgeRadius: 0
 --- !u!1 &1973456740
 GameObject:
   m_ObjectHideFlags: 0
@@ -2370,27 +2422,36 @@ MonoBehaviour:
   - frame: {fileID: 9100000000000000005}
     fill: {fileID: 9100000000000000009}
     label: {fileID: 9100000000000000013}
+    icon: {fileID: 0}
   - frame: {fileID: 9100000000000000017}
     fill: {fileID: 9100000000000000021}
     label: {fileID: 9100000000000000025}
+    icon: {fileID: 0}
   - frame: {fileID: 9100000000000000029}
     fill: {fileID: 9100000000000000033}
     label: {fileID: 9100000000000000037}
+    icon: {fileID: 0}
   - frame: {fileID: 9100000000000000041}
     fill: {fileID: 9100000000000000045}
     label: {fileID: 9100000000000000049}
+    icon: {fileID: 0}
   - frame: {fileID: 9100000000000000053}
     fill: {fileID: 9100000000000000057}
     label: {fileID: 9100000000000000061}
+    icon: {fileID: 0}
   weaponSlotRoot: {fileID: 1571479935}
   weaponSlot:
     frame: {fileID: 1571479937}
     fill: {fileID: 801026658}
     label: {fileID: 760910357}
+    icon: {fileID: 0}
   selectedFrameColor: {r: 1, g: 0.85, b: 0.3, a: 1}
   unselectedFrameColor: {r: 0.25, g: 0.25, b: 0.28, a: 0.9}
   emptyFillColor: {r: 0, g: 0, b: 0, a: 0.55}
   occupiedFillColor: {r: 0.2, g: 0.2, b: 0.22, a: 0.9}
+  animalFillColor: {r: 0.35, g: 0.55, b: 0.25, a: 0.9}
+  mineFillColor: {r: 0.6, g: 0.45, b: 0.1, a: 0.9}
+  bombFillColor: {r: 0.55, g: 0.15, b: 0.15, a: 0.9}
 --- !u!1 &9100000000000000003
 GameObject:
   m_ObjectHideFlags: 0
