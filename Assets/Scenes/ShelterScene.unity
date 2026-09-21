@@ -1489,6 +1489,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NextDayButton
   truckSceneName: TruckScene
   buttonLabel: {fileID: 1701749375}
+  shelterSettlement: {fileID: 978835628}
 --- !u!114 &974983078
 MonoBehaviour:
   m_ObjectHideFlags: 0

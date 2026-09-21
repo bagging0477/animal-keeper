@@ -6,7 +6,6 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    public const int MaxDay = 3;
     public const int InventorySlotCount = 5;
 
     /// <summary>config가 아직 연결되지 않았을 때만 쓰이는 안전장치용 기본값.</summary>
@@ -16,9 +15,30 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameBalanceConfig config;
     [SerializeField] private string truckSceneName = "TruckScene";
-    [SerializeField] private int day = 1;
 
-    public int Day => day;
+    /// <summary>게임을 시작한 뒤로 "다음 날로"를 몇 번 완료했는지(=몇 번째 순찰인지)를 센다. 예전
+    /// 3일 주기의 Day처럼 특정 값에서 흐름이 바뀌는 게이트로 쓰이지 않는다 - 순수하게 누적되는
+    /// 기록용 값으로, UI 표시와 이후 통계/난이도 조정에 쓰기 위해 존재한다. 1부터 시작해서
+    /// ResetDay()가 호출될 때마다(정산 후든, 필드에서 바로든) 1씩 늘어난다.</summary>
+    public int CycleCount { get; private set; } = 1;
+
+    /// <summary>TruckScene의 구조시작 지점에서 다음 상호작용 때 마을 탐색 대신 보호소로 보낼지.
+    /// 상호작용할 때마다 ToggleTruckDestination()으로 뒤집혀서, 같은 지점을 반복 방문할 때마다
+    /// 두 목적지를 번갈아 제시한다.</summary>
+    public bool NextTruckDestinationIsShelter { get; private set; }
+
+    public void ToggleTruckDestination() => NextTruckDestinationIsShelter = !NextTruckDestinationIsShelter;
+
+    /// <summary>TruckScene의 "다음날로" 지점(NextDayPoint)을 한 번 쓰면 false가 되어, 같은 트럭 방문
+    /// 동안 계속 눌러서 CycleCount를 무한히 불릴 수 없게 막는다. 보호소(ShelterScene)를 한 번
+    /// 다녀오면 다시 true로 풀린다 - 마을만 왕복해서는(트럭을 안 벗어나는 한) 다시 열리지 않는다.</summary>
+    public bool NextDayPointAvailable { get; private set; } = true;
+
+    public void MarkNextDayPointUsed() => NextDayPointAvailable = false;
+
+    /// <summary>ShelterScene에 들어올 때 호출해서 다음날로 지점을 다시 쓸 수 있게 푼다.</summary>
+    public void ReopenNextDayPoint() => NextDayPointAvailable = true;
+
     public int TargetCount => config != null ? config.targetRescueCount : 3;
     public int RescuedCount { get; private set; }
     public int Health { get; private set; }
@@ -97,27 +117,31 @@ public class GameManager : MonoBehaviour
         RescuedCount++;
     }
 
-    public void AdvanceDay()
-    {
-        if (day >= MaxDay) return;
-        day++;
-        rescuedAnimalIdsToday.Clear();
-        animalFieldStates.Clear();
-        Health = MaxHealth;
-    }
-
+    /// <summary>"오늘"을 마무리하고 다음 순찰(사이클)로 넘어간다 - 정산을 마치고 ShelterScene에서
+    /// 호출되든, 필드에서 보호소를 거치지 않고 TruckScene의 다음날로 지점에서 바로 호출되든 동일하게
+    /// 동작한다. 예전처럼 Day가 1→2→3으로 누적되며 3일째에만 보호소로 갈 수 있던 게이트는 없고,
+    /// 매번 "오늘"만 있는 구조라 항상 이 한 메서드로 오늘 상태를 리셋하면서 CycleCount만 늘린다.</summary>
     public void ResetDay()
     {
-        day = 1;
+        CycleCount++;
         rescuedAnimalIdsToday.Clear();
         animalFieldStates.Clear();
         Health = MaxHealth;
         gameSessionSeedInitialized = false;
+
+        // HasSettledCargo는 "이번 사이클에 이미 정산했는지"를 막는 가드다(ShelterScene ↔
+        // ClassSelectScene을 오가도 SettleCargo가 중복 호출되지 않게). 예전엔 게임당 보호소를
+        // 딱 한 번만 방문했으니 문제가 없었지만, 이제 사이클마다 반복 방문하므로 여기서 매번
+        // 새로 열어주지 않으면 두 번째 사이클부터는 SettleCargo 자체가 다시는 실행되지 않는다.
+        HasSettledCargo = false;
+        LastSettlementResult = default;
     }
 
     public void ResetGame()
     {
-        day = 1;
+        CycleCount = 1;
+        NextTruckDestinationIsShelter = false;
+        NextDayPointAvailable = true;
         rescuedAnimalIdsToday.Clear();
         animalFieldStates.Clear();
         Mileage = 0;
@@ -135,10 +159,10 @@ public class GameManager : MonoBehaviour
         NeedsStartingClassSelection = true;
     }
 
-    /// <summary>true면 TruckScene(Day 1)에 들어가기 전에 반드시 ClassSelectScene에서 시작 클래스를
-    /// 골라야 한다 - 새 게임을 막 시작했거나 ResetGame()으로 재시작한 직후에만 켜진다. ResetDay()(Day
-    /// 클리어 후 "다음 날로")는 마일리지/해금 클래스를 그대로 유지하는 소프트 리셋이라 여기 포함되지
-    /// 않는다 - 이미 고른 클래스를 잃지 않으므로 다시 고를 필요가 없다.</summary>
+    /// <summary>true면 TruckScene(첫 순찰)에 들어가기 전에 반드시 ClassSelectScene에서 시작 클래스를
+    /// 골라야 한다 - 새 게임을 막 시작했거나 ResetGame()으로 재시작한 직후에만 켜진다. ResetDay()("다음
+    /// 날로")는 마일리지/해금 클래스를 그대로 유지하는 소프트 리셋이라 여기 포함되지 않는다 - 이미
+    /// 고른 클래스를 잃지 않으므로 다시 고를 필요가 없다.</summary>
     public bool NeedsStartingClassSelection { get; private set; } = true;
 
     /// <summary>시작 시 무료 선택을 마친다. 이 시점의 CurrentClass(스탠드를 하나도 안 골랐다면 기본값인
@@ -185,9 +209,6 @@ public class GameManager : MonoBehaviour
         public int TotalWeight;
         public int PricePerWeight;
         public int BaseMileage;
-        public bool BonusApplied;
-        public int BonusMileage;
-        public int TotalMileage;
     }
 
     /// <summary>ShelterScene에 처음 들어왔을 때 이미 정산했는지 여부. ClassSelectScene을 거쳐
@@ -199,36 +220,57 @@ public class GameManager : MonoBehaviour
     public bool HasSettledCargo { get; private set; }
     public SettlementResult LastSettlementResult { get; private set; }
 
-    public SettlementResult SettleCargo(int pricePerWeight, int bonusMileage)
+    /// <summary>보호소에 들어갈 때마다(하루에 여러 번 왕복 가능) 그 시점까지 실은 화물만 마일리지로
+    /// 바꾼다. 목표 달성/게임 오버 판정은 여기서 하지 않는다 - 그 판정은 "오늘"이 실제로 끝나는
+    /// 시점(FinishCycle, "다음 날로" 클릭)에만 한다. 예전엔 여기서 곧바로 판정까지 했는데, 하루에
+    /// 여러 번 보호소를 들르는 게 가능해지면서 화물을 일부만 팔러 잠깐 들른 것도 "오늘 최종 판정"으로
+    /// 취급되는 문제가 있었다 - 예를 들어 목표 3마리 중 2마리만 팔고 다시 나가 마저 채우려 했는데,
+    /// 그 잠깐의 방문만으로 미달성 게임 오버가 나버렸다.</summary>
+    public SettlementResult SettleCargo(int pricePerWeight)
     {
         int totalWeight = TotalWeight;
         int baseMileage = totalWeight * pricePerWeight;
-        bool bonusApplied = RescuedCount >= TargetCount;
-        int bonus = bonusApplied ? bonusMileage : 0;
-        int total = baseMileage + bonus;
 
-        Mileage += total;
+        Mileage += baseMileage;
         cargoWeights.Clear();
-        RescuedCount = 0;
-
-        if (day >= MaxDay)
-        {
-            IsGameOver = !bonusApplied;
-        }
+        // RescuedCount는 여기서 초기화하지 않는다 - 오늘 목표 달성 여부는 하루 동안(여러 번의 정산에
+        // 걸쳐) 누적 구조한 마릿수로 판정해야 하므로, FinishCycle이 하루를 마감할 때만 초기화한다.
 
         SettlementResult result = new SettlementResult
         {
             TotalWeight = totalWeight,
             PricePerWeight = pricePerWeight,
-            BaseMileage = baseMileage,
-            BonusApplied = bonusApplied,
-            BonusMileage = bonus,
-            TotalMileage = total
+            BaseMileage = baseMileage
         };
 
         HasSettledCargo = true;
         LastSettlementResult = result;
         return result;
+    }
+
+    public struct CycleOutcome
+    {
+        public bool TargetMet;
+        public int BonusMileage;
+    }
+
+    /// <summary>"오늘"을 실제로 마감할 때(TruckScene/ShelterScene 어느 쪽의 "다음 날로"든) 목표 달성
+    /// 여부를 판정한다 - 보호소에 몇 번을 들렀든 상관없이, 오늘 누적 구조한 마릿수(RescuedCount)
+    /// 기준으로 딱 한 번만 판정하고 곧바로 ResetDay()로 다음 사이클을 시작한다.</summary>
+    public CycleOutcome FinishCycle()
+    {
+        bool targetMet = RescuedCount >= TargetCount;
+        int bonus = 0;
+        if (targetMet)
+        {
+            bonus = config != null ? config.targetBonusMileage : 50;
+            Mileage += bonus;
+        }
+
+        IsGameOver = !targetMet;
+        ResetDay();
+
+        return new CycleOutcome { TargetMet = targetMet, BonusMileage = bonus };
     }
 
     public bool TrySpendMileage(int amount)
@@ -428,10 +470,10 @@ public class GameManager : MonoBehaviour
     private int gameSessionSeed;
     private bool gameSessionSeedInitialized;
 
-    /// <summary>같은 Day 안에서는 VillageScene을 몇 번을 다시 들어가도 같은 시드를 돌려줘서
-    /// 똑같은 맵이 나오게 한다. Day가 바뀌면 자동으로 다른 값이 나온다.
+    /// <summary>같은 사이클(오늘) 안에서는 VillageScene을 몇 번을 다시 들어가도 같은 시드를 돌려줘서
+    /// 똑같은 맵이 나오게 한다. ResetDay()로 사이클이 넘어가면 자동으로 다른 값이 나온다.
     /// (Random.Range(int.MinValue, int.MaxValue)는 내부 범위 계산에서 오버플로가 나는지
-    /// 항상 같은 값을 반환해서 Day가 바뀌어도 맵이 안 바뀌는 버그가 있었다 - Guid 기반으로 교체.)</summary>
+    /// 항상 같은 값을 반환해서 시드가 안 바뀌는 버그가 있었다 - Guid 기반으로 교체.)</summary>
     public int GetVillageMapSeedForToday()
     {
         if (!gameSessionSeedInitialized)
@@ -439,7 +481,7 @@ public class GameManager : MonoBehaviour
             gameSessionSeedInitialized = true;
             gameSessionSeed = System.Guid.NewGuid().GetHashCode();
         }
-        return gameSessionSeed + day * 7919;
+        return gameSessionSeed + CycleCount * 7919;
     }
 
     private void Awake()
