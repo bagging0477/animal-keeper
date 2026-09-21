@@ -22,27 +22,16 @@ public class GameManager : MonoBehaviour
     /// ResetDay()가 호출될 때마다(정산 후든, 필드에서 바로든) 1씩 늘어난다.</summary>
     public int CycleCount { get; private set; } = 1;
 
-    /// <summary>TruckScene의 구조시작 지점에서 다음 상호작용 때 마을 탐색 대신 보호소로 보낼지.
-    /// 상호작용할 때마다 ToggleTruckDestination()으로 뒤집혀서, 같은 지점을 반복 방문할 때마다
-    /// 두 목적지를 번갈아 제시한다.</summary>
-    public bool NextTruckDestinationIsShelter { get; private set; }
-
-    public void ToggleTruckDestination() => NextTruckDestinationIsShelter = !NextTruckDestinationIsShelter;
-
-    /// <summary>TruckScene의 "다음날로" 지점(NextDayPoint)을 한 번 쓰면 false가 되어, 같은 트럭 방문
-    /// 동안 계속 눌러서 CycleCount를 무한히 불릴 수 없게 막는다. 보호소(ShelterScene)를 한 번
-    /// 다녀오면 다시 true로 풀린다 - 마을만 왕복해서는(트럭을 안 벗어나는 한) 다시 열리지 않는다.</summary>
-    public bool NextDayPointAvailable { get; private set; } = true;
-
-    public void MarkNextDayPointUsed() => NextDayPointAvailable = false;
-
-    /// <summary>ShelterScene에 들어올 때 호출해서 다음날로 지점을 다시 쓸 수 있게 푼다.</summary>
-    public void ReopenNextDayPoint() => NextDayPointAvailable = true;
-
     public int TargetCount => config != null ? config.targetRescueCount : 3;
+    public int TotalCyclesToWin => config != null ? config.totalCyclesToWin : 10;
     public int RescuedCount { get; private set; }
     public int Health { get; private set; }
     public bool IsGameOver { get; private set; }
+
+    /// <summary>TotalCyclesToWin번째 사이클을 목표 달성과 함께 완주하면 true가 된다. true가 되면
+    /// ResetDay()를 더 이상 호출하지 않으므로(FinishCycle 참고) CycleCount가 그 값에서 멈춰 있고,
+    /// ResetGame()으로 완전히 다시 시작하기 전까지는 다음 사이클로 넘어가지 않는다.</summary>
+    public bool IsGameWon { get; private set; }
 
     private int ComputeMaxHealth()
     {
@@ -117,13 +106,14 @@ public class GameManager : MonoBehaviour
         RescuedCount++;
     }
 
-    /// <summary>"오늘"을 마무리하고 다음 순찰(사이클)로 넘어간다 - 정산을 마치고 ShelterScene에서
-    /// 호출되든, 필드에서 보호소를 거치지 않고 TruckScene의 다음날로 지점에서 바로 호출되든 동일하게
-    /// 동작한다. 예전처럼 Day가 1→2→3으로 누적되며 3일째에만 보호소로 갈 수 있던 게이트는 없고,
-    /// 매번 "오늘"만 있는 구조라 항상 이 한 메서드로 오늘 상태를 리셋하면서 CycleCount만 늘린다.</summary>
+    /// <summary>"오늘"을 마무리하고 다음 순찰(사이클)로 넘어간다 - ShelterScene의 출구(ShelterExitPoint,
+    /// FinishCycle 참고)에서만 호출된다. 예전처럼 Day가 1→2→3으로 누적되며 3일째에만 보호소로 갈 수
+    /// 있던 게이트는 없고, 매번 "오늘"만 있는 구조라 항상 이 한 메서드로 오늘 상태를 리셋하면서
+    /// CycleCount만 늘린다.</summary>
     public void ResetDay()
     {
         CycleCount++;
+        RescuedCount = 0;
         rescuedAnimalIdsToday.Clear();
         animalFieldStates.Clear();
         Health = MaxHealth;
@@ -140,8 +130,6 @@ public class GameManager : MonoBehaviour
     public void ResetGame()
     {
         CycleCount = 1;
-        NextTruckDestinationIsShelter = false;
-        NextDayPointAvailable = true;
         rescuedAnimalIdsToday.Clear();
         animalFieldStates.Clear();
         Mileage = 0;
@@ -152,6 +140,7 @@ public class GameManager : MonoBehaviour
         Health = MaxHealth;
         TranquilizerAmmo = 0;
         IsGameOver = false;
+        IsGameWon = false;
         gameSessionSeedInitialized = false;
         ResetInventory();
         HasSettledCargo = false;
@@ -252,11 +241,14 @@ public class GameManager : MonoBehaviour
     {
         public bool TargetMet;
         public int BonusMileage;
+        public bool GameWon;
     }
 
-    /// <summary>"오늘"을 실제로 마감할 때(TruckScene/ShelterScene 어느 쪽의 "다음 날로"든) 목표 달성
-    /// 여부를 판정한다 - 보호소에 몇 번을 들렀든 상관없이, 오늘 누적 구조한 마릿수(RescuedCount)
-    /// 기준으로 딱 한 번만 판정하고 곧바로 ResetDay()로 다음 사이클을 시작한다.</summary>
+    /// <summary>"오늘"을 실제로 마감할 때(ShelterScene의 출구, ShelterExitPoint) 목표 달성 여부를 판정한다 -
+    /// 보호소에 몇 번을 들렀든 상관없이, 오늘 누적 구조한 마릿수(RescuedCount) 기준으로 딱 한 번만
+    /// 판정한다. TotalCyclesToWin번째 사이클을 목표 달성과 함께 완주했다면 게임 클리어로 끝내고
+    /// ResetDay()를 부르지 않는다(CycleCount가 그 값에 멈춰서, ResetGame() 전까지 다음 사이클로
+    /// 자동 진행되지 않는다) - 그 외에는 평소처럼 ResetDay()로 다음 사이클을 시작한다.</summary>
     public CycleOutcome FinishCycle()
     {
         bool targetMet = RescuedCount >= TargetCount;
@@ -267,10 +259,16 @@ public class GameManager : MonoBehaviour
             Mileage += bonus;
         }
 
-        IsGameOver = !targetMet;
-        ResetDay();
+        // ResetDay()가 아직 돌기 전이라 CycleCount는 "지금 막 끝낸" 사이클 번호 그대로다 - 그
+        // 사이클에서 목표까지 달성했다면 마지막 사이클을 완주한 것이다.
+        bool gameWon = targetMet && CycleCount >= TotalCyclesToWin;
 
-        return new CycleOutcome { TargetMet = targetMet, BonusMileage = bonus };
+        IsGameOver = !targetMet;
+        IsGameWon = gameWon;
+
+        if (!gameWon) ResetDay();
+
+        return new CycleOutcome { TargetMet = targetMet, BonusMileage = bonus, GameWon = gameWon };
     }
 
     public bool TrySpendMileage(int amount)

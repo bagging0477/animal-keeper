@@ -7,14 +7,11 @@ public class ShelterSettlement : MonoBehaviour
     [SerializeField] private Text settlementText;
     [SerializeField] private GameOverPanel gameOverPanel;
     [SerializeField] private DayClearPanel dayClearPanel;
+    [SerializeField] private GameClearPanel gameClearPanel;
 
     private void Awake()
     {
         if (GameManager.Instance == null) return;
-
-        // 보호소에 도착했으니 TruckScene의 "다음날로" 지점을 다시 쓸 수 있게 푼다 - 한 트럭 방문 동안
-        // 반복해서 눌러 CycleCount를 무한정 불리는 것을 막는 가드(NextDayPointAvailable)를 여기서 푼다.
-        GameManager.Instance.ReopenNextDayPoint();
 
         // ClassSelectScene을 거쳐 ShelterScene으로 다시 돌아온 것처럼, 이번 방문에서 이미 한 번
         // 정산했다면 SettleCargo를 또 호출하지 않는다 - 화물이 이미 비워진 채로 다시 정산하면
@@ -40,14 +37,24 @@ public class ShelterSettlement : MonoBehaviour
         }
     }
 
-    /// <summary>"오늘"을 실제로 마감한다 - NextDayButton이 클릭됐을 때만 호출된다. 목표 달성 여부를
+    /// <summary>"오늘"을 실제로 마감한다 - ShelterScene의 출구(ShelterExitPoint)에서만 호출된다. 목표 달성 여부를
     /// 판정해서 성공하면 보너스를 지급하고 사이클을 넘기며, 실패하면 게임 오버 패널을 띄우고 다음
-    /// 사이클로 넘어가지 않는다(호출자는 반환값이 false면 씬 전환을 하지 말아야 한다).</summary>
+    /// 사이클로 넘어가지 않는다(호출자는 반환값이 false면 씬 전환을 하지 말아야 한다). 마지막 사이클
+    /// (GameBalanceConfig.totalCyclesToWin)까지 목표 달성과 함께 완주했다면 Day 클리어 대신 게임
+    /// 클리어 화면을 띄우고, 이때도 트럭씬으로 넘어가지 않는다 - 오직 그 화면의 "다시 시작" 버튼으로만
+    /// 재개된다.</summary>
     public bool EvaluateCycleEnd()
     {
         if (GameManager.Instance == null) return true;
 
         GameManager.CycleOutcome outcome = GameManager.Instance.FinishCycle();
+
+        if (outcome.GameWon)
+        {
+            AudioManager.Instance?.PlayDaySuccess();
+            if (gameClearPanel != null) gameClearPanel.Show("10일간의 여정을 무사히 마쳤습니다!");
+            return false;
+        }
 
         if (!outcome.TargetMet)
         {

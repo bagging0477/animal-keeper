@@ -1,29 +1,23 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-/// <summary>TruckScene 필드에서 보호소를 거치지 않고도 "오늘"을 마무리할 수 있는 지점 - 부상으로
-/// 마을 탐색이 막혔을 때 체력을 회복하는 용도로도 쓰인다. 상호작용 시 정산 여부와 무관하게
-/// GameManager.ResetDay()를 호출해 사이클을 하나 진행시킨다 - 보호소 정산은 이후 별도로(구조시작
-/// 지점에서 보호소를 골라) 선택적으로 하면 된다.
-/// 한 번 쓰면 CycleCount를 무한정 불릴 수 없도록 그 즉시 자신을 숨긴다 - 같은 트럭 방문 동안에는
-/// 다시 나타나지 않고, 보호소(ShelterScene)를 한 번 다녀와야(GameManager.ReopenNextDayPoint 참고)
-/// 다음 트럭 방문에서 다시 쓸 수 있다.</summary>
+/// <summary>TruckScene 필드에서 보호소로 가는 지점 - 부상으로 마을 탐색이 막혔을 때도 이 지점을 통해
+/// 보호소로 가서 회복/정산할 수 있다. 이 지점 자체는 순수한 이동 포탈일 뿐이다 - 실제로 "오늘"을
+/// 마감하는 판정(목표 달성 확인, 사이클 증가, 체력 회복)은 ShelterScene의 출구(ShelterExitPoint)에서만
+/// 일어난다. "구조시작" 지점(TruckStartPoint)과 목적지를 완전히 분리해서, 목표를 막 달성한 순간
+/// 우연히 여기로 넘어와 버리는(예전 토글 방식의 문제) 일이 없게 한다.</summary>
 public class NextDayPoint : MonoBehaviour
 {
     [SerializeField] private float interactionRange = 1.2f;
+    [SerializeField] private string shelterSceneName = "ShelterScene";
     [SerializeField] private Text promptText;
 
     private Transform player;
 
     private void Start()
     {
-        if (GameManager.Instance != null && !GameManager.Instance.NextDayPointAvailable)
-        {
-            gameObject.SetActive(false);
-            return;
-        }
-
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
@@ -47,7 +41,7 @@ public class NextDayPoint : MonoBehaviour
         if (promptText != null)
         {
             promptText.gameObject.SetActive(inRange);
-            if (inRange) promptText.text = "E를 눌러 다음날로";
+            if (inRange) promptText.text = "E를 눌러 보호소로 이동";
         }
 
         if (!inRange) return;
@@ -55,12 +49,6 @@ public class NextDayPoint : MonoBehaviour
         Keyboard kb = Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;
 
-        GameManager.Instance?.ResetDay();
-        GameManager.Instance?.MarkNextDayPointUsed();
-
-        // 이번 트럭 방문 동안은 즉시 숨긴다 - 씬을 다시 로드하지 않는 한 Update()가 더 돌지 않으므로
-        // 반복해서 눌러 사이클을 계속 불리는 것을 막는다.
-        if (promptText != null) promptText.gameObject.SetActive(false);
-        gameObject.SetActive(false);
+        SceneManager.LoadScene(shelterSceneName);
     }
 }

@@ -215,6 +215,10 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("보너스 마일리지를 받기 위해 하루 동안 구조해야 하는 목표 마릿수")]
     public int targetRescueCount = 3;
 
+    [Tooltip("이 사이클(순찰) 수를 목표 달성과 함께 완주하면 게임 클리어 화면이 뜬다. 예: 10이면 " +
+        "10번째 사이클 정산에서 목표를 달성하는 순간 클리어된다.")]
+    public int totalCyclesToWin = 10;
+
     [Header("정산 (마일리지)")]
     [Tooltip("구조한 동물 무게 1kg당 지급되는 마일리지")]
     public int mileagePerWeight = 10;
