@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3367190040766243637}
   - component: {fileID: 3733329674057690218}
+  - component: {fileID: 5000000000000000002}
+  - component: {fileID: 5000000000000000004}
   m_Layer: 0
   m_Name: Visual
   m_TagString: Untagged
@@ -81,8 +83,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 9f887f191ebcef14ab4558f5f356fddc, type: 3}
-  m_Color: {r: 0.32, g: 0.08, b: 0.43, a: 1}
+  m_Sprite: {fileID: -1256168535239344385, guid: 025a082dbff4a20449305e42a97d0bdc, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -172,6 +174,80 @@ MonoBehaviour:
   sightBlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &5000000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4012556490459243761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e120aaf446e0b38981e9251d03a98734, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleFrameAnimator
+  idleSprite: {fileID: -1256168535239344385, guid: 025a082dbff4a20449305e42a97d0bdc, type: 3}
+  walkFrames:
+  - {fileID: 3266701932256404429, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: 6038311510170854774, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: 2219088859074253855, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: -2889148256826145102, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: -4178324588004604609, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: -4857891495978895553, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: 5731777477668464752, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: 2035308119759222615, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  fleeFrames:
+  - {fileID: 3266701932256404429, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: 6038311510170854774, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: 2219088859074253855, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: -2889148256826145102, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: -4178324588004604609, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: -4857891495978895553, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: 5731777477668464752, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  - {fileID: 2035308119759222615, guid: 44a5796a9fb46e34199485e4444af569, type: 3}
+  frameRate: 8
+  fleeFrameRate: 13
+  attack1Frames:
+  - {fileID: -6814328036605836770, guid: 87309d336115fd243b345eaa8b13eaac, type: 3}
+  - {fileID: 4170153692490509042, guid: 87309d336115fd243b345eaa8b13eaac, type: 3}
+  - {fileID: -8857493243992458081, guid: 87309d336115fd243b345eaa8b13eaac, type: 3}
+  - {fileID: 7897042316033909576, guid: 87309d336115fd243b345eaa8b13eaac, type: 3}
+  - {fileID: 6658721158333351674, guid: 87309d336115fd243b345eaa8b13eaac, type: 3}
+  - {fileID: 4380466542884337025, guid: 87309d336115fd243b345eaa8b13eaac, type: 3}
+  - {fileID: 6415968427823250912, guid: 87309d336115fd243b345eaa8b13eaac, type: 3}
+  - {fileID: 2822036503257444444, guid: 87309d336115fd243b345eaa8b13eaac, type: 3}
+  attack2Frames:
+  - {fileID: -54603013079127563, guid: 974f5a6bf638b1e4dbef2a75a5e6a9e6, type: 3}
+  - {fileID: -2968407065631280377, guid: 974f5a6bf638b1e4dbef2a75a5e6a9e6, type: 3}
+  - {fileID: -7289957141519966953, guid: 974f5a6bf638b1e4dbef2a75a5e6a9e6, type: 3}
+  - {fileID: -1363772023793656961, guid: 974f5a6bf638b1e4dbef2a75a5e6a9e6, type: 3}
+  - {fileID: 5303404458336507052, guid: 974f5a6bf638b1e4dbef2a75a5e6a9e6, type: 3}
+  - {fileID: 4705815591623768086, guid: 974f5a6bf638b1e4dbef2a75a5e6a9e6, type: 3}
+  - {fileID: 3364768132235204497, guid: 974f5a6bf638b1e4dbef2a75a5e6a9e6, type: 3}
+  - {fileID: 6139075040682254313, guid: 974f5a6bf638b1e4dbef2a75a5e6a9e6, type: 3}
+  hurtFrames:
+  - {fileID: 4181335173623461978, guid: 30db11b7548b5fb4295a4ad505cbef61, type: 3}
+  - {fileID: -3952207405440349453, guid: 30db11b7548b5fb4295a4ad505cbef61, type: 3}
+  - {fileID: -1054229494727135485, guid: 30db11b7548b5fb4295a4ad505cbef61, type: 3}
+  - {fileID: 961494661255656272, guid: 30db11b7548b5fb4295a4ad505cbef61, type: 3}
+  deathFrames:
+  - {fileID: 2803285695073185790, guid: 1c235d7909fb17849b263236a3024188, type: 3}
+  - {fileID: 2032272936354330926, guid: 1c235d7909fb17849b263236a3024188, type: 3}
+  - {fileID: 3157526330069159113, guid: 1c235d7909fb17849b263236a3024188, type: 3}
+  - {fileID: 5823387094109211886, guid: 1c235d7909fb17849b263236a3024188, type: 3}
+--- !u!114 &5000000000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4012556490459243761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f7b8426135743f44b1b960324be89e9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalFacingFlipper
+  horizontalDeadzone: 0.01
 --- !u!114 &6996777279432024342
 MonoBehaviour:
   m_ObjectHideFlags: 0

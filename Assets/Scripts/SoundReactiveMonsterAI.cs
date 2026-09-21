@@ -26,8 +26,14 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     [Tooltip("Chase 중 플레이어와의 사이에 이 레이어의 콜라이더(벽, 장애물)가 있으면 시야가 막힌 것으로 취급한다.")]
     [SerializeField] private LayerMask sightBlockingMask = ~0;
 
+    // 실제로 이 정도 이상 속도로 움직이고 있을 때만 Walk 프레임을 재생한다 - NavMeshAgent의
+    // velocity는 항상 정확하므로, 동물처럼 FixedUpdate에서 위치 변화량을 직접 잴 필요가 없다.
+    private const float MinMovingSpeed = 0.05f;
+
     private NavMeshAgent agent;
     private MonsterHealth health;
+    private SimpleFrameAnimator frameAnimator;
+    private AnimalFacingFlipper facingFlipper;
     private Transform player;
     private Vector3 origin;
     private State state = State.Wander;
@@ -55,6 +61,8 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         health = GetComponent<MonsterHealth>();
+        frameAnimator = visual != null ? visual.GetComponent<SimpleFrameAnimator>() : null;
+        facingFlipper = visual != null ? visual.GetComponent<AnimalFacingFlipper>() : null;
         agent.updateRotation = false;
         agent.updateUpAxis = false;
         agent.speed = WanderSpeed;
@@ -133,7 +141,13 @@ public class SoundReactiveMonsterAI : MonoBehaviour
                 bool blocked = IsSightBlocked(GamePosition, PlayerGamePosition);
                 bool sightLost = distanceToPlayer > LoseRange || blocked;
 
-                sightLostTimer = sightLost ? sightLostTimer + Time.deltaTime : 0f;
+                // 놓친 시간은 빠르게 쌓이지만 되찾았을 때는 그 절반 속도로만 줄어들게 해서, 모퉁이를
+                // 도는 순간 단 한 프레임만 다시 보여도 지금까지 쌓은 진행이 통째로 0으로 리셋되는 것을
+                // 막는다 - 몬스터 자신도 같은 모퉁이를 0.25초 뒤처져 따라 돌기 때문에 완전히 끊기지
+                // 않고 아주 잠깐씩 다시 보이는 경우가 흔해서, 즉시 리셋이면 사실상 영원히 못 놓친다.
+                sightLostTimer = sightLost
+                    ? sightLostTimer + Time.deltaTime
+                    : Mathf.Max(0f, sightLostTimer - Time.deltaTime * 2f);
 
                 if (sightLostTimer >= ChaseGiveUpSightLostDuration)
                 {
@@ -234,6 +248,24 @@ public class SoundReactiveMonsterAI : MonoBehaviour
         {
             visual.position = new Vector3(transform.position.x, transform.position.z, 0f);
         }
+
+        if (frameAnimator != null)
+        {
+            // Chase/Investigate/Search는 모두 평소 배회보다 급박하게 움직이는 상태라 걷기보다
+            // 우선하는 프레임(IsFleeing 슬롯 재사용)을 쓰고, Wander 중에는 실제로 속도가 나올 때만
+            // Walk, 목적지에 도착해 대기 중이거나 정지해 있으면 Idle로 자연스럽게 떨어진다.
+            frameAnimator.IsFleeing = state == State.Chase || state == State.Investigate || state == State.Search;
+            frameAnimator.IsMoving = state == State.Wander && agent.velocity.sqrMagnitude > MinMovingSpeed * MinMovingSpeed;
+        }
+
+        // 동물(AnimalWander/AnimalFlee)과 동일한 좌우 반전 컴포넌트를 재사용한다 - agent.velocity의
+        // x/z가 이 몬스터의 2D 좌표계(x, z)에서 그대로 가로/세로 이동 성분이므로 별도 변환이 필요 없다.
+        // Wander/Investigate/Chase/Search 등 상태와 무관하게 매 프레임 실제 이동 방향을 그대로 넘기면,
+        // 좌우 성분이 거의 없을 때(위/아래 이동, 정지) AnimalFacingFlipper가 알아서 마지막 방향을 유지한다.
+        if (facingFlipper != null)
+        {
+            facingFlipper.SetMoveDirection(new Vector2(agent.velocity.x, agent.velocity.z));
+        }
     }
 
     private void ReturnToWander()
@@ -275,20 +307,27 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     // 숨는 경우는 장애물이 이 보조선 간격보다 훨씬 크므로 여전히 셋 다 막혀서 스텔스에는 영향이 없다.
     private const float SightSampleOffset = 0.3f;
 
+    // 3줄 중 2줄 이상 막히면 "시야 차단"으로 판정한다. 원래는 3줄 전부를 요구했는데, 추격 중인
+    // 몬스터도 플레이어와 거의 같은 타이밍에 같은 모퉁이를 돌기 때문에 세 줄이 동시에 완전히
+    // 막히는 순간이 실제로는 드물어서 사실상 영원히 시야를 놓치지 않는 문제가 있었다. 2줄만
+    // 요구해도 문틀 모서리에 한 줄만 걸리는 흔한 오판(중심선만 잠깐 스치는 경우)은 여전히
+    // 걸러진다.
     private bool IsSightBlocked(Vector2 from, Vector2 to)
     {
-        if (Physics2D.Linecast(from, to, sightBlockingMask).collider == null) return false;
+        int blockedLines = 0;
+        if (Physics2D.Linecast(from, to, sightBlockingMask).collider != null) blockedLines++;
 
         Vector2 delta = to - from;
         Vector2 offset = new Vector2(-delta.y, delta.x).normalized * SightSampleOffset;
-        if (Physics2D.Linecast(from + offset, to + offset, sightBlockingMask).collider == null) return false;
-        if (Physics2D.Linecast(from - offset, to - offset, sightBlockingMask).collider == null) return false;
+        if (Physics2D.Linecast(from + offset, to + offset, sightBlockingMask).collider != null) blockedLines++;
+        if (Physics2D.Linecast(from - offset, to - offset, sightBlockingMask).collider != null) blockedLines++;
 
-        return true;
+        return blockedLines >= 2;
     }
 
     private void HandleCatch()
     {
+        frameAnimator?.PlayRandomAttack();
         int damage = config != null ? config.soundReactiveMonsterDamage : 47;
         GameManager.Instance?.TakeDamage(damage, monsterTypeName);
     }

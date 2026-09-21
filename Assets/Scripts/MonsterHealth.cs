@@ -8,6 +8,7 @@ public class MonsterHealth : MonoBehaviour, ISleepable
 
     private NavMeshAgent agent;
     private SpriteRenderer spriteRenderer;
+    private SimpleFrameAnimator frameAnimator;
     private float stunTimer;
     private float asleepTimer;
     private bool sleepPending;
@@ -34,6 +35,7 @@ public class MonsterHealth : MonoBehaviour, ISleepable
     {
         agent = GetComponent<NavMeshAgent>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        frameAnimator = GetComponentInChildren<SimpleFrameAnimator>();
         Health = MaxHealth;
     }
 
@@ -64,7 +66,14 @@ public class MonsterHealth : MonoBehaviour, ISleepable
         Health -= amount;
         Debug.Log($"{gameObject.name} 몬스터가 피격당함! 데미지: {amount:0.#}, 남은 체력: {Mathf.Max(Health, 0):0.#}/{MaxHealth}");
 
-        if (Health <= 0) Die();
+        if (Health <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            frameAnimator?.PlayHurt();
+        }
     }
 
     public void Stun(float duration)
@@ -85,6 +94,7 @@ public class MonsterHealth : MonoBehaviour, ISleepable
     private void Die()
     {
         IsDead = true;
+        frameAnimator?.PlayDeath();
         if (spriteRenderer != null) spriteRenderer.color = deadColor;
         if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
 
