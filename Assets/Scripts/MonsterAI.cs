@@ -16,6 +16,10 @@ public class MonsterAI : MonoBehaviour
         new Vector2(0f, 1.5f),
         new Vector2(1.5f, 0f)
     };
+    [Tooltip("각 순찰 웨이포인트에 도착한 뒤 다음 웨이포인트로 출발하기 전까지 멈춰 서서 대기하는 시간(초) 범위. " +
+        "이게 없으면 도착하자마자 바로 다음 지점으로 출발해서 좁은 경로를 쉬지 않고 도는 것처럼 보인다.")]
+    [SerializeField] private float patrolWaitMin = 2f;
+    [SerializeField] private float patrolWaitMax = 4f;
 
     [Header("Capture")]
     [SerializeField] private string monsterTypeName = "순찰형";
@@ -36,6 +40,8 @@ public class MonsterAI : MonoBehaviour
     private float searchTimer;
     private float sightLostTimer;
     private float chaseDestinationTimer;
+    private bool patrolWaiting;
+    private float patrolWaitTimer;
 
     private float PatrolSpeed => config != null ? config.patrolMonsterPatrolSpeed : 1.6f;
     private float ChaseSpeed => config != null ? config.monsterChaseSpeed : 4.3125f;
@@ -134,6 +140,7 @@ public class MonsterAI : MonoBehaviour
                 if (searchTimer >= SearchDuration)
                 {
                     state = State.Patrol;
+                    patrolWaiting = false;
                     agent.speed = PatrolSpeed;
                     if (waypoints.Length > 0 && agent.isOnNavMesh) agent.SetDestination(waypoints[targetIndex]);
                 }
@@ -186,8 +193,24 @@ public class MonsterAI : MonoBehaviour
         }
         else if (waypoints.Length > 0 && !agent.pathPending && agent.remainingDistance <= WaypointStopDistance)
         {
-            targetIndex = (targetIndex + 1) % waypoints.Length;
-            agent.SetDestination(waypoints[targetIndex]);
+            // 웨이포인트에 도착해도 바로 다음 지점으로 출발하지 않고, 잠시 멈춰 서서 배회하는
+            // 느낌을 준다 - Chase/Search 중에는 이 else if 자체가 실행되지 않으므로 대기 중에
+            // 플레이어가 나타나면 위쪽 분기에서 바로 Chase로 전환된다.
+            if (!patrolWaiting)
+            {
+                patrolWaiting = true;
+                patrolWaitTimer = Random.Range(patrolWaitMin, patrolWaitMax);
+            }
+            else
+            {
+                patrolWaitTimer -= Time.deltaTime;
+                if (patrolWaitTimer <= 0f)
+                {
+                    patrolWaiting = false;
+                    targetIndex = (targetIndex + 1) % waypoints.Length;
+                    agent.SetDestination(waypoints[targetIndex]);
+                }
+            }
         }
 
         if (visual != null)

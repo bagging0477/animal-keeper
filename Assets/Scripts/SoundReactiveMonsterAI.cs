@@ -11,8 +11,8 @@ public class SoundReactiveMonsterAI : MonoBehaviour
 
     [Header("Wander")]
     [SerializeField] private float wanderRadius = 5f;
-    [SerializeField] private float wanderWaitMin = 1f;
-    [SerializeField] private float wanderWaitMax = 3f;
+    [SerializeField] private float wanderWaitMin = 3f;
+    [SerializeField] private float wanderWaitMax = 6f;
 
     [Header("Investigate")]
     [SerializeField] private float investigateSpeed = 2f;
