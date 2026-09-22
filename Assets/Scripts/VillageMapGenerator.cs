@@ -236,14 +236,74 @@ public class VillageMapGenerator : MonoBehaviour
     // NavMesh는 벽에서 에이전트 반경(NavMeshAreas의 agentRadius, 기본 0.5)만큼 안쪽으로 침식되므로,
     // 문이 2줄 이하로만 뚫리면 침식 후 실제 통행 가능한 폭이 1.0 이하로 남아 몬스터가 그 연결부를
     // 절대 못 넘어가는 경우가 생긴다(ㄱ자/분리된 방처럼 가장자리 바닥 모양이 서로 잘 안 맞는 조합일
-    // 때 특히 그렇다). 무작위로 고른 방들을 순서 그대로 이어붙이기 전에, 실제로 마주보는 가장자리끼리
-    // 가장 넓게 겹치는 순서로 그리디하게 다시 배열해서 이런 조합이 이웃하지 않게 최대한 피한다.
+    // 때 특히 그렇다). 무작위로 고른 방들을 순서 그대로 이어붙이기 전에, 방 개수가 몇 안 되는 점을
+    // 이용해 가능한 순열을 전부 시도해서 "가장 좁은 연결부가 가장 넓어지는"(bottleneck 최댓값) 배치를
+    // 고른다 - 그리디하게 직전 방과만 비교하며 앞에서 좋은 조합을 다 써버리면, 남는 두 방이 최악의
+    // 조합으로 묶여 마지막 연결부만 좁아지는 경우가 있었다(A-B, C-D는 잘 맞지만 B-C는 안 맞을 때 등).
     private const int MinSafeDoorwayWidth = 3;
+
+    // 방 개수가 이 값을 넘으면 순열 탐색(n!)이 비싸지므로 예전의 그리디 방식으로 대체한다.
+    // 현재 방 프리팹은 4종뿐이라 실질적으로는 항상 순열 탐색이 쓰인다.
+    private const int ExhaustiveOrderSearchMaxRooms = 7;
 
     private static List<GameObject> OrderForDoorwayCompatibility(List<GameObject> rooms)
     {
         if (rooms.Count <= 1) return rooms;
+        if (rooms.Count > ExhaustiveOrderSearchMaxRooms) return GreedyOrderForDoorwayCompatibility(rooms);
 
+        List<GameObject> bestOrder = new List<GameObject>(rooms);
+        int bestMinOverlap = MinOverlapAlongChain(bestOrder);
+
+        SearchBestOrder(rooms, new bool[rooms.Count], new List<GameObject>(rooms.Count), ref bestOrder, ref bestMinOverlap);
+
+        if (bestMinOverlap < MinSafeDoorwayWidth)
+        {
+            Debug.LogWarning($"VillageMapGenerator: even the best possible room ordering for this combination leaves a " +
+                $"connector only {bestMinOverlap} tile(s) wide (target: {MinSafeDoorwayWidth}+). CarveDoorway will try to " +
+                "force-widen it by biting into adjacent wall tiles as a fallback.");
+        }
+
+        return bestOrder;
+    }
+
+    private static void SearchBestOrder(List<GameObject> pool, bool[] used, List<GameObject> current, ref List<GameObject> bestOrder, ref int bestMinOverlap)
+    {
+        if (current.Count == pool.Count)
+        {
+            int minOverlap = MinOverlapAlongChain(current);
+            if (minOverlap > bestMinOverlap)
+            {
+                bestMinOverlap = minOverlap;
+                bestOrder = new List<GameObject>(current);
+            }
+            return;
+        }
+
+        for (int i = 0; i < pool.Count; i++)
+        {
+            if (used[i]) continue;
+
+            used[i] = true;
+            current.Add(pool[i]);
+            SearchBestOrder(pool, used, current, ref bestOrder, ref bestMinOverlap);
+            current.RemoveAt(current.Count - 1);
+            used[i] = false;
+        }
+    }
+
+    private static int MinOverlapAlongChain(List<GameObject> chain)
+    {
+        if (chain.Count <= 1) return int.MaxValue;
+        int min = int.MaxValue;
+        for (int i = 0; i + 1 < chain.Count; i++)
+        {
+            min = Mathf.Min(min, BestEdgeOverlap(chain[i], chain[i + 1]));
+        }
+        return min;
+    }
+
+    private static List<GameObject> GreedyOrderForDoorwayCompatibility(List<GameObject> rooms)
+    {
         List<GameObject> remaining = new List<GameObject>(rooms);
         List<GameObject> ordered = new List<GameObject> { remaining[0] };
         remaining.RemoveAt(0);
@@ -587,7 +647,7 @@ public class VillageMapGenerator : MonoBehaviour
         int borderXForA = boundsA.MaxX + 1;
         int borderXForB = boundsB.MinX - 1;
 
-        int openedRows = 0;
+        List<int> openedYs = new List<int>();
         for (int y = overlapMinY; y <= overlapMaxY; y++)
         {
             Vector2Int aEdgeCellLocal = new Vector2Int(boundsA.MaxX - offsetA.x, y - offsetA.y);
@@ -596,20 +656,28 @@ public class VillageMapGenerator : MonoBehaviour
 
             OpenCell(wallsA, groundA, floorTile, new Vector2Int(borderXForA, y) - offsetA);
             OpenCell(wallsB, groundB, floorTile, new Vector2Int(borderXForB, y) - offsetB);
-            openedRows++;
+            openedYs.Add(y);
         }
 
         // NavMesh는 벽에서 에이전트 반경(NavMeshAreas의 agentRadius, 기본 0.5)만큼 안쪽으로
         // 침식(erode)되므로, 문이 실제로는 몇 칸 뚫려 있어도 침식 후 남는 통행 가능 폭은
         // (뚫린 줄 수 - 1.0)에 불과하다. 2줄 이하로 뚫리면 침식 후 폭이 1.0 이하로 남아
-        // 몬스터(반지름 0.4, 지름 0.8)가 겨우 지나가거나 아예 못 지나갈 수 있다 - 두 방의
-        // 모양이 이 경계에서 서로 잘 안 맞물릴 때 생기는 문제라 코드로 자동 복구하기보다
-        // 어떤 방 조합에서 발생하는지 바로 알아볼 수 있게 경고만 남긴다.
-        if (openedRows > 0 && openedRows < 3)
+        // 몬스터(반지름 0.4, 지름 0.8)가 겨우 지나가거나 아예 못 지나갈 수 있다. OrderForDoorwayCompatibility가
+        // 방 배치 순서를 최대한 유리하게 고르지만, 그래도 자연스럽게 겹치는 바닥 가장자리가 좁으면
+        // 여기서 실제 벽 타일을 추가로 갉아먹어 강제로 넓힌다(원래 바닥도 벽도 없던 빈 공간에 바닥을
+        // 새로 만들어내지 않도록, 양쪽 다 진짜 벽 타일이 있는 줄만 확장 대상으로 삼는다).
+        if (openedYs.Count < MinSafeDoorwayWidth)
         {
-            Debug.LogWarning($"VillageMapGenerator: doorway between {a.Root.name} and {b.Root.name} is only " +
-                $"{openedRows} tile(s) wide after alignment - monsters may get stuck or clip through it. " +
-                "두 방의 맞닿는 가장자리 바닥 모양이 서로 잘 겹치지 않는다는 뜻이니 해당 방 프리팹의 Ground 타일맵을 확인해보세요.");
+            WidenDoorway(wallsA, groundA, wallsB, groundB, floorTile, offsetA, offsetB, borderXForA, borderXForB,
+                overlapMinY, overlapMaxY, openedYs, MinSafeDoorwayWidth);
+        }
+
+        int openedRows = openedYs.Count;
+        if (openedRows > 0 && openedRows < MinSafeDoorwayWidth)
+        {
+            Debug.LogWarning($"VillageMapGenerator: doorway between {a.Root.name} and {b.Root.name} could only be " +
+                $"widened to {openedRows} tile(s) wide - no more genuine wall tiles were available to bite into on " +
+                "this edge, so monsters may still get stuck. 해당 방 프리팹들의 맞닿는 가장자리 바닥/벽 모양을 다시 확인해보세요.");
         }
         else if (openedRows == 0)
         {
@@ -619,6 +687,53 @@ public class VillageMapGenerator : MonoBehaviour
 
         RefreshWallCollider(wallsA);
         RefreshWallCollider(wallsB);
+    }
+
+    // openedYs가 가리키는 줄 범위 밖(위/아래)으로 한 줄씩 번갈아 확장하되, 그 줄에 실제로 두 방
+    // 모두 벽 타일이 있을 때만(=방 외곽의 진짜 벽을 갉아먹는 것이지, 원래 바닥도 벽도 없던 빈
+    // 공간에 바닥을 새로 만들어내는 게 아님을 보장) 문을 넓힌다. openedYs가 비어 있으면(자연
+    // 겹침이 전혀 없던 경우) overlap 범위 안에서 그런 줄을 하나 찾아 첫 앵커로 삼는다.
+    private static void WidenDoorway(Tilemap wallsA, Tilemap groundA, Tilemap wallsB, Tilemap groundB, TileBase floorTile,
+        Vector2Int offsetA, Vector2Int offsetB, int borderXForA, int borderXForB, int overlapMinY, int overlapMaxY,
+        List<int> openedYs, int minWidth)
+    {
+        bool BothWallsPresent(int y)
+        {
+            Vector2Int localA = new Vector2Int(borderXForA, y) - offsetA;
+            Vector2Int localB = new Vector2Int(borderXForB, y) - offsetB;
+            return wallsA.GetTile(new Vector3Int(localA.x, localA.y, 0)) != null &&
+                   wallsB.GetTile(new Vector3Int(localB.x, localB.y, 0)) != null;
+        }
+
+        void Open(int y)
+        {
+            OpenCell(wallsA, groundA, floorTile, new Vector2Int(borderXForA, y) - offsetA);
+            OpenCell(wallsB, groundB, floorTile, new Vector2Int(borderXForB, y) - offsetB);
+            openedYs.Add(y);
+        }
+
+        if (openedYs.Count == 0)
+        {
+            for (int y = overlapMinY; y <= overlapMaxY; y++)
+            {
+                if (BothWallsPresent(y)) { Open(y); break; }
+            }
+            if (openedYs.Count == 0) return; // 이 경계에는 양쪽 다 진짜 벽인 줄이 하나도 없다 - 안전하게 넓힐 방법이 없다.
+        }
+
+        while (openedYs.Count < minWidth)
+        {
+            openedYs.Sort();
+            int lowY = openedYs[0] - 1;
+            int highY = openedYs[openedYs.Count - 1] + 1;
+            bool canLow = lowY >= overlapMinY && BothWallsPresent(lowY);
+            bool canHigh = highY <= overlapMaxY && BothWallsPresent(highY);
+
+            if (!canLow && !canHigh) break; // 양쪽 다 더 이상 갉아먹을 진짜 벽 타일이 없다.
+
+            if (canLow) Open(lowY);
+            if (openedYs.Count < minWidth && canHigh) Open(highY);
+        }
     }
 
     private static void OpenCell(Tilemap walls, Tilemap ground, TileBase floorTile, Vector2Int localCell)
