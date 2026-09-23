@@ -37,10 +37,13 @@ public class PlayerItemDropper : MonoBehaviour
         switch (dropped.Type)
         {
             case InventoryItemType.Animal:
+                // MonsterCorpse(몬스터 시체)는 되살릴 배회/도주 프리팹이 없다 - 동물처럼 걸어다니게
+                // 만들면 안 되므로 일부러 아무것도 스폰하지 않고 그냥 소모시킨다.
                 AnimalRescue animalPrefab = dropped.AnimalKind switch
                 {
                     AnimalBehaviorKind.Flee => droppedFleeAnimalPrefab,
                     AnimalBehaviorKind.SoundFlee => droppedSoundFleeAnimalPrefab,
+                    AnimalBehaviorKind.MonsterCorpse => null,
                     _ => droppedWanderAnimalPrefab
                 };
                 if (animalPrefab != null)

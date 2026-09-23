@@ -72,6 +72,11 @@ public class GameBalanceConfig : ScriptableObject
     [Range(0f, 1f)]
     public float floorPatchThreshold = 0.62f;
 
+    [Header("몬스터 - 시체 획득 (임시값)")]
+    [Tooltip("늑대 기반 순찰형 몬스터(PatrolMonster) 처치 후 시체를 주웠을 때의 무게. 일반 동물(1~10)보다 " +
+        "더 무겁게 잡은 임시값이며, 최종 밸런스는 나중에 조정한다. 소리반응형(Blood) 몬스터에는 적용되지 않는다.")]
+    public int wolfCorpseWeight = 15;
+
     [Header("몬스터 - 스폰 (VillageScene 절차적 생성 전용)")]
     [Tooltip("몬스터가 스폰될 때 플레이어 스폰 위치로부터 최소 이 거리 이상 떨어진 곳에만 생성되도록 시도한다. " +
         "스폰 시점에만 적용되며, 스폰 이후 순찰/배회로 이 범위 안에 들어오는 것은 막지 않는다.")]
