@@ -1,0 +1,910 @@
+fileFormatVersion: 2
+guid: 510e12b3310175e4cbdf9740408477c4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2246826257688269993
+    second: Wolf Cub Sprite Sheet_0
+  - first:
+      213: 8242974669437852466
+    second: Wolf Cub Sprite Sheet_1
+  - first:
+      213: -7660713384892771422
+    second: Wolf Cub Sprite Sheet_2
+  - first:
+      213: 3227875543208805073
+    second: Wolf Cub Sprite Sheet_3
+  - first:
+      213: 1370504513138154119
+    second: Wolf Cub Sprite Sheet_4
+  - first:
+      213: -2588996985164446650
+    second: Wolf Cub Sprite Sheet_5
+  - first:
+      213: 7560456893148753289
+    second: Wolf Cub Sprite Sheet_6
+  - first:
+      213: 4116141386323349947
+    second: Wolf Cub Sprite Sheet_7
+  - first:
+      213: 411988434516541613
+    second: Wolf Cub Sprite Sheet_8
+  - first:
+      213: -8479921647899730186
+    second: Wolf Cub Sprite Sheet_9
+  - first:
+      213: -4609128611054263653
+    second: Wolf Cub Sprite Sheet_10
+  - first:
+      213: -4087902172450742344
+    second: Wolf Cub Sprite Sheet_11
+  - first:
+      213: -2273915954373762417
+    second: Wolf Cub Sprite Sheet_12
+  - first:
+      213: -2620789968647071644
+    second: Wolf Cub Sprite Sheet_13
+  - first:
+      213: 9127975967952985865
+    second: Wolf Cub Sprite Sheet_14
+  - first:
+      213: -4298775616141956366
+    second: Wolf Cub Sprite Sheet_15
+  - first:
+      213: -5823773985606279503
+    second: Wolf Cub Sprite Sheet_16
+  - first:
+      213: 8274783603417250123
+    second: Wolf Cub Sprite Sheet_17
+  - first:
+      213: -2990271359567075652
+    second: Wolf Cub Sprite Sheet_18
+  - first:
+      213: 7868680311234161882
+    second: Wolf Cub Sprite Sheet_19
+  - first:
+      213: -2899405602744774594
+    second: Wolf Cub Sprite Sheet_20
+  - first:
+      213: 5962703457465160826
+    second: Wolf Cub Sprite Sheet_21
+  - first:
+      213: 3958008704026127646
+    second: Wolf Cub Sprite Sheet_22
+  - first:
+      213: -1908057564271434455
+    second: Wolf Cub Sprite Sheet_23
+  - first:
+      213: -8867613944439602824
+    second: Wolf Cub Sprite Sheet_24
+  - first:
+      213: -2177666998476783547
+    second: Wolf Cub Sprite Sheet_25
+  - first:
+      213: -5875765099864577221
+    second: Wolf Cub Sprite Sheet_26
+  - first:
+      213: 3746788763358695725
+    second: Wolf Cub Sprite Sheet_27
+  - first:
+      213: -3881110996187029670
+    second: Wolf Cub Sprite Sheet_28
+  - first:
+      213: -2004467190613509834
+    second: Wolf Cub Sprite Sheet_29
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 16
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 191
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75b687e3c6ba1d0e0800000000000000
+      internalID: -2246826257688269993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 191
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23bd268e9cde46270800000000000000
+      internalID: 8242974669437852466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 191
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a3d26fb3cdafa590800000000000000
+      internalID: -7660713384892771422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 191
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d2c12c54b7bbcc20800000000000000
+      internalID: 3227875543208805073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 191
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78a5bace792050310800000000000000
+      internalID: 1370504513138154119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 191
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64447b685f8021cd0800000000000000
+      internalID: -2588996985164446650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 191
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98de8cfbc732ce860800000000000000
+      internalID: 7560456893148753289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 191
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb1561958c87f1930800000000000000
+      internalID: 4116141386323349947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 159
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da08de26c4da7b500800000000000000
+      internalID: 411988434516541613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 159
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fe9ac59034415a80800000000000000
+      internalID: -8479921647899730186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 127
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b92650ec2f51900c0800000000000000
+      internalID: -4609128611054263653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 127
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bf968ef1aad447c0800000000000000
+      internalID: -4087902172450742344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 95
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f82657abc7d6170e0800000000000000
+      internalID: -2273915954373762417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 95
+        width: 20
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46852e7b86511abd0800000000000000
+      internalID: -2620789968647071644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 96
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90fd320e7c51dae70800000000000000
+      internalID: 9127975967952985865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 95
+        width: 20
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2fa6fbe5a5ea754c0800000000000000
+      internalID: -4298775616141956366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 96
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bed6cf6a6ccd2fa0800000000000000
+      internalID: -5823773985606279503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 95
+        width: 20
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4979ea78dfe5d270800000000000000
+      internalID: 8274783603417250123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 95
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb6eaf6aa0c6086d0800000000000000
+      internalID: -2990271359567075652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 95
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adce8329d0b233d60800000000000000
+      internalID: 7868680311234161882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 63
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e30de9c47fd33c7d0800000000000000
+      internalID: -2899405602744774594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 63
+        width: 21
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a74543be337cfb250800000000000000
+      internalID: 5962703457465160826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 66
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1da16522fbade630800000000000000
+      internalID: 3958008704026127646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 64
+        width: 22
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 925aa9e21c73585e0800000000000000
+      internalID: -1908057564271434455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 31
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8718064a918efe480800000000000000
+      internalID: -8867613944439602824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 32
+        width: 26
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54043b4176f57c1e0800000000000000
+      internalID: -2177666998476783547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_26
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 32
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3b2fe6d5c6157ea0800000000000000
+      internalID: -5875765099864577221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_27
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 0
+        width: 20
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d219b6867844ff330800000000000000
+      internalID: 3746788763358695725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_28
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 0
+        width: 21
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5fd86aac16832ac0800000000000000
+      internalID: -3881110996187029670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wolf Cub Sprite Sheet_29
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 0
+        width: 23
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6397e83d5b3be24e0800000000000000
+      internalID: -2004467190613509834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Wolf Cub Sprite Sheet_0: -2246826257688269993
+      Wolf Cub Sprite Sheet_1: 8242974669437852466
+      Wolf Cub Sprite Sheet_10: -4609128611054263653
+      Wolf Cub Sprite Sheet_11: -4087902172450742344
+      Wolf Cub Sprite Sheet_12: -2273915954373762417
+      Wolf Cub Sprite Sheet_13: -2620789968647071644
+      Wolf Cub Sprite Sheet_14: 9127975967952985865
+      Wolf Cub Sprite Sheet_15: -4298775616141956366
+      Wolf Cub Sprite Sheet_16: -5823773985606279503
+      Wolf Cub Sprite Sheet_17: 8274783603417250123
+      Wolf Cub Sprite Sheet_18: -2990271359567075652
+      Wolf Cub Sprite Sheet_19: 7868680311234161882
+      Wolf Cub Sprite Sheet_2: -7660713384892771422
+      Wolf Cub Sprite Sheet_20: -2899405602744774594
+      Wolf Cub Sprite Sheet_21: 5962703457465160826
+      Wolf Cub Sprite Sheet_22: 3958008704026127646
+      Wolf Cub Sprite Sheet_23: -1908057564271434455
+      Wolf Cub Sprite Sheet_24: -8867613944439602824
+      Wolf Cub Sprite Sheet_25: -2177666998476783547
+      Wolf Cub Sprite Sheet_26: -5875765099864577221
+      Wolf Cub Sprite Sheet_27: 3746788763358695725
+      Wolf Cub Sprite Sheet_28: -3881110996187029670
+      Wolf Cub Sprite Sheet_29: -2004467190613509834
+      Wolf Cub Sprite Sheet_3: 3227875543208805073
+      Wolf Cub Sprite Sheet_4: 1370504513138154119
+      Wolf Cub Sprite Sheet_5: -2588996985164446650
+      Wolf Cub Sprite Sheet_6: 7560456893148753289
+      Wolf Cub Sprite Sheet_7: 4116141386323349947
+      Wolf Cub Sprite Sheet_8: 411988434516541613
+      Wolf Cub Sprite Sheet_9: -8479921647899730186
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

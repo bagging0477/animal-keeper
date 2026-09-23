@@ -31,6 +31,11 @@ public class SimpleFrameAnimator : MonoBehaviour
     [SerializeField] private Sprite[] hurtFrames;
     [SerializeField] private Sprite[] deathFrames;
 
+    [Tooltip("hurtFrames를 준비하지 못한 몬스터용 대체 연출. hurtFrames가 비어 있을 때 PlayHurt()를 호출하면 " +
+        "프레임 전환 없이(이동 애니메이션을 끊지 않고) 이 색으로 잠깐 틴트했다가 원래 색으로 되돌아간다.")]
+    [SerializeField] private Color hurtFlashColor = new Color(1f, 0.25f, 0.25f, 1f);
+    [SerializeField] private float hurtFlashDuration = 0.15f;
+
     private SpriteRenderer spriteRenderer;
     private bool isMoving;
     private bool isFleeing;
@@ -39,6 +44,7 @@ public class SimpleFrameAnimator : MonoBehaviour
     private float frameTimer;
     private Sprite[] activeOneShotFrames;
     private float oneShotTimeRemaining;
+    private float hurtFlashTimeRemaining;
 
     /// <summary>Idle 스프라이트. 인벤토리 아이콘 기본값으로 쓰인다.</summary>
     public Sprite IdleSprite => idleSprite;
@@ -87,10 +93,16 @@ public class SimpleFrameAnimator : MonoBehaviour
     }
 
     /// <summary>hurtFrames를 한 번만(반복 없이) 재생한 뒤 그 시점의 최신 이동 상태로 돌아간다.
-    /// hurtFrames가 비어 있으면 아무 일도 하지 않는다.</summary>
+    /// hurtFrames가 비어 있으면 대신 hurtFlashColor로 잠깐 틴트하는 것으로 대체한다 - 이 경우 mode는
+    /// 바뀌지 않으므로 Walk/Flee 등 진행 중이던 이동 애니메이션이 끊기지 않는다.</summary>
     public void PlayHurt()
     {
         if (mode == Mode.Dead) return;
+        if (hurtFrames == null || hurtFrames.Length == 0)
+        {
+            hurtFlashTimeRemaining = hurtFlashDuration;
+            return;
+        }
         StartOneShot(hurtFrames, Mode.Hurt);
     }
 
@@ -139,6 +151,7 @@ public class SimpleFrameAnimator : MonoBehaviour
         if (mode == Mode.Attack || mode == Mode.Hurt || mode == Mode.Dead)
         {
             UpdateOneShotFrame();
+            UpdateHurtFlash();
             return;
         }
 
@@ -152,6 +165,7 @@ public class SimpleFrameAnimator : MonoBehaviour
         if (frames == null || frames.Length == 0)
         {
             if (idleSprite != null) spriteRenderer.sprite = idleSprite;
+            UpdateHurtFlash();
             return;
         }
 
@@ -165,6 +179,17 @@ public class SimpleFrameAnimator : MonoBehaviour
         }
 
         spriteRenderer.sprite = frames[frameIndex % frames.Length];
+        UpdateHurtFlash();
+    }
+
+    // Dead 상태에서는 MonsterHealth가 spriteRenderer.color를 deadColor로 직접 바꿔 시체 연출을
+    // 하므로, 그 색을 덮어쓰지 않도록 PlayHurt()에서부터 이미 Dead일 때는 플래시가 걸리지 않는다.
+    private void UpdateHurtFlash()
+    {
+        if (hurtFlashTimeRemaining <= 0f) return;
+
+        hurtFlashTimeRemaining -= Time.deltaTime;
+        spriteRenderer.color = hurtFlashTimeRemaining > 0f ? hurtFlashColor : Color.white;
     }
 
     private void UpdateOneShotFrame()
