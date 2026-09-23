@@ -117,6 +117,17 @@ public class VillageMapGenerator : MonoBehaviour
         // 폭이 부족하면 벽 타일 몇 개를 바닥으로 바꿔서 넓힌다(원본 방 프리팹은 그대로 둔다).
         EnsureTruckClearance(centerRoom, truckXY, GetTruckFootprintSize());
 
+        // EnsureTruckClearance는 필요하면 벽 타일을 바닥으로 깎아서 새 바닥을 만드는데, 그 시점은
+        // 이미 위에서 NavMesh를 다 구운 뒤라 새로 열린 바닥이 NavMesh에는 전혀 반영되지 않는다 -
+        // 화면에는 뚫린 통로로 보여도 몬스터(NavMeshAgent) 입장에서는 여전히 벽이라 그 구간을
+        // 절대 지나다니지 못한다. centerRoom의 바닥 칸을 다시 읽어 NavGround 메시를 새로 만들고
+        // 전체를 한 번 더 구워서, 몬스터가 보이는 대로 지나다닐 수 있게 맞춘다.
+        centerRoom.FloorCells = GetFloorCells(centerRoom.Root);
+        int centerRoomIndex = placedRooms.IndexOf(centerRoom);
+        Destroy(navGroundMeshes[centerRoomIndex].gameObject);
+        navGroundMeshes[centerRoomIndex] = BuildNavGround(centerRoom);
+        BakeNavMesh(mapRoot, navGroundMeshes);
+
         // 플레이어/트럭 지점이 이미 차지한 칸에는 몬스터나 동물이 겹쳐서 스폰되지 않도록 제외한다.
         // (센터룸에서만 의미가 있다 - 다른 방에는 플레이어/트럭이 놓이지 않는다.)
         HashSet<Vector2Int> centerRoomExclusions = new HashSet<Vector2Int> { spawnCell, truckCell };
