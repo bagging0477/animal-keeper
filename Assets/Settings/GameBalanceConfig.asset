@@ -18,7 +18,7 @@ MonoBehaviour:
   patrolMonsterDetectRange: 3.4425004
   patrolMonsterLoseRange: 10
   soundReactiveMonsterDetectRange: 1.7255
-  soundReactiveMonsterLoseRange: 9
+  soundReactiveMonsterLoseRange: 13.5
   soundReactiveMonsterHearRange: 10.4
   monsterSearchDuration: 3
   patrolMonsterCatchRange: 0.7

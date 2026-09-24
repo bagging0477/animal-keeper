@@ -52,10 +52,13 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private float LoseRange => config != null ? config.soundReactiveMonsterLoseRange : 9f;
     private float SoundHearRange => config != null ? config.soundReactiveMonsterHearRange : 10.4f;
     private float SearchDuration => config != null ? config.monsterSearchDuration : 3f;
-    private float ChaseGiveUpSightLostDuration => config != null ? config.chaseGiveUpSightLostDuration : 2f;
+    // 순찰형(MonsterAI)과 공유하는 chaseGiveUpSightLostDuration 대신, blood 몬스터 전용 값을 쓴다 -
+    // 순찰형까지 같이 늘어나지 않도록 분리된 필드.
+    private float ChaseGiveUpSightLostDuration => config != null ? config.soundReactiveMonsterChaseGiveUpDuration : 3.5f;
     private float ChaseDirectionUpdateInterval => config != null ? config.chaseDirectionUpdateInterval : 0.25f;
     private float CatchRange => config != null ? config.soundReactiveMonsterCatchRange : 0.7f;
     private float WaypointStopDistance => config != null ? config.monsterWaypointStopDistance : 0.2f;
+    private float InvestigateApproachFraction => config != null ? config.soundInvestigateApproachFraction : 0.35f;
 
     private void Awake()
     {
@@ -94,18 +97,32 @@ public class SoundReactiveMonsterAI : MonoBehaviour
         SoundEvents.OnSoundEmitted -= HandleSoundEmitted;
     }
 
-    private void HandleSoundEmitted(Vector3 soundPosition)
+    private void HandleSoundEmitted(Vector3 soundPosition, float intensity)
     {
         if (state == State.Chase) return;
         if (health != null && health.IsIncapacitated) return;
 
+        // 감지 범위 자체가 소리 강도에 비례한다 - 강도 1.0(동물 울음소리)은 기존 감지 범위 그대로,
+        // 0.3(스프린트 발소리)처럼 낮은 소리는 그만큼 가까이서만 들린다.
+        float clampedIntensity = Mathf.Clamp01(intensity);
+        float effectiveHearRange = SoundHearRange * clampedIntensity;
+
         Vector2 soundGamePos = new Vector2(soundPosition.x, soundPosition.y);
-        if (Vector2.Distance(GamePosition, soundGamePos) > SoundHearRange) return;
+        if (Vector2.Distance(GamePosition, soundGamePos) > effectiveHearRange) return;
 
         if (!agent.isOnNavMesh) return;
 
         Vector3 navTarget = new Vector3(soundPosition.x, 0f, soundPosition.y);
-        if (NavMesh.SamplePosition(navTarget, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+
+        // 소리 지점까지 한 번에 이동하지 않고, 현재 위치에서 그 방향으로 강도에 비례한 만큼만 거리를
+        // 좁힌다("확인하러 조금 다가가기"). 같은 소리가 반복되면(동물이 계속 울거나 플레이어가 계속
+        // 스프린트하면) HandleSoundEmitted가 또 호출되어 매번 이만큼씩 더 다가가는 식으로 누적된다 -
+        // Investigate 중이어도(else if로 막지 않음) 새 소리가 오면 lookAroundTimer가 리셋되며 그
+        // 다음 단계로 갱신된다.
+        float approachFraction = Mathf.Clamp01(InvestigateApproachFraction * clampedIntensity);
+        Vector3 stepTarget = Vector3.Lerp(transform.position, navTarget, approachFraction);
+
+        if (NavMesh.SamplePosition(stepTarget, out NavMeshHit hit, 2f, NavMesh.AllAreas))
         {
             state = State.Investigate;
             lookAroundTimer = 0f;

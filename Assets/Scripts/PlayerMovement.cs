@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 moveInput;
     private float currentSpeed;
     private float exhaustionTimer;
+    private float sprintSoundTimer;
 
     /// <summary>마우스가 가리키는 방향(월드 기준, 정규화된 벡터). 무기 조준, 시야 범위 등에서 사용하세요.</summary>
     public Vector2 LookDirection { get; private set; } = Vector2.up;
@@ -63,6 +64,27 @@ public class PlayerMovement : MonoBehaviour
 
         UpdateStamina(kb);
         UpdateLookDirection();
+        UpdateSprintSound();
+    }
+
+    // 스프린트로 실제 이동 중일 때만(제자리에서 Shift만 누르고 있는 경우는 제외) 일정 주기로
+    // SoundEvents를 발생시켜, 소리반응형 몬스터(SoundReactiveMonsterAI)가 동물 울음소리보다
+    // 약한 강도(sprintSoundIntensity)로 감지할 수 있게 한다.
+    private void UpdateSprintSound()
+    {
+        if (!IsSprinting || moveInput.sqrMagnitude <= 0.0001f)
+        {
+            sprintSoundTimer = 0f;
+            return;
+        }
+
+        sprintSoundTimer += Time.deltaTime;
+        float interval = config != null ? config.sprintSoundInterval : 0.5f;
+        if (sprintSoundTimer < interval) return;
+
+        sprintSoundTimer -= interval;
+        float intensity = config != null ? config.sprintSoundIntensity : 0.3f;
+        SoundEvents.Emit(transform.position, intensity);
     }
 
     private void UpdateStamina(Keyboard kb)

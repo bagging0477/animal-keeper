@@ -7,7 +7,7 @@ public class AnimalFlee : MonoBehaviour
     private enum State { Wander, Alert, Fleeing }
 
     [Header("밸런스 설정 (비워두면 기본값 사용)")]
-    [SerializeField] private GameBalanceConfig config;
+    [SerializeField] protected GameBalanceConfig config;
 
     [Header("평소 배회 (Wander) - 얌전한 동물(코알라, AnimalWander)과 같은 패턴")]
     [SerializeField] private float wanderRadius = 1.5f;

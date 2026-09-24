@@ -31,8 +31,9 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("소리반응형 몬스터가 플레이어를 발견하는 거리")]
     public float soundReactiveMonsterDetectRange = 2.03f;
 
-    [Tooltip("소리반응형 몬스터가 추격을 포기하기 시작하는(수색 상태로 전환되는) 거리")]
-    public float soundReactiveMonsterLoseRange = 9f;
+    [Tooltip("소리반응형 몬스터가 추격을 포기하기 시작하는(수색 상태로 전환되는) 거리. 기존(9)보다 1.5배 늘려서 " +
+        "시야를 놓쳐도 더 멀리까지 쫓아오게 한다.")]
+    public float soundReactiveMonsterLoseRange = 13.5f;
 
     [Tooltip("소리반응형 몬스터가 동물 소리를 듣고 반응하는 거리")]
     public float soundReactiveMonsterHearRange = 10.4f;
@@ -59,6 +60,29 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("Chase 중 몬스터가 플레이어의 최신 위치로 목적지(SetDestination)를 다시 잡는 주기(초). " +
         "0보다 크게 두면 플레이어가 급하게 코너를 꺾었을 때 몬스터가 살짝 늦게 반응하는 느낌을 준다 - 매 프레임 완벽하게 추적하지 않는다.")]
     public float chaseDirectionUpdateInterval = 0.25f;
+
+    [Tooltip("소리반응형 몬스터(SoundReactiveMonsterAI) 전용 추격 포기 시간(초). 위 chaseGiveUpSightLostDuration은 " +
+        "순찰형(MonsterAI)과 공유하는 값이라 그대로 늘리면 순찰형까지 같이 바뀌므로, blood 몬스터만 따로 더 오래 " +
+        "쫓아오게 하려고 분리했다 - 순찰형은 이 필드와 무관하게 항상 chaseGiveUpSightLostDuration을 그대로 쓴다.")]
+    public float soundReactiveMonsterChaseGiveUpDuration = 3.5f;
+
+    [Header("몬스터 - 소리 강도 (Blood 몬스터 전용: 감지 범위와 Investigate 접근 거리 모두 이 값에 비례한다)")]
+    [Tooltip("소리 내는 동물(AnimalSoundFlee)이 내는 소리의 강도. 기준값 1.0 - 감지 범위/접근 거리를 그대로(배율 1) 적용한다.")]
+    public float animalSoundIntensity = 1f;
+
+    [Tooltip("플레이어가 스프린트 중 주기적으로 내는 발소리의 강도. 동물 소리(1.0)보다 약해서, 감지 범위와 " +
+        "한 번에 다가오는 접근 거리 모두 이 비율만큼 줄어든다(예: 0.3이면 감지 범위 30%, 접근 거리도 30%).")]
+    public float sprintSoundIntensity = 0.3f;
+
+    [Tooltip("플레이어가 스프린트 중일 때 이 주기(초)마다 발소리 SoundEvent를 하나씩 발생시킨다.")]
+    public float sprintSoundInterval = 0.5f;
+
+    [Tooltip("소리를 들은 소리반응형 몬스터가 Investigate 상태에서 한 번에 소리 발생 지점 쪽으로 좁히는 거리 " +
+        "비율(0~1, 소리 강도 1.0 기준). 실제 적용 비율은 여기에 그 소리의 강도를 곱한 값이라, 강도가 낮을수록 " +
+        "(예: 스프린트 발소리) 한 걸음에 다가가는 거리도 그만큼 작아진다. 소리가 반복되면(동물이 계속 울거나 " +
+        "플레이어가 계속 스프린트하면) 매번 이만큼씩 더 다가가는 식으로 누적된다.")]
+    [Range(0f, 1f)]
+    public float soundInvestigateApproachFraction = 0.35f;
 
     [Header("바닥 타일 변형 (VillageScene 절차적 생성 전용)")]
     [Tooltip("Perlin Noise 샘플링 좌표에 곱해지는 배율. 값이 작을수록 노이즈가 넓게 퍼져서 " +
