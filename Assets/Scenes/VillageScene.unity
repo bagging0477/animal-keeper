@@ -613,8 +613,8 @@ MonoBehaviour:
   minRoomCount: 3
   maxRoomCount: 4
   floorVariantTiles:
-  - {fileID: 11400000, guid: 99ff5d385a39427885c968917abe50d6, type: 2}
-  - {fileID: 11400000, guid: 3ea2567630a84d5c91db2f5b732ea4e5, type: 2}
+  - {fileID: 11400000, guid: 5d208106ab918ec45bb937e4b9699684, type: 2}
+  - {fileID: 11400000, guid: b05f468f631b7ef44a7aec08df6d923a, type: 2}
   animalPrefabs:
   - {fileID: 8620217539038921367, guid: 01f13696473ba7c4d884d8d271f17ce9, type: 3}
   - {fileID: 8620217539038921367, guid: 01f13696473ba7c4d884d8d271f17ce9, type: 3}

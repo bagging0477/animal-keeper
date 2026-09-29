@@ -172,30 +172,33 @@ public class VillageMapGenerator : MonoBehaviour
         },
     };
 
-    // 각 방 프리팹에 미리 배치해둔 장애물(크레이트)의 로컬 셀 좌표. NavMesh를 구울 때 이
-    // 칸들은 바닥에서 빼서 구멍으로 남겨두기 때문에, 장애물은 2D 충돌체뿐 아니라
-    // NavMeshAgent(몬스터) 경로에서도 실제로 피해 다녀야 할 장애물이 된다.
+    // 각 방 프리팹에 미리 배치해둔 장애물(상자/조각상/항아리/묘비/바위 등)의 로컬 셀 좌표. NavMesh를
+    // 구울 때 이 칸들은 바닥에서 빼서 구멍으로 남겨두기 때문에, 장애물은 2D 충돌체뿐 아니라
+    // NavMeshAgent(몬스터) 경로에서도 실제로 피해 다녀야 할 장애물이 된다. 나무/덤불이 놓인 칸은
+    // 일부러 여기서 뺐다 - 그 자리는 Obstacle 프리팹의 BoxCollider2D/ShadowCaster2D도 제거해
+    // 순수 장식(플레이어도 몬스터도 그냥 지나다님)으로 만들었으므로, NavMesh에서도 막힌 칸이
+    // 아니라 평범한 바닥이어야 한다.
     private static readonly Dictionary<string, Vector2Int[]> ObstacleCellsByRoom = new Dictionary<string, Vector2Int[]>
     {
         ["RoomA_Corridor"] = new[]
         {
-            new Vector2Int(5, 0), new Vector2Int(10, 4), new Vector2Int(14, 0),
+            new Vector2Int(5, 0), new Vector2Int(14, 0),
             new Vector2Int(18, 4), new Vector2Int(22, 0), new Vector2Int(25, 4),
         },
         ["RoomB_Square"] = new[]
         {
-            new Vector2Int(7, 7), new Vector2Int(9, 7), new Vector2Int(7, 9), new Vector2Int(9, 9),
-            new Vector2Int(14, 5), new Vector2Int(14, 11), new Vector2Int(4, 14), new Vector2Int(17, 3),
-            new Vector2Int(12, 15), new Vector2Int(18, 8), new Vector2Int(3, 4),
+            new Vector2Int(9, 7), new Vector2Int(7, 9),
+            new Vector2Int(14, 5), new Vector2Int(14, 11), new Vector2Int(4, 14),
+            new Vector2Int(12, 15), new Vector2Int(18, 8),
         },
         ["RoomC_LShape"] = new[]
         {
-            new Vector2Int(9, 7), new Vector2Int(13, 3), new Vector2Int(3, 12),
+            new Vector2Int(3, 12),
             new Vector2Int(15, 7), new Vector2Int(6, 15),
         },
         ["RoomD_Connected"] = new[]
         {
-            new Vector2Int(3, 3), new Vector2Int(16, 2), new Vector2Int(15, 15), new Vector2Int(10, 4),
+            new Vector2Int(16, 2), new Vector2Int(15, 15), new Vector2Int(10, 4),
         },
     };
 
