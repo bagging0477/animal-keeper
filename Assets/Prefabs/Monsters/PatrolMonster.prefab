@@ -94,6 +94,64 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &5000000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2029791192082603220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e120aaf446e0b38981e9251d03a98734, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleFrameAnimator
+  idleSprite: {fileID: 411988434516541613, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  walkFrames:
+  - {fileID: 411988434516541613, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: -8479921647899730186, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: -4609128611054263653, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: -4087902172450742344, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: -2273915954373762417, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: -2620789968647071644, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: 9127975967952985865, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: -4298775616141956366, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: -5823773985606279503, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: 8274783603417250123, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: -2990271359567075652, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: 7868680311234161882, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  fleeFrames:
+  - {fileID: -2899405602744774594, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: 5962703457465160826, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: 3958008704026127646, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: -1908057564271434455, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  frameRate: 8
+  fleeFrameRate: 13
+  attack1Frames:
+  - {fileID: -8867613944439602824, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: -2177666998476783547, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: -5875765099864577221, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  attack2Frames: []
+  hurtFrames: []
+  deathFrames:
+  - {fileID: 3746788763358695725, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: -3881110996187029670, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  - {fileID: -2004467190613509834, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
+  hurtFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
+  hurtFlashDuration: 0.15
+--- !u!114 &5000000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2029791192082603220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f7b8426135743f44b1b960324be89e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalFacingFlipper
+  horizontalDeadzone: 0.01
 --- !u!1 &6555077884092434632
 GameObject:
   m_ObjectHideFlags: 0
@@ -183,6 +241,8 @@ MonoBehaviour:
   - {x: -1.5, y: 0}
   - {x: 0, y: 1.5}
   - {x: 1.5, y: 0}
+  patrolWaitMin: 2
+  patrolWaitMax: 4
   monsterTypeName: "\uC21C\uCC30\uD615"
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
   sightBlockingMask:
@@ -198,66 +258,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27c44e65ab510d244b7bf49033eee48a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterCorpsePickup
-  interactionRange: 1.2
+  interactionRange: 1.8
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
   promptText: {fileID: 0}
   pickupSound: {fileID: 0}
   inventoryIcon: {fileID: 0}
---- !u!114 &5000000000000000001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2029791192082603220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e120aaf446e0b38981e9251d03a98734, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::SimpleFrameAnimator
-  idleSprite: {fileID: 411988434516541613, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  walkFrames:
-  - {fileID: 411988434516541613, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: -8479921647899730186, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: -4609128611054263653, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: -4087902172450742344, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: -2273915954373762417, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: -2620789968647071644, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: 9127975967952985865, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: -4298775616141956366, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: -5823773985606279503, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: 8274783603417250123, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: -2990271359567075652, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: 7868680311234161882, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  fleeFrames:
-  - {fileID: -2899405602744774594, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: 5962703457465160826, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: 3958008704026127646, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: -1908057564271434455, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  frameRate: 8
-  fleeFrameRate: 13
-  attack1Frames:
-  - {fileID: -8867613944439602824, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: -2177666998476783547, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: -5875765099864577221, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  attack2Frames: []
-  hurtFrames: []
-  deathFrames:
-  - {fileID: 3746788763358695725, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: -3881110996187029670, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
-  - {fileID: -2004467190613509834, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
---- !u!114 &5000000000000000003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2029791192082603220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f7b8426135743f44b1b960324be89e9, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::AnimalFacingFlipper
-  horizontalDeadzone: 0.01

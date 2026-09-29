@@ -8,7 +8,7 @@ public class ClassInteractPoint : MonoBehaviour
 {
     [SerializeField] private PlayerClass playerClass;
     [SerializeField] private GameBalanceConfig config;
-    [SerializeField] private float interactionRange = 1.6f;
+    [SerializeField] private float interactionRange = 2.4f;
     [SerializeField] private ClassInfoPopup popup;
     [SerializeField] private SpriteRenderer bodySprite;
 
@@ -37,7 +37,7 @@ public class ClassInteractPoint : MonoBehaviour
         if (player == null) return;
 
         float distance = Vector2.Distance(transform.position, player.position);
-        if (distance > interactionRange) return;
+        if (distance > interactionRange || !InteractionFocus.TryFocus(this, distance)) return;
 
         GameManager gm = GameManager.Instance;
         bool unlocked = gm != null && gm.IsClassUnlocked(playerClass);

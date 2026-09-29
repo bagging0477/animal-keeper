@@ -8,7 +8,7 @@ public class ShopItemInteractPoint : MonoBehaviour
 {
     [SerializeField] private ShopItemKind itemKind;
     [SerializeField] private GameBalanceConfig config;
-    [SerializeField] private float interactionRange = 1.2f;
+    [SerializeField] private float interactionRange = 1.8f;
     [SerializeField] private ShopItemPopup popup;
 
     private Transform player;
@@ -31,7 +31,7 @@ public class ShopItemInteractPoint : MonoBehaviour
         if (player == null) return;
 
         float distance = Vector2.Distance(transform.position, player.position);
-        if (distance > interactionRange) return;
+        if (distance > interactionRange || !InteractionFocus.TryFocus(this, distance)) return;
 
         int price = GetPrice();
 

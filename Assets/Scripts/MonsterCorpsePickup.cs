@@ -11,7 +11,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(MonsterHealth))]
 public class MonsterCorpsePickup : MonoBehaviour
 {
-    [SerializeField] private float interactionRange = 1.2f;
+    [SerializeField] private float interactionRange = 1.8f;
     [SerializeField] private GameBalanceConfig config;
     [SerializeField] private Text promptText;
 
@@ -88,7 +88,7 @@ public class MonsterCorpsePickup : MonoBehaviour
         SharedPrompt.BeginFrameIfNeeded(promptText);
 
         float distance = Vector2.Distance(health.GamePosition, new Vector2(player.position.x, player.position.y));
-        bool inRange = distance <= interactionRange;
+        bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
         if (inRange && GameManager.Instance.HasInventorySpace) SharedPrompt.Show(promptText, "E를 눌러 사체를 획득하세요");
 

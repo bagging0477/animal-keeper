@@ -123,7 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e768bcaaebe83d4c90b9c22509e51c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalRescue
-  interactionRange: 1.2
+  interactionRange: 1.8
   minWeight: 1
   maxWeight: 10
   promptText: {fileID: 0}
@@ -149,6 +149,9 @@ MonoBehaviour:
   waitMin: 1
   waitMax: 3
   wanderStopDistance: 0.1
+  wanderDestinationClearance: 1
+  wanderDestinationAttempts: 8
+  stuckRepickDelay: 0.4
   alertRange: 3
   loseRange: 8
   alertDuration: 0.5
@@ -156,6 +159,7 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  minMovingSpeed: 0.05
 --- !u!50 &5701105146326097001
 Rigidbody2D:
   serializedVersion: 5
@@ -262,3 +266,10 @@ MonoBehaviour:
   - {fileID: 877804133, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
   - {fileID: -965083657, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
   frameRate: 10
+  fleeFrameRate: 0
+  attack1Frames: []
+  attack2Frames: []
+  hurtFrames: []
+  deathFrames: []
+  hurtFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
+  hurtFlashDuration: 0.15

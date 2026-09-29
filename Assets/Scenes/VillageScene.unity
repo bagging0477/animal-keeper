@@ -2170,7 +2170,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1486068514634784547, guid: 435844a03dfd3664b8199677034b8871, type: 3}
+  m_Sprite: {fileID: 1073562036551934319, guid: 49028b2533b1c3849a5f1f212d7c223d, type: 3}
   m_Color: {r: 0.72, g: 0.72, b: 0.72, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2191,7 +2191,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 8, y: 6, z: 0}
-  m_LocalScale: {x: 6, y: 6, z: 1}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2208,7 +2208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4f85b36aac525c459f1ddf639ea2f45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TruckPoint
-  interactionRange: 1.8
+  interactionRange: 2.7
   truckSceneName: TruckScene
   promptText: {fileID: 363482550}
 --- !u!61 &1662819016
@@ -2249,13 +2249,13 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 0.38, y: 0.97}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.4, y: 0.68}
+  m_Size: {x: 0.36, y: 0.93}
   m_EdgeRadius: 0
 --- !u!1 &1973456740
 GameObject:

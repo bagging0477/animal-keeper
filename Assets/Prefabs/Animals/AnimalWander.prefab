@@ -123,7 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e768bcaaebe83d4c90b9c22509e51c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalRescue
-  interactionRange: 1.2
+  interactionRange: 1.8
   minWeight: 1
   maxWeight: 10
   promptText: {fileID: 0}
@@ -131,6 +131,7 @@ MonoBehaviour:
   playPickupSoundSegment: 0
   pickupSoundStartTime: 7
   pickupSoundEndTime: 8
+  inventoryIcon: {fileID: 0}
 --- !u!114 &740077487230975585
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,6 +149,14 @@ MonoBehaviour:
   waitMin: 1
   waitMax: 3
   stopDistance: 0.1
+  wanderDestinationClearance: 1
+  wanderDestinationAttempts: 8
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  wallLookahead: 0.6
+  stuckRepickDelay: 0.4
+  minMovingSpeed: 0.05
 --- !u!50 &8620217539038921401
 Rigidbody2D:
   serializedVersion: 5
@@ -221,7 +230,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e120aaf446e0b38981e9251d03a98734, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SimpleFrameAnimator
   idleSprite: {fileID: -1073623083, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
   walkFrames:
@@ -231,7 +240,15 @@ MonoBehaviour:
   - {fileID: -1083502863, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
   - {fileID: -123028918, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
   - {fileID: 653729013, guid: ca7515b9e2057515e9149bd9ed0c8004, type: 3}
+  fleeFrames: []
   frameRate: 8
+  fleeFrameRate: 0
+  attack1Frames: []
+  attack2Frames: []
+  hurtFrames: []
+  deathFrames: []
+  hurtFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
+  hurtFlashDuration: 0.15
 --- !u!114 &8620217539038921420
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242,6 +259,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f7b8426135743f44b1b960324be89e9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalFacingFlipper
   horizontalDeadzone: 0.01

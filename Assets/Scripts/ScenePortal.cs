@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// ShelterScene ↔ ClassSelectScene처럼 별도 처리 없이 단순히 씬만 전환하면 되는 문/출입구에 쓴다.</summary>
 public class ScenePortal : MonoBehaviour
 {
-    [SerializeField] private float interactionRange = 1.4f;
+    [SerializeField] private float interactionRange = 2.1f;
     [SerializeField] private string targetSceneName;
     [SerializeField] private string promptMessage = "E를 눌러 이동";
     [SerializeField] private Text promptText;
@@ -36,7 +36,7 @@ public class ScenePortal : MonoBehaviour
         SharedPrompt.BeginFrameIfNeeded(promptText);
 
         float distance = Vector2.Distance(transform.position, player.position);
-        bool inRange = distance <= interactionRange;
+        bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
         if (inRange) SharedPrompt.Show(promptText, promptMessage);
 

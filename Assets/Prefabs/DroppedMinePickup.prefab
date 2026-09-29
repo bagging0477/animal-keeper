@@ -106,5 +106,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GadgetPickup
   itemType: 2
-  interactionRange: 1.2
+  interactionRange: 1.8
   promptText: {fileID: 0}
+  icon: {fileID: 0}

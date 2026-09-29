@@ -6,7 +6,7 @@ using UnityEngine.UI;
 /// <summary>ShelterScene의 유일한 출구 - 여기서 상호작용하는 것 자체가 "오늘"을 마감하는 행동이다
 /// (예전에는 별도의 NextDayButton UI가 이 역할을 맡았는데, 출구를 하나로 합치면서 여기로 옮겼다).
 /// 목표 달성 여부를 판정해서 성공하면 트럭씬으로 넘어간다. 실패(목표 미달) 자체는 이제 TruckScene의
-/// NextDayPoint에서 보호소에 들어가기도 전에 미리 걸러지므로, 여기서 EvaluateCycleEnd()가 실패로
+/// 소파 허브(TruckHubPoint)에서 보호소에 들어가기도 전에 미리 걸러지므로, 여기서 EvaluateCycleEnd()가 실패로
 /// 나오는 경우는 정상적인 플레이에서는 일어나지 않는다 - 그래도 ShelterSettlement는 방어적으로 그
 /// 경우에도 게임 오버 패널을 띄우고 false를 반환해 씬 전환을 막는다.
 /// 마지막 사이클까지 목표 달성과 함께 완주해 게임을 클리어한 뒤에는(IsGameWon) 게임 오버와 동일하게
@@ -14,7 +14,7 @@ using UnityEngine.UI;
 /// 이 지점을 다시 눌러도 보너스가 중복 지급되지 않는다.</summary>
 public class ShelterExitPoint : MonoBehaviour
 {
-    [SerializeField] private float interactionRange = 1.4f;
+    [SerializeField] private float interactionRange = 2.1f;
     [SerializeField] private string truckSceneName = "TruckScene";
     [SerializeField] private ShelterSettlement shelterSettlement;
     [SerializeField] private Text promptText;
@@ -41,7 +41,7 @@ public class ShelterExitPoint : MonoBehaviour
         if (player == null) return;
 
         float distance = Vector2.Distance(transform.position, player.position);
-        bool inRange = distance <= interactionRange;
+        bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
         bool gameEnded = GameManager.Instance != null && (GameManager.Instance.IsGameOver || GameManager.Instance.IsGameWon);
 
         // 이 프롬프트는 이 지점 전용 Text라 SharedPrompt(여러 지점이 화면에 하나뿐인 공용 문구 UI를

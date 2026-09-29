@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// (AnimalDeliveryPoint)에서 슬롯을 선택해 따로 처리한다.</summary>
 public class TruckPoint : MonoBehaviour
 {
-    [SerializeField] private float interactionRange = 1.8f;
+    [SerializeField] private float interactionRange = 2.7f;
     [SerializeField] private string truckSceneName = "TruckScene";
     [SerializeField] private Text promptText;
 
@@ -36,7 +36,7 @@ public class TruckPoint : MonoBehaviour
         SharedPrompt.BeginFrameIfNeeded(promptText);
 
         float distance = Vector2.Distance(transform.position, player.position);
-        bool inRange = distance <= interactionRange;
+        bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
         if (inRange) SharedPrompt.Show(promptText, "E를 눌러 트럭에 타기");
 

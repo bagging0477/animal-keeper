@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// 상호작용해도 납품되지 않는다.</summary>
 public class AnimalDeliveryPoint : MonoBehaviour
 {
-    [SerializeField] private float interactionRange = 1.5f;
+    [SerializeField] private float interactionRange = 2.3f;
     [SerializeField] private Text promptText;
 
     private Transform player;
@@ -34,7 +34,7 @@ public class AnimalDeliveryPoint : MonoBehaviour
         SharedPrompt.BeginFrameIfNeeded(promptText);
 
         float distance = Vector2.Distance(transform.position, player.position);
-        if (distance > interactionRange) return;
+        if (distance > interactionRange || !InteractionFocus.TryFocus(this, distance)) return;
 
         bool selectedIsAnimal = GameManager.Instance.GetSlot(GameManager.Instance.SelectedSlotIndex).Type == InventoryItemType.Animal;
         if (selectedIsAnimal) SharedPrompt.Show(promptText, "E를 눌러 동물 납품하기");

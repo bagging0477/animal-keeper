@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class GadgetPickup : MonoBehaviour
 {
     [SerializeField] private InventoryItemType itemType = InventoryItemType.Mine;
-    [SerializeField] private float interactionRange = 1.2f;
+    [SerializeField] private float interactionRange = 1.8f;
     [SerializeField] private Text promptText;
 
     [Tooltip("인벤토리 슬롯에 표시할 아이콘. 비워두면 이 오브젝트의 SpriteRenderer 스프라이트를 자동으로 사용한다. 아직 아이콘이 없다면 비워두면 되고, 그 경우 슬롯은 기존처럼 색상 채움만으로 표시된다.")]
@@ -46,7 +46,7 @@ public class GadgetPickup : MonoBehaviour
         SharedPrompt.BeginFrameIfNeeded(promptText);
 
         float distance = Vector2.Distance(transform.position, player.position);
-        bool inRange = distance <= interactionRange;
+        bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
         if (inRange && GameManager.Instance.HasInventorySpace) SharedPrompt.Show(promptText, "E를 눌러 줍기");
 

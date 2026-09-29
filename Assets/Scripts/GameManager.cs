@@ -248,7 +248,7 @@ public class GameManager : MonoBehaviour
     /// <summary>"오늘"을 실제로 마감할 때 목표 달성 여부를 판정한다 - 오늘 누적 구조한 마릿수(RescuedCount)
     /// 기준으로 딱 한 번만 판정한다. 성공(목표 달성)은 ShelterScene의 출구(ShelterExitPoint, 보호소에서
     /// 정산/쇼핑까지 마친 뒤)에서 호출되고, 실패(목표 미달)는 이미 그 시점에 확정된 결과라 보호소에
-    /// 들어가기 전인 TruckScene의 NextDayPoint에서 곧바로 호출된다. TotalCyclesToWin번째 사이클을 목표
+    /// 들어가기 전인 TruckScene의 소파 허브(TruckHubPoint)에서 곧바로 호출된다. TotalCyclesToWin번째 사이클을 목표
     /// 달성과 함께 완주했다면 게임 클리어로 끝내고 ResetDay()를 부르지 않는다(CycleCount가 그 값에
     /// 멈춰서, ResetGame() 전까지 다음 사이클로 자동 진행되지 않는다) - 그 외에는 평소처럼 ResetDay()로
     /// 다음 사이클을 시작한다.</summary>

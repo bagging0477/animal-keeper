@@ -5,7 +5,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(AnimalSleep))]
 public class AnimalRescue : MonoBehaviour
 {
-    [SerializeField] private float interactionRange = 1.2f;
+    [SerializeField] private float interactionRange = 1.8f;
     [SerializeField] private int minWeight = 1;
     [SerializeField] private int maxWeight = 10;
     [SerializeField] private Text promptText;
@@ -143,7 +143,7 @@ public class AnimalRescue : MonoBehaviour
         SharedPrompt.BeginFrameIfNeeded(promptText);
 
         float distance = Vector2.Distance(transform.position, player.position);
-        bool inRange = distance <= interactionRange;
+        bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
         if (inRange && GameManager.Instance.HasInventorySpace) SharedPrompt.Show(promptText, "E를 눌러 구조하세요");
 

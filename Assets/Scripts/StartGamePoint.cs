@@ -11,7 +11,7 @@ using UnityEngine.UI;
 /// ShelterScene으로 돌아가 버리면(그날 화물을 하나도 못 모은 채로) 정산이 잘못 확정되는 버그가 생긴다.</summary>
 public class StartGamePoint : MonoBehaviour
 {
-    [SerializeField] private float interactionRange = 1.4f;
+    [SerializeField] private float interactionRange = 2.1f;
     [SerializeField] private string truckSceneName = "TruckScene";
     [SerializeField] private Text promptText;
     [SerializeField] private GameObject shelterReturnDoor;
@@ -46,7 +46,7 @@ public class StartGamePoint : MonoBehaviour
         SharedPrompt.BeginFrameIfNeeded(promptText);
 
         float distance = Vector2.Distance(transform.position, player.position);
-        bool inRange = distance <= interactionRange;
+        bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
         if (inRange) SharedPrompt.Show(promptText, "E를 눌러 시작하기");
 
