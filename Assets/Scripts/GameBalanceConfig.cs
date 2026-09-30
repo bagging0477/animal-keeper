@@ -163,9 +163,8 @@ public class GameBalanceConfig : ScriptableObject
     [Range(0f, 1f)]
     public float focusedVisionShadowSoftness = 0.5f;
 
-    [Tooltip("체크하면 부채꼴 시야가 벽에 닿아도 벽 타일 자체는 그대로 보이고, 그림자는 벽 바깥쪽부터 드리워진다. " +
-        "(벽 타일맵을 'Walls' 정렬 레이어로 옮겨 그림자를 아예 받지 않게 하므로, 시야 범위 안이면 다른 벽 뒤에 있는 벽도 보인다.) " +
-        "끄면 예전처럼 벽 안쪽 테두리부터 어두워진다. VillageScene 맵 생성 시점에 적용되므로 바꾼 뒤에는 씬을 다시 시작해야 한다.")]
+    [Tooltip("체크하면 빛이 닿는 벽은 타일 전체가 조명을 받아 보이고, 모서리 너머처럼 다른 벽에 가려진 벽만 그림자로 어두워진다. " +
+        "끄면 벽 칸 전체가 그림자에 덮여 벽 안쪽 테두리부터 어두워진다. VillageScene 맵 생성 시점에 적용되므로 바꾼 뒤에는 씬을 다시 시작해야 한다.")]
     public bool wallsVisibleInShadow = true;
 
     [Header("클래스 - 시야 범위 배율 (기준치 대비, %) - 100이면 기준치(위 ambientVisionRadius 등) 그대로. " +

@@ -38,9 +38,6 @@ TagManager:
   - 
   - 
   m_SortingLayers:
-  - name: Walls
-    uniqueID: 591777809
-    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

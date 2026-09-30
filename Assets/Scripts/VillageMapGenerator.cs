@@ -69,6 +69,8 @@ public class VillageMapGenerator : MonoBehaviour
         GameObject mapRoot = new GameObject(MapRootName);
         List<RoomInstance> placedRooms = BuildRoomChain(mapRoot.transform);
         if (placedRooms.Count == 0) return;
+        RemoveGroundUnderOtherRoomsWalls(placedRooms);
+        SealMapLeaks(placedRooms);
 
         // Doorway carving can split a room's wall ring into more than one disconnected piece
         // (e.g. a doorway cutting straight through what used to be one connected run of wall
@@ -77,7 +79,6 @@ public class VillageMapGenerator : MonoBehaviour
         {
             RebuildWallShadowCasters(room, WallsVisibleInShadow);
         }
-        if (WallsVisibleInShadow) LightWallsSortingLayer();
 
         List<MeshFilter> navGroundMeshes = new List<MeshFilter>();
         foreach (RoomInstance room in placedRooms)
@@ -118,6 +119,11 @@ public class VillageMapGenerator : MonoBehaviour
         // 사이에 두고 지나다닐 틈이 없다 - 이 맵 인스턴스에 한해서 주변 장애물은 치우고, 그래도
         // 폭이 부족하면 벽 타일 몇 개를 바닥으로 바꿔서 넓힌다(원본 방 프리팹은 그대로 둔다).
         EnsureTruckClearance(centerRoom, truckXY, GetTruckFootprintSize(), WallsVisibleInShadow);
+        // 트럭 자리를 넓히려고 바깥 벽까지 깎았다면 그 너머가 맵 밖일 수 있으므로 한 번 더 막는다.
+        foreach (RoomInstance sealedRoom in SealMapLeaks(placedRooms))
+        {
+            RebuildWallShadowCastersFromScratch(sealedRoom, WallsVisibleInShadow);
+        }
 
         // EnsureTruckClearance는 필요하면 벽 타일을 바닥으로 깎아서 새 바닥을 만드는데, 그 시점은
         // 이미 위에서 NavMesh를 다 구운 뒤라 새로 열린 바닥이 NavMesh에는 전혀 반영되지 않는다 -
@@ -450,61 +456,49 @@ public class VillageMapGenerator : MonoBehaviour
     // simple convex polygon - feeding that raw path into ShadowCaster2D confused its fill logic,
     // so parts of it either failed to block light at all, or (worse) filled in the doorway/interior
     // area as if it were solid wall. Sidestep all of that by reading the actual wall TILES directly
-    // and greedily merging them into simple axis-aligned rectangles (a classic maximal-rectangle
-    // tiling) - each rectangle is a trivially valid, never-self-intersecting box, using the exact
+    // and covering them with simple axis-aligned rectangles (every maximal horizontal and vertical
+    // run) - each rectangle is a trivially valid, never-self-intersecting box, using the exact
     // same BoxCollider2D + ShadowCaster2D shape-from-collider mechanism already proven correct for
     // obstacles. This guarantees every wall tile blocks light and nothing else (like a carved
     // doorway) ever does, regardless of how doorway carving happened to shape the walls this Day.
 
-    // How far each generated wall shadow rectangle overlaps its neighbors, in world units. See the
-    // comment on box.size below for why this needs to be greater than zero.
-    private const float WallShadowOverlap = 0.08f;
 
-    // 벽 타일맵만 따로 올려두는 정렬 레이어(Project Settings > Tags and Layers에서 Default보다 앞에 둔다).
-    // 벽 칸 아래에는 바닥 타일이 없고 원래 그리는 순서도 바닥(0) < 벽(1) < 나머지(2)였으므로, 이 레이어를
-    // Default 앞에 두어도 화면에 겹쳐 보이는 순서는 달라지지 않는다.
-    private const string WallsSortingLayerName = "Walls";
-
-    private static int WallsSortingLayerId
+    // 방은 가장자리끼리 두어 칸씩 겹쳐서 이어붙이기 때문에, 한 방의 벽 칸이 옆 방의 바닥 칸 위에 놓이는
+    // 경우가 생긴다(문 옆에 남은 벽 끄트머리 등). 그 칸은 지나갈 수 없는데도 옆 방의 바닥 목록(FloorCells)에
+    // 남아 NavMesh/스폰 후보가 되고, 렌더링 순서에 따라 바닥이 벽을 덮어 "벽은 안 보이는데 막혀 있는" 칸이
+    // 될 수 있다. 벽이 있는 칸의 바닥 타일은 어느 방 것이든 지운다.
+    private static void RemoveGroundUnderOtherRoomsWalls(List<RoomInstance> rooms)
     {
-        get
+        foreach (RoomInstance wallRoom in rooms)
         {
-            foreach (SortingLayer layer in SortingLayer.layers)
+            Tilemap walls = wallRoom.Root.transform.Find("Walls")?.GetComponent<Tilemap>();
+            if (walls == null) continue;
+            foreach (Vector3Int wallCell in walls.cellBounds.allPositionsWithin)
             {
-                if (layer.name == WallsSortingLayerName) return layer.id;
+                if (!walls.HasTile(wallCell)) continue;
+                Vector3 worldCenter = walls.GetCellCenterWorld(wallCell);
+                foreach (RoomInstance groundRoom in rooms)
+                {
+                    if (groundRoom == wallRoom) continue;
+                    Tilemap ground = groundRoom.Root.transform.Find("Ground")?.GetComponent<Tilemap>();
+                    if (ground == null) continue;
+                    Vector3Int groundCell = ground.WorldToCell(worldCenter);
+                    if (ground.HasTile(groundCell)) ground.SetTile(groundCell, null);
+                }
             }
-            return -1;
         }
     }
 
-    // ShadowCaster2D에는 그림자를 드리울 정렬 레이어(Inspector의 Target Sorting Layers)를 바꾸는 공개 API가
-    // 없어서 그 직렬화 필드 하나만 리플렉션으로 설정한다(JsonUtility.FromJsonOverwrite는 [SerializeReference]인
-    // 그림자 메시 필드까지 null로 초기화해서 쓸 수 없다). URP 버전이 바뀌어 필드를 못 찾으면 경고만 남긴다 -
-    // 그 경우 벽도 예전처럼 그림자에 가려질 뿐 게임은 정상 동작한다.
-    private static readonly System.Reflection.FieldInfo ShadowCasterSortingLayersField =
-        typeof(ShadowCaster2D).GetField("m_ApplyToSortingLayers", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-
-    private static void SetShadowedSortingLayers(ShadowCaster2D shadow, params int[] sortingLayerIds)
-    {
-        if (ShadowCasterSortingLayersField == null)
-        {
-            Debug.LogWarning("VillageMapGenerator: ShadowCaster2D.m_ApplyToSortingLayers를 찾지 못해 벽도 그림자에 가려집니다(URP 버전 변경?).");
-            return;
-        }
-        ShadowCasterSortingLayersField.SetValue(shadow, sortingLayerIds);
-    }
-
-    // 씬의 모든 Light2D(부채꼴/원형 시야, Global Light)가 Walls 레이어도 비추게 한다 - Light2D는 자기가
-    // 대상으로 삼은 정렬 레이어만 밝히므로, 이게 없으면 Walls 레이어로 옮긴 벽은 늘 새까맣게 나온다.
-    private static void LightWallsSortingLayer()
-    {
-        if (WallsSortingLayerId == -1) return;
-        foreach (Light2D light in FindObjectsByType<Light2D>(FindObjectsSortMode.None))
-        {
-            light.AddTargetSortingLayer(WallsSortingLayerName);
-        }
-    }
-
+    // 벽을 가로 방향 최대 연속 구간과 세로 방향 최대 연속 구간으로 각각 한 번씩 덮는다(곧게 이어진 벽 한 줄 = 상자
+    // 하나). 서로 맞닿은 두 벽 칸은 항상 같은 상자 하나 안에 함께 들어가므로(가로로 붙어 있으면 가로 구간, 세로로
+    // 붙어 있으면 세로 구간) 이음매에서 빛이 새는 틈이 생기지 않고, 상자를 바닥 쪽으로 키울 필요도 없다.
+    //
+    // wallsVisibleInShadow가 켜져 있으면 Self Shadows를 끄고, 서로 이어진 벽 덩어리마다 상자들을 하나의
+    // CompositeShadowCaster2D 그룹으로 묶는다. URP는 Self Shadows가 꺼진 상자의 영역 안에서 "같은 그룹"의 그림자를
+    // 모두 지우므로, 이어진 벽끼리는 서로를 가리지 않는다 - 빛이 닿는 벽은 타일 두께 전체가 조명(거리 감쇠, 부채꼴
+    // 경계, 부드러운 그림자)을 픽셀 단위로 그대로 받고, 다른 방의 벽이나 문으로 끊긴 다른 벽 덩어리처럼 앞을 막는
+    // 벽이 있는 곳만 어두워진다. 벽 줄마다 그룹이 따로면 꺾이는 곳에서 옆 벽 줄의 그림자가 벽 위에 대각선 쐐기로
+    // 떨어진다. 끄면 벽 칸 전체가 그림자에 덮여 벽 안쪽 테두리부터 어두워진다.
     private static void RebuildWallShadowCasters(RoomInstance room, bool wallsVisibleInShadow)
     {
         Transform wallsT = room.Root.transform.Find("Walls");
@@ -516,86 +510,81 @@ public class VillageMapGenerator : MonoBehaviour
         ShadowCaster2D prefabShadowCaster = wallsT.GetComponent<ShadowCaster2D>();
         if (prefabShadowCaster != null) Destroy(prefabShadowCaster);
 
-        // 벽을 보이게 하는 방식: 벽 타일맵을 Walls 정렬 레이어로 옮기고, 아래 그림자 상자들은 Default 레이어
-        // (바닥/동물/몬스터/장애물)에만 그림자를 드리우게 한다. 예전에는 대신 Self Shadows를 껐는데, 그러면
-        // 각 상자가 "자기" 그림자만 자기 영역에서 빠질 뿐 옆 상자의 그림자는 여전히 벽 위에 떨어져서,
-        // 벽이 꺾이는 모서리 칸마다 대각선 쐐기 모양의 밝은/어두운 경계가 생기고 상자 테두리에 빛이 샜다.
-        int wallsLayerId = WallsSortingLayerId;
-        bool excludeWallsFromShadow = wallsVisibleInShadow && wallsLayerId != -1;
-        if (wallsVisibleInShadow && wallsLayerId == -1)
-        {
-            Debug.LogWarning($"VillageMapGenerator: '{WallsSortingLayerName}' 정렬 레이어가 없어 벽도 그림자에 가려집니다. " +
-                "Project Settings > Tags and Layers에서 Default보다 앞에 추가하세요.");
-        }
-        if (excludeWallsFromShadow)
-        {
-            TilemapRenderer wallsRenderer = wallsT.GetComponent<TilemapRenderer>();
-            if (wallsRenderer != null) wallsRenderer.sortingLayerID = wallsLayerId;
-        }
-
-        HashSet<Vector2Int> remaining = new HashSet<Vector2Int>();
+        HashSet<Vector2Int> wallCells = new HashSet<Vector2Int>();
         foreach (Vector3Int pos in wallsTilemap.cellBounds.allPositionsWithin)
         {
-            if (wallsTilemap.HasTile(pos)) remaining.Add(new Vector2Int(pos.x, pos.y));
+            if (wallsTilemap.HasTile(pos)) wallCells.Add(new Vector2Int(pos.x, pos.y));
         }
 
-        List<Vector2Int> sortedCells = new List<Vector2Int>(remaining);
-        sortedCells.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
+        // 상하좌우로 이어진 벽 칸끼리 한 덩어리(그룹). 그룹 오브젝트 이름도 WallShadowCaster_로 시작해야
+        // RebuildWallShadowCastersFromScratch가 통째로 지우고 다시 만들 수 있다.
+        Dictionary<Vector2Int, Transform> groupOf = new Dictionary<Vector2Int, Transform>();
+        int groupIndex = 0;
+        foreach (Vector2Int seed in wallCells)
+        {
+            if (groupOf.ContainsKey(seed)) continue;
+
+            GameObject groupGO = new GameObject($"WallShadowCaster_Group_{groupIndex++}");
+            groupGO.transform.SetParent(wallsT, false);
+            if (wallsVisibleInShadow) groupGO.AddComponent<CompositeShadowCaster2D>();
+
+            Queue<Vector2Int> queue = new Queue<Vector2Int>();
+            queue.Enqueue(seed);
+            groupOf[seed] = groupGO.transform;
+            while (queue.Count > 0)
+            {
+                Vector2Int cell = queue.Dequeue();
+                foreach (Vector2Int dir in new[] { Vector2Int.left, Vector2Int.right, Vector2Int.up, Vector2Int.down })
+                {
+                    Vector2Int next = cell + dir;
+                    if (!wallCells.Contains(next) || groupOf.ContainsKey(next)) continue;
+                    groupOf[next] = groupGO.transform;
+                    queue.Enqueue(next);
+                }
+            }
+        }
 
         int rectIndex = 0;
-        foreach (Vector2Int start in sortedCells)
+        HashSet<Vector2Int> coveredByRun = new HashSet<Vector2Int>();
+        foreach (bool horizontal in new[] { true, false })
         {
-            if (!remaining.Contains(start)) continue; // already absorbed into an earlier rectangle
-
-            int width = 1;
-            while (remaining.Contains(start + new Vector2Int(width, 0))) width++;
-
-            int height = 1;
-            bool rowFull = true;
-            while (rowFull)
+            Vector2Int step = horizontal ? Vector2Int.right : Vector2Int.up;
+            foreach (Vector2Int cell in wallCells)
             {
-                for (int x = 0; x < width; x++)
-                {
-                    if (!remaining.Contains(start + new Vector2Int(x, height))) { rowFull = false; break; }
-                }
-                if (rowFull) height++;
+                if (wallCells.Contains(cell - step)) continue; // 구간의 첫 칸에서만 시작한다
+                int length = 1;
+                while (wallCells.Contains(cell + step * length)) length++;
+                if (length < 2) continue; // 한 칸짜리는 반대 방향 구간이 덮거나, 아래에서 따로 처리한다
+
+                for (int i = 0; i < length; i++) coveredByRun.Add(cell + step * i);
+                Vector2Int size = horizontal ? new Vector2Int(length, 1) : new Vector2Int(1, length);
+                AddWallShadowCaster(groupOf[cell], cell, size, rectIndex++, wallsVisibleInShadow);
             }
-
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    remaining.Remove(start + new Vector2Int(x, y));
-                }
-            }
-
-            GameObject shadowGO = new GameObject($"WallShadowCaster_{rectIndex++}");
-            shadowGO.transform.SetParent(wallsT, false);
-            shadowGO.transform.localPosition = new Vector3(start.x + width * 0.5f, start.y + height * 0.5f, 0f);
-
-            // Trigger-only: physical blocking is already handled by Walls' own CompositeCollider2D -
-            // this collider exists purely so ShadowCaster2D has a simple shape to read.
-            BoxCollider2D box = shadowGO.AddComponent<BoxCollider2D>();
-            box.isTrigger = true;
-            // Two adjacent rectangles from this tiling always share an exact border (zero overlap),
-            // which URP 2D's shadow mesh doesn't stitch together seamlessly - a hairline gap right at
-            // that shared edge lets the ambient/global light leak through, seen as an occasional bright
-            // seam wherever the greedy tiling happens to split a wall run (varies with each procedurally
-            // generated room layout, hence "sometimes"). Padding every rectangle to overlap its
-            // neighbors by WallShadowOverlap closes that gap; the sliver of extra shadow this casts
-            // just outside the wall footprint is imperceptible.
-            box.size = new Vector2(width + WallShadowOverlap, height + WallShadowOverlap);
-
-            ShadowCaster2D shadow = shadowGO.AddComponent<ShadowCaster2D>();
-            shadow.castsShadows = true;
-            // Self Shadows off leaves each shape's own silhouette edge outside the shadow it casts,
-            // which can show as a thin bright rim right at that edge (most visible along the seams
-            // above). Self-shadowing this trigger-only shape doesn't affect how anything looks (it has
-            // no renderer), so there's no downside to leaving it on.
-            shadow.selfShadows = true;
-
-            if (excludeWallsFromShadow) SetShadowedSortingLayers(shadow, SortingLayer.NameToID("Default"));
         }
+
+        // 어느 방향으로도 이웃이 없는 외톨이 벽 칸
+        foreach (Vector2Int cell in wallCells)
+        {
+            if (!coveredByRun.Contains(cell)) AddWallShadowCaster(groupOf[cell], cell, Vector2Int.one, rectIndex++, wallsVisibleInShadow);
+        }
+    }
+
+    // group은 벽 타일맵 바로 아래(위치/회전/크기 기본값)에 있으므로 로컬 좌표를 그대로 타일맵 칸 좌표로 쓴다.
+    private static void AddWallShadowCaster(Transform group, Vector2Int start, Vector2Int size, int index, bool wallsVisibleInShadow)
+    {
+        GameObject shadowGO = new GameObject($"WallShadowCaster_{index}");
+        shadowGO.transform.SetParent(group, false);
+        shadowGO.transform.localPosition = new Vector3(start.x + size.x * 0.5f, start.y + size.y * 0.5f, 0f);
+
+        // Trigger-only: physical blocking is already handled by Walls' own CompositeCollider2D -
+        // this collider exists purely so ShadowCaster2D has a simple shape to read.
+        BoxCollider2D box = shadowGO.AddComponent<BoxCollider2D>();
+        box.isTrigger = true;
+        box.size = size;
+
+        ShadowCaster2D shadow = shadowGO.AddComponent<ShadowCaster2D>();
+        shadow.castsShadows = true;
+        shadow.selfShadows = !wallsVisibleInShadow;
     }
 
     private static IntRect GetFloorBoundsLocal(List<Vector2Int> cells)
@@ -1073,15 +1062,82 @@ public class VillageMapGenerator : MonoBehaviour
 
         Debug.Log($"VillageMapGenerator: 트럭 주변 통행 확보를 위해 {room.Root.name}의 벽 일부를 이번 맵에서만 바닥으로 넓혔습니다.");
         RefreshWallCollider(walls);
+        RebuildWallShadowCastersFromScratch(room, wallsVisibleInShadow);
+    }
 
-        // RebuildWallShadowCasters는 이전에 만든 WallShadowCaster_* 자식을 스스로 지우지 않으므로,
-        // 다시 부르기 전에 먼저 비워야 한다 - 안 그러면 방금 뚫은 자리에 예전 그림자 상자가 그대로 남는다.
+    // RebuildWallShadowCasters는 이전에 만든 WallShadowCaster_* 자식을 스스로 지우지 않으므로,
+    // 다시 부르기 전에 먼저 비워야 한다 - 안 그러면 방금 뚫은 자리에 예전 그림자 상자가 그대로 남는다.
+    private static void RebuildWallShadowCastersFromScratch(RoomInstance room, bool wallsVisibleInShadow)
+    {
+        Transform wallsT = room.Root.transform.Find("Walls");
+        if (wallsT == null) return;
         for (int i = wallsT.childCount - 1; i >= 0; i--)
         {
             Transform child = wallsT.GetChild(i);
             if (child.name.StartsWith("WallShadowCaster_")) Destroy(child.gameObject);
         }
         RebuildWallShadowCasters(room, wallsVisibleInShadow);
+    }
+
+    // 방 사이 문을 뚫거나(CarveDoorway/WidenDoorway) 트럭 자리를 넓히면서 벽을 바닥으로 바꿀 때, 그 너머에
+    // 이어질 방이 없으면 벽도 바닥도 없는 빈칸(맵 바깥)과 바닥이 곧바로 맞닿아 플레이어가 맵 밖으로 나갈 수
+    // 있는 틈이 생긴다. 모든 깎기가 끝난 뒤 바닥과 상하좌우로 맞닿은 빈칸을 찾아, 그 바닥이 속한 방의 벽
+    // 타일로 막는다. 막은 방 목록을 돌려주므로, 이미 그림자 상자를 만든 뒤라면 호출한 쪽에서 다시 만들어야 한다.
+    private static HashSet<RoomInstance> SealMapLeaks(List<RoomInstance> rooms)
+    {
+        Dictionary<Vector2Int, RoomInstance> floorOwner = new Dictionary<Vector2Int, RoomInstance>();
+        HashSet<Vector2Int> wallCells = new HashSet<Vector2Int>();
+        foreach (RoomInstance room in rooms)
+        {
+            Tilemap ground = room.Root.transform.Find("Ground")?.GetComponent<Tilemap>();
+            Tilemap walls = room.Root.transform.Find("Walls")?.GetComponent<Tilemap>();
+            if (ground != null)
+            {
+                foreach (Vector3Int c in ground.cellBounds.allPositionsWithin)
+                {
+                    if (ground.HasTile(c)) floorOwner[ToWorldCell(ground, c)] = room;
+                }
+            }
+            if (walls != null)
+            {
+                foreach (Vector3Int c in walls.cellBounds.allPositionsWithin)
+                {
+                    if (walls.HasTile(c)) wallCells.Add(ToWorldCell(walls, c));
+                }
+            }
+        }
+
+        HashSet<RoomInstance> sealedRooms = new HashSet<RoomInstance>();
+        Vector2Int[] neighbors = { Vector2Int.left, Vector2Int.right, Vector2Int.up, Vector2Int.down };
+        foreach (KeyValuePair<Vector2Int, RoomInstance> floor in floorOwner)
+        {
+            foreach (Vector2Int dir in neighbors)
+            {
+                Vector2Int gap = floor.Key + dir;
+                if (floorOwner.ContainsKey(gap) || wallCells.Contains(gap)) continue;
+
+                Tilemap walls = floor.Value.Root.transform.Find("Walls")?.GetComponent<Tilemap>();
+                TileBase wallTile = walls != null ? FindAnyTile(walls) : null;
+                if (wallTile == null) continue;
+
+                walls.SetTile(walls.WorldToCell(new Vector3(gap.x + 0.5f, gap.y + 0.5f, 0f)), wallTile);
+                wallCells.Add(gap);
+                sealedRooms.Add(floor.Value);
+            }
+        }
+
+        foreach (RoomInstance room in sealedRooms)
+        {
+            RefreshWallCollider(room.Root.transform.Find("Walls").GetComponent<Tilemap>());
+            Debug.Log($"VillageMapGenerator: {room.Root.name}에서 맵 바깥으로 열린 틈을 벽으로 막았습니다.");
+        }
+        return sealedRooms;
+    }
+
+    private static Vector2Int ToWorldCell(Tilemap tilemap, Vector3Int localCell)
+    {
+        Vector3 center = tilemap.GetCellCenterWorld(localCell);
+        return new Vector2Int(Mathf.FloorToInt(center.x), Mathf.FloorToInt(center.y));
     }
 
     // 2D 게임 좌표(x, y) - 스프라이트를 쓰는 오브젝트(플레이어, 동물, 트럭 지점)용.
