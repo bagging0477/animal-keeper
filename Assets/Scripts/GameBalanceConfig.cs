@@ -40,8 +40,29 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("소리반응형 몬스터가 동물 소리를 듣고 반응하는 거리")]
     public float soundReactiveMonsterHearRange = 10.4f;
 
-    [Tooltip("몬스터가 시야에서 플레이어를 놓친 뒤, 완전히 포기하고 순찰/배회로 돌아가기 전까지 마지막으로 본 위치 근처에서 수색하는 시간(초)")]
-    public float monsterSearchDuration = 3f;
+    [Header("몬스터 - 탐색(Searching) 상태")]
+    [Tooltip("추격을 포기한 순찰형 몬스터가 마지막 목격 위치에 도착한 뒤 두리번거리는 시간(초)의 최솟값. " +
+        "실제 시간은 최솟값~최댓값 사이에서 매번 랜덤으로 정해지고, 끝나면 순찰로 돌아간다. 소리반응형 몬스터는 탐색 없이 바로 배회로 돌아간다.")]
+    public float monsterSearchLookDurationMin = 2f;
+
+    [Tooltip("두리번거리는 시간(초)의 최댓값 - 위 최솟값과 함께 랜덤 범위를 정한다.")]
+    public float monsterSearchLookDurationMax = 3f;
+
+    [Tooltip("두리번거리는 동안 좌우로 고개(바라보는 방향)를 바꾸는 간격(초). 작을수록 빠르고 초조하게 두리번거린다.")]
+    public float monsterSearchLookTurnInterval = 0.6f;
+
+    [Tooltip("마지막 목격 위치까지 이 시간(초) 안에 도착하지 못하면(길이 막혔거나 너무 멀면) 그 자리에서 바로 두리번거리기 시작한다.")]
+    public float monsterSearchTravelTimeout = 5f;
+
+    [Tooltip("두리번거리는 도중 방향을 바꿀 차례마다 제자리에서 돌아보는 대신 주변으로 몇 걸음 옮길 확률(0~1). 0이면 제자리에서만 두리번거린다.")]
+    [Range(0f, 1f)]
+    public float monsterSearchStepChance = 0.4f;
+
+    [Tooltip("두리번거리며 몇 걸음 옮길 때, 탐색 도착 지점에서 최대 이 거리 안쪽으로만 움직인다.")]
+    public float monsterSearchStepRadius = 0.8f;
+
+    [Tooltip("두리번거리며 몇 걸음 옮길 때의 이동속도 - 순찰 속도보다 느리게 둬서 조심스럽게 살피는 느낌을 낸다.")]
+    public float monsterSearchStepSpeed = 1.2f;
 
     [Header("몬스터 - 포획 판정")]
     [Tooltip("순찰형 몬스터가 이 거리 안으로 들어오면 플레이어를 붙잡은 것으로 판정한다")]

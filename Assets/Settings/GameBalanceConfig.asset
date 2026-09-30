@@ -20,7 +20,13 @@ MonoBehaviour:
   soundReactiveMonsterDetectRange: 1.7255
   soundReactiveMonsterLoseRange: 13.5
   soundReactiveMonsterHearRange: 10.4
-  monsterSearchDuration: 3
+  monsterSearchLookDurationMin: 2
+  monsterSearchLookDurationMax: 3
+  monsterSearchLookTurnInterval: 0.6
+  monsterSearchTravelTimeout: 5
+  monsterSearchStepChance: 0.4
+  monsterSearchStepRadius: 0.8
+  monsterSearchStepSpeed: 1.2
   patrolMonsterCatchRange: 0.7
   soundReactiveMonsterCatchRange: 0.7
   monsterWaypointStopDistance: 0.2

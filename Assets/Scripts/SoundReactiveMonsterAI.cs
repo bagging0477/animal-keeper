@@ -4,7 +4,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent), typeof(MonsterHealth))]
 public class SoundReactiveMonsterAI : MonoBehaviour
 {
-    private enum State { Wander, Investigate, Chase, Search }
+    private enum State { Wander, Investigate, Chase }
 
     [Header("Visual (2D sprite object this brain drives)")]
     [SerializeField] private Transform visual;
@@ -41,8 +41,6 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private float wanderWaitDuration;
     private float lookAroundTimer;
     private bool caughtLogged;
-    private Vector3 lastKnownPlayerPosition;
-    private float searchTimer;
     private float sightLostTimer;
     private float chaseDestinationTimer;
 
@@ -51,7 +49,6 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private float DetectRange => config != null ? config.soundReactiveMonsterDetectRange : 2.03f;
     private float LoseRange => config != null ? config.soundReactiveMonsterLoseRange : 9f;
     private float SoundHearRange => config != null ? config.soundReactiveMonsterHearRange : 10.4f;
-    private float SearchDuration => config != null ? config.monsterSearchDuration : 3f;
     // 순찰형(MonsterAI)과 공유하는 chaseGiveUpSightLostDuration 대신, blood 몬스터 전용 값을 쓴다 -
     // 순찰형까지 같이 늘어나지 않도록 분리된 필드.
     private float ChaseGiveUpSightLostDuration => config != null ? config.soundReactiveMonsterChaseGiveUpDuration : 3.5f;
@@ -168,27 +165,13 @@ public class SoundReactiveMonsterAI : MonoBehaviour
 
                 if (sightLostTimer >= ChaseGiveUpSightLostDuration)
                 {
-                    // 순간적으로 스친 정도가 아니라 일정 시간 이상 계속 놓쳤을 때만 포기하고,
-                    // 마지막으로 본 위치로 가서 잠시 수색한다.
-                    state = State.Search;
-                    agent.autoBraking = true; // Search는 고정된 한 지점으로 가서 서는 게 맞으므로 다시 켠다.
-                    searchTimer = 0f;
-                    lastKnownPlayerPosition = new Vector3(player.position.x, 0f, player.position.y);
-                    if (agent.isOnNavMesh)
-                    {
-                        agent.speed = ChaseSpeed;
-                        Vector3 destination = NavMesh.SamplePosition(lastKnownPlayerPosition, out NavMeshHit searchHit, 2f, NavMesh.AllAreas)
-                            ? searchHit.position
-                            : lastKnownPlayerPosition;
-                        agent.SetDestination(destination);
-                    }
-                }
-            }
-            else if (state == State.Search)
-            {
-                searchTimer += Time.deltaTime;
-                if (searchTimer >= SearchDuration)
-                {
+                    // 순간적으로 스친 정도가 아니라 일정 시간 이상 계속 놓쳤을 때만 포기한다. 순찰형과 달리
+                    // 탐색(두리번거리기) 단계 없이 곧바로 배회로 돌아간다 - 소리로 움직이는 몬스터라
+                    // 눈으로 찾아다니는 행동이 어울리지 않는다.
+                    agent.autoBraking = true; // Chase 중에 꺼둔 감속을 배회용으로 다시 켠다.
+                    // 배회 지점은 origin 주변에서 고르므로, 그대로 두면 처음 스폰된 곳까지 걸어서 되돌아간다.
+                    // 추격을 멈춘 이 자리를 새 배회 중심으로 삼아 그 근처에서 이어서 배회하게 한다.
+                    origin = transform.position;
                     ReturnToWander();
                 }
             }
@@ -268,16 +251,16 @@ public class SoundReactiveMonsterAI : MonoBehaviour
 
         if (frameAnimator != null)
         {
-            // Chase/Investigate/Search는 모두 평소 배회보다 급박하게 움직이는 상태라 걷기보다
+            // Chase/Investigate는 모두 평소 배회보다 급박하게 움직이는 상태라 걷기보다
             // 우선하는 프레임(IsFleeing 슬롯 재사용)을 쓰고, Wander 중에는 실제로 속도가 나올 때만
             // Walk, 목적지에 도착해 대기 중이거나 정지해 있으면 Idle로 자연스럽게 떨어진다.
-            frameAnimator.IsFleeing = state == State.Chase || state == State.Investigate || state == State.Search;
+            frameAnimator.IsFleeing = state == State.Chase || state == State.Investigate;
             frameAnimator.IsMoving = state == State.Wander && agent.velocity.sqrMagnitude > MinMovingSpeed * MinMovingSpeed;
         }
 
         // 동물(AnimalWander/AnimalFlee)과 동일한 좌우 반전 컴포넌트를 재사용한다 - agent.velocity의
         // x/z가 이 몬스터의 2D 좌표계(x, z)에서 그대로 가로/세로 이동 성분이므로 별도 변환이 필요 없다.
-        // Wander/Investigate/Chase/Search 등 상태와 무관하게 매 프레임 실제 이동 방향을 그대로 넘기면,
+        // Wander/Investigate/Chase 등 상태와 무관하게 매 프레임 실제 이동 방향을 그대로 넘기면,
         // 좌우 성분이 거의 없을 때(위/아래 이동, 정지) AnimalFacingFlipper가 알아서 마지막 방향을 유지한다.
         if (facingFlipper != null)
         {
