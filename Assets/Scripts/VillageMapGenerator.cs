@@ -38,6 +38,7 @@ public class VillageMapGenerator : MonoBehaviour
     private float MonsterMinSpawnDistanceFromPlayer => config != null ? config.monsterMinSpawnDistanceFromPlayer : 6f;
     private float FloorPatchNoiseScale => config != null ? config.floorPatchNoiseScale : 0.15f;
     private float FloorPatchThreshold => config != null ? config.floorPatchThreshold : 0.62f;
+    private bool WallsVisibleInShadow => config == null || config.wallsVisibleInShadow;
 
     // AnimalRescue.Id(계층 경로 기반)를 실제로 Instantiate하기 전에 미리 계산하기 위한 맵 루트 이름.
     // mapRoot 생성 시 이름과 반드시 같아야 한다.
@@ -74,7 +75,7 @@ public class VillageMapGenerator : MonoBehaviour
         // tiles). Do this now that every room's wall tiles are in their final, post-carving shape.
         foreach (RoomInstance room in placedRooms)
         {
-            RebuildWallShadowCasters(room);
+            RebuildWallShadowCasters(room, WallsVisibleInShadow);
         }
 
         List<MeshFilter> navGroundMeshes = new List<MeshFilter>();
@@ -115,7 +116,7 @@ public class VillageMapGenerator : MonoBehaviour
         // 트럭 자체만 안 겹치는 칸이어도, 바로 옆에 장애물이나 벽이 붙어있으면 플레이어가 트럭을
         // 사이에 두고 지나다닐 틈이 없다 - 이 맵 인스턴스에 한해서 주변 장애물은 치우고, 그래도
         // 폭이 부족하면 벽 타일 몇 개를 바닥으로 바꿔서 넓힌다(원본 방 프리팹은 그대로 둔다).
-        EnsureTruckClearance(centerRoom, truckXY, GetTruckFootprintSize());
+        EnsureTruckClearance(centerRoom, truckXY, GetTruckFootprintSize(), WallsVisibleInShadow);
 
         // EnsureTruckClearance는 필요하면 벽 타일을 바닥으로 깎아서 새 바닥을 만드는데, 그 시점은
         // 이미 위에서 NavMesh를 다 구운 뒤라 새로 열린 바닥이 NavMesh에는 전혀 반영되지 않는다 -
@@ -458,7 +459,7 @@ public class VillageMapGenerator : MonoBehaviour
     // comment on box.size below for why this needs to be greater than zero.
     private const float WallShadowOverlap = 0.08f;
 
-    private static void RebuildWallShadowCasters(RoomInstance room)
+    private static void RebuildWallShadowCasters(RoomInstance room, bool wallsVisibleInShadow)
     {
         Transform wallsT = room.Root.transform.Find("Walls");
         if (wallsT == null) return;
@@ -524,11 +525,11 @@ public class VillageMapGenerator : MonoBehaviour
 
             ShadowCaster2D shadow = shadowGO.AddComponent<ShadowCaster2D>();
             shadow.castsShadows = true;
-            // Self Shadows off leaves each shape's own silhouette edge outside the shadow it casts,
-            // which can show as a thin bright rim right at that edge (most visible along the seams
-            // above). Self-shadowing this trigger-only shape doesn't affect how anything looks (it has
-            // no renderer), so there's no downside to leaving it on.
-            shadow.selfShadows = true;
+            // Self Shadows가 켜져 있으면 벽 타일 영역 자체도 그림자에 덮여서, 부채꼴 시야가 벽에 닿는
+            // 순간 벽의 안쪽 테두리부터 어두워진다. 끄면 이 상자 모양(=벽 타일 영역)은 그림자에서
+            // 빠지므로 벽은 그대로 보이고 그림자는 벽 바깥쪽부터 드리워진다. 상자끼리 WallShadowOverlap만큼
+            // 겹쳐 있어서 이음매에 밝은 틈이 생기지 않는다.
+            shadow.selfShadows = !wallsVisibleInShadow;
         }
     }
 
@@ -939,7 +940,7 @@ public class VillageMapGenerator : MonoBehaviour
     // 트럭 주변 지정된 여유 폭 안에 있는 장애물은 이 맵 인스턴스에서만 치우고(원본 방 프리팹은
     // 그대로 유지), 그래도 벽이 너무 가까우면 그 벽 타일만 바닥으로 바꿔서 넓힌다. 방 한가운데에
     // 두는 것보다 이렇게 실제로 지나다닐 틈을 만드는 쪽을 우선한다.
-    private static void EnsureTruckClearance(RoomInstance room, Vector2 truckWorldCenter, Vector2 truckFootprintSize)
+    private static void EnsureTruckClearance(RoomInstance room, Vector2 truckWorldCenter, Vector2 truckFootprintSize, bool wallsVisibleInShadow)
     {
         Vector2 clearance = truckFootprintSize + new Vector2(TruckClearanceMarginPerSide * 2f, TruckClearanceMarginPerSide * 2f);
 
@@ -1015,7 +1016,7 @@ public class VillageMapGenerator : MonoBehaviour
             Transform child = wallsT.GetChild(i);
             if (child.name.StartsWith("WallShadowCaster_")) Destroy(child.gameObject);
         }
-        RebuildWallShadowCasters(room);
+        RebuildWallShadowCasters(room, wallsVisibleInShadow);
     }
 
     // 2D 게임 좌표(x, y) - 스프라이트를 쓰는 오브젝트(플레이어, 동물, 트럭 지점)용.

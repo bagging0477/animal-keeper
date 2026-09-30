@@ -119,34 +119,32 @@ public class MonsterAI : MonoBehaviour
             }
             else if (state == State.Chase)
             {
-                // 거리가 너무 벌어졌거나(LoseRange 초과) 벽/장애물에 가려 시야가 막힌 상태가
-                // 이 프레임에도 계속되는지 판정한다. 둘 중 하나라도 '완전히 놓친' 상태로 친다.
-                bool blocked = IsSightBlocked(GamePosition, PlayerGamePosition);
-                bool sightLost = distanceToPlayer > LoseRange || blocked;
+                // 거리가 LoseRange를 넘으면 시야 차단과 달리 깜빡일 일이 없으므로 유예 시간 없이
+                // 그 자리에 멈춰 선다 - 추격 속도가 대부분의 플레이어보다 빨라서, "LoseRange 밖에서
+                // 2초 더 버티기"까지 요구하면 사실상 영원히 떼어낼 수 없었다.
+                if (distanceToPlayer > LoseRange)
+                {
+                    EnterSearch(new Vector3(transform.position.x, 0f, transform.position.z));
+                }
+                else
+                {
+                    // 벽/장애물에 가려 시야가 막힌 상태가 이 프레임에도 계속되는지 판정한다.
+                    bool sightLost = IsSightBlocked(GamePosition, PlayerGamePosition);
 
-                // 놓친 시간은 빠르게 쌓이지만 되찾았을 때는 그 절반 속도로만 줄어들게 해서, 모퉁이를
-                // 도는 순간 단 한 프레임만 다시 보여도 지금까지 쌓은 진행이 통째로 0으로 리셋되는 것을
-                // 막는다 - 몬스터 자신도 같은 모퉁이를 0.25초 뒤처져 따라 돌기 때문에 완전히 끊기지
-                // 않고 아주 잠깐씩 다시 보이는 경우가 흔해서, 즉시 리셋이면 사실상 영원히 못 놓친다.
-                sightLostTimer = sightLost
-                    ? sightLostTimer + Time.deltaTime
-                    : Mathf.Max(0f, sightLostTimer - Time.deltaTime * 2f);
+                    // 놓친 시간은 빠르게 쌓이지만 되찾았을 때는 그 절반 속도로만 줄어들게 해서, 모퉁이를
+                    // 도는 순간 단 한 프레임만 다시 보여도 지금까지 쌓은 진행이 통째로 0으로 리셋되는 것을
+                    // 막는다 - 몬스터 자신도 같은 모퉁이를 0.25초 뒤처져 따라 돌기 때문에 완전히 끊기지
+                    // 않고 아주 잠깐씩 다시 보이는 경우가 흔해서, 즉시 리셋이면 사실상 영원히 못 놓친다.
+                    sightLostTimer = sightLost
+                        ? sightLostTimer + Time.deltaTime
+                        : Mathf.Max(0f, sightLostTimer - Time.deltaTime * 2f);
+                }
 
-                if (sightLostTimer >= ChaseGiveUpSightLostDuration)
+                if (state == State.Chase && sightLostTimer >= ChaseGiveUpSightLostDuration)
                 {
                     // 순간적으로 스친 정도가 아니라 일정 시간 이상 계속 놓쳤을 때만 포기하고,
                     // 마지막으로 본 위치로 가서 잠시 수색한다.
-                    state = State.Search;
-                    agent.autoBraking = true; // Search는 고정된 한 지점으로 가서 서는 게 맞으므로 다시 켠다.
-                    searchTimer = 0f;
-                    lastKnownPlayerPosition = new Vector3(player.position.x, 0f, player.position.y);
-                    if (agent.isOnNavMesh)
-                    {
-                        Vector3 destination = NavMesh.SamplePosition(lastKnownPlayerPosition, out NavMeshHit searchHit, 2f, NavMesh.AllAreas)
-                            ? searchHit.position
-                            : lastKnownPlayerPosition;
-                        agent.SetDestination(destination);
-                    }
+                    EnterSearch(new Vector3(player.position.x, 0f, player.position.y));
                 }
             }
             else if (state == State.Search)
@@ -249,6 +247,23 @@ public class MonsterAI : MonoBehaviour
         if (facingFlipper != null)
         {
             facingFlipper.SetMoveDirection(new Vector2(agent.velocity.x, agent.velocity.z));
+        }
+    }
+
+    // 추격을 포기하고 searchPoint로 가서 SearchDuration 동안 머문 뒤 순찰로 돌아간다.
+    // 거리로 놓쳤을 때는 자기 현재 위치를 넘겨서 그 자리에 멈춰 서게 한다.
+    private void EnterSearch(Vector3 searchPoint)
+    {
+        state = State.Search;
+        agent.autoBraking = true; // Search는 고정된 한 지점으로 가서 서는 게 맞으므로 다시 켠다.
+        searchTimer = 0f;
+        lastKnownPlayerPosition = searchPoint;
+        if (agent.isOnNavMesh)
+        {
+            Vector3 destination = NavMesh.SamplePosition(searchPoint, out NavMeshHit searchHit, 2f, NavMesh.AllAreas)
+                ? searchHit.position
+                : searchPoint;
+            agent.SetDestination(destination);
         }
     }
 

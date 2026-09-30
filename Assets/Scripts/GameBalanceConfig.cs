@@ -25,8 +25,10 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("순찰형 몬스터가 플레이어를 발견하는 거리")]
     public float patrolMonsterDetectRange = 4.05f;
 
-    [Tooltip("순찰형 몬스터가 추격을 포기하기 시작하는(수색 상태로 전환되는) 거리")]
-    public float patrolMonsterLoseRange = 10f;
+    [Tooltip("순찰형 몬스터(늑대)가 이 거리보다 멀어지면 즉시 추격을 멈추고 그 자리에서 잠시 수색한 뒤 순찰로 돌아간다. " +
+        "추격 속도(monsterChaseSpeed)가 트래퍼/거너 걷기 속도보다 빠르므로, 스프린트로 떼어낼 수 있는 거리여야 한다 " +
+        "(DetectRange보다는 커야 바로 재발견되지 않는다).")]
+    public float patrolMonsterLoseRange = 5.5f;
 
     [Tooltip("소리반응형 몬스터가 플레이어를 발견하는 거리")]
     public float soundReactiveMonsterDetectRange = 2.03f;
@@ -139,6 +141,10 @@ public class GameBalanceConfig : ScriptableObject
         "너무 딱딱하게 끊기면 이질감이 들어서 기본값을 약간 부드럽게 뒀다.")]
     [Range(0f, 1f)]
     public float focusedVisionShadowSoftness = 0.5f;
+
+    [Tooltip("체크하면 부채꼴 시야가 벽에 닿아도 벽 타일 자체는 그대로 보이고, 그림자는 벽 바깥쪽부터 드리워진다. " +
+        "끄면 예전처럼 벽 안쪽 테두리부터 어두워진다. VillageScene 맵 생성 시점에 적용되므로 바꾼 뒤에는 씬을 다시 시작해야 한다.")]
+    public bool wallsVisibleInShadow = true;
 
     [Header("클래스 - 시야 범위 배율 (기준치 대비, %) - 100이면 기준치(위 ambientVisionRadius 등) 그대로. " +
         "원형 시야(Ambient)와 부채꼴 시야(Focused)를 따로 조절할 수 있다.")]
