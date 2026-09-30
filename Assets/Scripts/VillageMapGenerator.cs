@@ -77,6 +77,7 @@ public class VillageMapGenerator : MonoBehaviour
         {
             RebuildWallShadowCasters(room, WallsVisibleInShadow);
         }
+        if (WallsVisibleInShadow) LightWallsSortingLayer();
 
         List<MeshFilter> navGroundMeshes = new List<MeshFilter>();
         foreach (RoomInstance room in placedRooms)
@@ -459,6 +460,51 @@ public class VillageMapGenerator : MonoBehaviour
     // comment on box.size below for why this needs to be greater than zero.
     private const float WallShadowOverlap = 0.08f;
 
+    // 벽 타일맵만 따로 올려두는 정렬 레이어(Project Settings > Tags and Layers에서 Default보다 앞에 둔다).
+    // 벽 칸 아래에는 바닥 타일이 없고 원래 그리는 순서도 바닥(0) < 벽(1) < 나머지(2)였으므로, 이 레이어를
+    // Default 앞에 두어도 화면에 겹쳐 보이는 순서는 달라지지 않는다.
+    private const string WallsSortingLayerName = "Walls";
+
+    private static int WallsSortingLayerId
+    {
+        get
+        {
+            foreach (SortingLayer layer in SortingLayer.layers)
+            {
+                if (layer.name == WallsSortingLayerName) return layer.id;
+            }
+            return -1;
+        }
+    }
+
+    // ShadowCaster2D에는 그림자를 드리울 정렬 레이어(Inspector의 Target Sorting Layers)를 바꾸는 공개 API가
+    // 없어서 그 직렬화 필드 하나만 리플렉션으로 설정한다(JsonUtility.FromJsonOverwrite는 [SerializeReference]인
+    // 그림자 메시 필드까지 null로 초기화해서 쓸 수 없다). URP 버전이 바뀌어 필드를 못 찾으면 경고만 남긴다 -
+    // 그 경우 벽도 예전처럼 그림자에 가려질 뿐 게임은 정상 동작한다.
+    private static readonly System.Reflection.FieldInfo ShadowCasterSortingLayersField =
+        typeof(ShadowCaster2D).GetField("m_ApplyToSortingLayers", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+    private static void SetShadowedSortingLayers(ShadowCaster2D shadow, params int[] sortingLayerIds)
+    {
+        if (ShadowCasterSortingLayersField == null)
+        {
+            Debug.LogWarning("VillageMapGenerator: ShadowCaster2D.m_ApplyToSortingLayers를 찾지 못해 벽도 그림자에 가려집니다(URP 버전 변경?).");
+            return;
+        }
+        ShadowCasterSortingLayersField.SetValue(shadow, sortingLayerIds);
+    }
+
+    // 씬의 모든 Light2D(부채꼴/원형 시야, Global Light)가 Walls 레이어도 비추게 한다 - Light2D는 자기가
+    // 대상으로 삼은 정렬 레이어만 밝히므로, 이게 없으면 Walls 레이어로 옮긴 벽은 늘 새까맣게 나온다.
+    private static void LightWallsSortingLayer()
+    {
+        if (WallsSortingLayerId == -1) return;
+        foreach (Light2D light in FindObjectsByType<Light2D>(FindObjectsSortMode.None))
+        {
+            light.AddTargetSortingLayer(WallsSortingLayerName);
+        }
+    }
+
     private static void RebuildWallShadowCasters(RoomInstance room, bool wallsVisibleInShadow)
     {
         Transform wallsT = room.Root.transform.Find("Walls");
@@ -469,6 +515,23 @@ public class VillageMapGenerator : MonoBehaviour
 
         ShadowCaster2D prefabShadowCaster = wallsT.GetComponent<ShadowCaster2D>();
         if (prefabShadowCaster != null) Destroy(prefabShadowCaster);
+
+        // 벽을 보이게 하는 방식: 벽 타일맵을 Walls 정렬 레이어로 옮기고, 아래 그림자 상자들은 Default 레이어
+        // (바닥/동물/몬스터/장애물)에만 그림자를 드리우게 한다. 예전에는 대신 Self Shadows를 껐는데, 그러면
+        // 각 상자가 "자기" 그림자만 자기 영역에서 빠질 뿐 옆 상자의 그림자는 여전히 벽 위에 떨어져서,
+        // 벽이 꺾이는 모서리 칸마다 대각선 쐐기 모양의 밝은/어두운 경계가 생기고 상자 테두리에 빛이 샜다.
+        int wallsLayerId = WallsSortingLayerId;
+        bool excludeWallsFromShadow = wallsVisibleInShadow && wallsLayerId != -1;
+        if (wallsVisibleInShadow && wallsLayerId == -1)
+        {
+            Debug.LogWarning($"VillageMapGenerator: '{WallsSortingLayerName}' 정렬 레이어가 없어 벽도 그림자에 가려집니다. " +
+                "Project Settings > Tags and Layers에서 Default보다 앞에 추가하세요.");
+        }
+        if (excludeWallsFromShadow)
+        {
+            TilemapRenderer wallsRenderer = wallsT.GetComponent<TilemapRenderer>();
+            if (wallsRenderer != null) wallsRenderer.sortingLayerID = wallsLayerId;
+        }
 
         HashSet<Vector2Int> remaining = new HashSet<Vector2Int>();
         foreach (Vector3Int pos in wallsTilemap.cellBounds.allPositionsWithin)
@@ -525,11 +588,13 @@ public class VillageMapGenerator : MonoBehaviour
 
             ShadowCaster2D shadow = shadowGO.AddComponent<ShadowCaster2D>();
             shadow.castsShadows = true;
-            // Self Shadows가 켜져 있으면 벽 타일 영역 자체도 그림자에 덮여서, 부채꼴 시야가 벽에 닿는
-            // 순간 벽의 안쪽 테두리부터 어두워진다. 끄면 이 상자 모양(=벽 타일 영역)은 그림자에서
-            // 빠지므로 벽은 그대로 보이고 그림자는 벽 바깥쪽부터 드리워진다. 상자끼리 WallShadowOverlap만큼
-            // 겹쳐 있어서 이음매에 밝은 틈이 생기지 않는다.
-            shadow.selfShadows = !wallsVisibleInShadow;
+            // Self Shadows off leaves each shape's own silhouette edge outside the shadow it casts,
+            // which can show as a thin bright rim right at that edge (most visible along the seams
+            // above). Self-shadowing this trigger-only shape doesn't affect how anything looks (it has
+            // no renderer), so there's no downside to leaving it on.
+            shadow.selfShadows = true;
+
+            if (excludeWallsFromShadow) SetShadowedSortingLayers(shadow, SortingLayer.NameToID("Default"));
         }
     }
 
