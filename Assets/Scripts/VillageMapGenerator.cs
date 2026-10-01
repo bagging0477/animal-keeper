@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering.Universal;
@@ -71,6 +71,7 @@ public class VillageMapGenerator : MonoBehaviour
         if (placedRooms.Count == 0) return;
         RemoveGroundUnderOtherRoomsWalls(placedRooms);
         SealMapLeaks(placedRooms);
+        NormalizeWalls(placedRooms);
 
         // Doorway carving can split a room's wall ring into more than one disconnected piece
         // (e.g. a doorway cutting straight through what used to be one connected run of wall
@@ -124,16 +125,29 @@ public class VillageMapGenerator : MonoBehaviour
         {
             RebuildWallShadowCastersFromScratch(sealedRoom, WallsVisibleInShadow);
         }
+        // 트럭 자리를 깎으면서 새로 생긴 돌기/두꺼운 벽도 마저 정리한다.
+        HashSet<RoomInstance> destubbedRooms = NormalizeWalls(placedRooms);
+        foreach (RoomInstance room in destubbedRooms)
+        {
+            RebuildWallShadowCastersFromScratch(room, WallsVisibleInShadow);
+        }
+
+        // 벽 모양은 여기서 확정된다(이후로 벽 타일을 바꾸는 곳이 없다).
+        BuildMergedWallVisuals(mapRoot.transform, placedRooms);
 
         // EnsureTruckClearance는 필요하면 벽 타일을 바닥으로 깎아서 새 바닥을 만드는데, 그 시점은
         // 이미 위에서 NavMesh를 다 구운 뒤라 새로 열린 바닥이 NavMesh에는 전혀 반영되지 않는다 -
         // 화면에는 뚫린 통로로 보여도 몬스터(NavMeshAgent) 입장에서는 여전히 벽이라 그 구간을
-        // 절대 지나다니지 못한다. centerRoom의 바닥 칸을 다시 읽어 NavGround 메시를 새로 만들고
-        // 전체를 한 번 더 구워서, 몬스터가 보이는 대로 지나다닐 수 있게 맞춘다.
-        centerRoom.FloorCells = GetFloorCells(centerRoom.Root);
-        int centerRoomIndex = placedRooms.IndexOf(centerRoom);
-        Destroy(navGroundMeshes[centerRoomIndex].gameObject);
-        navGroundMeshes[centerRoomIndex] = BuildNavGround(centerRoom);
+        // 절대 지나다니지 못한다. centerRoom(과 돌기를 깎아 바닥이 늘어난 방)의 바닥 칸을 다시 읽어
+        // NavGround 메시를 새로 만들고 전체를 한 번 더 구워서, 몬스터가 보이는 대로 지나다닐 수 있게 맞춘다.
+        destubbedRooms.Add(centerRoom);
+        foreach (RoomInstance room in destubbedRooms)
+        {
+            room.FloorCells = GetFloorCells(room.Root);
+            int roomIndex = placedRooms.IndexOf(room);
+            Destroy(navGroundMeshes[roomIndex].gameObject);
+            navGroundMeshes[roomIndex] = BuildNavGround(room);
+        }
         BakeNavMesh(mapRoot, navGroundMeshes);
 
         // 플레이어/트럭 지점이 이미 차지한 칸에는 몬스터나 동물이 겹쳐서 스폰되지 않도록 제외한다.
@@ -1132,6 +1146,209 @@ public class VillageMapGenerator : MonoBehaviour
             Debug.Log($"VillageMapGenerator: {room.Root.name}에서 맵 바깥으로 열린 틈을 벽으로 막았습니다.");
         }
         return sealedRooms;
+    }
+
+    // 돌기로 보고 깎는 막다른 벽의 최대 길이. 이보다 긴 막다른 벽은 두 공간을 나누는 칸막이라 남긴다.
+    private const int MaxWallStubLength = 2;
+
+    // 방을 이어붙이고 나면 벽이 두 가지로 어긋난다.
+    // 1) 두 칸 두께 벽: PlaceAdjacent가 다음 방의 서쪽 벽을 이전 방의 동쪽 벽 바로 옆에 붙이므로, 경계에
+    //    두 방의 벽이 나란히 선다(바닥-벽-벽-바닥). 서쪽/남쪽 칸을 바닥으로 바꿔 한 칸 두께로 만든다.
+    // 2) 돌기: 문을 뚫은 뒤 한 방의 벽 끝이 옆 방 바닥 위에 한두 칸 남아 바닥 안으로 튀어나온다. 막다른
+    //    끝에서 갈림길이나 맵 가장자리 벽까지의 길이가 MaxWallStubLength 이하인 것만 바닥으로 바꾼다.
+    // 어느 쪽이든 주변 8칸에 맵 바깥(벽도 바닥도 없는 칸)이 있는 벽은 건드리지 않으므로, 바닥으로 바꿔도
+    // 맵 밖으로 새는 틈이 생기지 않는다. 벽이 바뀐 방 목록을 돌려준다(그림자/NavMesh는 호출한 쪽에서 다시 만든다).
+    private static HashSet<RoomInstance> NormalizeWalls(List<RoomInstance> rooms)
+    {
+        HashSet<RoomInstance> changedRooms = new HashSet<RoomInstance>();
+
+        // 1) 두 칸 두께 벽 얇게 만들기 (서쪽/남쪽 칸만 조건에 맞으므로 한 쌍 중 한 칸만 바닥이 된다)
+        while (true)
+        {
+            WallLayout layout = ReadWallLayout(rooms);
+            List<Vector2Int> thickCells = new List<Vector2Int>();
+            foreach (Vector2Int cell in layout.WallsAt.Keys)
+            {
+                bool thickX = layout.Floor.Contains(cell + Vector2Int.left) && layout.WallsAt.ContainsKey(cell + Vector2Int.right)
+                    && layout.Floor.Contains(cell + Vector2Int.right * 2);
+                bool thickY = layout.Floor.Contains(cell + Vector2Int.down) && layout.WallsAt.ContainsKey(cell + Vector2Int.up)
+                    && layout.Floor.Contains(cell + Vector2Int.up * 2);
+                if ((thickX || thickY) && !layout.NearOutside(cell)) thickCells.Add(cell);
+            }
+            if (thickCells.Count == 0) break;
+            foreach (Vector2Int cell in thickCells) OpenWallCell(layout, cell, changedRooms);
+        }
+
+        // 2) 짧은 돌기 깎기
+        {
+            WallLayout layout = ReadWallLayout(rooms);
+            HashSet<Vector2Int> stubCells = new HashSet<Vector2Int>();
+            foreach (Vector2Int start in layout.WallsAt.Keys)
+            {
+                if (layout.WallNeighbors(start).Count > 1 || layout.NearOutside(start)) continue;
+
+                // 막다른 끝에서 시작해 갈림길(벽 이웃 3개 이상)이나 맵 가장자리 벽을 만날 때까지 따라간다.
+                List<Vector2Int> chain = new List<Vector2Int> { start };
+                Vector2Int prev = start, cur = start;
+                while (chain.Count <= MaxWallStubLength)
+                {
+                    List<Vector2Int> next = layout.WallNeighbors(cur);
+                    next.Remove(prev);
+                    if (next.Count == 0) break;
+                    Vector2Int n = next[0];
+                    if (layout.NearOutside(n) || layout.WallNeighbors(n).Count >= 3) break;
+                    chain.Add(n);
+                    prev = cur;
+                    cur = n;
+                }
+                if (chain.Count <= MaxWallStubLength) stubCells.UnionWith(chain);
+            }
+            foreach (Vector2Int cell in stubCells) OpenWallCell(layout, cell, changedRooms);
+        }
+
+        foreach (RoomInstance room in changedRooms)
+        {
+            RefreshWallCollider(room.Root.transform.Find("Walls").GetComponent<Tilemap>());
+            Debug.Log($"VillageMapGenerator: {room.Root.name}의 두꺼운 벽/튀어나온 벽을 한 칸 두께로 정리했습니다.");
+        }
+        return changedRooms;
+    }
+
+    private class WallLayout
+    {
+        // 월드 셀 -> 그 칸에 벽 타일을 가진 (방, 로컬 셀) 목록. 경계에서는 두 방이 같은 칸에 벽을 가질 수 있다.
+        public readonly Dictionary<Vector2Int, List<(RoomInstance room, Vector3Int local)>> WallsAt =
+            new Dictionary<Vector2Int, List<(RoomInstance room, Vector3Int local)>>();
+        public readonly HashSet<Vector2Int> Floor = new HashSet<Vector2Int>();
+
+        public bool NearOutside(Vector2Int cell)
+        {
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    Vector2Int n = new Vector2Int(cell.x + dx, cell.y + dy);
+                    if (!WallsAt.ContainsKey(n) && !Floor.Contains(n)) return true;
+                }
+            }
+            return false;
+        }
+
+        public List<Vector2Int> WallNeighbors(Vector2Int cell)
+        {
+            List<Vector2Int> result = new List<Vector2Int>(4);
+            foreach (Vector2Int dir in new[] { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left })
+            {
+                if (WallsAt.ContainsKey(cell + dir)) result.Add(cell + dir);
+            }
+            return result;
+        }
+    }
+
+    private static WallLayout ReadWallLayout(List<RoomInstance> rooms)
+    {
+        WallLayout layout = new WallLayout();
+        foreach (RoomInstance room in rooms)
+        {
+            Tilemap walls = room.Root.transform.Find("Walls")?.GetComponent<Tilemap>();
+            Tilemap ground = room.Root.transform.Find("Ground")?.GetComponent<Tilemap>();
+            if (walls != null)
+            {
+                foreach (Vector3Int c in walls.cellBounds.allPositionsWithin)
+                {
+                    if (!walls.HasTile(c)) continue;
+                    Vector2Int w = ToWorldCell(walls, c);
+                    if (!layout.WallsAt.TryGetValue(w, out var list)) layout.WallsAt[w] = list = new List<(RoomInstance, Vector3Int)>();
+                    list.Add((room, c));
+                }
+            }
+            if (ground != null)
+            {
+                foreach (Vector3Int c in ground.cellBounds.allPositionsWithin)
+                {
+                    if (ground.HasTile(c)) layout.Floor.Add(ToWorldCell(ground, c));
+                }
+            }
+        }
+        return layout;
+    }
+
+    private static void OpenWallCell(WallLayout layout, Vector2Int cell, HashSet<RoomInstance> changedRooms)
+    {
+        foreach ((RoomInstance room, Vector3Int local) in layout.WallsAt[cell])
+        {
+            Tilemap walls = room.Root.transform.Find("Walls").GetComponent<Tilemap>();
+            Tilemap ground = room.Root.transform.Find("Ground").GetComponent<Tilemap>();
+            walls.SetTile(local, null);
+            if (ground.GetTile(local) == null) ground.SetTile(local, FindAnyTile(ground));
+            changedRooms.Add(room);
+        }
+    }
+
+    // 벽 RuleTile은 같은 Tilemap 안의 이웃만 보고 조각(직선/모서리/끝/T자)을 고르는데, 방마다 Walls Tilemap이
+    // 따로 있어서 방끼리 맞닿은 경계에서는 서로를 이웃으로 못 본다. PlaceAdjacent가 다음 방의 서쪽 벽을 이전
+    // 방의 동쪽 벽 바로 옆 칸에 붙이므로, 경계마다 두 방의 벽이 나란히 서거나 같은 칸에 겹쳐 그려지고, 이어져야
+    // 할 가로 벽은 경계에서 양쪽 다 끝 조각으로 끊겨 보였다. 그래서 그리기만 맵 전체를 하나로 합친 Tilemap에서
+    // 하고(이웃 판정이 방 경계를 넘어 이어진다), 방별 Walls는 충돌/그림자/길찾기용으로만 남긴 채 렌더러를 끈다.
+    private static void BuildMergedWallVisuals(Transform mapRoot, List<RoomInstance> rooms)
+    {
+        Tilemap template = null;
+        TileBase wallTile = null;
+        List<Vector3Int> worldCells = new List<Vector3Int>();
+        HashSet<Vector3Int> seen = new HashSet<Vector3Int>();
+
+        foreach (RoomInstance room in rooms)
+        {
+            Tilemap walls = room.Root.transform.Find("Walls")?.GetComponent<Tilemap>();
+            if (walls == null) continue;
+            if (template == null) template = walls;
+            if (wallTile == null) wallTile = FindAnyTile(walls);
+
+            foreach (Vector3Int c in walls.cellBounds.allPositionsWithin)
+            {
+                if (!walls.HasTile(c)) continue;
+                Vector2Int w = ToWorldCell(walls, c);
+                Vector3Int cell = new Vector3Int(w.x, w.y, 0);
+                if (seen.Add(cell)) worldCells.Add(cell);
+            }
+        }
+        if (template == null || wallTile == null) return;
+
+        GameObject gridGO = new GameObject("WallVisuals");
+        gridGO.transform.SetParent(mapRoot, false);
+        Grid grid = gridGO.AddComponent<Grid>();
+        if (template.layoutGrid != null)
+        {
+            grid.cellSize = template.layoutGrid.cellSize;
+            grid.cellGap = template.layoutGrid.cellGap;
+        }
+
+        GameObject tilemapGO = new GameObject("Walls");
+        tilemapGO.transform.SetParent(gridGO.transform, false);
+        Tilemap merged = tilemapGO.AddComponent<Tilemap>();
+        merged.tileAnchor = template.tileAnchor;
+        merged.color = template.color;
+        TilemapRenderer mergedRenderer = tilemapGO.AddComponent<TilemapRenderer>();
+        TilemapRenderer templateRenderer = template.GetComponent<TilemapRenderer>();
+        if (templateRenderer != null)
+        {
+            mergedRenderer.sharedMaterial = templateRenderer.sharedMaterial;
+            mergedRenderer.sortingLayerID = templateRenderer.sortingLayerID;
+            mergedRenderer.sortingOrder = templateRenderer.sortingOrder;
+            mergedRenderer.mode = templateRenderer.mode;
+        }
+
+        // ToWorldCell은 칸 중심의 월드 좌표를 내림한 값이므로, 원점·셀 크기 1인 Grid에서는 그대로 셀 좌표다.
+        TileBase[] tiles = new TileBase[worldCells.Count];
+        for (int i = 0; i < tiles.Length; i++) tiles[i] = wallTile;
+        merged.SetTiles(worldCells.ToArray(), tiles);
+        merged.RefreshAllTiles();
+
+        foreach (RoomInstance room in rooms)
+        {
+            TilemapRenderer roomRenderer = room.Root.transform.Find("Walls")?.GetComponent<TilemapRenderer>();
+            if (roomRenderer != null) roomRenderer.enabled = false;
+        }
     }
 
     private static Vector2Int ToWorldCell(Tilemap tilemap, Vector3Int localCell)
