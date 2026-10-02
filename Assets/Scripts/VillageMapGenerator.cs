@@ -73,14 +73,6 @@ public class VillageMapGenerator : MonoBehaviour
         SealMapLeaks(placedRooms);
         NormalizeWalls(placedRooms);
 
-        // Doorway carving can split a room's wall ring into more than one disconnected piece
-        // (e.g. a doorway cutting straight through what used to be one connected run of wall
-        // tiles). Do this now that every room's wall tiles are in their final, post-carving shape.
-        foreach (RoomInstance room in placedRooms)
-        {
-            RebuildWallShadowCasters(room, WallsVisibleInShadow);
-        }
-
         List<MeshFilter> navGroundMeshes = new List<MeshFilter>();
         foreach (RoomInstance room in placedRooms)
         {
@@ -119,21 +111,21 @@ public class VillageMapGenerator : MonoBehaviour
         // 트럭 자체만 안 겹치는 칸이어도, 바로 옆에 장애물이나 벽이 붙어있으면 플레이어가 트럭을
         // 사이에 두고 지나다닐 틈이 없다 - 이 맵 인스턴스에 한해서 주변 장애물은 치우고, 그래도
         // 폭이 부족하면 벽 타일 몇 개를 바닥으로 바꿔서 넓힌다(원본 방 프리팹은 그대로 둔다).
-        EnsureTruckClearance(centerRoom, truckXY, GetTruckFootprintSize(), WallsVisibleInShadow);
+        EnsureTruckClearance(centerRoom, truckXY, GetTruckFootprintSize());
         // 트럭 자리를 넓히려고 바깥 벽까지 깎았다면 그 너머가 맵 밖일 수 있으므로 한 번 더 막는다.
-        foreach (RoomInstance sealedRoom in SealMapLeaks(placedRooms))
-        {
-            RebuildWallShadowCastersFromScratch(sealedRoom, WallsVisibleInShadow);
-        }
+        SealMapLeaks(placedRooms);
         // 트럭 자리를 깎으면서 새로 생긴 돌기/두꺼운 벽도 마저 정리한다.
         HashSet<RoomInstance> destubbedRooms = NormalizeWalls(placedRooms);
-        foreach (RoomInstance room in destubbedRooms)
-        {
-            RebuildWallShadowCastersFromScratch(room, WallsVisibleInShadow);
-        }
 
-        // 벽 모양은 여기서 확정된다(이후로 벽 타일을 바꾸는 곳이 없다).
-        BuildMergedWallVisuals(mapRoot.transform, placedRooms);
+        // 벽 모양은 여기서 확정된다(이후로 벽 타일을 바꾸는 곳이 없다). 벽 그림과 그림자 상자를 모두
+        // 맵 전체 기준으로 한 번에 만든다.
+        Tilemap mergedWalls = BuildMergedWallVisuals(mapRoot.transform, placedRooms, WallsVisibleInShadow, out HashSet<Vector2Int> mergedWallCells);
+        // 이어진 벽은 서로 그림자를 드리우지 않으므로(위 참고), 꺾인 벽의 뒤쪽처럼 다른 벽에 가려진 칸은 따로 어둡게 칠한다.
+        if (mergedWalls != null && WallsVisibleInShadow)
+        {
+            GameObject player = GameObject.Find(playerObjectName);
+            if (player != null) mergedWalls.gameObject.AddComponent<WallVisibilityMask>().Init(player.transform, config, mergedWallCells);
+        }
 
         // EnsureTruckClearance는 필요하면 벽 타일을 바닥으로 깎아서 새 바닥을 만드는데, 그 시점은
         // 이미 위에서 NavMesh를 다 구운 뒤라 새로 열린 바닥이 NavMesh에는 전혀 반영되지 않는다 -
@@ -510,28 +502,17 @@ public class VillageMapGenerator : MonoBehaviour
     // wallsVisibleInShadow가 켜져 있으면 Self Shadows를 끄고, 서로 이어진 벽 덩어리마다 상자들을 하나의
     // CompositeShadowCaster2D 그룹으로 묶는다. URP는 Self Shadows가 꺼진 상자의 영역 안에서 "같은 그룹"의 그림자를
     // 모두 지우므로, 이어진 벽끼리는 서로를 가리지 않는다 - 빛이 닿는 벽은 타일 두께 전체가 조명(거리 감쇠, 부채꼴
-    // 경계, 부드러운 그림자)을 픽셀 단위로 그대로 받고, 다른 방의 벽이나 문으로 끊긴 다른 벽 덩어리처럼 앞을 막는
+    // 경계, 부드러운 그림자)을 픽셀 단위로 그대로 받고, 문으로 끊긴 다른 벽 덩어리처럼 앞을 막는
     // 벽이 있는 곳만 어두워진다. 벽 줄마다 그룹이 따로면 꺾이는 곳에서 옆 벽 줄의 그림자가 벽 위에 대각선 쐐기로
     // 떨어진다. 끄면 벽 칸 전체가 그림자에 덮여 벽 안쪽 테두리부터 어두워진다.
-    private static void RebuildWallShadowCasters(RoomInstance room, bool wallsVisibleInShadow)
+    //
+    // 그룹은 반드시 맵 전체의 벽 칸을 기준으로 나눠야 한다. 그림자 지우기는 같은 그룹 안에서만 통하므로, 방마다
+    // 따로 묶으면 방끼리 맞닿은 곳에서 옆 방 벽의 그림자가 이쪽 벽 위로 떨어져 벽이 타일 경계를 따라 직각으로
+    // 갈라진 것처럼 보인다. 그래서 BuildMergedWallVisuals가 합친 벽 Tilemap 아래(parent)에서 한 번만 부른다.
+    // parent는 원점·셀 크기 1인 Grid의 Tilemap이므로 wallCells(월드 칸 좌표)를 그대로 로컬 좌표로 쓴다.
+    private static void BuildWallShadowCasters(Transform parent, HashSet<Vector2Int> wallCells, bool wallsVisibleInShadow)
     {
-        Transform wallsT = room.Root.transform.Find("Walls");
-        if (wallsT == null) return;
-
-        Tilemap wallsTilemap = wallsT.GetComponent<Tilemap>();
-        if (wallsTilemap == null) return;
-
-        ShadowCaster2D prefabShadowCaster = wallsT.GetComponent<ShadowCaster2D>();
-        if (prefabShadowCaster != null) Destroy(prefabShadowCaster);
-
-        HashSet<Vector2Int> wallCells = new HashSet<Vector2Int>();
-        foreach (Vector3Int pos in wallsTilemap.cellBounds.allPositionsWithin)
-        {
-            if (wallsTilemap.HasTile(pos)) wallCells.Add(new Vector2Int(pos.x, pos.y));
-        }
-
-        // 상하좌우로 이어진 벽 칸끼리 한 덩어리(그룹). 그룹 오브젝트 이름도 WallShadowCaster_로 시작해야
-        // RebuildWallShadowCastersFromScratch가 통째로 지우고 다시 만들 수 있다.
+        // 상하좌우로 이어진 벽 칸끼리 한 덩어리(그룹).
         Dictionary<Vector2Int, Transform> groupOf = new Dictionary<Vector2Int, Transform>();
         int groupIndex = 0;
         foreach (Vector2Int seed in wallCells)
@@ -539,7 +520,7 @@ public class VillageMapGenerator : MonoBehaviour
             if (groupOf.ContainsKey(seed)) continue;
 
             GameObject groupGO = new GameObject($"WallShadowCaster_Group_{groupIndex++}");
-            groupGO.transform.SetParent(wallsT, false);
+            groupGO.transform.SetParent(parent, false);
             if (wallsVisibleInShadow) groupGO.AddComponent<CompositeShadowCaster2D>();
 
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
@@ -1008,7 +989,7 @@ public class VillageMapGenerator : MonoBehaviour
     // 트럭 주변 지정된 여유 폭 안에 있는 장애물은 이 맵 인스턴스에서만 치우고(원본 방 프리팹은
     // 그대로 유지), 그래도 벽이 너무 가까우면 그 벽 타일만 바닥으로 바꿔서 넓힌다. 방 한가운데에
     // 두는 것보다 이렇게 실제로 지나다닐 틈을 만드는 쪽을 우선한다.
-    private static void EnsureTruckClearance(RoomInstance room, Vector2 truckWorldCenter, Vector2 truckFootprintSize, bool wallsVisibleInShadow)
+    private static void EnsureTruckClearance(RoomInstance room, Vector2 truckWorldCenter, Vector2 truckFootprintSize)
     {
         Vector2 clearance = truckFootprintSize + new Vector2(TruckClearanceMarginPerSide * 2f, TruckClearanceMarginPerSide * 2f);
 
@@ -1076,21 +1057,6 @@ public class VillageMapGenerator : MonoBehaviour
 
         Debug.Log($"VillageMapGenerator: 트럭 주변 통행 확보를 위해 {room.Root.name}의 벽 일부를 이번 맵에서만 바닥으로 넓혔습니다.");
         RefreshWallCollider(walls);
-        RebuildWallShadowCastersFromScratch(room, wallsVisibleInShadow);
-    }
-
-    // RebuildWallShadowCasters는 이전에 만든 WallShadowCaster_* 자식을 스스로 지우지 않으므로,
-    // 다시 부르기 전에 먼저 비워야 한다 - 안 그러면 방금 뚫은 자리에 예전 그림자 상자가 그대로 남는다.
-    private static void RebuildWallShadowCastersFromScratch(RoomInstance room, bool wallsVisibleInShadow)
-    {
-        Transform wallsT = room.Root.transform.Find("Walls");
-        if (wallsT == null) return;
-        for (int i = wallsT.childCount - 1; i >= 0; i--)
-        {
-            Transform child = wallsT.GetChild(i);
-            if (child.name.StartsWith("WallShadowCaster_")) Destroy(child.gameObject);
-        }
-        RebuildWallShadowCasters(room, wallsVisibleInShadow);
     }
 
     // 방 사이 문을 뚫거나(CarveDoorway/WidenDoorway) 트럭 자리를 넓히면서 벽을 바닥으로 바꿀 때, 그 너머에
@@ -1290,8 +1256,10 @@ public class VillageMapGenerator : MonoBehaviour
     // 방의 동쪽 벽 바로 옆 칸에 붙이므로, 경계마다 두 방의 벽이 나란히 서거나 같은 칸에 겹쳐 그려지고, 이어져야
     // 할 가로 벽은 경계에서 양쪽 다 끝 조각으로 끊겨 보였다. 그래서 그리기만 맵 전체를 하나로 합친 Tilemap에서
     // 하고(이웃 판정이 방 경계를 넘어 이어진다), 방별 Walls는 충돌/그림자/길찾기용으로만 남긴 채 렌더러를 끈다.
-    private static void BuildMergedWallVisuals(Transform mapRoot, List<RoomInstance> rooms)
+    // 그림자 상자도 같은 이유로 여기서 맵 전체 기준으로 만든다(BuildWallShadowCasters 참고).
+    private static Tilemap BuildMergedWallVisuals(Transform mapRoot, List<RoomInstance> rooms, bool wallsVisibleInShadow, out HashSet<Vector2Int> wallCells)
     {
+        wallCells = new HashSet<Vector2Int>();
         Tilemap template = null;
         TileBase wallTile = null;
         List<Vector3Int> worldCells = new List<Vector3Int>();
@@ -1312,7 +1280,8 @@ public class VillageMapGenerator : MonoBehaviour
                 if (seen.Add(cell)) worldCells.Add(cell);
             }
         }
-        if (template == null || wallTile == null) return;
+        if (template == null || wallTile == null) return null;
+        FillDiagonalWallGaps(worldCells, seen, ReadWallLayout(rooms).Floor);
 
         GameObject gridGO = new GameObject("WallVisuals");
         gridGO.transform.SetParent(mapRoot, false);
@@ -1346,8 +1315,51 @@ public class VillageMapGenerator : MonoBehaviour
 
         foreach (RoomInstance room in rooms)
         {
-            TilemapRenderer roomRenderer = room.Root.transform.Find("Walls")?.GetComponent<TilemapRenderer>();
+            Transform roomWalls = room.Root.transform.Find("Walls");
+            if (roomWalls == null) continue;
+            TilemapRenderer roomRenderer = roomWalls.GetComponent<TilemapRenderer>();
             if (roomRenderer != null) roomRenderer.enabled = false;
+            // 프리팹에 들어 있는 방 단위 그림자 캐스터는 쓰지 않는다.
+            ShadowCaster2D prefabShadowCaster = roomWalls.GetComponent<ShadowCaster2D>();
+            if (prefabShadowCaster != null) Destroy(prefabShadowCaster);
+        }
+
+        foreach (Vector3Int cell in worldCells) wallCells.Add(new Vector2Int(cell.x, cell.y));
+        BuildWallShadowCasters(tilemapGO.transform, wallCells, wallsVisibleInShadow);
+        return merged;
+    }
+
+    // 방을 이어붙이다 보면 두 벽 칸이 모서리(대각선)로만 맞닿는 곳이 생긴다. RuleTile은 상하좌우 이웃만 보므로
+    // 양쪽 다 둥근 끝 조각이 되어 모서리에 틈이 벌어져 보인다. 그 사이의 두 칸 중 바닥이 아닌 칸(맵 바깥이나 벽
+    // 뒤쪽 빈칸)을 벽으로 채워 이어준다. 바닥 칸은 다니는 길이므로 채우지 않는다 - 둘 다 바닥이면 그대로 둔다.
+    // 채운 칸은 바닥과 맞닿지 않은 빈칸이라(SealMapLeaks가 이미 막았다) 그림/그림자에만 넣고 충돌은 필요 없다.
+    private static void FillDiagonalWallGaps(List<Vector3Int> worldCells, HashSet<Vector3Int> wallSet, HashSet<Vector2Int> floor)
+    {
+        Vector3Int[] diagonals = { new Vector3Int(1, 1, 0), new Vector3Int(1, -1, 0), new Vector3Int(-1, 1, 0), new Vector3Int(-1, -1, 0) };
+        bool changed = true;
+        while (changed)
+        {
+            changed = false;
+            for (int i = 0; i < worldCells.Count; i++)
+            {
+                Vector3Int cell = worldCells[i];
+                foreach (Vector3Int d in diagonals)
+                {
+                    if (!wallSet.Contains(cell + d)) continue;
+                    Vector3Int a = cell + new Vector3Int(d.x, 0, 0);
+                    Vector3Int b = cell + new Vector3Int(0, d.y, 0);
+                    if (wallSet.Contains(a) || wallSet.Contains(b)) continue;
+
+                    Vector3Int? bridge = !floor.Contains(new Vector2Int(a.x, a.y)) ? a
+                        : !floor.Contains(new Vector2Int(b.x, b.y)) ? b
+                        : (Vector3Int?)null;
+                    if (bridge == null) continue;
+
+                    wallSet.Add(bridge.Value);
+                    worldCells.Add(bridge.Value);
+                    changed = true;
+                }
+            }
         }
     }
 
