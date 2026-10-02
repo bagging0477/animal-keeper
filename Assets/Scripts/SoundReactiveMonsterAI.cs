@@ -22,6 +22,10 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     [SerializeField] private string monsterTypeName = "소리반응형";
     [SerializeField] private GameBalanceConfig config;
 
+    [Header("추격음")]
+    [Tooltip("이 몬스터가 추격할 때 재생할 추격음. 비워두면 AudioManager의 기본 추격음을 쓴다. 다른 몬스터의 추격음과는 따로 겹쳐서 재생된다.")]
+    [SerializeField] private AudioClip chaseClip;
+
     [Header("Chase 시야 차단 판정")]
     [Tooltip("Chase 중 플레이어와의 사이에 이 레이어의 콜라이더(벽, 장애물)가 있으면 시야가 막힌 것으로 취급한다.")]
     [SerializeField] private LayerMask sightBlockingMask = ~0;
@@ -92,6 +96,15 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private void OnDisable()
     {
         SoundEvents.OnSoundEmitted -= HandleSoundEmitted;
+        AudioManager.Instance?.SetChasing(this, false);
+    }
+
+    // Update는 마취로 무력화되면 맨 앞에서 빠져나가 state가 Chase로 남을 수 있어서, 추격음 보고는
+    // 무력화 여부까지 반영해 LateUpdate에서 매 프레임 한다.
+    private void LateUpdate()
+    {
+        bool chasing = state == State.Chase && (health == null || !health.IsIncapacitated);
+        AudioManager.Instance?.SetChasing(this, chasing, chaseClip);
     }
 
     private void HandleSoundEmitted(Vector3 soundPosition, float intensity)
@@ -146,7 +159,6 @@ public class SoundReactiveMonsterAI : MonoBehaviour
                 // 없는데, 목적지가 하필 문처럼 좁은 통로 한가운데로 갱신되는 순간 "거의 도착"으로
                 // 오판해 감속하면서 연결부 근처에서 순간적으로 멈추는 것처럼 보였다. Chase 중에는 꺼둔다.
                 agent.autoBraking = false;
-                AudioManager.Instance?.PlayMonsterChaseAlert();
             }
             else if (state == State.Chase)
             {

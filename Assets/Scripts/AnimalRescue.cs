@@ -13,6 +13,9 @@ public class AnimalRescue : MonoBehaviour
     [Tooltip("이 동물을 구조할 때 재생할 픽업음. 비워두면 AudioManager의 기본 픽업음을 사용한다.")]
     [SerializeField] private AudioClip pickupSound;
 
+    [Tooltip("pickupSound의 재생 볼륨. 원본 파일마다 녹음 크기가 달라서 다른 효과음과 체감 크기를 맞추는 보정값이다.")]
+    [SerializeField, Range(0f, 1f)] private float pickupSoundVolume = 1f;
+
     [Tooltip("체크하면 pickupSound 전체가 아니라 아래 구간만 잘라서 재생한다.")]
     [SerializeField] private bool playPickupSoundSegment;
     [SerializeField] private float pickupSoundStartTime = 7f;
@@ -166,11 +169,11 @@ public class AnimalRescue : MonoBehaviour
         }
         else if (playPickupSoundSegment)
         {
-            AudioManager.Instance?.PlaySfxSegment(pickupSound, pickupSoundStartTime, pickupSoundEndTime);
+            AudioManager.Instance?.PlaySfxSegment(pickupSound, pickupSoundStartTime, pickupSoundEndTime, pickupSoundVolume);
         }
         else
         {
-            AudioManager.Instance?.PlaySfx(pickupSound);
+            AudioManager.Instance?.PlaySfx(pickupSound, pickupSoundVolume);
         }
         Debug.Log($"{name}: 인벤토리에 동물을 담았다");
 

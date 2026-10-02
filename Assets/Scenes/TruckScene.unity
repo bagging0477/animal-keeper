@@ -581,6 +581,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62785813e99f1f741b7f50f4d66711b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  sfxGroup: {fileID: 742695692719143053, guid: 975c066eab6b1184d90484b04dee0fe7, type: 2}
+  uiGroup: {fileID: 7681382728416998684, guid: 975c066eab6b1184d90484b04dee0fe7, type: 2}
+  musicGroup: {fileID: 8365513680750707986, guid: 975c066eab6b1184d90484b04dee0fe7, type: 2}
+  chaseGroup: {fileID: -7755426217631057507, guid: 975c066eab6b1184d90484b04dee0fe7, type: 2}
   pickupClip: {fileID: 0}
   hitClip: {fileID: 8300000, guid: ed81729fe3464804aab12593feecf617, type: 3}
   netSwingClip: {fileID: 8300000, guid: e72d311dae0b2704384056cd85d3ca40, type: 3}
@@ -590,10 +594,19 @@ MonoBehaviour:
   dayFailClip: {fileID: 8300000, guid: 9b1f4b47dc84c6a4eac85773b0e42b5c, type: 3}
   truckMusicClip: {fileID: 8300000, guid: ad4ec7ad1723afe4d9317be895f10afc, type: 3}
   villageMusicClip: {fileID: 8300000, guid: 8987cf16a6e3214448e044ce50d85443, type: 3}
-  sfxVolume: 1
-  musicVolume: 0.5
-  truckMusicVolumeScale: 0.4
-  hitVolumeScale: 2
+  pickupVolume: 0.32
+  hitVolume: 1
+  netSwingVolume: 0.48
+  tranquilizerShotVolume: 0.9
+  monsterChaseVolume: 0.56
+  daySuccessVolume: 0.4
+  dayFailVolume: 0.19
+  truckMusicVolume: 0.33
+  villageMusicVolume: 0.83
+  chaseReleaseDelay: 1.5
+  chaseFadeOutDuration: 1
+  chaseFadeInDuration: 0.3
+  loopChaseClip: 0
 --- !u!4 &189033480
 Transform:
   m_ObjectHideFlags: 0

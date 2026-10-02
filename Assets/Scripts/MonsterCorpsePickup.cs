@@ -18,6 +18,9 @@ public class MonsterCorpsePickup : MonoBehaviour
     [Tooltip("이 시체를 주울 때 재생할 픽업음. 비워두면 AudioManager의 기본 픽업음을 사용한다.")]
     [SerializeField] private AudioClip pickupSound;
 
+    [Tooltip("pickupSound의 재생 볼륨. 원본 파일마다 녹음 크기가 달라서 다른 효과음과 체감 크기를 맞추는 보정값이다.")]
+    [SerializeField, Range(0f, 1f)] private float pickupSoundVolume = 1f;
+
     [Tooltip("인벤토리 슬롯에 표시할 아이콘. 비워두면 Visual 자식의 SimpleFrameAnimator에서 리컬러되지 " +
         "않은 원본 Idle 첫 프레임을 자동으로 가져온다 - 시체 자체는 MonsterHealth.deadColor로 틴트되어 " +
         "보이지만, 그건 SpriteRenderer.color(렌더러 틴트)일 뿐 Sprite 애셋 자체는 그대로라서 아이콘은 " +
@@ -111,7 +114,7 @@ public class MonsterCorpsePickup : MonoBehaviour
         }
         else
         {
-            AudioManager.Instance?.PlaySfx(pickupSound);
+            AudioManager.Instance?.PlaySfx(pickupSound, pickupSoundVolume);
         }
         Debug.Log($"{name}: 몬스터 시체를 인벤토리에 담았다");
 

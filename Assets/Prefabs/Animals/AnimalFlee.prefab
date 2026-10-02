@@ -128,6 +128,7 @@ MonoBehaviour:
   maxWeight: 10
   promptText: {fileID: 0}
   pickupSound: {fileID: 8300000, guid: bef158e49cf76bc43a024c7dc290df42, type: 3}
+  pickupSoundVolume: 0.25
   playPickupSoundSegment: 0
   pickupSoundStartTime: 7
   pickupSoundEndTime: 8
