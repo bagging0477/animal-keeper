@@ -127,8 +127,8 @@ MonoBehaviour:
   minWeight: 1
   maxWeight: 10
   promptText: {fileID: 0}
-  pickupSound: {fileID: 0}
-  playPickupSoundSegment: 1
+  pickupSound: {fileID: 8300000, guid: 1d7561f4b15b70747897b71af6319c54, type: 3}
+  playPickupSoundSegment: 0
   pickupSoundStartTime: 7
   pickupSoundEndTime: 8
   inventoryIcon: {fileID: 0}
@@ -160,6 +160,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   minMovingSpeed: 0.05
+  cryClip: {fileID: 8300000, guid: 67a55558d587a4c4683ad97fdb5cc905, type: 3}
+  cryVolume: 1
 --- !u!50 &6992825298821530901
 Rigidbody2D:
   serializedVersion: 5
