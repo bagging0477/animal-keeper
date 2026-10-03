@@ -21,6 +21,10 @@ public class ShelterExitPoint : MonoBehaviour
 
     private Transform player;
 
+    // 오늘을 이미 마감해서(FinishCycle) Day 클리어 패널의 확인 버튼을 기다리는 중이면 true. 그 사이 E를 또
+    // 누르면 FinishCycle이 한 번 더 불려 다음 사이클이 빈 상태로 판정(=게임 오버)되므로 입력을 막는다.
+    private bool awaitingDayClearConfirm;
+
     private void Start()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -43,6 +47,7 @@ public class ShelterExitPoint : MonoBehaviour
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
         bool gameEnded = GameManager.Instance != null && (GameManager.Instance.IsGameOver || GameManager.Instance.IsGameWon);
+        if (awaitingDayClearConfirm) inRange = false;
 
         // 이 프롬프트는 이 지점 전용 Text라 SharedPrompt(여러 지점이 화면에 하나뿐인 공용 문구 UI를
         // 나눠 쓸 때 쓰는 유틸)를 쓰면 안 된다 - 같은 프레임에 다른 지점이 먼저 그 공용 게이트를
@@ -62,16 +67,24 @@ public class ShelterExitPoint : MonoBehaviour
         if (gameEnded)
         {
             if (!SceneTransitionGuard.TryBeginTransition()) return;
+            // 클리어/게임 오버 패널이 timeScale을 0으로 멈춰둔 상태다 - 패널 버튼과 똑같이 되돌려야 한다.
+            Time.timeScale = 1f;
             GameManager.Instance?.ResetGame();
             SceneManager.LoadScene(truckSceneName);
             return;
         }
 
-        // 목표 달성 여부를 여기서 처음 판정한다(보호소에서 정산을 몇 번 했는지는 상관없다). 미달성이면
-        // ShelterSettlement가 게임 오버 패널을 띄우고 false를 반환하므로, 트럭씬으로 넘어가지 않고
-        // 그 패널을 볼 수 있게 여기 머문다.
+        // 목표 달성 여부를 여기서 처음 판정한다(보호소에서 정산을 몇 번 했는지는 상관없다). 결과 패널
+        // (Day 클리어/게임 클리어/게임 오버)이 뜨면 ShelterSettlement가 false를 반환하고, 그 패널의 버튼이
+        // 다음 씬으로 넘긴다 - 여기서는 패널을 볼 수 있게 머문다.
         bool canProceed = shelterSettlement == null || shelterSettlement.EvaluateCycleEnd();
-        if (!canProceed) return;
+        if (!canProceed)
+        {
+            bool endedNow = GameManager.Instance != null && (GameManager.Instance.IsGameOver || GameManager.Instance.IsGameWon);
+            awaitingDayClearConfirm = !endedNow;
+            if (awaitingDayClearConfirm && promptText != null) promptText.gameObject.SetActive(false);
+            return;
+        }
 
         if (!SceneTransitionGuard.TryBeginTransition()) return;
         SceneManager.LoadScene(truckSceneName);

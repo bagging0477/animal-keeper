@@ -60,8 +60,12 @@ public class PauseMenu : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 씬이 바뀌면 메뉴는 항상 닫힌 상태로 시작한다(시간 복구는 씬을 넘기는 쪽이 이미 했다).
+        // 씬이 바뀌면 메뉴는 항상 닫힌 상태로 시작한다. 시간도 여기서 무조건 되돌린다 - 씬을 넘기는 쪽이
+        // 깜빡하거나(게임 클리어 패널이 뜬 채 출구에서 E로 재시작 등), ESC를 누른 바로 그 프레임에 몬스터에게
+        // 잡혀 강제 복귀하면 timeScale 0이 다음 씬으로 넘어가 화면이 얼어붙고, ESC도 "다른 화면이 멈춰둔
+        // 상태"로 오인해 열리지 않아 빠져나갈 방법이 없었다.
         IsPaused = false;
+        Time.timeScale = 1f;
         Hide();
     }
 

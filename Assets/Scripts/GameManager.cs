@@ -320,11 +320,14 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>시작 시 무료 클래스 선택(NeedsStartingClassSelection)에서만 쓰인다 - 마일리지를 전혀
-    /// 건드리지 않고 바로 해금한다. PurchaseClass와 달리 가격 확인/차감이 없다.</summary>
+    /// 건드리지 않고 바로 해금한다. PurchaseClass와 달리 가격 확인/차감이 없다. 무료 선택은 하나뿐이라,
+    /// 다른 스탠드를 다시 고르면 직전 무료 선택을 대체한다 - 그대로 누적하면 스탠드를 돌며 E만 눌러
+    /// 모든 클래스를 공짜로 해금할 수 있었다.</summary>
     public bool UnlockClassFree(PlayerClass playerClass)
     {
         if (unlockedClasses.Contains(playerClass)) return false;
 
+        if (NeedsStartingClassSelection) unlockedClasses.Clear();
         unlockedClasses.Add(playerClass);
         return true;
     }

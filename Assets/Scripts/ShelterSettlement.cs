@@ -53,7 +53,7 @@ public class ShelterSettlement : MonoBehaviour
         if (outcome.GameWon)
         {
             AudioManager.Instance?.PlayDaySuccess();
-            if (gameClearPanel != null) gameClearPanel.Show("10일간의 여정을 무사히 마쳤습니다!");
+            if (gameClearPanel != null) gameClearPanel.Show($"{GameManager.Instance.TotalCyclesToWin}일간의 여정을 무사히 마쳤습니다!");
             return false;
         }
 
@@ -65,7 +65,11 @@ public class ShelterSettlement : MonoBehaviour
         }
 
         AudioManager.Instance?.PlayDaySuccess();
-        if (dayClearPanel != null) dayClearPanel.Show("Day 클리어!");
-        return true;
+
+        // 패널이 있으면 그 확인 버튼이 트럭씬으로 넘긴다 - 여기서 true를 돌려주면 호출자가 같은 프레임에
+        // 바로 씬을 넘겨 패널이 보이지 않는다. 패널이 연결되지 않았을 때만 호출자가 곧장 넘어가게 한다.
+        if (dayClearPanel == null) return true;
+        dayClearPanel.Show("Day 클리어!");
+        return false;
     }
 }
