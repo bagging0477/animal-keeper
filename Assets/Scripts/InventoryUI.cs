@@ -26,6 +26,11 @@ public class InventoryUI : MonoBehaviour
     [Header("클래스 고정 무기 슬롯 (스카우트는 무기가 없어 자동으로 숨겨짐)")]
     [SerializeField] private GameObject weaponSlotRoot;
     [SerializeField] private InventorySlotUI weaponSlot;
+    [Tooltip("무기 슬롯을 감싸는 모서리 장식(CornerBrackets) 이미지들. 지정하면 무기 슬롯은 배경 없이 이 장식만 보이고, " +
+        "선택 여부는 장식 색으로 구분한다.")]
+    [SerializeField] private Image[] weaponSlotCorners;
+    [SerializeField] private Color weaponCornerSelectedColor = new Color(1f, 0.85f, 0.3f, 1f);
+    [SerializeField] private Color weaponCornerUnselectedColor = Color.white;
 
     [Header("슬롯 배경 이미지 - 둘 다 지정되면 아이템 유무와 상관없이 선택 여부로만 배경을 고른다 (비우면 아래 색상 방식)")]
     [SerializeField] private Sprite slotDefaultSprite;
@@ -71,8 +76,28 @@ public class InventoryUI : MonoBehaviour
         if (weaponSlotRoot != null) weaponSlotRoot.SetActive(equipped != WeaponType.None);
         if (equipped == WeaponType.None || weaponSlot == null) return;
 
-        ApplySlotBackground(weaponSlot, weaponSelected, occupiedFillColor);
-        if (weaponSlot.label != null) weaponSlot.label.text = equipped == WeaponType.Net ? "Q\n포획망" : "Q\n마취총";
+        if (weaponSlotCorners != null && weaponSlotCorners.Length > 0)
+        {
+            // 모서리 장식만으로 슬롯을 표시한다 - 인벤토리 칸 배경/채움은 끄고, 선택되면 장식 색이 바뀐다.
+            if (weaponSlot.frame != null) weaponSlot.frame.enabled = false;
+            if (weaponSlot.fill != null) weaponSlot.fill.enabled = false;
+            if (weaponSlot.label != null) weaponSlot.label.color = unselectedLabelColor;
+            foreach (Image corner in weaponSlotCorners)
+            {
+                if (corner != null) corner.color = weaponSelected ? weaponCornerSelectedColor : weaponCornerUnselectedColor;
+            }
+        }
+        else
+        {
+            ApplySlotBackground(weaponSlot, weaponSelected, occupiedFillColor);
+        }
+        // 화면 오른쪽 위의 별도 "장착/탄약" 표시를 없애고 이 슬롯이 그 자리를 대신하므로, 마취총 남은 탄약도 여기에 표시한다.
+        if (weaponSlot.label != null)
+        {
+            weaponSlot.label.text = equipped == WeaponType.Net
+                ? "Q\n포획망"
+                : $"Q\n마취총\n{GameManager.Instance.TranquilizerAmmo}/{GameManager.Instance.MaxTranquilizerAmmo}";
+        }
     }
 
     /// <summary>슬롯 배경을 그린다. 배경 이미지가 지정돼 있으면 선택된 슬롯은 slotSelectedSprite, 나머지는 slotDefaultSprite를
