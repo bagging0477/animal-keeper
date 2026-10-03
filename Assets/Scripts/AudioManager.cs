@@ -60,11 +60,24 @@ public class AudioManager : MonoBehaviour
     [Tooltip("체크하면 추격하는 동안 추격음을 반복 재생한다. 지금 클립(alert stinger)은 한 번 울리고 잦아드는 소리라 꺼두고, 반복 가능한 추격용 트랙으로 바꾸면 켠다.")]
     [SerializeField] private bool loopChaseClip;
 
+    [Header("효과음 반응 속도")]
+    [Tooltip("체크하면 효과음/UI음/추격음 파일 앞부분의 무음을 잘라낸 복사본으로 재생해서, 키를 누른 순간 바로 소리가 난다. " +
+        "원본 파일과 볼륨은 그대로다. 배경음과 구간 재생(PlaySfxSegment)에는 적용하지 않는다.")]
+    [SerializeField] private bool trimLeadingSilence = true;
+    [Tooltip("그 클립의 최대 음량 대비 이 비율보다 작은 앞부분을 무음으로 본다. 올릴수록 더 많이 잘린다(소리의 시작이 뭉개질 수 있다).")]
+    [SerializeField, Range(0f, 0.3f)] private float leadingSilenceThreshold = 0.02f;
+    [Tooltip("소리가 시작되는 지점보다 이 시간(초)만큼 앞에서 자른다 - 시작음이 툭 끊겨 들리지 않게 남기는 여유분.")]
+    [SerializeField, Min(0f)] private float leadingSilencePreRoll = 0.005f;
+
     private AudioSource sfxSource;
     private AudioSource segmentSource;
     private AudioSource uiSource;
     private AudioSource musicSource;
     private string currentMusicScene;
+    private float segmentStopTimer = -1f;
+
+    // 원본 클립 -> 앞부분 무음을 잘라낸 클립. 잘라낼 게 없으면 원본 자신을 담아 다시 계산하지 않는다.
+    private readonly Dictionary<AudioClip, AudioClip> trimmedClips = new Dictionary<AudioClip, AudioClip>();
 
     // 몬스터 한 마리의 추격음 상태. 같은 몬스터의 끊김/재추격 판정은 이 안에서만 하므로,
     // 서로 다른 몬스터의 추격음은 서로를 막지 않고 각자 겹쳐서 재생된다.
@@ -96,6 +109,12 @@ public class AudioManager : MonoBehaviour
         musicSource = CreateSource(musicGroup, true);
 
         EnsurePlaceholderClips();
+
+        // 처음 재생하는 순간에 자르느라 한 박자 늦지 않게, 이미 아는 클립은 미리 잘라둔다.
+        foreach (AudioClip clip in new[] { pickupClip, hitClip, netSwingClip, tranquilizerShotClip, monsterChaseClip, daySuccessClip, dayFailClip })
+        {
+            GetTrimmedClip(clip);
+        }
     }
 
     private AudioSource CreateSource(AudioMixerGroup group, bool loop)
@@ -125,6 +144,7 @@ public class AudioManager : MonoBehaviour
     private void Update()
     {
         UpdateChaseMusic();
+        UpdateSfxSegment();
     }
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -168,36 +188,44 @@ public class AudioManager : MonoBehaviour
     public void PlaySfx(AudioClip clip, float volume = 1f)
     {
         if (clip == null || sfxSource == null) return;
-        sfxSource.PlayOneShot(clip, volume);
+        sfxSource.PlayOneShot(GetTrimmedClip(clip), volume);
     }
 
     private void PlayUi(AudioClip clip, float volume)
     {
         if (clip == null || uiSource == null) return;
-        uiSource.PlayOneShot(clip, volume);
+        uiSource.PlayOneShot(GetTrimmedClip(clip), volume);
     }
 
     /// <summary>
     /// 파일 전체가 아니라 [startTime, endTime) 구간만 잘라서 재생한다. PlayOneShot은
     /// AudioSource.time으로 시작 지점을 지정할 수 없어서, 대신 segmentSource의 clip을 직접
-    /// 지정해 재생한 뒤 구간 길이만큼 뒤에 Stop()을 예약하는 방식을 쓴다. sfxSource를 같이 쓰면
+    /// 지정해 재생한 뒤 구간 길이만큼 뒤에 Stop()한다. 정지 시점은 unscaled 시간으로 잰다 - Invoke는
+    /// timeScale을 따라서, ESC 일시정지 중에는 Stop이 미뤄진 채 클립이 구간을 넘어 끝까지 재생됐다. sfxSource를 같이 쓰면
     /// 여기서 바꾼 volume이 이후의 PlayOneShot에도 곱해져서 전용 소스를 따로 둔다.
     /// </summary>
     public void PlaySfxSegment(AudioClip clip, float startTime, float endTime, float volume = 1f)
     {
         if (clip == null || segmentSource == null) return;
 
-        CancelInvoke(nameof(StopSfxSegment));
-
         segmentSource.clip = clip;
         segmentSource.volume = volume;
         segmentSource.time = Mathf.Clamp(startTime, 0f, clip.length);
         segmentSource.Play();
 
-        Invoke(nameof(StopSfxSegment), Mathf.Max(0f, endTime - startTime));
+        segmentStopTimer = Mathf.Max(0f, endTime - startTime);
     }
 
-    private void StopSfxSegment() => segmentSource.Stop();
+    private void UpdateSfxSegment()
+    {
+        if (segmentStopTimer < 0f) return;
+
+        segmentStopTimer -= Time.unscaledDeltaTime;
+        if (segmentStopTimer > 0f) return;
+
+        segmentStopTimer = -1f;
+        segmentSource.Stop();
+    }
 
     /// <summary>
     /// 몬스터가 매 프레임 자기가 추격 중인지 알린다(상태가 바뀔 때만이 아니라 계속 불러도 된다).
@@ -226,7 +254,7 @@ public class AudioManager : MonoBehaviour
         chaseVoices.Add(chaser, new ChaseVoice { Source = source, Chasing = true });
 
         if (clip == null) return;
-        source.clip = clip;
+        source.clip = GetTrimmedClip(clip);
         source.loop = loopChaseClip;
         source.volume = monsterChaseVolume * ChaseLayerScale(ActiveChaseVoiceCount());
         source.Play();
@@ -295,6 +323,54 @@ public class AudioManager : MonoBehaviour
     {
         if (duration <= 0f || monsterChaseVolume <= 0f) return target;
         return Mathf.MoveTowards(current, target, monsterChaseVolume * dt / duration);
+    }
+
+    private AudioClip GetTrimmedClip(AudioClip clip)
+    {
+        if (!trimLeadingSilence || clip == null) return clip;
+        if (trimmedClips.TryGetValue(clip, out AudioClip cached)) return cached;
+
+        // 샘플을 읽으려면 데이터가 메모리에 올라와 있어야 한다(Load Type: Decompress On Load). 아직 로드 중이면
+        // 이번만 원본으로 재생하고 캐시하지 않아, 다음 재생 때 다시 시도한다.
+        if (clip.loadState != AudioDataLoadState.Loaded) clip.LoadAudioData();
+        if (clip.loadState != AudioDataLoadState.Loaded) return clip;
+
+        AudioClip trimmed = BuildTrimmedClip(clip);
+        trimmedClips[clip] = trimmed;
+        return trimmed;
+    }
+
+    private AudioClip BuildTrimmedClip(AudioClip clip)
+    {
+        int channels = clip.channels;
+        float[] data = new float[clip.samples * channels];
+        if (!clip.GetData(data, 0)) return clip;
+
+        float peak = 0f;
+        for (int i = 0; i < data.Length; i++) peak = Mathf.Max(peak, Mathf.Abs(data[i]));
+        if (peak <= 0f) return clip;
+
+        float threshold = peak * leadingSilenceThreshold;
+        int firstFrame = 0;
+        for (int i = 0; i < data.Length; i++)
+        {
+            if (Mathf.Abs(data[i]) >= threshold)
+            {
+                firstFrame = i / channels;
+                break;
+            }
+        }
+
+        int startFrame = Mathf.Max(0, firstFrame - Mathf.RoundToInt(leadingSilencePreRoll * clip.frequency));
+        if (startFrame < clip.frequency * 0.005f) return clip; // 5ms도 안 되면 잘라봐야 체감 차이가 없다.
+
+        int frameCount = clip.samples - startFrame;
+        float[] trimmedData = new float[frameCount * channels];
+        System.Array.Copy(data, startFrame * channels, trimmedData, 0, trimmedData.Length);
+
+        AudioClip trimmed = AudioClip.Create(clip.name + "_Trimmed", frameCount, channels, clip.frequency, false);
+        trimmed.SetData(trimmedData, 0);
+        return trimmed;
     }
 
     private void EnsurePlaceholderClips()
