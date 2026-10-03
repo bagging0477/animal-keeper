@@ -40,7 +40,7 @@ public class ShopItemInteractPoint : MonoBehaviour
             popup.Show(GetDisplayName(), GetDescription(), $"{price} 마일리지 - E를 눌러 구매", transform);
         }
 
-        Keyboard kb = Keyboard.current;
+        Keyboard kb = PauseMenu.IsPaused ? null : Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;
 
         Purchase(price);

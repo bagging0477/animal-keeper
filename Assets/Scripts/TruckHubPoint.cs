@@ -53,7 +53,7 @@ public class TruckHubPoint : MonoBehaviour
 
     private void Update()
     {
-        Keyboard kb = Keyboard.current;
+        Keyboard kb = PauseMenu.IsPaused ? null : Keyboard.current;
 
         if (menuOpen)
         {

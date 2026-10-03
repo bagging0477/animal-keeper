@@ -53,7 +53,7 @@ public class TruckStartPoint : MonoBehaviour
 
         if (!inRange || isDown) return;
 
-        Keyboard kb = Keyboard.current;
+        Keyboard kb = PauseMenu.IsPaused ? null : Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;
 
         if (!SceneTransitionGuard.TryBeginTransition()) return;

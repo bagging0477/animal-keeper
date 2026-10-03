@@ -97,7 +97,7 @@ public class MonsterCorpsePickup : MonoBehaviour
 
         if (!inRange) return;
 
-        Keyboard kb = Keyboard.current;
+        Keyboard kb = PauseMenu.IsPaused ? null : Keyboard.current;
         if (kb != null && kb.eKey.wasPressedThisFrame)
         {
             PickUp();

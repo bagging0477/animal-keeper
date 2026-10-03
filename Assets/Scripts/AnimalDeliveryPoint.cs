@@ -39,7 +39,7 @@ public class AnimalDeliveryPoint : MonoBehaviour
         bool selectedIsAnimal = GameManager.Instance.GetSlot(GameManager.Instance.SelectedSlotIndex).Type == InventoryItemType.Animal;
         if (selectedIsAnimal) SharedPrompt.Show(promptText, "E를 눌러 동물 납품하기");
 
-        Keyboard kb = Keyboard.current;
+        Keyboard kb = PauseMenu.IsPaused ? null : Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;
 
         if (GameManager.Instance.TryDeliverSelectedAnimal())

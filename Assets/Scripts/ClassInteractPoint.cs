@@ -59,7 +59,7 @@ public class ClassInteractPoint : MonoBehaviour
             popup.Show(GetClassDisplayName(playerClass), BuildStatsText(playerClass), priceLine, transform);
         }
 
-        Keyboard kb = Keyboard.current;
+        Keyboard kb = PauseMenu.IsPaused ? null : Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame || gm == null) return;
 
         if (!unlocked)
