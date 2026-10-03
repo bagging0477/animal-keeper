@@ -2453,6 +2453,10 @@ MonoBehaviour:
     fill: {fileID: 801026658}
     label: {fileID: 760910357}
     icon: {fileID: 0}
+  slotDefaultSprite: {fileID: -6838316545486389642, guid: 1b7f376e1b759bb44b9dde4c58cc3d1d, type: 3}
+  slotSelectedSprite: {fileID: -3438129901997111831, guid: c922d4e7020695c4a8380ae5a6612ec3, type: 3}
+  unselectedLabelColor: {r: 1, g: 1, b: 1, a: 1}
+  selectedLabelColor: {r: 0.36, g: 0.2, b: 0.14, a: 1}
   selectedFrameColor: {r: 1, g: 0.85, b: 0.3, a: 1}
   unselectedFrameColor: {r: 0.25, g: 0.25, b: 0.28, a: 0.9}
   emptyFillColor: {r: 0, g: 0, b: 0, a: 0.55}

@@ -15,8 +15,8 @@ public class InventorySlotUI
     public Image icon;
 }
 
-/// <summary>5칸 인벤토리 + 클래스 고정 무기 슬롯을 화면에 그린다. 선택된 슬롯은 테두리(frame) 색이
-/// 강조색으로 바뀌어 구분되고, 각 슬롯의 라벨은 내용물(동물/지뢰/폭탄/빈칸/무기)에 맞는 텍스트로
+/// <summary>5칸 인벤토리 + 클래스 고정 무기 슬롯을 화면에 그린다. 선택된 슬롯은 선택용 배경 이미지로
+/// 바뀌어 구분되고(ApplySlotBackground), 각 슬롯의 라벨은 내용물(동물/지뢰/폭탄/빈칸/무기)에 맞는 텍스트로
 /// 갱신된다. 무기 슬롯과 숫자 슬롯은 서로 배타적으로만 강조되므로(GameManager.IsWeaponSelected)
 /// 항상 둘 중 하나만 강조된 채로 보인다.</summary>
 public class InventoryUI : MonoBehaviour
@@ -26,6 +26,13 @@ public class InventoryUI : MonoBehaviour
     [Header("클래스 고정 무기 슬롯 (스카우트는 무기가 없어 자동으로 숨겨짐)")]
     [SerializeField] private GameObject weaponSlotRoot;
     [SerializeField] private InventorySlotUI weaponSlot;
+
+    [Header("슬롯 배경 이미지 - 둘 다 지정되면 아이템 유무와 상관없이 선택 여부로만 배경을 고른다 (비우면 아래 색상 방식)")]
+    [SerializeField] private Sprite slotDefaultSprite;
+    [SerializeField] private Sprite slotSelectedSprite;
+    [Tooltip("배경 이미지를 쓸 때 라벨(숫자/아이템 이름) 색. 선택 배경은 밝은 색이라 어두운 글씨가 잘 보인다.")]
+    [SerializeField] private Color unselectedLabelColor = Color.white;
+    [SerializeField] private Color selectedLabelColor = new Color(0.36f, 0.2f, 0.14f, 1f);
 
     [SerializeField] private Color selectedFrameColor = new Color(1f, 0.85f, 0.3f, 1f);
     [SerializeField] private Color unselectedFrameColor = new Color(0.25f, 0.25f, 0.28f, 0.9f);
@@ -50,8 +57,7 @@ public class InventoryUI : MonoBehaviour
 
             InventorySlotData data = GameManager.Instance.GetSlot(i);
 
-            if (slot.frame != null) slot.frame.color = !weaponSelected && i == selected ? selectedFrameColor : unselectedFrameColor;
-            if (slot.fill != null) slot.fill.color = FillColorFor(data.Type);
+            ApplySlotBackground(slot, !weaponSelected && i == selected, FillColorFor(data.Type));
             if (slot.label != null) slot.label.text = BuildLabel(i, data);
             UpdateIcon(slot.icon, data);
         }
@@ -65,9 +71,38 @@ public class InventoryUI : MonoBehaviour
         if (weaponSlotRoot != null) weaponSlotRoot.SetActive(equipped != WeaponType.None);
         if (equipped == WeaponType.None || weaponSlot == null) return;
 
-        if (weaponSlot.frame != null) weaponSlot.frame.color = weaponSelected ? selectedFrameColor : unselectedFrameColor;
-        if (weaponSlot.fill != null) weaponSlot.fill.color = occupiedFillColor;
+        ApplySlotBackground(weaponSlot, weaponSelected, occupiedFillColor);
         if (weaponSlot.label != null) weaponSlot.label.text = equipped == WeaponType.Net ? "Q\n포획망" : "Q\n마취총";
+    }
+
+    /// <summary>슬롯 배경을 그린다. 배경 이미지가 지정돼 있으면 선택된 슬롯은 slotSelectedSprite, 나머지는 slotDefaultSprite를
+    /// 테두리(frame) Image에 그대로(흰색 틴트) 그리고, 아이템 종류별 색 채움(fill)은 끈다 - 빈 칸이든 아이템이 있든 배경은
+    /// 선택 여부로만 정해진다. 이미지가 비어 있으면 예전처럼 테두리 색 + 종류별 채움 색으로 그린다.</summary>
+    private void ApplySlotBackground(InventorySlotUI slot, bool isSelected, Color fillColor)
+    {
+        bool useSprites = slotDefaultSprite != null && slotSelectedSprite != null;
+
+        if (slot.frame != null)
+        {
+            if (useSprites)
+            {
+                slot.frame.sprite = isSelected ? slotSelectedSprite : slotDefaultSprite;
+                slot.frame.color = Color.white;
+                slot.frame.preserveAspect = true;
+            }
+            else
+            {
+                slot.frame.color = isSelected ? selectedFrameColor : unselectedFrameColor;
+            }
+        }
+
+        if (slot.fill != null)
+        {
+            slot.fill.enabled = !useSprites;
+            if (!useSprites) slot.fill.color = fillColor;
+        }
+
+        if (slot.label != null && useSprites) slot.label.color = isSelected ? selectedLabelColor : unselectedLabelColor;
     }
 
     /// <summary>아이콘 스프라이트가 있으면 보여주고, 없으면(빈 슬롯, 또는 아직 아이콘이 지정되지 않은
