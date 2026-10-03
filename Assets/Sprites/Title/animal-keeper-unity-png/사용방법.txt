@@ -1,0 +1,22 @@
+Animal Keeper PNG 세트
+
+background.png: 480×300, 하늘·풍경·도로 배경
+title.png: 480×120, 투명 타이틀
+truck-01.png / truck-02.png: 100×65, 투명 트럭 2프레임
+
+모든 이미지가 같은 원본 픽셀 크기입니다.
+원래 화면 위치: 배경 좌측 상단을 (0,0)으로 할 때, 타이틀 (0,35), 트럭 (102,183). 좌표는 위에서 아래 방향 기준입니다.
+트럭 이미지 안의 여백을 포함한 좌표입니다.
+
+유니티에서 PNG를 Assets로 드래그하세요.
+Texture Type: Sprite (2D and UI)
+Sprite Mode: Single
+Filter Mode: Point (no filter)
+Compression: None
+Pixels Per Unit은 모두 같은 값(예: 100)으로 설정하세요.
+
+배경 → 타이틀 → 트럭 순서로 겹쳐 배치하세요.
+트럭 2장은 바퀴 무늬가 다른 간단한 프레임입니다.
+두 트럭 이미지를 Animation 창에서 8 Samples로 번갈아 재생하고 Loop Time을 켜세요.
+도로를 지나가는 움직임은 트럭 오브젝트의 위치를 Animation 창에서 키프레임으로 추가하면 됩니다.
+PNG만으로는 이동이 자동 재생되지 않습니다.
