@@ -163,9 +163,22 @@ public class GameBalanceConfig : ScriptableObject
     [Range(0f, 1f)]
     public float focusedVisionShadowSoftness = 0.5f;
 
-    [Tooltip("체크하면 빛이 닿는 벽은 타일 전체가 조명을 받아 보이고, 모서리 너머처럼 다른 벽에 가려진 벽만 그림자로 어두워진다. " +
-        "끄면 벽 칸 전체가 그림자에 덮여 벽 안쪽 테두리부터 어두워진다. VillageScene 맵 생성 시점에 적용되므로 바꾼 뒤에는 씬을 다시 시작해야 한다.")]
-    public bool wallsVisibleInShadow = true;
+    [Header("시야 라이트 블렌딩 - 원형/부채꼴 시야가 겹치는 경계가 띠처럼 보이지 않게")]
+    [Tooltip("원형/부채꼴 시야 라이트 공통 밝기(Light2D Intensity). 둘을 같게 둬야 겹치는 곳에서 밝기가 어긋나지 않는다. " +
+        "1을 넘기면 화면 최대 밝기에서 잘려 평평한 띠가 생기고 그 가장자리가 오히려 날카롭게 보인다.")]
+    public float visionLightIntensity = 1f;
+
+    [Tooltip("원형/부채꼴 시야 라이트 공통 감쇠 곡선 세기(Light2D Falloff Strength). 둘을 같은 곡선으로 어두워지게 한다.")]
+    [Range(0f, 1f)]
+    public float visionLightFalloffStrength = 0.5f;
+
+    [Tooltip("부채꼴 시야 양옆 가장자리에서 한쪽당 몇 도에 걸쳐 서서히 어두워질지. 클수록 원형 시야와 부드럽게 섞인다 " +
+        "(부채꼴 각도의 절반을 넘으면 가운데부터 바로 어두워지기 시작한다).")]
+    public float focusedVisionEdgeFadeAngle = 30f;
+
+    [Tooltip("부채꼴 시야가 최대 밝기를 유지하는 거리(반경 대비 비율). 작을수록 플레이어에서 멀어지며 일찍부터 서서히 어두워진다.")]
+    [Range(0f, 1f)]
+    public float focusedVisionInnerRadiusRatio = 0.55f;
 
     [Header("클래스 - 시야 범위 배율 (기준치 대비, %) - 100이면 기준치(위 ambientVisionRadius 등) 그대로. " +
         "원형 시야(Ambient)와 부채꼴 시야(Focused)를 따로 조절할 수 있다.")]

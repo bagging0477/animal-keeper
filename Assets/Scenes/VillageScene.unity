@@ -118,7 +118,7 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 23800000, guid: c5ba15ee605f64440b08f51c294acbb1, type: 2}
+  m_NavMeshData: {fileID: 0}
 --- !u!1 &300076827
 GameObject:
   m_ObjectHideFlags: 0
@@ -160,7 +160,7 @@ MonoBehaviour:
   m_Intensity: 1.4
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000
+  m_ApplyToSortingLayers: 65b005a24de640bb00000000
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -613,7 +613,6 @@ MonoBehaviour:
   minRoomCount: 3
   maxRoomCount: 4
   floorVariantTiles:
-  - {fileID: 11400000, guid: 5d208106ab918ec45bb937e4b9699684, type: 2}
   - {fileID: 11400000, guid: b05f468f631b7ef44a7aec08df6d923a, type: 2}
   animalPrefabs:
   - {fileID: 8620217539038921367, guid: 01f13696473ba7c4d884d8d271f17ce9, type: 3}
@@ -627,6 +626,15 @@ MonoBehaviour:
   playerObjectName: Player
   truckPointObjectName: TruckPoint
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
+  boundaryLayerName: Default
+  outsideMaskMaterial: {fileID: 2100000, guid: 67ac8126d05722c48b320abae6fec33b, type: 2}
+  outsideMaskColor: {r: 0, g: 0, b: 0, a: 1}
+  outsideMaskMargin: 40
+  outsideMaskFadeWidth: 0.5
+  outsideMaskFadeSubdivisions: 4
+  outsideMaskSortingLayer: Floor
+  outsideMaskSortingOrder: 100
+  floorSortingLayer: Floor
 --- !u!4 &485346730
 Transform:
   m_ObjectHideFlags: 0
@@ -724,7 +732,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.01, g: 0.01, b: 0.015, a: 1}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -836,7 +844,7 @@ MonoBehaviour:
   m_Intensity: 0
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000
+  m_ApplyToSortingLayers: 65b005a24de640bb00000000
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -1602,7 +1610,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000
+  m_ApplyToSortingLayers: 65b005a24de640bb00000000
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0

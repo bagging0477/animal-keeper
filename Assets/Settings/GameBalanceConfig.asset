@@ -41,7 +41,11 @@ MonoBehaviour:
   ambientVisionIgnoresShadows: 1
   focusedVisionRadius: 11
   focusedVisionAngle: 80
-  focusedVisionShadowSoftness: 0.5
+  focusedVisionShadowSoftness: 0.9
+  visionLightIntensity: 1
+  visionLightFalloffStrength: 0.5
+  focusedVisionEdgeFadeAngle: 30
+  focusedVisionInnerRadiusRatio: 0.55
   scoutAmbientVisionRangePercent: 100
   trapperAmbientVisionRangePercent: 100
   gunnerAmbientVisionRangePercent: 150

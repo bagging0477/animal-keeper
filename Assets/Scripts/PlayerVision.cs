@@ -30,6 +30,10 @@ public class PlayerVision : MonoBehaviour
     private float lastFocusedRadius;
     private float lastFocusedAngle;
     private float lastFocusedShadowSoftness;
+    private float lastLightIntensity;
+    private float lastLightFalloff;
+    private float lastFocusedEdgeFadeAngle;
+    private float lastFocusedInnerRadiusRatio;
 
     private void Awake()
     {
@@ -48,10 +52,16 @@ public class PlayerVision : MonoBehaviour
         float targetFocusedRadius = config.GetClassFocusedVisionRadius(currentClass);
         float targetFocusedAngle = config.GetClassFocusedVisionAngle(currentClass);
 
+        // 두 라이트의 밝기/감쇠 곡선은 항상 같게 맞춘다 - 다르면 겹치는 경계에서 한쪽이 먼저 어두워져 띠가 보인다.
+        bool blendChanged = !visionRangesApplied || lastLightIntensity != config.visionLightIntensity ||
+            lastLightFalloff != config.visionLightFalloffStrength;
+
         if (ambientVisionLight != null &&
-            (!visionRangesApplied || lastClass != currentClass || lastAmbientRadius != targetAmbientRadius ||
+            (blendChanged || lastClass != currentClass || lastAmbientRadius != targetAmbientRadius ||
              lastAmbientIgnoresShadows != config.ambientVisionIgnoresShadows))
         {
+            ambientVisionLight.intensity = config.visionLightIntensity;
+            ambientVisionLight.falloffIntensity = config.visionLightFalloffStrength;
             ambientVisionLight.pointLightOuterRadius = targetAmbientRadius;
             // 바로 옆인데 벽 때문에 기본 시야가 뚝 끊겨 보이는 이질감을 없애기 위해, 기본 원형 시야는
             // 기본적으로 그림자(벽/장애물 가림)를 무시하고 범위 안을 항상 전부 보여준다.
@@ -61,17 +71,29 @@ public class PlayerVision : MonoBehaviour
         }
 
         if (focusedVisionLight != null &&
-            (!visionRangesApplied || lastClass != currentClass || lastFocusedRadius != targetFocusedRadius ||
-             lastFocusedAngle != targetFocusedAngle || lastFocusedShadowSoftness != config.focusedVisionShadowSoftness))
+            (blendChanged || lastClass != currentClass || lastFocusedRadius != targetFocusedRadius ||
+             lastFocusedAngle != targetFocusedAngle || lastFocusedShadowSoftness != config.focusedVisionShadowSoftness ||
+             lastFocusedEdgeFadeAngle != config.focusedVisionEdgeFadeAngle ||
+             lastFocusedInnerRadiusRatio != config.focusedVisionInnerRadiusRatio))
         {
+            focusedVisionLight.intensity = config.visionLightIntensity;
+            focusedVisionLight.falloffIntensity = config.visionLightFalloffStrength;
             focusedVisionLight.pointLightOuterRadius = targetFocusedRadius;
+            focusedVisionLight.pointLightInnerRadius = targetFocusedRadius * config.focusedVisionInnerRadiusRatio;
             focusedVisionLight.pointLightOuterAngle = targetFocusedAngle;
+            // 부채꼴 옆 가장자리 페이드 폭. 각도 차이는 거리에 비례해 넓어지므로 플레이어 바로 옆에서는 페이드가 아주 좁다 -
+            // 한쪽당 각도를 넉넉히 잡아야 원형 시야와 만나는 근거리 경계가 칼선처럼 보이지 않는다.
+            focusedVisionLight.pointLightInnerAngle = Mathf.Max(0f, targetFocusedAngle - 2f * config.focusedVisionEdgeFadeAngle);
             focusedVisionLight.shadowSoftness = config.focusedVisionShadowSoftness;
             lastFocusedRadius = targetFocusedRadius;
             lastFocusedAngle = targetFocusedAngle;
             lastFocusedShadowSoftness = config.focusedVisionShadowSoftness;
+            lastFocusedEdgeFadeAngle = config.focusedVisionEdgeFadeAngle;
+            lastFocusedInnerRadiusRatio = config.focusedVisionInnerRadiusRatio;
         }
 
+        lastLightIntensity = config.visionLightIntensity;
+        lastLightFalloff = config.visionLightFalloffStrength;
         lastClass = currentClass;
         visionRangesApplied = true;
     }
