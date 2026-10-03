@@ -5759,6 +5759,9 @@ MonoBehaviour:
     fill: {fileID: 0}
     label: {fileID: 0}
     icon: {fileID: 0}
+  weaponSlotCorners: []
+  weaponCornerSelectedColor: {r: 1, g: 0.85, b: 0.3, a: 1}
+  weaponCornerUnselectedColor: {r: 1, g: 1, b: 1, a: 1}
   slotDefaultSprite: {fileID: -6838316545486389642, guid: 1b7f376e1b759bb44b9dde4c58cc3d1d, type: 3}
   slotSelectedSprite: {fileID: -3438129901997111831, guid: c922d4e7020695c4a8380ae5a6612ec3, type: 3}
   unselectedLabelColor: {r: 1, g: 1, b: 1, a: 1}
