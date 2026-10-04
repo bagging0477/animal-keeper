@@ -1,0 +1,81 @@
+지뢰 + 붉은 섬광 / Unity 2D 적용 설명서
+
+1. 파일 구성
+Sprites/mine-32.png: 실제 32×32, RGBA 투명 배경 지뢰.
+Sprites/red-flash-32.png: 실제 32×32, RGBA 투명 배경 붉은 섬광.
+Scripts/MineFlash2D.cs: 플레이어가 지뢰를 밟으면 섬광을 표시하는 스크립트.
+앞서 만든 확대 이미지를 축소해 가장자리를 투명하게 정리한 파일입니다.
+섬광은 한 장이며, 스크립트가 크기와 투명도를 바꿔 번쩍이는 느낌을 냅니다.
+
+2. 유니티로 가져오기
+ZIP을 압축 해제한 뒤 MineFlashUnity 폴더를 프로젝트의 Assets 폴더에 넣으세요.
+유니티가 스크립트 컴파일을 마칠 때까지 기다리세요.
+이 ZIP은 .unitypackage가 아니므로 Import Package 메뉴를 사용하지 않습니다.
+
+3. PNG 설정 (두 이미지 모두 같은 설정)
+Project 창에서 두 PNG를 선택하고 Inspector를 확인하세요.
+Texture Type: Sprite (2D and UI)
+Sprite Mode: Single
+Pixels Per Unit: 32 (32픽셀이 월드의 1유닛이 됩니다)
+Filter Mode: Point (no filter)
+Compression: None
+Generate Mip Maps: 끄기 (옵션이 표시되는 경우)
+Wrap Mode: Clamp
+Alpha Is Transparency: 켜기 (옵션이 표시되는 경우)
+Pivot: Center (기본값)
+Apply를 누르세요. 이미지별 설정이 다르면 크기가 달라질 수 있습니다.
+프로젝트에 이미 픽셀 크기 기준이 있다면 그 PPU로 두 이미지 모두 맞추세요.
+
+4. 지뢰 배치
+mine-32.png를 Scene 또는 Hierarchy로 드래그하세요.
+새 오브젝트 이름을 Mine으로 바꾸세요.
+Transform의 Scale은 (1,1,1), Rotation은 (0,0,0)으로 두고 위치를 원하는 곳에 놓으세요.
+Inspector > Add Component에서 Box Collider 2D를 추가하세요.
+Is Trigger를 켜세요. Edit Collider를 눌러 지뢰 본체 크기에 맞추세요.
+MineFlash2D.cs를 Mine의 Inspector로 드래그하세요.
+Flash Sprite 칸에 red-flash-32.png를 드래그하세요.
+Flash Duration: 0.25 (초)
+Flash Size: 1.8 (지뢰 오브젝트에 대한 섬광 배율)
+Sprite Renderer의 Order in Layer는 배경보다 높은 값(예: 10)으로 지정하세요.
+섬광은 같은 Sorting Layer에서 지뢰보다 Order가 10 높게 표시됩니다.
+2D 조명 때문에 어두워지면 Sprite Renderer의 Material을 프로젝트에 맞는 Unlit 스프라이트 재질로 바꾸세요.
+
+5. 플레이어 설정
+플레이어 본체의 Tag를 Player로 지정하세요.
+Collider 2D(예: Box Collider 2D 또는 Capsule Collider 2D)를 추가하세요.
+Rigidbody 2D를 추가하세요. 3D Rigidbody/Collider와 섞지 마세요.
+기존 플레이어 이동 방식에 맞는 Body Type을 유지하세요.
+위에서 내려다보는 게임에서 중력이 필요 없다면 Gravity Scale을 0으로 지정하세요.
+옆으로 보는 플랫폼 게임에서는 기존 중력 설정을 유지하세요.
+콜라이더가 자식에 있어도 Player 태그가 붙은 Rigidbody 2D 본체를 감지합니다.
+플레이어와 지뢰의 레이어가 Physics 2D의 Layer Collision Matrix에서 충돌하도록 허용되어야 합니다.
+
+6. 실행 결과와 테스트
+Play를 누르고 플레이어를 지뢰의 콜라이더에 닿게 하세요.
+지뢰가 사라지고 그 자리에 붉은 섬광이 0.25초 동안 커지며 흐려진 뒤 사라집니다.
+지뢰는 한 번만 발동하고 삭제됩니다.
+플레이어 이동 기능이 없어도 테스트할 수 있습니다.
+Play 중 Mine의 MineFlash2D 컴포넌트 메뉴에서 Test Red Flash를 선택하세요.
+버전에 따라 메뉴는 컴포넌트 제목의 세로 점 3개 또는 우클릭으로 열립니다.
+이 스크립트는 시각 효과만 처리합니다. 체력 감소, 소리, 카메라 흔들림, 화면 전체 붉은 필터는 포함하지 않습니다.
+
+7. 스크립트 없이 이미지만 사용하기
+지뢰 PNG와 섬광 PNG를 각각 Sprite Renderer 오브젝트로 배치하세요.
+섬광을 지뢰 위치에 겹치고 Order in Layer를 더 높게 설정하세요.
+섬광 오브젝트를 평소에는 꺼두고 기존 게임 로직이나 Animation으로 켜고 끄세요.
+이미지 한 장 자체가 자동으로 움직이거나 충돌을 감지하지는 않습니다.
+
+8. 문제 해결
+섬광이 안 나옴: Flash Sprite 지정, Player 태그, 2D 콜라이더, Rigidbody 2D, 레이어 충돌 설정을 확인하세요.
+흐리게 보임: Filter Mode Point, Compression None, 카메라/오브젝트의 픽셀 정렬을 확인하세요.
+크기가 안 맞음: 두 이미지의 PPU를 통일하고 Flash Size를 조절하세요.
+배경 뒤에 가려짐: Sorting Layer와 Order in Layer를 확인하세요.
+Console에 컴파일 오류가 있음: 파일명이 MineFlash2D.cs인지 확인하고 기존 프로젝트 오류도 해결하세요.
+지뢰가 사라진 후 재테스트: Play를 종료하고 다시 실행하세요.
+
+검증 범위
+PNG의 실제 크기와 투명 채널, ZIP 내용은 확인했습니다.
+Unity Editor에서 컴파일·플레이 테스트는 수행하지 않았습니다.
+
+공식 참고: Unity OnTriggerEnter2D
+https://docs.unity3d.com/6000.0/Documentation/ScriptReference/MonoBehaviour.OnTriggerEnter2D.html
