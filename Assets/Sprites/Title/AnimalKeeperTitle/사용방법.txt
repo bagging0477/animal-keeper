@@ -1,0 +1,109 @@
+Animal Keeper — 움직이는 타이틀 화면 / Unity 적용 방법
+
+이 세트는 PNG 11장과 C# 스크립트로 구성됩니다.
+처음엔 트럭이 오른쪽으로 이동합니다. 2.3초 뒤 시점이 부드럽게 트럭을 따라가는 연출로 전환됩니다.
+트럭이 화면에 머무르는 동안 가까운 나무, 도로와 풀은 빠르게 뒤로 흐르고 먼 언덕과 구름은 느리게 움직입니다.
+바퀴 2프레임, 차체 흔들림, 작은 먼지 효과가 포함되어 있습니다.
+로고는 고정되어 계속 읽을 수 있습니다.
+실제 카메라를 이동시키는 방식 대신 UI 레이어를 움직여 같은 시각 효과를 냅니다.
+게임 시작 버튼과 실제 게임 씬 전환은 포함하지 않습니다.
+
+1. 폴더 넣기
+ZIP 압축을 해제합니다.
+AnimalKeeperTitle 폴더 전체를 유니티 Project 창의 Assets에 드래그합니다.
+최종 경로는 Assets/AnimalKeeperTitle/... 형태가 됩니다.
+Resources와 Editor 폴더 이름 및 그 안의 파일명은 그대로 유지하세요.
+스크립트가 컴파일될 때까지 기다리고 Console의 빨간 오류가 없는지 확인합니다.
+ZIP 자체를 유니티에 드래그하거나 Import Package로 여는 방식이 아닙니다.
+이 세트는 이전 PNG 세트와 별개이므로 이전 타이틀 오브젝트는 끄거나 새 씬에서 사용하세요.
+
+2. 타이틀 씬 만들기
+File > New Scene으로 빈 씬을 만들고 저장하세요. 예: TitleScene.
+Hierarchy에서 우클릭 > Create Empty를 선택합니다.
+이름을 AnimalKeeperTitleRoot로 지정합니다.
+Transform의 Scale은 (1,1,1)로 두세요.
+Project 창의 AnimalKeeperTitle.cs를 이 오브젝트의 Inspector에 드래그합니다.
+Play를 누르면 Canvas와 그림들이 자동 생성되고 연출이 재생됩니다.
+PNG를 각각 배치하거나 카메라를 트럭에 연결할 필요가 없습니다.
+화면은 실행 중 생성되므로 Play 전에는 배경이 보이지 않는 것이 정상입니다.
+Play를 종료하면 생성된 Canvas는 없어지고 다음 실행 때 다시 생성됩니다.
+
+3. 권장 Game 창 설정
+Game 창의 화면 비율을 16:10으로 설정하세요.
+원본 디자인은 480×300입니다. 960×600 또는 1440×900처럼 정수 배율 해상도가 가장 또렷합니다.
+다른 화면 비율에서도 원본 비율이 유지되며 위아래 또는 좌우에 여백이 생깁니다.
+Screen Space Overlay UI로 그리므로 카메라의 위치와 Orthographic Size는 연출에 영향을 주지 않습니다.
+여백에는 기존 카메라 배경이 보입니다. 여백 색을 바꾸려면 카메라 배경색을 바꾸세요.
+
+4. PNG 자동 설정
+Editor/AnimalKeeperTextureImporter.cs가 포함된 경로의 PNG에 픽셀아트 설정을 적용합니다.
+Texture Type: Default
+Filter Mode: Point (no filter)
+Compression: None
+Generate Mip Maps: Off
+Wrap Mode: Clamp
+Non Power of 2: None
+Alpha Is Transparency: On
+이 세트는 Sprite Renderer 대신 UI RawImage를 사용하므로 Texture Type을 Sprite로 바꾸지 않아도 됩니다.
+PPU 설정도 필요하지 않습니다.
+이미지가 흐리거나 크기가 바뀌었다면 Resources/AnimalKeeperTitle의 PNG를 모두 선택한 뒤 우클릭 > Reimport하세요.
+플랫폼별 Texture Override가 이미 적용돼 있다면 압축 및 리사이즈 설정도 확인하세요.
+
+5. Inspector에서 연출 조절하기
+AnimalKeeperTitleRoot의 AnimalKeeperTitle 컴포넌트를 선택합니다.
+Truck Speed: 기본 52. 원본 화면 픽셀 기준 초당 이동량입니다. 40~65부터 조절하면 좋습니다.
+Follow Delay: 기본 2.3. 몇 초 뒤 추적 연출을 시작할지 결정합니다.
+Follow Blend Duration: 기본 1.5. 추적 속도가 올라가는 시간입니다. 값이 크면 더 천천히 전환됩니다.
+Wheel Frames Per Second: 기본 8. 트럭 바퀴 프레임 변경 속도입니다.
+Enable Dust: 트럭 뒤 먼지 표시 여부입니다.
+Enable Bounce: 트럭의 작은 위아래 흔들림 여부입니다.
+기본값에서 트럭은 원본 화면 x 약 231 지점에 자리 잡습니다.
+정착 위치는 72 + Truck Speed × (Follow Delay + Follow Blend Duration / 2)입니다.
+속도나 지연을 아주 크게 설정하면 트럭이 화면 밖으로 나갈 수 있으니 기본값 주변에서 조절하세요.
+애니메이션은 Time.timeScale이 0이어도 진행되도록 unscaledDeltaTime을 사용합니다.
+
+6. 이미지 구성
+Resources/AnimalKeeperTitle/sky.png — 하늘과 해
+clouds.png — 구름, 가장 느리게 이동
+hills.png — 먼 언덕
+far-trees.png — 먼 나무
+near-trees.png — 가까운 나무
+ ground.png — 도로와 바닥의 기본 색
+markings.png — 도로의 점선
+flowers.png — 가까운 풀과 꽃
+ title.png — 흰 글자, 노란 테두리, 검정 그림자의 로고
+truck-01.png / truck-02.png — 투명 트럭 2프레임
+(파일명 앞에 공백은 없습니다.)
+배경 레이어는 각 480×300, 타이틀은 480×120, 트럭은 각 100×65입니다.
+투명 배경을 포함한 원래 크기를 유지하세요. 빈 부분을 자르면 자동 배치 좌표가 맞지 않습니다.
+Editor 폴더의 스크립트는 유니티 에디터에서 이미지 설정만 처리합니다.
+AnimalKeeperTitle.cs는 실행 시 화면을 구성하고 연출합니다.
+
+7. 시작 버튼을 나중에 추가할 때
+이 연출 스크립트는 버튼을 만들거나 클릭을 처리하지 않습니다.
+별도 Canvas를 만들고 Render Mode를 Screen Space Overlay로 지정하세요.
+그 Canvas의 Sort Order를 10처럼 더 높은 값으로 설정하면 타이틀 위에 버튼을 올릴 수 있습니다.
+버튼 클릭에는 프로젝트의 EventSystem과 적절한 Input Module이 필요합니다.
+이 세트의 그림은 Raycast Target이 꺼져 있어 별도 버튼 클릭을 막지 않습니다.
+
+8. 문제 해결
+UnityEngine.UI 관련 오류: Window > Package Manager에서 Unity UI(uGUI / com.unity.ugui)가 있는지 확인하세요.
+그림이 안 보임: 빈 오브젝트가 활성화돼 있고 스크립트가 Enabled인지 확인한 뒤 Play를 누르세요.
+Missing title texture 메시지: Assets/AnimalKeeperTitle/Resources/AnimalKeeperTitle 안에 PNG 11장이 있는지 확인하세요.
+다른 그림으로 로드됨: 같은 이름의 Resources/AnimalKeeperTitle 경로가 중복으로 존재하지 않는지 확인하세요.
+화면이 두 겹으로 보임: AnimalKeeperTitle 컴포넌트를 하나만 사용하고 기존 타이틀 Canvas를 끄세요.
+다른 UI가 가림: 각 Canvas의 Sort Order를 확인하세요.
+나무가 흐리거나 번짐: PNG를 Reimport하고 Game 해상도를 원본의 정수 배율로 설정하세요.
+트럭이 화면 밖으로 나감: Truck Speed 52, Follow Delay 2.3, Follow Blend Duration 1.5로 되돌리세요.
+배경 움직임이 끊김: 이전 통짜 background.png를 덮어놓지 말고 이 세트의 분리 레이어를 사용하세요.
+처음부터 다시 보기: Play를 종료하고 다시 실행하세요.
+
+9. 확인한 범위
+PNG 크기, 투명 채널, 리소스 경로, ZIP 무결성, 추적 전환 계산을 확인했습니다.
+유니티 에디터가 이 환경에 없어 Unity 컴파일/Play 테스트는 하지 않았습니다.
+특정 URP 조명이나 Cinemachine 패키지는 필요하지 않습니다. Unity UI는 필요합니다.
+
+공식 참고
+Resources 로딩: https://docs.unity3d.com/kr/6000.0/Manual/assets-resources-system-load.html
+RawImage: https://docs.unity3d.com/kr/2018.4/ScriptReference/UI.RawImage-texture.html
+Aspect Ratio Fitter: https://docs.unity3d.com/kr/2022.3/Manual/script-AspectRatioFitter.html
