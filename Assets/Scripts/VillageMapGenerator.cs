@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
 
 /// <summary>
@@ -10,7 +11,8 @@ using UnityEngine.Tilemaps;
 /// 맵의 가로 한가운데에 가장 가까운 방에 스폰된다. 이어붙인 뒤 각 방의 바닥 타일을
 /// 기준으로 NavMesh를 다시 구워서, 절차적으로 생성된 위치에서도 몬스터(NavMeshAgent)가
 /// 순찰/추격할 수 있게 한다. 방 사이에는 벽이 없어 맵 전체가 하나의 열린 바닥이며, 바닥이 끝나는
-/// 가장자리는 보이지 않는 충돌체가 막고 그 바깥은 항상 어둡게 칠해진다.
+/// 가장자리는 보이지 않는 충돌체가 막고 그 바깥은 항상 어둡게 칠해진다. 시야(Light2D)는 그 가장자리에서만
+/// 끊기고(BuildWallShadows), 방과 방이 이어지는 통로는 그대로 통과한다.
 /// </summary>
 [DefaultExecutionOrder(-1000)]
 public class VillageMapGenerator : MonoBehaviour
@@ -110,6 +112,7 @@ public class VillageMapGenerator : MonoBehaviour
         }
 
         BuildMapBoundary(mapRoot.transform, mapFloor);
+        BuildWallShadows(mapRoot.transform, mapFloor);
         BuildOutsideMask(mapRoot.transform, mapFloor, placedRooms);
 
         // Obstacle colliders baked into the room prefabs (and the boundary just built) are live at
@@ -707,7 +710,7 @@ public class VillageMapGenerator : MonoBehaviour
 
     // 바닥 칸과 상하좌우·대각선으로 맞닿은 바닥 아닌 칸(맵 바깥)마다 보이지 않는 충돌체를 둬서, 플레이어/동물이
     // 바닥 밖으로 나가지 못하게 한다(몬스터는 바닥 모양으로 구운 NavMesh 밖으로 원래 못 나간다). 스프라이트도
-    // ShadowCaster2D도 없는 순수 충돌체라 화면에 보이지 않고 시야(빛)도 가리지 않는다. 칸마다 상자를 따로 두면
+    // ShadowCaster2D도 없는 순수 충돌체라 화면에 보이지 않는다(시야를 막는 그림자는 같은 경계를 따라 BuildWallShadows가 따로 만든다). 칸마다 상자를 따로 두면
     // 상자 이음매에 캐릭터가 걸릴 수 있으므로, 맞닿은 칸을 가능한 큰 직사각형으로 합쳐서 상자 수를 줄인다.
     // 맵을 새로 만들 때마다(Day가 바뀌어 VillageScene을 다시 불러올 때마다) 바닥 범위를 기준으로 다시 만들어진다.
     private void BuildMapBoundary(Transform mapRoot, HashSet<Vector2Int> mapFloor)
@@ -735,6 +738,61 @@ public class VillageMapGenerator : MonoBehaviour
             BoxCollider2D box = boundary.AddComponent<BoxCollider2D>();
             box.offset = rect.center;
             box.size = rect.size;
+        }
+    }
+
+    // 시야를 막는 벽 그림자. 이동 불가 구역(경계 충돌체가 놓인 바닥 아닌 칸)이 바닥과 맞닿는 타일 경계 - 즉 경계 충돌체의
+    // 안쪽 면 - 을 FloorOutline으로 한 번에 추적해서, 이어진 외곽선(루프)마다 ShadowCaster2D 하나를 둔다. 바닥끼리 맞닿은
+    // 방 사이 통로에는 선이 생기지 않으므로 시야 콘이 그대로 건너편까지 닿는다. 예전 벽처럼 칸마다 캐스터를 붙이면 칸
+    // 이음매/모서리마다 부드러운 그림자 쐐기가 생겨 빛이 새거나 같은 벽이 통째로 밝아졌는데, 루프 하나로 이어진 선분은
+    // 모서리에서 끊기지 않아 그런 틈이 없다. 장애물(Obstacle 프리팹)의 ShadowCaster2D는 건드리지 않는다.
+    // 캐스터는 mapRoot 아래에 생기므로, Day가 바뀌어 VillageScene을 다시 불러오면 이전 맵과 함께 사라지고 새 바닥 기준으로 다시 만들어진다.
+    private const string WallShadowsName = "WallShadows";
+
+    private static readonly System.Reflection.FieldInfo ShadowShapePathField =
+        typeof(ShadowCaster2D).GetField("m_ShapePath", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+    private static readonly System.Reflection.FieldInfo ShadowShapePathHashField =
+        typeof(ShadowCaster2D).GetField("m_ShapePathHash", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+    private static void BuildWallShadows(Transform mapRoot, HashSet<Vector2Int> mapFloor)
+    {
+        // 혹시 같은 맵 루트 아래 이전에 만든 벽 그림자가 남아 있으면(재생성) 먼저 지운다.
+        Transform previous = mapRoot.Find(WallShadowsName);
+        if (previous != null) Destroy(previous.gameObject);
+
+        if (ShadowShapePathField == null || ShadowShapePathHashField == null)
+        {
+            Debug.LogError("VillageMapGenerator: 이 URP 버전의 ShadowCaster2D에서 m_ShapePath/m_ShapePathHash를 찾지 못해 벽 그림자를 만들 수 없다.");
+            return;
+        }
+
+        GameObject root = new GameObject(WallShadowsName);
+        root.transform.SetParent(mapRoot, false);
+
+        List<List<Vector2Int>> loops = FloorOutline.TraceLoops(mapFloor);
+        for (int i = 0; i < loops.Count; i++)
+        {
+            List<Vector2Int> loop = loops[i];
+            Vector3[] path = new Vector3[loop.Count];
+            int hash = 17;
+            for (int k = 0; k < loop.Count; k++)
+            {
+                path[k] = new Vector3(loop[k].x, loop[k].y, 0f);
+                hash = unchecked(hash * 31 + loop[k].GetHashCode());
+            }
+
+            // 비활성 상태에서 컴포넌트를 붙이고 모양을 넣은 뒤 켜야, Awake가 기본 1x1 사각형 대신 이 외곽선으로 그림자 메시를
+            // 처음부터 만든다. 콜라이더/렌더러가 없는 오브젝트라 에디터에서도 모양 공급원(provider)을 자동으로 잡지 않고
+            // 이 경로(Shape Editor 방식)를 그대로 쓴다.
+            GameObject go = new GameObject($"WallShadow_{i}");
+            go.SetActive(false);
+            go.transform.SetParent(root.transform, false);
+            ShadowCaster2D caster = go.AddComponent<ShadowCaster2D>();
+            ShadowShapePathField.SetValue(caster, path);
+            ShadowShapePathHashField.SetValue(caster, hash == 0 ? 1 : hash);
+            caster.castingOption = ShadowCaster2D.ShadowCastingOptions.CastShadow;
+            caster.selfShadows = false;
+            go.SetActive(true);
         }
     }
 
