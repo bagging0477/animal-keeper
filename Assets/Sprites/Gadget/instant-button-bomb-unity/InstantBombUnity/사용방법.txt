@@ -1,0 +1,92 @@
+빨간 버튼 즉시 발동 폭탄 + 화염 효과 / Unity 2D
+
+1. 구성
+Sprites/button-bomb-32.png: 실제 32×32 투명 PNG. 도화선 대신 빨간 버튼이 있는 게임용 폭탄.
+Sprites/fire-explosion-32.png: 실제 32×32 투명 PNG. 노랑·주황·붉은 화염 폭발.
+Scripts/InstantButtonBomb2D.cs: Space 키 또는 UI 버튼에서 즉시 폭발 발동.
+Scripts/FireBurstEffect2D.cs: 화염 크기 변화, 작은 흔들림, 페이드아웃.
+화염 이미지는 1장입니다. 프레임별 화염 애니메이션 대신 스크립트 연출을 사용합니다.
+기본 폭발 연출 시간은 0.45초이며, 카운트다운은 없습니다.
+
+2. 가져오기
+ZIP을 압축 해제하고 InstantBombUnity 폴더 전체를 Assets 폴더에 넣으세요.
+두 스크립트가 컴파일될 때까지 기다리세요. ZIP은 .unitypackage 형식이 아닙니다.
+
+3. PNG 설정 (2장 모두)
+Texture Type: Sprite (2D and UI)
+Sprite Mode: Single
+Pixels Per Unit: 32 (기존 게임이 다른 기준이면 두 이미지 모두 같은 기존 PPU 사용)
+Filter Mode: Point (no filter)
+Compression: None
+Generate Mip Maps: Off (옵션이 보이는 경우)
+Wrap Mode: Clamp
+Pivot: Center
+Alpha Is Transparency: On (옵션이 보이는 경우)
+Apply를 누르세요.
+
+4. 가장 간단한 테스트
+button-bomb-32.png를 Scene에 드래그하세요.
+생성된 폭탄 오브젝트에 InstantButtonBomb2D.cs를 붙이세요.
+Fire Sprite 칸에 fire-explosion-32.png를 드래그하세요.
+Sprite Renderer의 Order in Layer를 배경보다 높게 설정하세요.
+Play를 누르고 Game 창을 클릭한 뒤 Space를 누르세요.
+폭탄은 즉시 사라지고 같은 위치에 화염이 커지며 번쩍인 뒤 사라집니다.
+테스트에는 콜라이더나 Rigidbody가 필요하지 않습니다.
+FireBurstEffect2D는 자동 생성된 화염에 붙으므로 수동으로 붙이지 마세요.
+
+5. 캐릭터 손에 들기
+플레이어 아래에 빈 자식 오브젝트 HandPoint를 만들고 손 위치에 배치하세요.
+폭탄 오브젝트를 HandPoint의 자식으로 옮기고 Local Position을 (0,0,0)으로 맞추세요.
+Local Scale로 손에 맞는 크기를 조절하세요. 예: (0.4,0.4,1).
+폭탄 Sprite Renderer의 Sorting Layer를 캐릭터와 같게 하고 Order를 캐릭터보다 높게 지정하세요.
+이 스크립트는 폭탄 자체에 붙이세요. 플레이어 본체에 붙이면 플레이어 오브젝트가 삭제될 수 있습니다.
+손 본이 있는 애니메이션이면 해당 손 본을 HandPoint 대신 부모로 사용해도 됩니다.
+발동한 화염은 폭탄의 월드 위치에 독립적으로 생성되어 캐릭터가 이동하거나 제거돼도 그 자리에 남습니다.
+
+6. 화면 버튼으로 발동하기
+Hierarchy > UI > Button (또는 Button - TextMeshPro)을 추가하세요.
+버튼 이름/글자를 폭발처럼 원하는 문구로 바꾸세요.
+Button 컴포넌트의 On Click() 항목에서 +를 누르세요.
+Scene에 있는 폭탄 오브젝트를 오브젝트 칸에 드래그하세요. Project의 스크립트 파일을 넣는 것이 아닙니다.
+함수 목록에서 InstantButtonBomb2D > Detonate()를 선택하세요.
+Enable Space Key를 끄면 키보드 발동 없이 UI 버튼만 사용합니다.
+Play 중 버튼을 클릭하면 카운트다운 없이 화염이 나타납니다.
+Unity 기본 Button의 On Click은 눌렀다 뗄 때 호출됩니다.
+화면에 그려진 폭탄의 빨간 버튼 자체는 클릭 영역이 아닙니다. 별도 UI 버튼을 연결하는 방식입니다.
+UI 버튼을 사용하려면 Canvas, Graphic Raycaster, EventSystem과 프로젝트 입력 방식에 맞는 Input Module이 필요합니다.
+Input System 사용 프로젝트: Input System UI Input Module.
+기존 입력 프로젝트: Standalone Input Module.
+새 Input System 및 기존 Input Manager의 Space 키를 조건부 코드로 지원합니다. Both에서는 새 Input System을 우선합니다.
+
+7. 자폭/체력 기능 연결
+기본 스크립트는 폭탄 삭제와 화염 표시만 처리합니다. 플레이어 체력 감소나 사망을 자동 구현하지 않습니다.
+폭탄 컴포넌트의 On Detonated 이벤트에서 +를 눌러 플레이어의 기존 체력/사망 스크립트 오브젝트를 넣으세요.
+프로젝트에서 사용하는 public 사망 함수(인자 없음) 등을 선택하면 발동 순간에 호출됩니다.
+플레이어를 제거해도 화염은 독립 생성돼 끝까지 재생됩니다.
+폭탄이 여러 개면 Space를 사용하는 모든 폭탄이 발동합니다. 장착 중인 하나만 Enable Space Key를 켜거나 장착 관리 코드에서 해당 폭탄의 Detonate()를 호출하세요.
+예: bomb.Detonate();
+UI 버튼은 한 번 발동한 폭탄이 삭제되므로 새 폭탄을 장착할 때 새 오브젝트로 다시 연결해야 합니다.
+
+8. 설정
+Effect Duration: 기본 0.45초, 연출 지속 시간.
+Effect Scale: 기본 2.5, 손에 든 폭탄의 월드 스케일에 대한 화염 크기.
+Enable Space Key: Space 키 사용 여부.
+화염은 폭탄과 같은 Sorting Layer에서 Order가 10 높게 생성됩니다.
+Time.timeScale이 0이어도 화염 연출은 진행됩니다. 일시정지 시 입력을 막으려면 기존 일시정지 로직에서 발동을 제한하세요.
+효과가 조명 때문에 어두우면 폭탄에 프로젝트에 맞는 Unlit 스프라이트 재질을 지정하세요. 효과가 그 재질을 이어받습니다.
+
+9. 문제 해결
+Space가 안 됨: Game 창에 포커스를 주고 Enable Space Key를 확인하세요. Console 오류를 먼저 해결하세요.
+화염이 안 뜸: Fire Sprite를 지정하고 SpriteRenderer의 정렬 순서와 카메라 Culling Mask를 확인하세요.
+UI 버튼이 안 됨: On Click 대상이 Scene의 폭탄인지, 함수가 Detonate인지, EventSystem 입력 모듈이 맞는지 확인하세요.
+흐리게 보임: Point, None 설정 및 픽셀 정렬을 확인하세요.
+플레이어가 원치 않게 사라짐: 폭탄 스크립트가 플레이어 본체가 아닌 폭탄 자식에 붙었는지 확인하세요.
+새로 테스트하려면 Play를 종료한 뒤 다시 실행하세요.
+
+10. 검증 범위
+PNG 실제 크기와 투명 채널, ZIP 무결성 및 파일 구성은 확인했습니다.
+Unity Editor가 없어 에디터 컴파일과 Play 테스트는 수행하지 않았습니다.
+
+Unity 공식 참고
+https://docs.unity3d.com/Packages/com.unity.inputsystem@1.4/manual/Migration.html
+https://docs.unity3d.com/kr/560/ScriptReference/UI.Button-onClick.html

@@ -90,7 +90,7 @@ MonoBehaviour:
   bombDamage: 3
   bombStunDuration: 2
   bombRadius: 3
-  bombEffectDisplayDuration: 0.35
+  bombEffectDisplayDuration: 0.45
   bombEffectColor: {r: 1, g: 0, b: 0, a: 0.5}
   debugStartingMineCount: 2
   debugStartingBombCount: 1

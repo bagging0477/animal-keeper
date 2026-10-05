@@ -1433,6 +1433,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerGadgetController
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
   minePrefab: {fileID: 8656619260825683585, guid: e6ed613e650a3e94e9404a1d711b5d2f, type: 3}
+  bombFireSprite: {fileID: 21300000, guid: 66c16519d283430ebbe5057b6d08ba1a, type: 3}
+  bombFireVisibleRatio: 0.8
 --- !u!114 &1011791170
 MonoBehaviour:
   m_ObjectHideFlags: 0

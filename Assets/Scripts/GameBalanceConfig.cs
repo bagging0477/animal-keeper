@@ -347,10 +347,10 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("인벤토리에서 폭탄 슬롯을 선택하고 클릭해 사용했을 때 플레이어 위치를 중심으로 피해를 주는 반경")]
     public float bombRadius = 3f;
 
-    [Tooltip("폭탄 사용 시 피해 범위를 보여주는 빨간 원 연출이 유지되는 시간(초)")]
-    public float bombEffectDisplayDuration = 0.35f;
+    [Tooltip("폭탄 사용 시 피해 범위를 보여주는 화염 연출이 유지되는 시간(초)")]
+    public float bombEffectDisplayDuration = 0.45f;
 
-    [Tooltip("폭탄 범위 연출의 색상(알파값이 투명도)")]
+    [Tooltip("화염 스프라이트가 없을 때 대신 쓰는 빨간 원 범위 연출의 색상(알파값이 투명도)")]
     public Color bombEffectColor = new Color(1f, 0f, 0f, 0.5f);
 
     [Header("소모품 - 디버그 시작 보유량")]

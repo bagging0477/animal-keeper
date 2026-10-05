@@ -11,6 +11,12 @@ public class PlayerGadgetController : MonoBehaviour
     [SerializeField] private GameBalanceConfig config;
     [SerializeField] private MineTrap minePrefab;
 
+    [Tooltip("폭탄 사용 시 띄울 화염 스프라이트. 비워두면 기존 빨간 원 연출을 쓴다.")]
+    [SerializeField] private Sprite bombFireSprite;
+    [Tooltip("화염 스프라이트 캔버스 폭 중 바깥 불티를 뺀 화염 몸통이 차지하는 비율. 이 몸통 폭이 폭탄 피해 지름과 같아지도록 " +
+        "크기를 맞춘다. 화염이 범위보다 커 보이면 올리고, 작아 보이면 내린다. (원형 불꽃 폭발 스프라이트 기준 약 0.8)")]
+    [SerializeField, Range(0.1f, 1f)] private float bombFireVisibleRatio = 0.8f;
+
     private PlayerMovement playerMovement;
 
     private void Awake()
@@ -60,9 +66,16 @@ public class PlayerGadgetController : MonoBehaviour
         float radius = config != null ? config.bombRadius : 3f;
         Vector2 origin = transform.position;
 
-        float effectDuration = config != null ? config.bombEffectDisplayDuration : 0.35f;
-        Color effectColor = config != null ? config.bombEffectColor : new Color(1f, 0f, 0f, 0.5f);
-        BombExplosionEffect.Spawn(transform.position, radius, effectDuration, effectColor);
+        float effectDuration = config != null ? config.bombEffectDisplayDuration : 0.45f;
+        if (bombFireSprite != null)
+        {
+            BombExplosionEffect.SpawnFire(transform.position, radius, effectDuration, bombFireSprite, bombFireVisibleRatio);
+        }
+        else
+        {
+            Color effectColor = config != null ? config.bombEffectColor : new Color(1f, 0f, 0f, 0.5f);
+            BombExplosionEffect.Spawn(transform.position, radius, effectDuration, effectColor);
+        }
 
         for (int i = MonsterHealth.Active.Count - 1; i >= 0; i--)
         {
