@@ -1,0 +1,10 @@
+<!--
+  IL2CPP 코드 스트리핑 예외 목록.
+  VillageMapGenerator.BuildWallShadows가 리플렉션으로 ShadowCaster2D의 m_ShapePath / m_ShapePathHash 필드에
+  벽 외곽선을 넣는다. 지금(Windows, Mono)은 스트리핑이 없지만, IL2CPP로 바꿔도 이 타입이 통째로 보존되게 해둔다.
+-->
+<linker>
+  <assembly fullname="Unity.RenderPipelines.Universal.2D.Runtime">
+    <type fullname="UnityEngine.Rendering.Universal.ShadowCaster2D" preserve="all" />
+  </assembly>
+</linker>
