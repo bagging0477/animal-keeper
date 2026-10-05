@@ -94,9 +94,15 @@ public class VillageMapGenerator : MonoBehaviour
             Random.InitState(GameManager.Instance.GetVillageMapSeedForToday());
         }
 
+        // Inspector에서 비어 있는 칸이나 바닥(Ground)이 없는 방 프리팹이 섞여 있으면 생성 도중 예외로 맵이 반쯤
+        // 만들어진 채 멈춘다 - 쓸 수 없는 항목은 경고만 남기고 이번 생성에서 뺀다(에셋은 건드리지 않는다).
+        roomPrefabs = RemoveUnusablePrefabs(roomPrefabs, nameof(roomPrefabs), prefab => GetFloorCells(prefab).Count > 0, "바닥(Ground) 타일이 없다");
+        animalPrefabs = RemoveUnusablePrefabs(animalPrefabs, nameof(animalPrefabs));
+        monsterPrefabs = RemoveUnusablePrefabs(monsterPrefabs, nameof(monsterPrefabs));
+
         if (roomPrefabs == null || roomPrefabs.Length == 0)
         {
-            Debug.LogError($"{name}: no room prefabs assigned - cannot generate the village map.");
+            Debug.LogError($"{name}: no usable room prefabs assigned - cannot generate the village map.");
             return;
         }
 
@@ -169,6 +175,29 @@ public class VillageMapGenerator : MonoBehaviour
             SpawnAnimal(room, room.Root.transform, usedCells);
             SpawnMonster(room, room.Root.transform, playerSpawnWorldXY, usedCells);
         }
+    }
+
+    private GameObject[] RemoveUnusablePrefabs(GameObject[] prefabs, string fieldName, System.Func<GameObject, bool> isUsable = null, string reason = null)
+    {
+        if (prefabs == null) return new GameObject[0];
+        List<GameObject> usable = new List<GameObject>(prefabs.Length);
+        for (int i = 0; i < prefabs.Length; i++)
+        {
+            GameObject prefab = prefabs[i];
+            if (prefab == null)
+            {
+                Debug.LogWarning($"{name}: {fieldName}[{i}]이 비어 있어 건너뛴다.");
+            }
+            else if (isUsable != null && !isUsable(prefab))
+            {
+                Debug.LogWarning($"{name}: {fieldName}[{i}] '{prefab.name}' - {reason} - 건너뛴다.");
+            }
+            else
+            {
+                usable.Add(prefab);
+            }
+        }
+        return usable.ToArray();
     }
 
     // 각 방 프리팹에 미리 배치해둔 장애물(상자/조각상/항아리/묘비/바위 등)이 차지하는 칸은 코드에 따로 적어두지 않고,
@@ -1348,6 +1377,12 @@ public class VillageMapGenerator : MonoBehaviour
 
         NavMeshBuildSettings settings = NavMesh.GetSettingsByID(0);
         NavMeshData data = NavMeshBuilder.BuildNavMeshData(settings, sources, bounds, Vector3.zero, Quaternion.identity);
+        if (data == null)
+        {
+            // 몬스터는 NavMesh 없이는 움직이지 못하지만, 맵·플레이어·동물은 정상이므로 게임은 계속 진행한다.
+            Debug.LogError("VillageMapGenerator: NavMesh 빌드에 실패했다 - 몬스터가 이동하지 못한다.");
+            return;
+        }
         activeNavMeshDataInstance = NavMesh.AddNavMeshData(data);
     }
 

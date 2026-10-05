@@ -39,7 +39,11 @@ public class PauseMenu : MonoBehaviour
         IsPaused = false;
         if (instance != null) return;
         PauseMenu prefab = Resources.Load<PauseMenu>(ResourcePath);
-        if (prefab == null) return;
+        if (prefab == null)
+        {
+            Debug.LogWarning($"PauseMenu: Resources/{ResourcePath} 프리팹을 찾지 못해 ESC 일시정지 메뉴 없이 진행한다.");
+            return;
+        }
 
         instance = Instantiate(prefab);
         instance.name = prefab.name;

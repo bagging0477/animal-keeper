@@ -165,7 +165,7 @@ public class GameManager : MonoBehaviour
 
     public void TakeDamage(int amount, string monsterTypeName)
     {
-        if (Health <= 0) return;
+        if (Health <= 0 || amount < 0) return; // 음수 데미지가 체력을 회복시키지 않게 한다
 
         AudioManager.Instance?.PlayHit();
         Health = Mathf.Clamp(Health - amount, 0, MaxHealth);
@@ -254,6 +254,12 @@ public class GameManager : MonoBehaviour
     /// 다음 사이클을 시작한다.</summary>
     public CycleOutcome FinishCycle()
     {
+        // 이미 게임 오버/클리어로 끝난 판에서 다시 불리면(중복 입력 등) 보너스 마일리지가 또 지급되지 않게 그대로 돌려준다.
+        if (IsGameOver || IsGameWon)
+        {
+            return new CycleOutcome { TargetMet = IsGameWon, BonusMileage = 0, GameWon = IsGameWon };
+        }
+
         bool targetMet = RescuedCount >= TargetCount;
         int bonus = 0;
         if (targetMet)
@@ -280,6 +286,12 @@ public class GameManager : MonoBehaviour
 
     public bool TrySpendMileage(int amount)
     {
+        // 설정 실수로 가격이 음수가 되면 "지불"이 오히려 마일리지를 늘리게 된다 - 거절한다.
+        if (amount < 0)
+        {
+            Debug.LogWarning($"GameManager.TrySpendMileage: 음수 금액({amount})은 지불할 수 없다.");
+            return false;
+        }
         if (amount > Mileage) return false;
         Mileage = Mathf.Max(0, Mileage - amount);
         return true;

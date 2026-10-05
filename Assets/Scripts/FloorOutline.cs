@@ -71,6 +71,14 @@ public static class FloorOutline
                         break;
                     }
                     int next = TurnLeftFirst(dir, dirs);
+                    if (next < 0 || used > edgeCount)
+                    {
+                        // 바닥 칸 경계에서는 생길 수 없는 경우(되돌아가는 선분만 남음 / 선분 수를 넘어 계속 돎)지만,
+                        // 생기더라도 예외나 무한 루프 대신 이 루프만 버린다.
+                        Debug.LogError($"FloorOutline: {v}에서 외곽선을 이어갈 수 없다 - 이 루프를 버린다.");
+                        corners = null;
+                        break;
+                    }
                     dirs.Remove(next);
                     if (next != dir) corners.Add(v);
                     dir = next;
