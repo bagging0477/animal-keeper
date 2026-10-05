@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 /// <summary>죽은 몬스터의 시체를 AnimalRescue와 동일한 방식(거리 기반 E키 상호작용)으로 인벤토리에
 /// 담을 수 있게 한다. MonsterHealth.Die()가 시체를 씬에 그대로 남겨두는 기존 동작은 건드리지 않고,
@@ -13,7 +12,6 @@ public class MonsterCorpsePickup : MonoBehaviour
 {
     [SerializeField] private float interactionRange = 1.8f;
     [SerializeField] private GameBalanceConfig config;
-    [SerializeField] private Text promptText;
 
     [Tooltip("이 시체를 주울 때 재생할 픽업음. 비워두면 AudioManager의 기본 픽업음을 사용한다.")]
     [SerializeField] private AudioClip pickupSound;
@@ -53,12 +51,6 @@ public class MonsterCorpsePickup : MonoBehaviour
             Debug.LogWarning($"{name}: no GameObject tagged 'Player' found in the scene.");
         }
 
-        if (promptText == null)
-        {
-            GameObject promptObj = GameObject.Find("PromptText");
-            if (promptObj != null) promptText = promptObj.GetComponent<Text>();
-        }
-
         resolvedIcon = inventoryIcon != null ? inventoryIcon : ResolveDefaultIcon();
     }
 
@@ -88,12 +80,10 @@ public class MonsterCorpsePickup : MonoBehaviour
     {
         if (!health.IsDead || player == null || GameManager.Instance == null) return;
 
-        SharedPrompt.BeginFrameIfNeeded(promptText);
-
         float distance = Vector2.Distance(health.GamePosition, new Vector2(player.position.x, player.position.y));
         bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
-        if (inRange && GameManager.Instance.HasInventorySpace) SharedPrompt.Show(promptText, "E를 눌러 사체를 획득하세요");
+        if (inRange && GameManager.Instance.HasInventorySpace) SubtitleManager.Show("E를 눌러 사체를 획득하세요", SubtitleManager.WhileInRange);
 
         if (!inRange) return;
 

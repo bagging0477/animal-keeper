@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 /// <summary>TruckScene(캠핑카)의 문 - 마을 탐색을 시작하는 지점. 메뉴 없이 E 한 번으로 바로 출발한다. 1일 주기(예전 3일 주기의 흔적인 "Day 3에만
 /// 보호소" 게이트는 없다)에서는 항상 VillageScene으로만 보낸다 - 여러 번 자유롭게 왕복 가능하다.
@@ -12,7 +11,6 @@ public class TruckStartPoint : MonoBehaviour
 {
     [SerializeField] private float interactionRange = 1.8f;
     [SerializeField] private string villageSceneName = "VillageScene";
-    [SerializeField] private Text promptText;
 
     private Transform player;
 
@@ -28,7 +26,6 @@ public class TruckStartPoint : MonoBehaviour
             Debug.LogWarning($"{name}: no GameObject tagged 'Player' found in the scene.");
         }
 
-        if (promptText != null) promptText.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -40,15 +37,11 @@ public class TruckStartPoint : MonoBehaviour
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
-        if (promptText != null)
+        if (inRange)
         {
-            promptText.gameObject.SetActive(inRange);
-            if (inRange)
-            {
-                promptText.text = isDown
-                    ? "부상으로 이동할 수 없습니다. 다음 날로 이동해주세요"
-                    : "E를 눌러 구조 시작";
-            }
+            SubtitleManager.Show(isDown
+                ? "부상으로 이동할 수 없습니다. 다음 날로 이동해주세요"
+                : "E를 눌러 구조 시작", SubtitleManager.WhileInRange);
         }
 
         if (!inRange || isDown) return;

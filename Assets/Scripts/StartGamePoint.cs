@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 /// <summary>ClassSelectScene이 "시작 시 무료 선택" 모드(GameManager.NeedsStartingClassSelection)일 때만
 /// 나타나는 진행 지점. E로 상호작용하면 그 플래그를 끄고 TruckScene(Day 1)으로 이동한다 - 이 시점까지
@@ -13,7 +12,6 @@ public class StartGamePoint : MonoBehaviour
 {
     [SerializeField] private float interactionRange = 2.1f;
     [SerializeField] private string truckSceneName = "TruckScene";
-    [SerializeField] private Text promptText;
     [SerializeField] private GameObject shelterReturnDoor;
 
     private Transform player;
@@ -36,19 +34,16 @@ public class StartGamePoint : MonoBehaviour
             Debug.LogWarning($"{name}: no GameObject tagged 'Player' found in the scene.");
         }
 
-        if (promptText != null) promptText.gameObject.SetActive(false);
     }
 
     private void Update()
     {
         if (player == null) return;
 
-        SharedPrompt.BeginFrameIfNeeded(promptText);
-
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
-        if (inRange) SharedPrompt.Show(promptText, "E를 눌러 시작하기");
+        if (inRange) SubtitleManager.Show("E를 눌러 시작하기", SubtitleManager.WhileInRange);
 
         if (!inRange) return;
 

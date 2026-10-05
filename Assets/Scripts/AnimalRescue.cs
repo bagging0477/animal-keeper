@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 [RequireComponent(typeof(AnimalSleep))]
 public class AnimalRescue : MonoBehaviour
@@ -8,7 +7,6 @@ public class AnimalRescue : MonoBehaviour
     [SerializeField] private float interactionRange = 1.8f;
     [SerializeField] private int minWeight = 1;
     [SerializeField] private int maxWeight = 10;
-    [SerializeField] private Text promptText;
 
     [Tooltip("이 동물을 구조할 때 재생할 픽업음. 비워두면 AudioManager의 기본 픽업음을 사용한다.")]
     [SerializeField] private AudioClip pickupSound;
@@ -114,14 +112,6 @@ public class AnimalRescue : MonoBehaviour
             Debug.LogWarning($"{name}: no GameObject tagged 'Player' found in the scene.");
         }
 
-        // Procedurally spawned animals aren't wired to the scene's shared prompt Text in the
-        // Inspector, so fall back to finding it by name.
-        if (promptText == null)
-        {
-            GameObject promptObj = GameObject.Find("PromptText");
-            if (promptObj != null) promptText = promptObj.GetComponent<Text>();
-        }
-
         // 다른 컴포넌트의 Awake(예: SpriteSheetAnimator의 프레임 슬라이싱)가 모두 끝난 뒤인 Start
         // 시점에 골라야 idleFrames가 비어있지 않다.
         InventoryIcon = inventoryIcon != null ? inventoryIcon : ResolveDefaultIcon();
@@ -143,12 +133,10 @@ public class AnimalRescue : MonoBehaviour
     {
         if (player == null || GameManager.Instance == null) return;
 
-        SharedPrompt.BeginFrameIfNeeded(promptText);
-
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
-        if (inRange && GameManager.Instance.HasInventorySpace) SharedPrompt.Show(promptText, "E를 눌러 구조하세요");
+        if (inRange && GameManager.Instance.HasInventorySpace) SubtitleManager.Show("E를 눌러 구조하세요", SubtitleManager.WhileInRange);
 
         if (!inRange) return;
 

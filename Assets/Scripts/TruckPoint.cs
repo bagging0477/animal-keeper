@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 /// <summary>VillageScene 안에서 트럭으로 돌아가는 지점. 인벤토리 내용과 무관하게 E 한 번으로
 /// 바로 TruckScene으로 넘어간다 - 구조한 동물의 실제 납품은 TruckScene 안의 케이지
@@ -10,7 +9,6 @@ public class TruckPoint : MonoBehaviour
 {
     [SerializeField] private float interactionRange = 2.7f;
     [SerializeField] private string truckSceneName = "TruckScene";
-    [SerializeField] private Text promptText;
 
     private Transform player;
 
@@ -26,19 +24,16 @@ public class TruckPoint : MonoBehaviour
             Debug.LogWarning($"{name}: no GameObject tagged 'Player' found in the scene.");
         }
 
-        if (promptText != null) promptText.gameObject.SetActive(false);
     }
 
     private void Update()
     {
         if (player == null) return;
 
-        SharedPrompt.BeginFrameIfNeeded(promptText);
-
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
-        if (inRange) SharedPrompt.Show(promptText, "E를 눌러 트럭에 타기");
+        if (inRange) SubtitleManager.Show("E를 눌러 트럭에 타기", SubtitleManager.WhileInRange);
 
         if (!inRange) return;
 

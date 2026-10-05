@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 /// <summary>G키로 인벤토리에서 꺼내 바닥에 내려놓은 지뢰/폭탄 하나. 몬스터를 노리고 설치하는
 /// MineTrap(작동 중인 지뢰)과는 다른, 아직 인벤토리에 들어가지 않은 "줍는 물건" 상태를 나타낸다.
@@ -9,7 +8,6 @@ public class GadgetPickup : MonoBehaviour
 {
     [SerializeField] private InventoryItemType itemType = InventoryItemType.Mine;
     [SerializeField] private float interactionRange = 1.8f;
-    [SerializeField] private Text promptText;
 
     [Tooltip("인벤토리 슬롯에 표시할 아이콘. 비워두면 이 오브젝트의 SpriteRenderer 스프라이트를 자동으로 사용한다. 아직 아이콘이 없다면 비워두면 되고, 그 경우 슬롯은 기존처럼 색상 채움만으로 표시된다.")]
     [SerializeField] private Sprite icon;
@@ -29,12 +27,6 @@ public class GadgetPickup : MonoBehaviour
             Debug.LogWarning($"{name}: no GameObject tagged 'Player' found in the scene.");
         }
 
-        if (promptText == null)
-        {
-            GameObject promptObj = GameObject.Find("PromptText");
-            if (promptObj != null) promptText = promptObj.GetComponent<Text>();
-        }
-
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         resolvedIcon = icon != null ? icon : (spriteRenderer != null ? spriteRenderer.sprite : null);
     }
@@ -43,12 +35,10 @@ public class GadgetPickup : MonoBehaviour
     {
         if (player == null || GameManager.Instance == null) return;
 
-        SharedPrompt.BeginFrameIfNeeded(promptText);
-
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
-        if (inRange && GameManager.Instance.HasInventorySpace) SharedPrompt.Show(promptText, "E를 눌러 줍기");
+        if (inRange && GameManager.Instance.HasInventorySpace) SubtitleManager.Show("E를 눌러 줍기", SubtitleManager.WhileInRange);
 
         if (!inRange) return;
 

@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 /// <summary>ShelterScene의 유일한 출구 - 여기서 상호작용하는 것 자체가 "오늘"을 마감하는 행동이다
 /// (예전에는 별도의 NextDayButton UI가 이 역할을 맡았는데, 출구를 하나로 합치면서 여기로 옮겼다).
@@ -17,7 +16,6 @@ public class ShelterExitPoint : MonoBehaviour
     [SerializeField] private float interactionRange = 2.1f;
     [SerializeField] private string truckSceneName = "TruckScene";
     [SerializeField] private ShelterSettlement shelterSettlement;
-    [SerializeField] private Text promptText;
 
     private Transform player;
 
@@ -37,7 +35,6 @@ public class ShelterExitPoint : MonoBehaviour
             Debug.LogWarning($"{name}: no GameObject tagged 'Player' found in the scene.");
         }
 
-        if (promptText != null) promptText.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -49,15 +46,9 @@ public class ShelterExitPoint : MonoBehaviour
         bool gameEnded = GameManager.Instance != null && (GameManager.Instance.IsGameOver || GameManager.Instance.IsGameWon);
         if (awaitingDayClearConfirm) inRange = false;
 
-        // 이 프롬프트는 이 지점 전용 Text라 SharedPrompt(여러 지점이 화면에 하나뿐인 공용 문구 UI를
-        // 나눠 쓸 때 쓰는 유틸)를 쓰면 안 된다 - 같은 프레임에 다른 지점이 먼저 그 공용 게이트를
-        // 건드리면 이 프롬프트의 숨김 호출이 밀려서, 한 번 뜬 뒤로 범위를 벗어나도 계속 화면에
-        // 남아있는 버그가 있었다. 대신 매 프레임 자기 범위만 보고 직접 켜고 끈다.
-        if (promptText != null)
-        {
-            promptText.gameObject.SetActive(inRange);
-            if (inRange) promptText.text = gameEnded ? "E를 눌러 재시작" : "E를 눌러 다음날로";
-        }
+        // 범위 안에 있는 동안만 매 프레임 갱신한다 - 범위를 벗어나거나 Day 클리어 확인을 기다리는 동안에는
+        // 호출이 끊겨서 자막이 저절로 사라진다.
+        if (inRange) SubtitleManager.Show(gameEnded ? "E를 눌러 재시작" : "E를 눌러 다음날로", SubtitleManager.WhileInRange);
 
         if (!inRange) return;
 
@@ -82,7 +73,7 @@ public class ShelterExitPoint : MonoBehaviour
         {
             bool endedNow = GameManager.Instance != null && (GameManager.Instance.IsGameOver || GameManager.Instance.IsGameWon);
             awaitingDayClearConfirm = !endedNow;
-            if (awaitingDayClearConfirm && promptText != null) promptText.gameObject.SetActive(false);
+            if (awaitingDayClearConfirm) SubtitleManager.Hide();
             return;
         }
 

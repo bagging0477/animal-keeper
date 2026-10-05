@@ -12,7 +12,6 @@ public class TruckHubPoint : MonoBehaviour
     [SerializeField] private float interactionRange = 2.1f;
     [SerializeField] private string shelterSceneName = "ShelterScene";
     [SerializeField] private string promptMessage = "E를 눌러 소파에서 쉬기";
-    [SerializeField] private Text promptText;
     [SerializeField] private GameObject menuPanel;
     [SerializeField] private Button nextDayButton;
     [SerializeField] private GameOverPanel gameOverPanel;
@@ -38,7 +37,6 @@ public class TruckHubPoint : MonoBehaviour
             Debug.LogWarning($"{name}: no GameObject tagged 'Player' found in the scene.");
         }
 
-        if (promptText != null) promptText.gameObject.SetActive(false);
     }
 
     private void OnDisable()
@@ -69,11 +67,7 @@ public class TruckHubPoint : MonoBehaviour
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactionRange && !isGameOver && InteractionFocus.TryFocus(this, distance);
 
-        if (promptText != null)
-        {
-            promptText.gameObject.SetActive(inRange);
-            if (inRange) promptText.text = promptMessage;
-        }
+        if (inRange) SubtitleManager.Show(promptMessage, SubtitleManager.WhileInRange);
 
         if (!inRange) return;
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;
@@ -88,7 +82,7 @@ public class TruckHubPoint : MonoBehaviour
         menuOpen = true;
         menuPanel.transform.SetAsLastSibling();
         menuPanel.SetActive(true);
-        if (promptText != null) promptText.gameObject.SetActive(false);
+        SubtitleManager.Hide();
         Time.timeScale = 0f;
     }
 
