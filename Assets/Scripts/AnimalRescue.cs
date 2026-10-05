@@ -41,6 +41,11 @@ public class AnimalRescue : MonoBehaviour
     /// AnimalFlee를 상속하므로 더 구체적인 타입부터 확인한다.</summary>
     public AnimalBehaviorKind BehaviorKind { get; private set; }
 
+    /// <summary>이 동물을 만든 원본 프리팹. 내려놓을 때(PlayerItemDropper) 같은 종으로 되살리는 데 쓴다 - 실행 중에는
+    /// 인스턴스가 자기 프리팹을 알 수 없으므로, 동물을 Instantiate하는 쪽(VillageMapGenerator, PlayerItemDropper)이
+    /// 채워 넣는다. 씬에 직접 배치한 동물처럼 비어 있으면 행동 종류(BehaviorKind)로 대체 프리팹을 고른다.</summary>
+    public AnimalRescue SourcePrefab { get; set; }
+
     private Transform player;
 
     // OnDestroy에서 "세계에 남아있던(주운 적 없는) 동물인지"를 gameObject.activeInHierarchy로 판단하지
@@ -149,7 +154,7 @@ public class AnimalRescue : MonoBehaviour
 
     private void PickUp()
     {
-        if (!GameManager.Instance.TryAddAnimal(Id, Weight, BehaviorKind, InventoryIcon)) return; // 인벤토리가 가득 찼을 때의 로그는 GameManager가 찍는다.
+        if (!GameManager.Instance.TryAddAnimal(Id, Weight, BehaviorKind, InventoryIcon, SourcePrefab)) return; // 인벤토리가 가득 찼을 때의 로그는 GameManager가 찍는다.
 
         if (pickupSound == null)
         {

@@ -361,30 +361,31 @@ public class GameBalanceConfig : ScriptableObject
     public int debugStartingBombCount = 1;
 
     [Header("상점 아이템 가격")]
-    [Tooltip("ShelterScene의 각 상점 아이템(ShopItemInteractPoint) 이름과 가격. itemName은 ShopItemInteractPoint.GetPrice()가 " +
-        "찾는 이름과 정확히 일치해야 한다. 클래스 해금 가격은 여기가 아니라 위의 scoutUnlockPrice/trapperUnlockPrice/gunnerUnlockPrice로 조정한다.")]
+    [Tooltip("ShelterScene의 각 상점 아이템(ShopItemInteractPoint) 종류별 가격. 새 아이템 종류(ShopItemKind)를 추가하면 여기에 " +
+        "한 줄을 더한다. 클래스 해금 가격은 여기가 아니라 위의 scoutUnlockPrice/trapperUnlockPrice/gunnerUnlockPrice로 조정한다.")]
     public List<ShopItemPrice> shopItemPrices = new List<ShopItemPrice>
     {
-        new ShopItemPrice { itemName = "마취총 탄약", price = 30 },
-        new ShopItemPrice { itemName = "지뢰", price = 40 },
-        new ShopItemPrice { itemName = "폭탄", price = 70 },
+        new ShopItemPrice { item = ShopItemKind.TranquilizerAmmo, price = 30 },
+        new ShopItemPrice { item = ShopItemKind.Mine, price = 40 },
+        new ShopItemPrice { item = ShopItemKind.Bomb, price = 70 },
     };
 
+    // 예전에는 한글 이름 문자열로 찾아서, Inspector에서 이름이 조금만 달라져도 가격이 0(공짜)이 됐다 - 종류(enum)로 찾는다.
     [Serializable]
     public class ShopItemPrice
     {
-        public string itemName;
+        public ShopItemKind item;
         public int price;
     }
 
-    public int GetShopItemPrice(string itemName)
+    public int GetShopItemPrice(ShopItemKind item)
     {
         foreach (ShopItemPrice entry in shopItemPrices)
         {
-            if (entry.itemName == itemName) return entry.price;
+            if (entry.item == item) return entry.price;
         }
 
-        Debug.LogWarning($"{name}: no shop price configured for '{itemName}'.");
+        Debug.LogError($"{name}: 상점 아이템 '{item}'의 가격이 shopItemPrices에 없다 - 0으로 팔린다.");
         return 0;
     }
 

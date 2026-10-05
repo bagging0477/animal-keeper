@@ -88,9 +88,9 @@ public class ShopItemInteractPoint : MonoBehaviour
 
     private int GetPrice() => itemKind switch
     {
-        ShopItemKind.TranquilizerAmmo => config != null ? config.GetShopItemPrice("마취총 탄약") : 0,
-        ShopItemKind.Mine => config != null ? config.GetShopItemPrice("지뢰") : 0,
-        ShopItemKind.Bomb => config != null ? config.GetShopItemPrice("폭탄") : 0,
+        ShopItemKind.TranquilizerAmmo => config != null ? config.GetShopItemPrice(ShopItemKind.TranquilizerAmmo) : 0,
+        ShopItemKind.Mine => config != null ? config.GetShopItemPrice(ShopItemKind.Mine) : 0,
+        ShopItemKind.Bomb => config != null ? config.GetShopItemPrice(ShopItemKind.Bomb) : 0,
         _ => 0
     };
 

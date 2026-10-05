@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering.Universal;
@@ -29,6 +30,8 @@ public class VillageMapGenerator : MonoBehaviour
     [SerializeField] private GameObject[] animalPrefabs;
     [SerializeField] private int animalsPerRoom = 2;
     [SerializeField] private GameObject[] monsterPrefabs;
+    [Tooltip("방 하나에 스폰할 몬스터 수. 방마다 이 수만큼 monsterPrefabs에서 무작위로 뽑는다.")]
+    [SerializeField, Min(0)] private int monstersPerRoom = 1;
 
     [Header("기존 씬 오브젝트 (재배치할 대상)")]
     [SerializeField] private string playerObjectName = "Player";
@@ -70,6 +73,16 @@ public class VillageMapGenerator : MonoBehaviour
         public GameObject Root;
         public string PrefabName;
         public List<Vector2Int> FloorCells;
+        // 방 프리팹에 배치된 장애물(트리거가 아닌 2D 충돌체)과 그것들이 차지하는 로컬 칸. GetRoomObstacles 참고.
+        public List<RoomObstacle> Obstacles;
+        public HashSet<Vector2Int> ObstacleCells;
+    }
+
+    private class RoomObstacle
+    {
+        public Collider2D Collider;
+        public List<Vector2Int> Cells;
+        public readonly List<GameObject> NavCarvers = new List<GameObject>();
     }
 
     private void Awake()
@@ -137,7 +150,7 @@ public class VillageMapGenerator : MonoBehaviour
 
         // 트럭 바로 옆에 장애물이 붙어있으면 플레이어가 트럭을 사이에 두고 지나다닐 틈이 없다 - 이 맵
         // 인스턴스에 한해서 주변 장애물은 치운다(원본 방 프리팹은 그대로 둔다).
-        EnsureTruckClearance(truckXY, truckClearance);
+        EnsureTruckClearance(placedRooms, truckXY, truckClearance);
 
         // 플레이어/트럭 지점이 이미 차지한 칸에는 몬스터나 동물이 겹쳐서 스폰되지 않도록 제외한다.
         // (센터룸에서만 의미가 있다 - 다른 방에는 플레이어/트럭이 놓이지 않는다.)
@@ -146,45 +159,23 @@ public class VillageMapGenerator : MonoBehaviour
 
         foreach (RoomInstance room in placedRooms)
         {
-            HashSet<Vector2Int> exclusions = room == centerRoom ? centerRoomExclusions : null;
+            // 이 방에서 이미 차지된 칸(플레이어/트럭 + 먼저 스폰한 동물/몬스터). 동물과 몬스터가 같은 칸에 겹쳐
+            // 스폰되지 않도록 둘이 함께 쓴다.
+            HashSet<Vector2Int> usedCells = room == centerRoom ? new HashSet<Vector2Int>(centerRoomExclusions) : new HashSet<Vector2Int>();
 
             // Parented under each room (not the shared mapRoot) so AnimalRescue's hierarchy-path Id
             // stays unique per room - rooms never repeat a prefab, but animalPrefabs can be picked
             // for more than one room, and a shared parent would give those clones identical Ids.
-            SpawnAnimal(room, room.Root.transform, exclusions);
-            SpawnMonster(room, room.Root.transform, playerSpawnWorldXY, exclusions);
+            SpawnAnimal(room, room.Root.transform, usedCells);
+            SpawnMonster(room, room.Root.transform, playerSpawnWorldXY, usedCells);
         }
     }
 
-    // 각 방 프리팹에 미리 배치해둔 장애물(상자/조각상/항아리/묘비/바위 등)의 로컬 셀 좌표. NavMesh를
-    // 구울 때 이 칸들은 바닥에서 빼서 구멍으로 남겨두기 때문에, 장애물은 2D 충돌체뿐 아니라
-    // NavMeshAgent(몬스터) 경로에서도 실제로 피해 다녀야 할 장애물이 된다. 나무/덤불이 놓인 칸은
-    // 일부러 여기서 뺐다 - 그 자리는 Obstacle 프리팹의 BoxCollider2D/ShadowCaster2D도 제거해
-    // 순수 장식(플레이어도 몬스터도 그냥 지나다님)으로 만들었으므로, NavMesh에서도 막힌 칸이
-    // 아니라 평범한 바닥이어야 한다.
-    private static readonly Dictionary<string, Vector2Int[]> ObstacleCellsByRoom = new Dictionary<string, Vector2Int[]>
-    {
-        ["RoomA_Corridor"] = new[]
-        {
-            new Vector2Int(5, 0), new Vector2Int(14, 0),
-            new Vector2Int(18, 4), new Vector2Int(22, 0), new Vector2Int(25, 4),
-        },
-        ["RoomB_Square"] = new[]
-        {
-            new Vector2Int(9, 7), new Vector2Int(7, 9),
-            new Vector2Int(14, 5), new Vector2Int(14, 11), new Vector2Int(4, 14),
-            new Vector2Int(12, 15), new Vector2Int(18, 8),
-        },
-        ["RoomC_LShape"] = new[]
-        {
-            new Vector2Int(3, 12),
-            new Vector2Int(15, 7), new Vector2Int(6, 15),
-        },
-        ["RoomD_Connected"] = new[]
-        {
-            new Vector2Int(16, 2), new Vector2Int(15, 15), new Vector2Int(10, 4),
-        },
-    };
+    // 각 방 프리팹에 미리 배치해둔 장애물(상자/조각상/항아리/묘비/바위 등)이 차지하는 칸은 코드에 따로 적어두지 않고,
+    // 방을 맵에 배치할 때 프리팹 안의 2D 충돌체에서 직접 읽는다(GetRoomObstacles). NavMesh를 구울 때 이 칸들은 바닥에서
+    // 빼서 구멍으로 남겨두기 때문에, 장애물은 2D 충돌체뿐 아니라 NavMeshAgent(몬스터) 경로에서도 실제로 피해 다녀야 할
+    // 장애물이 된다. 나무/덤불처럼 충돌체가 없는 장식은 자연히 빠지므로 NavMesh에서도 평범한 바닥으로 남는다.
+    // 새 방 프리팹은 장애물에 BoxCollider2D(트리거 아님)만 붙여두면 되고 이 스크립트를 고칠 필요가 없다.
 
     private struct IntRect
     {
@@ -210,11 +201,14 @@ public class VillageMapGenerator : MonoBehaviour
             string prefabName = prefab.name;
 
             GameObject instance = Instantiate(prefab, Vector3.zero, Quaternion.identity, mapRoot);
+            List<RoomObstacle> obstacles = GetRoomObstacles(instance);
             RoomInstance room = new RoomInstance
             {
                 Root = instance,
                 PrefabName = prefabName,
-                FloorCells = GetFloorCells(instance)
+                FloorCells = GetFloorCells(instance),
+                Obstacles = obstacles,
+                ObstacleCells = new HashSet<Vector2Int>(obstacles.SelectMany(o => o.Cells))
             };
 
             if (placed.Count > 0)
@@ -547,6 +541,33 @@ public class VillageMapGenerator : MonoBehaviour
         return cells;
     }
 
+    // 방 프리팹 안의 장애물 = 트리거가 아닌 2D 충돌체(바닥 Tilemap의 충돌체는 제외). 방을 원점에 막 Instantiate한
+    // 직후(PlaceAdjacent로 옮기기 전)에 불러야 충돌체 범위가 곧 방 로컬 좌표가 된다. 충돌체 범위가 걸치는 칸을 모두
+    // 장애물 칸으로 보므로 1칸보다 큰 장애물도 그대로 처리된다(경계에 딱 닿기만 한 칸은 넣지 않는다).
+    private static List<RoomObstacle> GetRoomObstacles(GameObject roomInstance)
+    {
+        Physics2D.SyncTransforms();
+        Vector3 origin = roomInstance.transform.position;
+        const float edgeEpsilon = 0.01f;
+
+        List<RoomObstacle> obstacles = new List<RoomObstacle>();
+        foreach (Collider2D col in roomInstance.GetComponentsInChildren<Collider2D>())
+        {
+            if (!col.enabled || col.isTrigger || col is TilemapCollider2D || col is CompositeCollider2D) continue;
+
+            Bounds b = col.bounds;
+            int minX = Mathf.FloorToInt(b.min.x - origin.x + edgeEpsilon), maxX = Mathf.FloorToInt(b.max.x - origin.x - edgeEpsilon);
+            int minY = Mathf.FloorToInt(b.min.y - origin.y + edgeEpsilon), maxY = Mathf.FloorToInt(b.max.y - origin.y - edgeEpsilon);
+            List<Vector2Int> cells = new List<Vector2Int>();
+            for (int y = minY; y <= maxY; y++)
+            {
+                for (int x = minX; x <= maxX; x++) cells.Add(new Vector2Int(x, y));
+            }
+            obstacles.Add(new RoomObstacle { Collider = col, Cells = cells });
+        }
+        return obstacles;
+    }
+
     private static Vector2Int PickCentralCell(RoomInstance room)
     {
         Vector2 centroid = Vector2.zero;
@@ -681,30 +702,29 @@ public class VillageMapGenerator : MonoBehaviour
     private const float TruckClearanceMarginPerSide = 1.1f;
 
     // 트럭 주변 여유 폭 안에 있는 장애물은 이 맵 인스턴스에서만 치운다(원본 방 프리팹은 그대로 유지).
-    // 몬스터가 그 자리를 피해 다니도록 심어둔 ObstacleNavCarver도 짝을 맞춰 같이 지운다(안 지워도 안전에는
+    // 몬스터가 그 자리를 피해 다니도록 심어둔 NavMesh 카버도 짝을 맞춰 같이 지운다(안 지워도 안전에는
     // 문제없지만, 이미 치운 장애물 자리를 몬스터가 계속 없는 장애물처럼 피해 다니는 건 어색하다).
-    private static void EnsureTruckClearance(Vector2 truckWorldCenter, Vector2 clearance)
+    // 방 장애물 목록(GetRoomObstacles)에 있는 충돌체만 치우므로 맵 경계·트럭·캐릭터 같은 다른 충돌체는 건드리지 않는다.
+    private static void EnsureTruckClearance(List<RoomInstance> rooms, Vector2 truckWorldCenter, Vector2 clearance)
     {
-        GameObject mapRoot = GameObject.Find(MapRootName);
+        Dictionary<Collider2D, RoomObstacle> obstacleByCollider = new Dictionary<Collider2D, RoomObstacle>();
+        foreach (RoomInstance room in rooms)
+        {
+            foreach (RoomObstacle obstacle in room.Obstacles) obstacleByCollider[obstacle.Collider] = obstacle;
+        }
+
         Collider2D[] hits = Physics2D.OverlapBoxAll(truckWorldCenter, clearance, 0f);
         foreach (Collider2D hit in hits)
         {
-            if (hit == null || hit.gameObject.name != "Obstacle") continue;
+            if (hit == null || !obstacleByCollider.TryGetValue(hit, out RoomObstacle obstacle)) continue;
 
-            Vector3 obstaclePos = hit.transform.position;
             Debug.Log($"VillageMapGenerator: 트럭 주변 통행 확보를 위해 장애물 '{hit.gameObject.name}'을(를) 이번 맵에서만 제거했습니다.");
             Destroy(hit.gameObject);
-
-            if (mapRoot == null) continue;
-            foreach (Transform carverCandidate in mapRoot.GetComponentsInChildren<Transform>(true))
+            foreach (GameObject carver in obstacle.NavCarvers)
             {
-                if (!carverCandidate.name.StartsWith("ObstacleNavCarver")) continue;
-                Vector3 carverPos = carverCandidate.position;
-                if (Mathf.Abs(carverPos.x - obstaclePos.x) < 0.1f && Mathf.Abs(carverPos.z - obstaclePos.y) < 0.1f)
-                {
-                    Destroy(carverCandidate.gameObject);
-                }
+                if (carver != null) Destroy(carver);
             }
+            obstacle.NavCarvers.Clear();
         }
     }
 
@@ -1073,14 +1093,11 @@ public class VillageMapGenerator : MonoBehaviour
         go.transform.position = worldPosition;
     }
 
-    private void SpawnAnimal(RoomInstance room, Transform parent, HashSet<Vector2Int> excludedCells = null)
+    // usedCells: 이 방에서 이미 차지된 칸. 뽑은 칸을 여기에 더해서 같은 자리에 여러 마리가 겹쳐 스폰되지 않게 하고,
+    // 뒤이어 스폰하는 몬스터(SpawnMonster)도 같은 집합으로 동물이 있는 칸을 피한다.
+    private void SpawnAnimal(RoomInstance room, Transform parent, HashSet<Vector2Int> usedCells)
     {
         if (animalPrefabs == null || animalPrefabs.Length == 0 || room.FloorCells.Count == 0) return;
-
-        // 방 하나에 animalsPerRoom마리를 뽑는 동안, 이미 뽑은 칸은 다음 마리를 위해 제외 목록에
-        // 더해서 같은 자리에 여러 마리가 겹쳐 스폰되지 않게 한다. excludedCells(플레이어/트럭 위치)는
-        // 호출자가 다른 곳(SpawnMonster)에서도 재사용하므로 원본을 건드리지 않고 복사해서 쓴다.
-        HashSet<Vector2Int> usedCells = excludedCells != null ? new HashSet<Vector2Int>(excludedCells) : new HashSet<Vector2Int>();
 
         for (int i = 0; i < animalsPerRoom; i++)
         {
@@ -1107,6 +1124,8 @@ public class VillageMapGenerator : MonoBehaviour
 
             Vector3 spawnPosition = hasFieldState ? savedPosition : ToSpritePosition(room, cell);
             GameObject instance = Instantiate(prefab, spawnPosition, Quaternion.identity, parent);
+            AnimalRescue rescue = instance.GetComponent<AnimalRescue>();
+            if (rescue != null) rescue.SourcePrefab = prefab.GetComponent<AnimalRescue>();
             instance.name = animalName;
             Debug.Log($"[FieldState] 조회: {predictedId}, found={hasFieldState}" + (hasFieldState ? $", pos={savedPosition}" : ""));
 
@@ -1143,12 +1162,23 @@ public class VillageMapGenerator : MonoBehaviour
         return bestCell;
     }
 
-    private void SpawnMonster(RoomInstance room, Transform parent, Vector2 playerSpawnWorldXY, HashSet<Vector2Int> excludedCells = null)
+    private void SpawnMonster(RoomInstance room, Transform parent, Vector2 playerSpawnWorldXY, HashSet<Vector2Int> usedCells)
     {
         if (monsterPrefabs == null || monsterPrefabs.Length == 0 || room.FloorCells.Count == 0) return;
 
-        GameObject prefab = monsterPrefabs[Random.Range(0, monsterPrefabs.Length)];
-        Vector2Int cell = PickMonsterSpawnCell(room, excludedCells, playerSpawnWorldXY, MonsterMinSpawnDistanceFromPlayer);
+        for (int i = 0; i < monstersPerRoom; i++)
+        {
+            GameObject prefab = monsterPrefabs[Random.Range(0, monsterPrefabs.Length)];
+            Vector2Int cell = PickMonsterSpawnCell(room, usedCells, playerSpawnWorldXY, MonsterMinSpawnDistanceFromPlayer);
+            usedCells.Add(cell);
+            // 같은 방에 같은 몬스터 프리팹이 둘 이상 뽑혀도 MonsterCorpsePickup의 계층 경로 Id가 겹치지 않게 번호를 붙인다
+            // (동물의 이름 규칙과 같다).
+            SpawnMonsterAt(room, parent, prefab, cell, $"{prefab.name}_{i}");
+        }
+    }
+
+    private void SpawnMonsterAt(RoomInstance room, Transform parent, GameObject prefab, Vector2Int cell, string instanceName)
+    {
         Vector3 desired = ToNavPosition(room, cell);
 
         // NavMesh baking erodes walkable area inward from walls by the agent radius, so even an
@@ -1158,7 +1188,7 @@ public class VillageMapGenerator : MonoBehaviour
         // doorway into a different room, which read as monsters spawning "outside" the map.
         if (NavMesh.SamplePosition(desired, out NavMeshHit hit, 1.5f, NavMesh.AllAreas) && IsWithinRoom(room, hit.position))
         {
-            Instantiate(prefab, hit.position, Quaternion.identity, parent);
+            Instantiate(prefab, hit.position, Quaternion.identity, parent).name = instanceName;
         }
         else
         {
@@ -1178,9 +1208,7 @@ public class VillageMapGenerator : MonoBehaviour
     private static Vector2Int PickInteriorCell(RoomInstance room, HashSet<Vector2Int> excludedCells = null)
     {
         HashSet<Vector2Int> floorSet = new HashSet<Vector2Int>(room.FloorCells);
-        HashSet<Vector2Int> obstacleCells = ObstacleCellsByRoom.TryGetValue(room.PrefabName, out Vector2Int[] obs)
-            ? new HashSet<Vector2Int>(obs)
-            : new HashSet<Vector2Int>();
+        HashSet<Vector2Int> obstacleCells = room.ObstacleCells;
 
         List<Vector2Int> interior = new List<Vector2Int>();
         foreach (Vector2Int c in room.FloorCells)
@@ -1214,13 +1242,13 @@ public class VillageMapGenerator : MonoBehaviour
     // Unity의 표준 카빙 파이프라인을 타므로 벽 근처에서도 훨씬 안정적으로 뚫린다.
     private static void AddObstacleCarvers(RoomInstance room, Transform parent)
     {
-        if (!ObstacleCellsByRoom.TryGetValue(room.PrefabName, out Vector2Int[] cells)) return;
-
-        foreach (Vector2Int c in cells)
+        foreach (RoomObstacle roomObstacle in room.Obstacles)
+        foreach (Vector2Int c in roomObstacle.Cells)
         {
             GameObject carver = new GameObject("ObstacleNavCarver");
             carver.transform.SetParent(parent, false);
             carver.transform.position = ToNavPosition(room, c);
+            roomObstacle.NavCarvers.Add(carver);
 
             NavMeshObstacle obstacle = carver.AddComponent<NavMeshObstacle>();
             obstacle.shape = NavMeshObstacleShape.Box;
@@ -1241,9 +1269,7 @@ public class VillageMapGenerator : MonoBehaviour
     // 한 번 더 보강한다 - 둘 중 하나만으로는 벽 근처에서 완전히 안 뚫리는 경우가 있었다.
     private static MeshFilter BuildNavGround(RoomInstance room)
     {
-        HashSet<Vector2Int> obstacleCells = ObstacleCellsByRoom.TryGetValue(room.PrefabName, out Vector2Int[] obs)
-            ? new HashSet<Vector2Int>(obs)
-            : new HashSet<Vector2Int>();
+        HashSet<Vector2Int> obstacleCells = room.ObstacleCells;
 
         List<Vector3> vertices = new List<Vector3>(room.FloorCells.Count * 4);
         List<int> triangles = new List<int>(room.FloorCells.Count * 6);

@@ -95,9 +95,9 @@ MonoBehaviour:
   debugStartingMineCount: 2
   debugStartingBombCount: 1
   shopItemPrices:
-  - itemName: "\uB9C8\uCDE8\uCD1D \uD0C4\uC57D"
+  - item: 0
     price: 30
-  - itemName: "\uC9C0\uB8B0"
+  - item: 1
     price: 40
-  - itemName: "\uD3ED\uD0C4"
+  - item: 2
     price: 70

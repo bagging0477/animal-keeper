@@ -29,8 +29,9 @@ public class MineTrap : MonoBehaviour
         float triggerRadius = config != null ? config.mineTriggerRadius : 0.4f;
         Vector2 position = transform.position;
 
-        foreach (MonsterHealth monster in FindObjectsByType<MonsterHealth>(FindObjectsInactive.Exclude))
+        for (int i = MonsterHealth.Active.Count - 1; i >= 0; i--)
         {
+            MonsterHealth monster = MonsterHealth.Active[i];
             if (monster.IsDead) continue;
             if (Vector2.Distance(position, monster.GamePosition) > triggerRadius) continue;
 

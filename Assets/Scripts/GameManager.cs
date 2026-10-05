@@ -423,8 +423,8 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    public bool TryAddAnimal(string animalId, int weight, AnimalBehaviorKind kind, Sprite icon) =>
-        TryAddItem(new InventorySlotData { Type = InventoryItemType.Animal, AnimalId = animalId, AnimalWeight = weight, AnimalKind = kind, Icon = icon });
+    public bool TryAddAnimal(string animalId, int weight, AnimalBehaviorKind kind, Sprite icon, AnimalRescue sourcePrefab = null) =>
+        TryAddItem(new InventorySlotData { Type = InventoryItemType.Animal, AnimalId = animalId, AnimalWeight = weight, AnimalKind = kind, Icon = icon, AnimalPrefab = sourcePrefab });
 
     public bool TryAddMine(Sprite icon = null) => TryAddItem(new InventorySlotData { Type = InventoryItemType.Mine, Icon = icon });
 

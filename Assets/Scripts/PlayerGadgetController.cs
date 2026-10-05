@@ -64,8 +64,9 @@ public class PlayerGadgetController : MonoBehaviour
         Color effectColor = config != null ? config.bombEffectColor : new Color(1f, 0f, 0f, 0.5f);
         BombExplosionEffect.Spawn(transform.position, radius, effectDuration, effectColor);
 
-        foreach (MonsterHealth monster in FindObjectsByType<MonsterHealth>(FindObjectsInactive.Exclude))
+        for (int i = MonsterHealth.Active.Count - 1; i >= 0; i--)
         {
+            MonsterHealth monster = MonsterHealth.Active[i];
             if (monster.IsDead) continue;
             if (Vector2.Distance(origin, monster.GamePosition) > radius) continue;
 

@@ -36,15 +36,16 @@ public class TranquilizerDart : MonoBehaviour
 
         Vector2 position = transform.position;
 
-        foreach (MonsterHealth monster in FindObjectsByType<MonsterHealth>(FindObjectsInactive.Exclude))
+        for (int i = MonsterHealth.Active.Count - 1; i >= 0; i--)
         {
+            MonsterHealth monster = MonsterHealth.Active[i];
             if (monster.IsDead) continue;
             if (TryHit(monster, position)) return;
         }
 
-        foreach (AnimalSleep animal in FindObjectsByType<AnimalSleep>(FindObjectsInactive.Exclude))
+        for (int i = AnimalSleep.Active.Count - 1; i >= 0; i--)
         {
-            if (TryHit(animal, position)) return;
+            if (TryHit(AnimalSleep.Active[i], position)) return;
         }
     }
 

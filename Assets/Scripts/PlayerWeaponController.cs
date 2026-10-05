@@ -63,8 +63,9 @@ public class PlayerWeaponController : MonoBehaviour
         Vector2 origin = transform.position;
         Vector2 aimDirection = playerMovement.LookDirection;
 
-        foreach (MonsterHealth monster in FindObjectsByType<MonsterHealth>(FindObjectsInactive.Exclude))
+        for (int i = MonsterHealth.Active.Count - 1; i >= 0; i--)
         {
+            MonsterHealth monster = MonsterHealth.Active[i];
             if (monster.IsDead) continue;
 
             Vector2 toMonster = monster.GamePosition - origin;

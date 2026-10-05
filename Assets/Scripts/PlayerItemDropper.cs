@@ -9,7 +9,8 @@ public class PlayerItemDropper : MonoBehaviour
 {
     [SerializeField] private float dropDistance = 1f;
 
-    [Tooltip("동물을 원래 행동 종류(AnimalBehaviorKind)에 맞게 되살리기 위한 프리팹들")]
+    [Tooltip("원본 프리팹을 모르는 동물(씬에 직접 배치한 동물 등)을 원래 행동 종류(AnimalBehaviorKind)에 맞게 되살리기 위한 대체 프리팹들. " +
+        "맵에서 스폰된 동물은 자기 원본 프리팹(같은 종)으로 되살아난다.")]
     [SerializeField] private AnimalRescue droppedWanderAnimalPrefab;
     [SerializeField] private AnimalRescue droppedFleeAnimalPrefab;
     [SerializeField] private AnimalRescue droppedSoundFleeAnimalPrefab;
@@ -39,16 +40,19 @@ public class PlayerItemDropper : MonoBehaviour
             case InventoryItemType.Animal:
                 // MonsterCorpse(몬스터 시체)는 되살릴 배회/도주 프리팹이 없다 - 동물처럼 걸어다니게
                 // 만들면 안 되므로 일부러 아무것도 스폰하지 않고 그냥 소모시킨다.
-                AnimalRescue animalPrefab = dropped.AnimalKind switch
-                {
-                    AnimalBehaviorKind.Flee => droppedFleeAnimalPrefab,
-                    AnimalBehaviorKind.SoundFlee => droppedSoundFleeAnimalPrefab,
-                    AnimalBehaviorKind.MonsterCorpse => null,
-                    _ => droppedWanderAnimalPrefab
-                };
+                AnimalRescue animalPrefab = dropped.AnimalKind == AnimalBehaviorKind.MonsterCorpse ? null
+                    : dropped.AnimalPrefab != null ? dropped.AnimalPrefab
+                    : dropped.AnimalKind switch
+                    {
+                        AnimalBehaviorKind.Flee => droppedFleeAnimalPrefab,
+                        AnimalBehaviorKind.SoundFlee => droppedSoundFleeAnimalPrefab,
+                        _ => droppedWanderAnimalPrefab
+                    };
                 if (animalPrefab != null)
                 {
-                    Instantiate(animalPrefab, position, Quaternion.identity).SetWeight(dropped.AnimalWeight);
+                    AnimalRescue droppedAnimal = Instantiate(animalPrefab, position, Quaternion.identity);
+                    droppedAnimal.SetWeight(dropped.AnimalWeight);
+                    droppedAnimal.SourcePrefab = animalPrefab;
                 }
                 break;
             case InventoryItemType.Mine:
