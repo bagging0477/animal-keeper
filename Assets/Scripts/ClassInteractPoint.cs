@@ -11,6 +11,8 @@ public class ClassInteractPoint : MonoBehaviour
     [SerializeField] private float interactionRange = 2.4f;
     [SerializeField] private ClassInfoPopup popup;
     [SerializeField] private SpriteRenderer bodySprite;
+    [Tooltip("장착 중이 아닐 때 몸체 스프라이트 색. 세 스탠드가 같은 석상 스프라이트를 쓰므로 이 색으로 직업을 구분한다.")]
+    [SerializeField] private Color idleColor = Color.white;
 
     private static readonly Color EquippedColorA = new Color(1f, 0.85f, 0.2f, 1f);
     private static readonly Color EquippedColorB = new Color(1f, 0.55f, 0.05f, 1f);
@@ -80,7 +82,7 @@ public class ClassInteractPoint : MonoBehaviour
         bool selected = GameManager.Instance != null && GameManager.Instance.CurrentClass == playerClass;
         if (!selected)
         {
-            bodySprite.color = Color.white;
+            bodySprite.color = idleColor;
             return;
         }
 
