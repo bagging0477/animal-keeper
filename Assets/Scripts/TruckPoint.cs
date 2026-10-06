@@ -37,7 +37,7 @@ public class TruckPoint : MonoBehaviour
 
         if (!inRange) return;
 
-        Keyboard kb = PauseMenu.IsPaused ? null : Keyboard.current;
+        Keyboard kb = GameplayInput.IsBlocked ? null : Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;
 
         if (!SceneTransitionGuard.TryBeginTransition()) return;

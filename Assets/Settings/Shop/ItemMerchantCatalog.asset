@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1059a556ae144b58aeaaa47ae6e06090, type: 3}
+  m_Name: ItemMerchantCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::ShopCatalog
+  title: "\uC544\uC774\uD15C \uC0C1\uC778"
+  emptyMessage: "\uC900\uBE44 \uC911\uC785\uB2C8\uB2E4"
+  entries:
+  - kind: 1
+    displayName: "\uC9C0\uB8B0"
+    icon: {fileID: 21300000, guid: cd6d590abfb7c7f4f815f180fda46b8f, type: 3}
+  - kind: 2
+    displayName: "\uD3ED\uD0C4"
+    icon: {fileID: 21300000, guid: f14fb8edbcf54c21b7a06665145229dd, type: 3}
+  - kind: 0
+    displayName: "\uB9C8\uCDE8\uCD1D \uC7AC\uC7A5\uC804"
+    icon: {fileID: -1276648029552128895, guid: 003e49d42897744428b8156edb1a4193, type: 3}

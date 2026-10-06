@@ -135,7 +135,7 @@ public class PlayerMovement : MonoBehaviour
     private void UpdateLookDirection()
     {
         // 일시정지 중에는 바라보는 방향(=부채꼴 시야 방향, PlayerVision)을 마지막 값 그대로 고정한다.
-        Mouse mouse = PauseMenu.IsPaused ? null : Mouse.current;
+        Mouse mouse = GameplayInput.IsBlocked ? null : Mouse.current;
         if (mouse == null || aimCamera == null) return;
 
         Vector2 screenPos = mouse.position.ReadValue();

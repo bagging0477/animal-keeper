@@ -361,7 +361,7 @@ public class GameBalanceConfig : ScriptableObject
     public int debugStartingBombCount = 1;
 
     [Header("상점 아이템 가격")]
-    [Tooltip("ShelterScene의 각 상점 아이템(ShopItemInteractPoint) 종류별 가격. 새 아이템 종류(ShopItemKind)를 추가하면 여기에 " +
+    [Tooltip("상인(ShopMerchant) 메뉴에서 파는 상점 아이템 종류별 가격. 새 아이템 종류(ShopItemKind)를 추가하면 여기에 " +
         "한 줄을 더한다. 클래스 해금 가격은 여기가 아니라 위의 scoutUnlockPrice/trapperUnlockPrice/gunnerUnlockPrice로 조정한다.")]
     public List<ShopItemPrice> shopItemPrices = new List<ShopItemPrice>
     {

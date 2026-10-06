@@ -43,6 +43,31 @@ public class SubtitleManager : MonoBehaviour
     private const int CanvasSortingOrder = 500; // HUD(0) 위, 일시정지 메뉴(1000) 아래
 
     private static SubtitleManager instance;
+    private static TMP_FontAsset sharedFont;
+    private static bool sharedFontResolved;
+
+    /// <summary>자막과 같은 한글 TMP 폰트. 다른 UI(상점 메뉴 등)도 글꼴을 맞추려고 이 값을 쓴다.
+    /// Resources/SubtitleFont가 없으면 OS 한글 폰트로 한 번만 만들어 재사용하고, 그것도 없으면 null.</summary>
+    public static TMP_FontAsset SharedFont
+    {
+        get
+        {
+            if (sharedFontResolved) return sharedFont;
+            sharedFontResolved = true;
+
+            sharedFont = Resources.Load<TMP_FontAsset>(FontResourceName);
+            if (sharedFont == null)
+            {
+                // 임시 대체: 폰트 파일을 프로젝트에 넣기 전까지는 OS에 설치된 한글 폰트를 실행 중에 읽어 쓴다(게임에 폰트를
+                // 포함하지 않는다). Windows가 아니거나 이 폰트가 없으면 TMP 기본 폰트로 남아 한글이 안 보일 수 있다.
+                sharedFont = TMP_FontAsset.CreateFontAsset(FallbackOsFontFamily, FallbackOsFontStyle);
+                Debug.LogWarning($"SubtitleManager: Resources/{FontResourceName} 폰트 에셋이 없다 - Assets/Fonts에 폰트를 넣고 " +
+                    $"Tools > Subtitles > Build Subtitle Font Asset을 실행하자. 그 전까지 OS 폰트 '{FallbackOsFontFamily}'로 대체" +
+                    (sharedFont != null ? "한다." : "하려 했지만 찾지 못했다."));
+            }
+            return sharedFont;
+        }
+    }
 
     private TextMeshProUGUI label;
     private string currentText;
@@ -96,16 +121,7 @@ public class SubtitleManager : MonoBehaviour
         rt.sizeDelta = new Vector2(MaxWidth, FontSize * 2.6f);
 
         label = textGO.AddComponent<TextMeshProUGUI>();
-        TMP_FontAsset font = Resources.Load<TMP_FontAsset>(FontResourceName);
-        if (font == null)
-        {
-            // 임시 대체: 폰트 파일을 프로젝트에 넣기 전까지는 OS에 설치된 한글 폰트를 실행 중에 읽어 쓴다(게임에 폰트를
-            // 포함하지 않는다). Windows가 아니거나 이 폰트가 없으면 TMP 기본 폰트로 남아 한글이 안 보일 수 있다.
-            font = TMP_FontAsset.CreateFontAsset(FallbackOsFontFamily, FallbackOsFontStyle);
-            Debug.LogWarning($"SubtitleManager: Resources/{FontResourceName} 폰트 에셋이 없다 - Assets/Fonts에 폰트를 넣고 " +
-                $"Tools > Subtitles > Build Subtitle Font Asset을 실행하자. 그 전까지 OS 폰트 '{FallbackOsFontFamily}'로 대체" +
-                (font != null ? "한다." : "하려 했지만 찾지 못했다."));
-        }
+        TMP_FontAsset font = SharedFont;
         if (font != null) label.font = font;
         // 실행 중에 만든 폰트 에셋은 모바일 SDF 셰이더를 쓰는데, 그 셰이더는 OUTLINE_ON 키워드가 없으면 테두리를 그리지
         // 않는다. 테두리가 항상 켜져 있는 데스크톱 SDF 셰이더로 바꾼다(빌더로 만든 폰트 에셋은 처음부터 이 셰이더다).

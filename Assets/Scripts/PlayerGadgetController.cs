@@ -26,7 +26,7 @@ public class PlayerGadgetController : MonoBehaviour
 
     private void Update()
     {
-        Mouse mouse = PauseMenu.IsPaused ? null : Mouse.current;
+        Mouse mouse = GameplayInput.IsBlocked ? null : Mouse.current;
         if (mouse == null || !mouse.leftButton.wasPressedThisFrame) return;
         if (GameManager.Instance == null) return;
 

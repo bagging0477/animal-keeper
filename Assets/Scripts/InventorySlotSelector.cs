@@ -8,7 +8,7 @@ public class InventorySlotSelector : MonoBehaviour
 {
     private void Update()
     {
-        Keyboard kb = PauseMenu.IsPaused ? null : Keyboard.current;
+        Keyboard kb = GameplayInput.IsBlocked ? null : Keyboard.current;
         if (kb == null || GameManager.Instance == null) return;
 
         if (kb.digit1Key.wasPressedThisFrame) GameManager.Instance.SelectSlot(0);

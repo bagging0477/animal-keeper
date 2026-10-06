@@ -27,7 +27,7 @@ public class PlayerItemDropper : MonoBehaviour
 
     private void Update()
     {
-        Keyboard kb = PauseMenu.IsPaused ? null : Keyboard.current;
+        Keyboard kb = GameplayInput.IsBlocked ? null : Keyboard.current;
         if (kb == null || !kb.gKey.wasPressedThisFrame) return;
         if (GameManager.Instance == null) return;
 
