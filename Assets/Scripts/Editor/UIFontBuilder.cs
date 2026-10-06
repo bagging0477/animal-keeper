@@ -39,10 +39,13 @@ public static class UIFontBuilder
     private const int SamplingPointStep = 2;
     private const int FallbackAtlasSize = 1024;
 
-    // 공용 글씨 스타일. Outline은 글자 경계 안팎에 반씩 그려져 흰 획이 그만큼 가늘어지므로, Face를 Outline의 절반만큼
-    // 넓혀(FaceDilate) 획 굵기를 유지한다.
-    public const float OutlineWidth = 0.2f;
-    private const float FaceDilate = OutlineWidth * 0.5f;
+    // 공용 글씨 스타일. Outline은 글자 경계 안팎에 반씩 그려져 흰 획이 그만큼 가늘어진다. 셰이더는 FaceDilate의 절반만큼
+    // 경계를 밀어내므로, FaceDilate를 OutlineWidth와 같게 두어야 안쪽 절반이 메워져 흰 획 굵기가 원래대로 유지되고
+    // 테두리는 전부 글자 바깥에 그려진다.
+    // Outline 두께는 픽셀이 아니라 SDF 범위(Padding)에 대한 비율이라, Padding이 작으면 값을 올려도 거의 보이지 않는다.
+    // 더 굵게 하려면 OutlineWidth를 올린다(PaddingRatio 0.2에서 최대 약 0.45). 그 이상은 PaddingRatio도 같이 올린다.
+    public const float OutlineWidth = 0.25f;
+    private const float FaceDilate = OutlineWidth;
 
     // 영문/숫자(ASCII 0x20~0x7E)와 한글 자모(ㄱ~ㅣ)는 코드에서 범위로 넣는다.
     private const string BasicSymbols =
@@ -146,7 +149,7 @@ public static class UIFontBuilder
         EditorUtility.SetDirty(main);
         EditorUtility.SetDirty(fallback);
 
-        SetDefaultFontAsset(main);
+        SetTmpSettingsFonts(main, fallback);
         WriteCharacterList(characters);
         AssetDatabase.SaveAssets();
         AssetDatabase.ImportAsset(CharacterListPath);
@@ -181,7 +184,10 @@ public static class UIFontBuilder
         return path != null ? AssetDatabase.LoadAssetAtPath<Font>(path) : null;
     }
 
-    private static int PaddingFor(int samplingPointSize) => Mathf.Clamp(Mathf.RoundToInt(samplingPointSize * 0.1f), 5, 9);
+    // Outline이 그려질 SDF 범위(샘플링 크기 대비). 작으면 OutlineWidth를 올려도 테두리가 거의 보이지 않는다.
+    private const float PaddingRatio = 0.2f;
+
+    private static int PaddingFor(int samplingPointSize) => Mathf.Clamp(Mathf.RoundToInt(samplingPointSize * PaddingRatio), 8, 16);
 
     private static TMP_FontAsset CreateFontAsset(Font font, int samplingPointSize, int atlasSize, AtlasPopulationMode mode)
     {
@@ -369,7 +375,10 @@ public static class UIFontBuilder
         so.ApplyModifiedPropertiesWithoutUndo();
     }
 
-    private static void SetDefaultFontAsset(TMP_FontAsset font)
+    /// <summary>TMP Settings의 기본 폰트를 font로, 글로벌 Fallback 목록을 fallback 하나로 맞춘다. 글로벌 Fallback은
+    /// 폰트 에셋 자체의 Fallback 목록 다음에 검사되므로, 다른 폰트를 쓰는 글씨가 남아 있어도 한글이 네모로 깨지지 않는다.
+    /// 누락 글리프 경고(m_warningsDisabled = 0)도 켜 둔다 - Fallback에도 없는 글자는 Console에 경고가 남는다.</summary>
+    private static void SetTmpSettingsFonts(TMP_FontAsset font, TMP_FontAsset fallback)
     {
         UnityEngine.Object settings = AssetDatabase.LoadMainAssetAtPath(TmpSettingsPath);
         if (settings == null)
@@ -379,6 +388,10 @@ public static class UIFontBuilder
         }
         var so = new SerializedObject(settings);
         so.FindProperty("m_defaultFontAsset").objectReferenceValue = font;
+        SerializedProperty fallbacks = so.FindProperty("m_fallbackFontAssets");
+        fallbacks.arraySize = 1;
+        fallbacks.GetArrayElementAtIndex(0).objectReferenceValue = fallback;
+        so.FindProperty("m_warningsDisabled").boolValue = false;
         so.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(settings);
     }
