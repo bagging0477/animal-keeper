@@ -27,6 +27,10 @@ public static class UIFontBuilder
     public const string GeneratedFolder = FontFolder + "/Generated";
     public const string MainAssetPath = GeneratedFolder + "/UIFont SDF.asset";
     public const string FallbackAssetPath = GeneratedFolder + "/UIFont Fallback SDF.asset";
+    // 머티리얼 프리셋은 TMP 규칙대로 "폰트 에셋 이름 - 이름"으로 둔다. 기본 머티리얼(흰 Face + 검은 Outline)을 복사해
+    // Face 색만 바꾸므로 Outline 두께 등은 항상 기본 머티리얼과 같다.
+    public const string YellowPresetPath = GeneratedFolder + "/UIFont SDF - Yellow.mat";
+    public static readonly Color YellowFaceColor = new Color32(0xFF, 0xD8, 0x4D, 0xFF);
     private const string CharacterListPath = GeneratedFolder + "/UIFont Characters.txt";
     private const string HangulListPath = FontFolder + "/Charsets/KSX1001_Hangul2350.txt";
     private const string TmpSettingsPath = "Assets/TextMesh Pro/Resources/TMP Settings.asset";
@@ -150,6 +154,7 @@ public static class UIFontBuilder
         EditorUtility.SetDirty(fallback);
 
         SetTmpSettingsFonts(main, fallback);
+        RebuildPresets(main);
         WriteCharacterList(characters);
         AssetDatabase.SaveAssets();
         AssetDatabase.ImportAsset(CharacterListPath);
@@ -360,6 +365,26 @@ public static class UIFontBuilder
         EditorUtility.SetDirty(existing);
         DestroyFontAsset(temp);
         return existing;
+    }
+
+    /// <summary>기본 머티리얼에서 파생한 프리셋을 만들거나 갱신한다. 이미 있으면 같은 파일에 덮어써서 GUID를 유지한다 -
+    /// 폰트를 다시 만들면 Padding 등이 바뀔 수 있으므로 Rebuild 때마다 같이 맞춘다.</summary>
+    public static void RebuildPresets(TMP_FontAsset main)
+    {
+        Material source = main.material;
+        Material preset = AssetDatabase.LoadAssetAtPath<Material>(YellowPresetPath);
+        if (preset == null)
+        {
+            preset = new Material(source);
+            AssetDatabase.CreateAsset(preset, YellowPresetPath);
+        }
+        else
+        {
+            preset.shader = source.shader;
+            preset.CopyPropertiesFromMaterial(source);
+        }
+        preset.SetColor("_FaceColor", YellowFaceColor);
+        EditorUtility.SetDirty(preset);
     }
 
     private static void SetSerializedBool(UnityEngine.Object target, string property, bool value)

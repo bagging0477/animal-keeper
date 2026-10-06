@@ -95,7 +95,8 @@ public static class UIFontApplier
                 string where = HierarchyPath(text.transform);
                 int changedBefore = changed;
 
-                if (text.font != font || text.fontSharedMaterial != font.material)
+                // 같은 폰트 아틀라스를 쓰는 머티리얼 프리셋(예: UIFont SDF - Yellow)은 의도한 것이므로 그대로 둔다.
+                if (text.font != font || !UsesFontAtlas(text.fontSharedMaterial, font))
                 {
                     text.font = font;
                     text.fontSharedMaterial = font.material;
@@ -173,6 +174,10 @@ public static class UIFontApplier
         foreach (string line in lines) audit.AppendLine(line);
         return changed;
     }
+
+    private static bool UsesFontAtlas(Material material, TMP_FontAsset font) =>
+        material != null && material.HasProperty(ShaderUtilities.ID_MainTex) &&
+        material.GetTexture(ShaderUtilities.ID_MainTex) == font.atlasTexture;
 
     private static bool HasFraction(Vector2 v) =>
         Mathf.Abs(v.x - Mathf.Round(v.x)) > 0.01f || Mathf.Abs(v.y - Mathf.Round(v.y)) > 0.01f;

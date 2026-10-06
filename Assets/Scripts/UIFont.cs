@@ -9,6 +9,7 @@ using UnityEngine;
 /// - 머티리얼은 폰트 에셋의 기본 머티리얼 하나만 공유한다(흰 Face + 검은 Outline). 글씨마다 머티리얼을 복제하지 않으므로
 ///   이 머티리얼 한 곳을 바꾸면 모든 글씨가 같이 바뀐다. 그래서 코드에서 outlineWidth/fontMaterial처럼 인스턴스
 ///   머티리얼을 만드는 속성은 쓰지 않는다 - 글씨별 차이는 color(정점 색)와 fontSize로만 낸다.
+///   색이 다른 공유 프리셋이 필요하면 Rebuild Fonts가 같이 만드는 프리셋(예: UIFont SDF - Yellow)을 씬에서 직접 연결한다.
 /// </summary>
 public static class UIFont
 {
