@@ -40,6 +40,20 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("소리반응형 몬스터가 동물 소리를 듣고 반응하는 거리")]
     public float soundReactiveMonsterHearRange = 10.4f;
 
+    [Header("몬스터 - 늑대(순찰형) 전용: 영역과 추격 피로")]
+    [Tooltip("늑대의 영역 반경. 스폰 위치(홈)에서 플레이어까지의 거리가 이 값을 넘으면 추격을 포기하고 홈으로 걸어 돌아간다. " +
+        "영역 밖에 있는 플레이어는 새로 발견하지도 않는다. 방 하나가 약 20칸이고, 너무 작으면 홈에서 바깥쪽으로 1~2초만 달려도 포기해 버린다.")]
+    public float wolfLeashRadius = 14f;
+
+    [Tooltip("늑대가 전속력(monsterChaseSpeed)으로 이 시간(초) 동안 계속 추격하면 잠깐 숨을 고른다.")]
+    public float wolfChaseBurstDuration = 3.5f;
+
+    [Tooltip("숨을 고르는 시간(초). 이 동안은 추격 속도가 wolfWindedSpeedMultiplier배로 떨어진다.")]
+    public float wolfWindedDuration = 1.5f;
+
+    [Tooltip("숨을 고르는 동안의 추격 속도 배율(monsterChaseSpeed 기준).")]
+    [Range(0.1f, 1f)] public float wolfWindedSpeedMultiplier = 0.5f;
+
     [Header("몬스터 - 탐색(Searching) 상태")]
     [Tooltip("추격을 포기한 순찰형 몬스터가 마지막 목격 위치에 도착한 뒤 두리번거리는 시간(초)의 최솟값. " +
         "실제 시간은 최솟값~최댓값 사이에서 매번 랜덤으로 정해지고, 끝나면 순찰로 돌아간다. 소리반응형 몬스터는 탐색 없이 바로 배회로 돌아간다.")]

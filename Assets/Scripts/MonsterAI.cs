@@ -59,6 +59,9 @@ public class MonsterAI : MonoBehaviour
     private float chaseDestinationTimer;
     private bool patrolWaiting;
     private float patrolWaitTimer;
+    private Vector2 homeGamePosition;
+    private float chaseBurstTimer;
+    private float windedTimer;
 
     private float PatrolSpeed => config != null ? config.patrolMonsterPatrolSpeed : 1.6f;
     private float ChaseSpeed => config != null ? config.monsterChaseSpeed : 4.3125f;
@@ -75,6 +78,11 @@ public class MonsterAI : MonoBehaviour
     private float ChaseDirectionUpdateInterval => config != null ? config.chaseDirectionUpdateInterval : 0.25f;
     private float CatchRange => config != null ? config.patrolMonsterCatchRange : 0.7f;
     private float WaypointStopDistance => config != null ? config.monsterWaypointStopDistance : 0.2f;
+    private float LeashRadius => config != null ? config.wolfLeashRadius : 14f;
+    private float ChaseBurstDuration => config != null ? config.wolfChaseBurstDuration : 3.5f;
+    private float WindedDuration => config != null ? config.wolfWindedDuration : 1.5f;
+    private float WindedSpeedMultiplier => config != null ? config.wolfWindedSpeedMultiplier : 0.5f;
+    private bool IsWinded => windedTimer > 0f;
 
     private void Awake()
     {
@@ -89,6 +97,7 @@ public class MonsterAI : MonoBehaviour
 
         waypoints = new Vector3[patrolOffsets.Length];
         Vector3 origin = transform.position;
+        homeGamePosition = new Vector2(origin.x, origin.z);
         for (int i = 0; i < patrolOffsets.Length; i++)
         {
             Vector3 point = origin + new Vector3(patrolOffsets[i].x, 0f, patrolOffsets[i].y);
@@ -135,10 +144,14 @@ public class MonsterAI : MonoBehaviour
         {
             float distanceToPlayer = Vector2.Distance(GamePosition, PlayerGamePosition);
 
-            if (state != State.Chase && distanceToPlayer <= DetectRange)
+            // 영역(홈에서 LeashRadius) 밖에 있는 플레이어는 발견하지 않는다 - 영역 경계 바로 밖에 선 플레이어를
+            // 집으로 돌아가던 늑대가 다시 발견해 추격과 복귀를 반복하지 않게 한다.
+            if (state != State.Chase && distanceToPlayer <= DetectRange && IsPlayerInTerritory)
             {
                 state = State.Chase;
                 sightLostTimer = 0f;
+                chaseBurstTimer = 0f;
+                windedTimer = 0f;
                 lastSeenPlayerPosition = PlayerNavPosition;
                 chaseDestinationTimer = ChaseDirectionUpdateInterval; // 발견한 그 프레임에 바로 추격을 시작한다.
                 // autoBraking은 목적지에 부드럽게 도착하려고 미리 감속하는 기능이다. Chase 중에는
@@ -152,7 +165,12 @@ public class MonsterAI : MonoBehaviour
                 // 거리가 LoseRange를 넘으면 시야 차단과 달리 깜빡일 일이 없으므로 유예 시간 없이
                 // 바로 포기한다 - 추격 속도가 대부분의 플레이어보다 빨라서, "LoseRange 밖에서
                 // 2초 더 버티기"까지 요구하면 사실상 영원히 떼어낼 수 없었다.
-                if (distanceToPlayer > LoseRange)
+                if (!IsPlayerInTerritory)
+                {
+                    // 영역 밖까지 도망친 플레이어는 수색하지 않고 바로 포기한 채 홈으로 돌아간다.
+                    ReturnHome();
+                }
+                else if (distanceToPlayer > LoseRange)
                 {
                     EnterSearch(lastSeenPlayerPosition);
                 }
@@ -208,7 +226,7 @@ public class MonsterAI : MonoBehaviour
         }
         else if (state == State.Chase && player != null)
         {
-            agent.speed = ChaseSpeed;
+            agent.speed = UpdateChaseFatigue();
 
             // 목적지를 매 프레임 갱신하지 않고 일정 주기로만 갱신해서, 플레이어가 급하게
             // 코너를 꺾었을 때 몬스터가 완벽하게 즉시 따라오지 못하고 살짝 늦게 반응하게 한다.
@@ -261,8 +279,9 @@ public class MonsterAI : MonoBehaviour
             // 있으면 Idle로 자연스럽게 떨어진다.
             // 탐색 중 두리번거릴 때는 Idle 프레임 + 좌우 반전으로 "둘러보는" 느낌을 내고, 사이사이 몇 걸음
             // 옮길 때만 Patrol처럼 Walk 프레임을 쓴다.
-            frameAnimator.IsFleeing = state == State.Chase || (state == State.Search && !searchLooking);
-            frameAnimator.IsMoving = (state == State.Patrol || (state == State.Search && searchLooking)) &&
+            // 숨을 고르는 동안에는 급박한 프레임 대신 평소 걷기 프레임을 써서 느려진 것이 눈에 보이게 한다.
+            frameAnimator.IsFleeing = (state == State.Chase && !IsWinded) || (state == State.Search && !searchLooking);
+            frameAnimator.IsMoving = (state == State.Patrol || (state == State.Chase && IsWinded) || (state == State.Search && searchLooking)) &&
                 agent.velocity.sqrMagnitude > MinMovingSpeed * MinMovingSpeed;
         }
 
@@ -276,6 +295,41 @@ public class MonsterAI : MonoBehaviour
             facingFlipper.SetMoveDirection(new Vector2(agent.velocity.x, agent.velocity.z));
         }
     }
+
+    // 전속력 추격이 ChaseBurstDuration만큼 이어지면 WindedDuration 동안 숨을 고르며 느려진다. 추격 속도가
+    // 트래퍼/거너의 스태미나 평균 속도보다 빨라서, 이런 틈이 없으면 첫 스프린트로 LoseRange를 못 넘긴 순간
+    // 사실상 영원히 떼어낼 수 없다.
+    private float UpdateChaseFatigue()
+    {
+        if (IsWinded)
+        {
+            windedTimer -= Time.deltaTime;
+            return ChaseSpeed * WindedSpeedMultiplier;
+        }
+
+        chaseBurstTimer += Time.deltaTime;
+        if (chaseBurstTimer >= ChaseBurstDuration)
+        {
+            chaseBurstTimer = 0f;
+            windedTimer = WindedDuration;
+        }
+        return ChaseSpeed;
+    }
+
+    // 영역 밖으로 나간 플레이어를 포기하고 순찰 경로(홈 주변 웨이포인트)로 걸어서 돌아간다. 도착하면 기존 순찰 대기/순환이
+    // 그대로 이어진다.
+    private void ReturnHome()
+    {
+        state = State.Patrol;
+        searchLooking = false;
+        patrolWaiting = false;
+        windedTimer = 0f;
+        agent.autoBraking = true;
+        agent.speed = PatrolSpeed;
+        if (agent.isOnNavMesh && waypoints.Length > 0) agent.SetDestination(waypoints[targetIndex]);
+    }
+
+    private bool IsPlayerInTerritory => Vector2.Distance(homeGamePosition, PlayerGamePosition) <= LeashRadius;
 
     // 추격 포기 -> 탐색(Search): 마지막 목격 위치로 이동한 뒤, 도착하면 제자리에서 좌우로 방향을
     // 바꿔가며 잠시 두리번거리고, 그래도 못 찾으면 순찰로 돌아간다. 탐색 중 플레이어가 DetectRange
