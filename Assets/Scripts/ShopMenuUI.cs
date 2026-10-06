@@ -13,7 +13,7 @@ using UnityEngine.UI;
 /// 목록이 비어 있으면 catalog.emptyMessage("준비 중입니다")만 보인다.
 ///
 /// - SubtitleManager처럼 씬과 무관하게 하나만 존재하며, 첫 Open 때 자기 전용 오버레이 Canvas를 코드로 만든다
-///   (씬마다 UI를 배치할 필요가 없다). 글꼴은 자막과 같은 SubtitleManager.SharedFont.
+///   (씬마다 UI를 배치할 필요가 없다). 글꼴과 머티리얼은 모든 글씨와 같은 UIFont.
 /// - 열려 있는 동안은 TruckHubPoint의 메뉴처럼 Time.timeScale을 0으로 멈춰 플레이어가 움직이지 않게 하고,
 ///   GameplayInput.IsBlocked로 다른 상호작용/공격 입력도 막는다. E 또는 ESC로 닫는다 - PauseMenu는 다른 화면이
 ///   시간을 멈춰둔 동안 ESC로 열리지 않으므로(먼저 실행되어 timeScale 0을 보고 물러남) 둘이 겹치지 않는다.
@@ -322,8 +322,7 @@ public class ShopMenuUI : MonoBehaviour
         go.transform.SetParent(parent, false);
 
         TextMeshProUGUI text = go.AddComponent<TextMeshProUGUI>();
-        TMP_FontAsset font = SubtitleManager.SharedFont;
-        if (font != null) text.font = font;
+        UIFont.Apply(text);
         text.fontSize = size;
         text.alignment = alignment;
         text.color = color;

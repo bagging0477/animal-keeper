@@ -21,12 +21,6 @@ public class SubtitleManager : MonoBehaviour
     /// <summary>매 프레임 갱신하는 "범위 안에 있는 동안" 안내용 지속시간. 호출이 끊기면 이만큼 뒤에 페이드 아웃한다.</summary>
     public const float WhileInRange = 0.15f;
 
-    // Resources/에 있는 TMP SDF 폰트 에셋 이름(Tools > Subtitles > Build Subtitle Font Asset으로 만든다).
-    private const string FontResourceName = "SubtitleFont";
-    private const string FallbackOsFontFamily = "Malgun Gothic";
-    private const string FallbackOsFontStyle = "Bold";
-    private const string DesktopSdfShaderName = "TextMeshPro/Distance Field";
-
     // 1920x1080 기준 좌표. 인벤토리 슬롯 줄(2240x1260 기준 캔버스에서 하단 24 + 높이 165 = 189, 이 캔버스로
     // 환산하면 약 162)의 바로 위에 여백 20을 두고 자막의 아래 끝을 맞춘다. 두 캔버스 모두 Scale With Screen Size
     // (match 0.5)라 화면 비율이 달라도 이 둘의 비율은 일정해서 겹치지 않는다.
@@ -34,51 +28,15 @@ public class SubtitleManager : MonoBehaviour
     private const float BottomOffset = 182f;
     private const float MaxWidth = 1400f;
     private const float FontSize = 34f;
-    // TMP 테두리는 글자 경계를 중심으로 안팎에 반씩 그려져서, 테두리만 두껍게 하면 흰 획이 가늘어진다. 글자면(Face)을
-    // 그만큼 바깥으로 넓혀(FaceDilate) 획 굵기를 유지한 채 테두리가 또렷하게 보이도록 맞췄다.
-    public const float OutlineWidth = 0.25f;
-    public const float FaceDilate = 0.25f;
     private const float FadeInDuration = 0.15f;
     private const float FadeOutDuration = 0.12f;
     private const int CanvasSortingOrder = 500; // HUD(0) 위, 일시정지 메뉴(1000) 아래
 
     private static SubtitleManager instance;
-    private static TMP_FontAsset sharedFont;
-    private static bool sharedFontResolved;
 
-    // 프로젝트가 Play 진입 시 Domain Reload를 끄고 있어서 static 값이 Play 세션을 넘어 남는다. 실행 중에 만든
-    // 폰트 에셋은 Play가 끝나면 파괴되므로, 리셋하지 않으면 다음 Play에서 파괴된 폰트를 "이미 찾음"으로 보고
-    // TMP 기본 폰트(한글 없음)로 떨어진다. 매 Play 시작 때 캐시를 비운다.
+    // 도메인 리로드를 끈 에디터(Enter Play Mode Options)에서도 이전 Play의 인스턴스 참조가 남지 않게 한다.
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void ResetStatics()
-    {
-        instance = null;
-        sharedFont = null;
-        sharedFontResolved = false;
-    }
-
-    /// <summary>자막과 같은 한글 TMP 폰트. 다른 UI(상점 메뉴 등)도 글꼴을 맞추려고 이 값을 쓴다.
-    /// Resources/SubtitleFont가 없으면 OS 한글 폰트로 한 번만 만들어 재사용하고, 그것도 없으면 null.</summary>
-    public static TMP_FontAsset SharedFont
-    {
-        get
-        {
-            if (sharedFontResolved) return sharedFont;
-            sharedFontResolved = true;
-
-            sharedFont = Resources.Load<TMP_FontAsset>(FontResourceName);
-            if (sharedFont == null)
-            {
-                // 임시 대체: 폰트 파일을 프로젝트에 넣기 전까지는 OS에 설치된 한글 폰트를 실행 중에 읽어 쓴다(게임에 폰트를
-                // 포함하지 않는다). Windows가 아니거나 이 폰트가 없으면 TMP 기본 폰트로 남아 한글이 안 보일 수 있다.
-                sharedFont = TMP_FontAsset.CreateFontAsset(FallbackOsFontFamily, FallbackOsFontStyle);
-                Debug.LogWarning($"SubtitleManager: Resources/{FontResourceName} 폰트 에셋이 없다 - Assets/Fonts에 폰트를 넣고 " +
-                    $"Tools > Subtitles > Build Subtitle Font Asset을 실행하자. 그 전까지 OS 폰트 '{FallbackOsFontFamily}'로 대체" +
-                    (sharedFont != null ? "한다." : "하려 했지만 찾지 못했다."));
-            }
-            return sharedFont;
-        }
-    }
+    private static void ResetStatics() => instance = null;
 
     private TextMeshProUGUI label;
     private string currentText;
@@ -131,25 +89,15 @@ public class SubtitleManager : MonoBehaviour
         rt.anchoredPosition = new Vector2(0f, BottomOffset);
         rt.sizeDelta = new Vector2(MaxWidth, FontSize * 2.6f);
 
+        // 흰 글자 + 검은 테두리는 공용 머티리얼(UIFont)에 들어 있다. 여기서 outlineWidth 등을 바꾸면 이 글씨만의
+        // 머티리얼 복제본이 생겨 전체 스타일과 따로 놀게 되므로 크기/정렬/색만 정한다.
         label = textGO.AddComponent<TextMeshProUGUI>();
-        TMP_FontAsset font = SharedFont;
-        if (font != null) label.font = font;
-        // 실행 중에 만든 폰트 에셋은 모바일 SDF 셰이더를 쓰는데, 그 셰이더는 OUTLINE_ON 키워드가 없으면 테두리를 그리지
-        // 않는다. 테두리가 항상 켜져 있는 데스크톱 SDF 셰이더로 바꾼다(빌더로 만든 폰트 에셋은 처음부터 이 셰이더다).
-        Shader sdf = Shader.Find(DesktopSdfShaderName);
-        if (sdf != null && label.fontSharedMaterial != null && label.fontSharedMaterial.shader != sdf)
-        {
-            label.fontSharedMaterial = new Material(label.fontSharedMaterial) { shader = sdf };
-        }
+        UIFont.Apply(label);
         label.fontSize = FontSize;
         label.alignment = TextAlignmentOptions.Bottom;
         label.textWrappingMode = TextWrappingModes.Normal;
         label.raycastTarget = false;
-        label.color = Color.white; // Face
-        label.outlineColor = new Color32(0, 0, 0, 255);
-        label.outlineWidth = OutlineWidth;
-        label.fontMaterial.SetFloat(ShaderUtilities.ID_FaceDilate, FaceDilate);
-        label.UpdateMeshPadding();
+        label.color = Color.white;
         label.text = string.Empty;
         label.alpha = 0f;
 
