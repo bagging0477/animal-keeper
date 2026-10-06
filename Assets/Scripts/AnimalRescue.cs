@@ -19,13 +19,16 @@ public class AnimalRescue : MonoBehaviour
     [SerializeField] private float pickupSoundStartTime = 7f;
     [SerializeField] private float pickupSoundEndTime = 8f;
 
-    [Tooltip("인벤토리 슬롯에 표시할 아이콘. 비워두면 이 동물의 Idle 첫 프레임을 자동으로 사용한다.")]
+    [Tooltip("인벤토리 슬롯에 표시할 아이콘. 비워두면 이 동물 스프라이트 시트의 첫 번째 프레임을 자동으로 사용한다.")]
     [SerializeField] private Sprite inventoryIcon;
+
+    // inventoryIcon이 비었을 때 쓰는 시트 첫 프레임. OnValidate가 에디터에서 채운다 (InventoryIconUtility 참고).
+    [SerializeField, HideInInspector] private Sprite sheetFirstFrameIcon;
 
     public int Weight { get; private set; }
 
-    /// <summary>인벤토리 슬롯에 그릴 아이콘. inventoryIcon이 지정돼 있으면 그것을, 아니면 이 동물의
-    /// 애니메이터(SpriteSheetAnimator/SimpleFrameAnimator)에서 Idle 첫 프레임을 자동으로 가져온다.</summary>
+    /// <summary>인벤토리 슬롯에 그릴 정지 아이콘. inventoryIcon이 지정돼 있으면 그것을, 아니면 이 동물
+    /// 스프라이트 시트의 첫 프레임을 쓴다.</summary>
     public Sprite InventoryIcon { get; private set; }
 
     /// <summary>G키로 인벤토리에서 다시 꺼내 바닥에 내려놓을 때, 원래 갖고 있던 무게를 그대로
@@ -122,8 +125,27 @@ public class AnimalRescue : MonoBehaviour
         InventoryIcon = inventoryIcon != null ? inventoryIcon : ResolveDefaultIcon();
     }
 
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        SpriteSheetAnimator sheetAnimator = GetComponent<SpriteSheetAnimator>();
+        SimpleFrameAnimator frameAnimator = GetComponent<SimpleFrameAnimator>();
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        Texture2D sheet = sheetAnimator != null && sheetAnimator.Sheet != null ? sheetAnimator.Sheet
+            : frameAnimator != null && frameAnimator.IdleSprite != null ? frameAnimator.IdleSprite.texture
+            : spriteRenderer != null && spriteRenderer.sprite != null ? spriteRenderer.sprite.texture
+            : null;
+
+        Sprite found = InventoryIconUtility.FindSheetFirstFrame(sheet);
+        if (found != null) sheetFirstFrameIcon = found;
+    }
+#endif
+
+    // 시트 첫 프레임을 아직 못 찾은 경우(시트를 잘라 두지 않았거나 OnValidate가 돌기 전)를 위한 대체 경로.
     private Sprite ResolveDefaultIcon()
     {
+        if (sheetFirstFrameIcon != null) return sheetFirstFrameIcon;
+
         SpriteSheetAnimator sheetAnimator = GetComponent<SpriteSheetAnimator>();
         if (sheetAnimator != null && sheetAnimator.IdleFirstFrame != null) return sheetAnimator.IdleFirstFrame;
 

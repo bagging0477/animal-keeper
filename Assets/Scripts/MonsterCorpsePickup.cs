@@ -19,11 +19,14 @@ public class MonsterCorpsePickup : MonoBehaviour
     [Tooltip("pickupSound의 재생 볼륨. 원본 파일마다 녹음 크기가 달라서 다른 효과음과 체감 크기를 맞추는 보정값이다.")]
     [SerializeField, Range(0f, 1f)] private float pickupSoundVolume = 1f;
 
-    [Tooltip("인벤토리 슬롯에 표시할 아이콘. 비워두면 Visual 자식의 SimpleFrameAnimator에서 리컬러되지 " +
-        "않은 원본 Idle 첫 프레임을 자동으로 가져온다 - 시체 자체는 MonsterHealth.deadColor로 틴트되어 " +
+    [Tooltip("인벤토리 슬롯에 표시할 아이콘. 비워두면 Visual 자식의 SimpleFrameAnimator가 쓰는 스프라이트 " +
+        "시트의 첫 번째 프레임을 자동으로 가져온다 - 시체 자체는 MonsterHealth.deadColor로 틴트되어 " +
         "보이지만, 그건 SpriteRenderer.color(렌더러 틴트)일 뿐 Sprite 애셋 자체는 그대로라서 아이콘은 " +
         "리컬러 없이 원본 색 그대로 나온다.")]
     [SerializeField] private Sprite inventoryIcon;
+
+    // inventoryIcon이 비었을 때 쓰는 시트 첫 프레임. OnValidate가 에디터에서 채운다 (InventoryIconUtility 참고).
+    [SerializeField, HideInInspector] private Sprite sheetFirstFrameIcon;
 
     private MonsterHealth health;
     private Transform player;
@@ -67,8 +70,22 @@ public class MonsterCorpsePickup : MonoBehaviour
         return path.ToString();
     }
 
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        SimpleFrameAnimator frameAnimator = GetComponentInChildren<SimpleFrameAnimator>(true);
+        if (frameAnimator == null || frameAnimator.IdleSprite == null) return;
+
+        Sprite found = InventoryIconUtility.FindSheetFirstFrame(frameAnimator.IdleSprite.texture);
+        if (found != null) sheetFirstFrameIcon = found;
+    }
+#endif
+
+    // 시트 첫 프레임을 아직 못 찾은 경우를 위한 대체 경로.
     private Sprite ResolveDefaultIcon()
     {
+        if (sheetFirstFrameIcon != null) return sheetFirstFrameIcon;
+
         SimpleFrameAnimator frameAnimator = GetComponentInChildren<SimpleFrameAnimator>();
         if (frameAnimator != null && frameAnimator.IdleSprite != null) return frameAnimator.IdleSprite;
 

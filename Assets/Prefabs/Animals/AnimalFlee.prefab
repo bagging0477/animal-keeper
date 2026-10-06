@@ -133,6 +133,7 @@ MonoBehaviour:
   pickupSoundStartTime: 7
   pickupSoundEndTime: 8
   inventoryIcon: {fileID: 0}
+  sheetFirstFrameIcon: {fileID: -1766235454, guid: f08ded3ef52d7ad23a003a4588354d26, type: 3}
 --- !u!114 &5220942028165541938
 MonoBehaviour:
   m_ObjectHideFlags: 0

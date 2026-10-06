@@ -45,6 +45,9 @@ public class SpriteSheetAnimator : MonoBehaviour
     /// 끝난 뒤(늦어도 다른 컴포넌트의 Start 시점)라면 항상 값이 채워져 있다.</summary>
     public Sprite IdleFirstFrame => idleFrames != null && idleFrames.Length > 0 ? idleFrames[0] : null;
 
+    /// <summary>프레임을 잘라내는 원본 시트. 인벤토리 아이콘으로 쓸 시트 첫 프레임을 에디터에서 찾을 때 쓴다.</summary>
+    public Texture2D Sheet => sheet;
+
     /// <summary>Idle/Alert/Moving 중 하나로 전환한다. Alert나 Movement 프레임이 설정되지 않은
     /// 상태로 전환을 요청하면 Idle로 대체된다. 상태가 실제로 바뀔 때만 프레임 인덱스를 리셋해서,
     /// 매 프레임 같은 값으로 호출해도 애니메이션이 끊기지 않는다.</summary>

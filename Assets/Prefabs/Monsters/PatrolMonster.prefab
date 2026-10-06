@@ -265,3 +265,4 @@ MonoBehaviour:
   promptText: {fileID: 0}
   pickupSound: {fileID: 0}
   inventoryIcon: {fileID: 0}
+  sheetFirstFrameIcon: {fileID: -2246826257688269993, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}

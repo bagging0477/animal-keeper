@@ -15,9 +15,9 @@ public struct InventorySlotData
     /// <summary>동물을 내려놓을 때 되살릴 원본 프리팹(AnimalRescue.SourcePrefab). 비어 있으면 AnimalKind로 고른다.</summary>
     public AnimalRescue AnimalPrefab;
 
-    /// <summary>슬롯 UI에 그릴 아이콘. 동물은 AnimalRescue.InventoryIcon(수동 지정 또는 Idle 첫 프레임),
-    /// 지뢰/폭탄은 GadgetPickup에 지정된 스프라이트에서 온다. 아직 아이콘이 없으면 null로 남아있고,
-    /// InventoryUI는 이 경우 기존의 색상 채움만으로 표시한다.</summary>
+    /// <summary>슬롯 UI에 그릴 아이콘. 동물은 AnimalRescue.InventoryIcon(수동 지정 또는 시트 첫 프레임),
+    /// 바닥에서 주운 지뢰/폭탄은 GadgetPickup의 스프라이트에서 온다. 시작 지급/상점 구매처럼 아이콘 없이
+    /// 들어오면 null로 남고, InventoryUI가 종류별 기본 아이콘(없으면 임시 아이콘)으로 대신 그린다.</summary>
     public Sprite Icon;
 
     public static readonly InventorySlotData Empty = new InventorySlotData { Type = InventoryItemType.None };

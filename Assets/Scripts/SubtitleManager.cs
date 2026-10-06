@@ -27,11 +27,11 @@ public class SubtitleManager : MonoBehaviour
     private const string FallbackOsFontStyle = "Bold";
     private const string DesktopSdfShaderName = "TextMeshPro/Distance Field";
 
-    // 1920x1080 기준 좌표. 인벤토리 슬롯 줄(2240x1260 기준 캔버스에서 하단 24 + 높이 110 = 134, 이 캔버스로
-    // 환산하면 약 115)의 바로 위에 여백을 두고 자막의 아래 끝을 맞춘다. 두 캔버스 모두 Scale With Screen Size
+    // 1920x1080 기준 좌표. 인벤토리 슬롯 줄(2240x1260 기준 캔버스에서 하단 24 + 높이 165 = 189, 이 캔버스로
+    // 환산하면 약 162)의 바로 위에 여백 20을 두고 자막의 아래 끝을 맞춘다. 두 캔버스 모두 Scale With Screen Size
     // (match 0.5)라 화면 비율이 달라도 이 둘의 비율은 일정해서 겹치지 않는다.
     private static readonly Vector2 ReferenceResolution = new Vector2(1920f, 1080f);
-    private const float BottomOffset = 135f;
+    private const float BottomOffset = 182f;
     private const float MaxWidth = 1400f;
     private const float FontSize = 34f;
     // TMP 테두리는 글자 경계를 중심으로 안팎에 반씩 그려져서, 테두리만 두껍게 하면 흰 획이 가늘어진다. 글자면(Face)을
