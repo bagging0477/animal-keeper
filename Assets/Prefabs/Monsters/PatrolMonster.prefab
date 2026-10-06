@@ -139,6 +139,7 @@ MonoBehaviour:
   - {fileID: -2004467190613509834, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
   hurtFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
   hurtFlashDuration: 0.15
+  knockedOutSprite: {fileID: -3881110996187029670, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
 --- !u!114 &5000000000000000003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -245,6 +246,7 @@ MonoBehaviour:
   patrolWaitMax: 4
   monsterTypeName: "\uC21C\uCC30\uD615"
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
+  chaseClip: {fileID: 0}
   sightBlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -262,7 +264,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterCorpsePickup
   interactionRange: 1.8
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
-  promptText: {fileID: 0}
   pickupSound: {fileID: 0}
+  pickupSoundVolume: 1
   inventoryIcon: {fileID: 0}
   sheetFirstFrameIcon: {fileID: -2246826257688269993, guid: 510e12b3310175e4cbdf9740408477c4, type: 3}
