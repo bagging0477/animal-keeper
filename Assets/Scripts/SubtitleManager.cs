@@ -46,6 +46,17 @@ public class SubtitleManager : MonoBehaviour
     private static TMP_FontAsset sharedFont;
     private static bool sharedFontResolved;
 
+    // 프로젝트가 Play 진입 시 Domain Reload를 끄고 있어서 static 값이 Play 세션을 넘어 남는다. 실행 중에 만든
+    // 폰트 에셋은 Play가 끝나면 파괴되므로, 리셋하지 않으면 다음 Play에서 파괴된 폰트를 "이미 찾음"으로 보고
+    // TMP 기본 폰트(한글 없음)로 떨어진다. 매 Play 시작 때 캐시를 비운다.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        instance = null;
+        sharedFont = null;
+        sharedFontResolved = false;
+    }
+
     /// <summary>자막과 같은 한글 TMP 폰트. 다른 UI(상점 메뉴 등)도 글꼴을 맞추려고 이 값을 쓴다.
     /// Resources/SubtitleFont가 없으면 OS 한글 폰트로 한 번만 만들어 재사용하고, 그것도 없으면 null.</summary>
     public static TMP_FontAsset SharedFont
