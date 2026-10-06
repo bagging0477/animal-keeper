@@ -36,6 +36,9 @@ public class SimpleFrameAnimator : MonoBehaviour
     [SerializeField] private Color hurtFlashColor = new Color(1f, 0.25f, 0.25f, 1f);
     [SerializeField] private float hurtFlashDuration = 0.15f;
 
+    [Header("기절 - 마취/스턴 중에 고정해서 보여줄 스프라이트. 비워 두면 idleSprite를 쓴다")]
+    [SerializeField] private Sprite knockedOutSprite;
+
     private SpriteRenderer spriteRenderer;
     private ISleepable sleepable;
     private MonsterHealth monsterHealth;
@@ -157,13 +160,14 @@ public class SimpleFrameAnimator : MonoBehaviour
 
     private void Update()
     {
-        // 기절 중에는 Idle 스프라이트에 멈춰 있는다. 피격/사망 모션은 그대로 재생하고, 진행 중이던 공격은 끊는다.
+        // 기절 중에는 기절 스프라이트(없으면 Idle)에 멈춰 있는다. 피격/사망 모션은 그대로 재생하고, 진행 중이던 공격은 끊는다.
         if (IsKnockedOut && mode != Mode.Hurt && mode != Mode.Dead)
         {
             if (mode == Mode.Attack) mode = Mode.Idle;
             frameIndex = 0;
             frameTimer = 0f;
-            if (idleSprite != null) spriteRenderer.sprite = idleSprite;
+            Sprite knockedOut = knockedOutSprite != null ? knockedOutSprite : idleSprite;
+            if (knockedOut != null) spriteRenderer.sprite = knockedOut;
             UpdateHurtFlash();
             return;
         }
