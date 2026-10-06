@@ -37,6 +37,8 @@ public class SimpleFrameAnimator : MonoBehaviour
     [SerializeField] private float hurtFlashDuration = 0.15f;
 
     private SpriteRenderer spriteRenderer;
+    private ISleepable sleepable;
+    private MonsterHealth monsterHealth;
     private bool isMoving;
     private bool isFleeing;
     private Mode mode;
@@ -144,10 +146,28 @@ public class SimpleFrameAnimator : MonoBehaviour
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        // 몬스터는 이 애니메이터가 Visual 자식에 있고 MonsterHealth는 루트에 있으므로 부모까지 찾는다.
+        sleepable = GetComponentInParent<ISleepable>();
+        monsterHealth = sleepable as MonsterHealth;
     }
+
+    // 마취(동물/몬스터) 또는 스턴(몬스터) 중이면 기절 상태로 본다. 사망은 Dead 모드가 따로 처리한다.
+    private bool IsKnockedOut =>
+        (sleepable != null && sleepable.IsAsleep) || (monsterHealth != null && monsterHealth.IsStunned);
 
     private void Update()
     {
+        // 기절 중에는 Idle 스프라이트에 멈춰 있는다. 피격/사망 모션은 그대로 재생하고, 진행 중이던 공격은 끊는다.
+        if (IsKnockedOut && mode != Mode.Hurt && mode != Mode.Dead)
+        {
+            if (mode == Mode.Attack) mode = Mode.Idle;
+            frameIndex = 0;
+            frameTimer = 0f;
+            if (idleSprite != null) spriteRenderer.sprite = idleSprite;
+            UpdateHurtFlash();
+            return;
+        }
+
         if (mode == Mode.Attack || mode == Mode.Hurt || mode == Mode.Dead)
         {
             UpdateOneShotFrame();

@@ -34,6 +34,7 @@ public class SpriteSheetAnimator : MonoBehaviour
     [SerializeField] private int movementFrameCount;
 
     private SpriteRenderer spriteRenderer;
+    private ISleepable sleepable;
     private Sprite[] idleFrames;
     private Sprite[] alertFrames;
     private Sprite[] movementFrames;
@@ -69,6 +70,7 @@ public class SpriteSheetAnimator : MonoBehaviour
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        sleepable = GetComponentInParent<ISleepable>();
 
         if (sheet == null)
         {
@@ -100,6 +102,15 @@ public class SpriteSheetAnimator : MonoBehaviour
 
     private void Update()
     {
+        // 마취로 잠든 동안에는 Idle 첫 프레임에 멈춰 있는다.
+        if (sleepable != null && sleepable.IsAsleep)
+        {
+            frameIndex = 0;
+            frameTimer = 0f;
+            if (idleFrames != null && idleFrames.Length > 0) spriteRenderer.sprite = idleFrames[0];
+            return;
+        }
+
         Sprite[] frames = state switch
         {
             AnimalAnimState.Alert => alertFrames,
