@@ -1,10 +1,8 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ShelterSettlement : MonoBehaviour
 {
     [SerializeField] private GameBalanceConfig config;
-    [SerializeField] private Text settlementText;
     [SerializeField] private GameOverPanel gameOverPanel;
     [SerializeField] private DayClearPanel dayClearPanel;
     [SerializeField] private GameClearPanel gameClearPanel;
@@ -21,20 +19,19 @@ public class ShelterSettlement : MonoBehaviour
             ? GameManager.Instance.SettleCargo(config != null ? config.mileagePerWeight : 10)
             : GameManager.Instance.LastSettlementResult;
 
-        if (settlementText != null)
-        {
-            int rescued = GameManager.Instance.RescuedCount;
-            int target = GameManager.Instance.TargetCount;
+        // 목표 달성/게임 오버는 여기서 판정하지 않는다(FinishCycle 참고) - 보호소를 하루에 여러 번 들를 수
+        // 있으므로 실제 성패 판정은 "다음 날로"를 눌러야 이루어진다. 화면에는 총 보유 마일리지(MileageDisplayUI)만
+        // 보여 주고, 계산 내역은 확인용으로 로그에만 남긴다.
+        LogSettlement(resultValue, isFirstSettle);
+    }
 
-            // 목표 달성/게임 오버는 여기서 판정하지 않는다(FinishCycle 참고) - 보호소를 하루에
-            // 여러 번 들를 수 있으므로, 이 화면은 "지금까지 이번 정산에서 판 화물" 영수증과 "오늘
-            // 누적 진행도"만 보여주고, 실제 성패 판정은 "다음 날로"를 눌러야 이루어진다.
-            settlementText.text =
-                $"기본 정산 ({resultValue.TotalWeight}kg × {resultValue.PricePerWeight})   {resultValue.BaseMileage}\n" +
-                $"────────────────\n" +
-                $"<b><color=#8BC34A>합계   {resultValue.BaseMileage} 마일리지</color></b>\n\n" +
-                $"오늘 목표 진행   {rescued}/{target}";
-        }
+    [System.Diagnostics.Conditional("UNITY_EDITOR"), System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+    private static void LogSettlement(GameManager.SettlementResult result, bool isFirstSettle)
+    {
+        GameManager gm = GameManager.Instance;
+        Debug.Log($"[정산{(isFirstSettle ? "" : " - 이번 방문에서 이미 정산함, 이전 결과")}] " +
+                  $"기본 정산 {result.TotalWeight}kg × {result.PricePerWeight} = {result.BaseMileage}, " +
+                  $"총 보유 마일리지 {gm.Mileage}, 오늘 목표 진행 {gm.RescuedCount}/{gm.TargetCount}");
     }
 
     /// <summary>"오늘"을 실제로 마감한다 - ShelterScene의 출구(ShelterExitPoint)에서만 호출된다. 목표 미달로
@@ -49,6 +46,7 @@ public class ShelterSettlement : MonoBehaviour
         if (GameManager.Instance == null) return true;
 
         GameManager.CycleOutcome outcome = GameManager.Instance.FinishCycle();
+        LogCycleEnd(outcome);
 
         if (outcome.GameWon)
         {
@@ -71,5 +69,12 @@ public class ShelterSettlement : MonoBehaviour
         if (dayClearPanel == null) return true;
         dayClearPanel.Show("Day 클리어!");
         return false;
+    }
+
+    [System.Diagnostics.Conditional("UNITY_EDITOR"), System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+    private static void LogCycleEnd(GameManager.CycleOutcome outcome)
+    {
+        Debug.Log($"[하루 마감] 목표 달성 {outcome.TargetMet}, 보너스 {outcome.BonusMileage}, " +
+                  $"게임 클리어 {outcome.GameWon}, 총 보유 마일리지 {GameManager.Instance.Mileage}");
     }
 }
