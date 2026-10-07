@@ -590,6 +590,9 @@ MonoBehaviour:
   - {fileID: 8453516254361774462, guid: a369de8a6938edb45a8c07c800314236, type: 3}
   - {fileID: 233379151328233148, guid: aee08adaa603e8848945fd379da60d6c, type: 3}
   - {fileID: 4987092796169242363, guid: 670f755404a187b4d86d314119b8dc28, type: 3}
+  - {fileID: 1896611908410197428, guid: bfc93dd70e597ef43bc44f73a99ae262, type: 3}
+  - {fileID: 6611023393126557278, guid: c7723c4c6fa007549bd18f1e24b41066, type: 3}
+  - {fileID: 7186287678727500887, guid: b67f91f182be6014cb4b6d9085d1a262, type: 3}
   minRoomCount: 3
   maxRoomCount: 4
   floorVariantTiles:
@@ -603,6 +606,7 @@ MonoBehaviour:
   monsterPrefabs:
   - {fileID: 6555077884092434632, guid: 5b86696969f0f8e48ba300b904e7fcaf, type: 3}
   - {fileID: 5382451385581636795, guid: 17d880809c3e527428af5414eb32f690, type: 3}
+  monstersPerRoom: 1
   playerObjectName: Player
   truckPointObjectName: TruckPoint
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
