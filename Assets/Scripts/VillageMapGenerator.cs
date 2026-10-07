@@ -53,6 +53,11 @@ public class VillageMapGenerator : MonoBehaviour
     [SerializeField] private int outsideMaskMargin = 40;
     [Tooltip("맵 가장자리(지나갈 수 있는 바닥의 끝)에서 바깥쪽으로 몇 칸에 걸쳐 점점 어두워질지. 이 범위에는 바닥 타일이 장식으로 더 깔린다(들어갈 수는 없다). 0이면 바닥 경계에서 딱 끊긴다.")]
     [SerializeField, Range(0f, 8f)] private float outsideMaskFadeWidth = 0.5f;
+    [Tooltip("바닥 가장자리 안쪽으로 몇 칸 전부터 미리 어두워지기 시작할지. 시야를 막는 벽 그림자(BuildWallShadows)는 바닥 경계에 그대로 있으므로, " +
+        "경계에 닿기 전에 바닥이 충분히 어두워져 있으면 부채꼴 시야가 경계에서 칼같이 끊기는 선이 드러나지 않는다. 0이면 경계 바깥에서만 어두워진다. " +
+        "부채꼴 시야는 경계 바깥이 그림자라 항상 새까맣기 때문에, 바깥 폭(outsideMaskFadeWidth)을 0으로 두고 이 값만으로 경계에서 완전히 어두워지게 해야 " +
+        "경계선이 드러나지 않는다. 마스크는 Floor 레이어에만 그려지므로 캐릭터/장애물은 어두워지지 않는다.")]
+    [SerializeField, Range(0f, 4f)] private float outsideMaskInnerFadeWidth = 2f;
     [Tooltip("그라데이션을 칸마다 몇 조각으로 나눠 그릴지. 클수록 부드럽지만 정점이 늘어난다.")]
     [SerializeField, Range(1, 8)] private int outsideMaskFadeSubdivisions = 4;
     [Tooltip("마스크는 바닥(Floor) 위, 캐릭터/장애물(Default) 아래에 그려진다.")]
@@ -131,7 +136,7 @@ public class VillageMapGenerator : MonoBehaviour
         }
 
         BuildMapBoundary(mapRoot.transform, mapFloor);
-        BuildWallShadows(mapRoot.transform, mapFloor);
+        BuildWallShadows(mapRoot.transform, WithObstacleOverhang(mapFloor, placedRooms));
         BuildOutsideMask(mapRoot.transform, mapFloor, placedRooms);
 
         // Obstacle colliders baked into the room prefabs (and the boundary just built) are live at
@@ -803,6 +808,28 @@ public class VillageMapGenerator : MonoBehaviour
     private static readonly System.Reflection.FieldInfo ShadowShapePathHashField =
         typeof(ShadowCaster2D).GetField("m_ShapePathHash", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
+    // 나무처럼 칸보다 큰 장애물 스프라이트는 바닥 가장자리 밖으로 삐져나온다. 장애물은 캐릭터와 같은 Default 레이어라 벽 그림자를 받는데,
+    // 그림자 외곽선이 바닥 경계에 있으면 밖으로 나간 부분이 그 선을 따라 잘려 보인다. 그래서 방 소품 스프라이트가 덮는 바닥 밖 칸까지
+    // 외곽선을 넓힌다 - 넓어지는 칸에는 바닥이 없어 캐릭터가 설 수 없으므로, 그림자로 캐릭터를 가리는 시야 규칙은 그대로다.
+    // (그림자 대상 레이어에서 Default를 빼는 방식은 모서리 뒤 몬스터까지 드러나게 해서 쓰지 않는다.)
+    // 동물/몬스터를 스폰하기 전에 부르므로 이 시점의 SpriteRenderer는 방 프리팹의 장애물/장식뿐이다.
+    private static HashSet<Vector2Int> WithObstacleOverhang(HashSet<Vector2Int> mapFloor, List<RoomInstance> rooms)
+    {
+        HashSet<Vector2Int> cells = new HashSet<Vector2Int>(mapFloor);
+        foreach (RoomInstance room in rooms)
+        {
+            foreach (SpriteRenderer sprite in room.Root.GetComponentsInChildren<SpriteRenderer>())
+            {
+                Bounds b = sprite.bounds;
+                for (int y = Mathf.FloorToInt(b.min.y); y <= Mathf.FloorToInt(b.max.y - 0.001f); y++)
+                {
+                    for (int x = Mathf.FloorToInt(b.min.x); x <= Mathf.FloorToInt(b.max.x - 0.001f); x++) cells.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+        return cells;
+    }
+
     private static void BuildWallShadows(Transform mapRoot, HashSet<Vector2Int> mapFloor)
     {
         // 혹시 같은 맵 루트 아래 이전에 만든 벽 그림자가 남아 있으면(재생성) 먼저 지운다.
@@ -887,7 +914,10 @@ public class VillageMapGenerator : MonoBehaviour
     // Unlit 머티리얼로 덮어 그릴 뿐이라 맵 안쪽의 시야/그림자 처리에는 영향이 없다.
     // 바닥 경계에서 딱 끊기면 어색하므로, 경계 바깥 outsideMaskFadeWidth칸까지는 바닥과 같은 타일을 장식으로 더 깔고
     // (BuildOutsideFloorBand - 걸어 다닐 수는 없다, 경계 충돌체는 원래 바닥 가장자리에 그대로 있다) 그 위의 마스크를
-    // 경계에서 투명 → 바깥으로 갈수록 점점 진하게 칠한다. 그 너머(fadeWidth 이상)는 outsideMaskColor로 완전히 덮는다.
+    // 바깥으로 갈수록 점점 진하게 칠한다. 그 너머(fadeWidth 이상)는 outsideMaskColor로 완전히 덮는다.
+    // 시야를 막는 벽 그림자는 바닥 경계에 있어서, 경계까지 바닥이 그대로 밝으면 부채꼴 시야가 그 선에서 칼같이 끊겨 보인다.
+    // 그래서 마스크는 경계 안쪽 outsideMaskInnerFadeWidth칸부터 미리 어두워지기 시작해, 경계 안팎을 하나의 곡선으로 지나간다
+    // (그림자 위치/시야 차단 규칙은 그대로라 모서리 너머가 더 보이지는 않는다).
     // 바닥 범위를 outsideMaskMargin만큼 넓힌 사각형 안에서, 완전히 덮는 칸은 줄마다 이어지는 구간을 사각형 하나로 만든다.
     private void BuildOutsideMask(Transform mapRoot, HashSet<Vector2Int> mapFloor, List<RoomInstance> rooms)
     {
@@ -897,7 +927,9 @@ public class VillageMapGenerator : MonoBehaviour
         // 색이 그대로 보이도록 미리 linear로 바꿔 넣는다(안 바꾸면 화면에서 더 밝게 보인다).
         Color maskColor = QualitySettings.activeColorSpace == ColorSpace.Linear ? outsideMaskColor.linear : outsideMaskColor;
         float fade = outsideMaskFadeWidth;
+        float innerFade = outsideMaskInnerFadeWidth;
         int reach = Mathf.CeilToInt(fade) + 1;
+        int innerReach = Mathf.CeilToInt(innerFade) + 1;
 
         // 점 p에서 가장 가까운 바닥 칸(정사각형)까지의 거리. reach 밖은 fade보다 멀다고 보고 찾지 않는다.
         float DistanceToFloor(Vector2 p)
@@ -918,6 +950,36 @@ public class VillageMapGenerator : MonoBehaviour
             return Mathf.Sqrt(best);
         }
 
+        // 바닥 안쪽의 점 p에서 가장 가까운 바닥 아닌 칸(정사각형)까지의 거리. innerReach 밖은 innerFade보다 멀다고 보고 찾지 않는다.
+        float DistanceToOutside(Vector2 p)
+        {
+            int px = Mathf.FloorToInt(p.x), py = Mathf.FloorToInt(p.y);
+            float best = float.MaxValue;
+            for (int y = py - innerReach; y <= py + innerReach; y++)
+            {
+                for (int x = px - innerReach; x <= px + innerReach; x++)
+                {
+                    if (mapFloor.Contains(new Vector2Int(x, y))) continue;
+                    float dx = Mathf.Max(x - p.x, 0f, p.x - (x + 1));
+                    float dy = Mathf.Max(y - p.y, 0f, p.y - (y + 1));
+                    float d = dx * dx + dy * dy;
+                    if (d < best) best = d;
+                }
+            }
+            return Mathf.Sqrt(best);
+        }
+
+        // 바닥 경계 기준 부호 있는 거리(바깥 +, 안쪽 -)로 투명도를 정한다: 안쪽 innerFade = 투명, 바깥 fade = 완전히 어둡게.
+        float MaskAlpha(Vector2 p)
+        {
+            float outside = DistanceToFloor(p);
+            float signedDistance = outside > 0f ? outside : -DistanceToOutside(p);
+            float span = innerFade + fade;
+            if (span <= 0f) return signedDistance > 0f ? maskColor.a : 0f;
+            float t = Mathf.Clamp01((signedDistance + innerFade) / span);
+            return maskColor.a * t * t * (3f - 2f * t);
+        }
+
         // 그라데이션이 걸치는 바깥 칸들. 칸 가운데가 아니라 칸에서 가장 가까운 지점 기준으로 거르므로 빠지는 칸이 없다.
         HashSet<Vector2Int> band = new HashSet<Vector2Int>();
         if (fade > 0f)
@@ -935,6 +997,16 @@ public class VillageMapGenerator : MonoBehaviour
                 }
             }
             BuildOutsideFloorBand(mapRoot, band, rooms);
+        }
+
+        // 그라데이션이 걸치는 바닥 칸들(경계 안쪽 innerFade 이내).
+        List<Vector2Int> innerBand = new List<Vector2Int>();
+        if (innerFade > 0f)
+        {
+            foreach (Vector2Int c in mapFloor)
+            {
+                if (DistanceToOutside(new Vector2(c.x + 0.5f, c.y + 0.5f)) - 0.71f < innerFade) innerBand.Add(c);
+            }
         }
 
         int minX = int.MaxValue, maxX = int.MinValue, minY = int.MaxValue, maxY = int.MinValue;
@@ -972,11 +1044,11 @@ public class VillageMapGenerator : MonoBehaviour
             }
         }
 
-        // 그라데이션 칸은 outsideMaskFadeSubdivisions x 조각으로 잘게 나눠, 정점마다 바닥까지의 거리로 투명도를 정한다
-        // (바닥 경계 = 투명, fadeWidth 이상 = 완전히 어둡게). 칸 모양과 상관없이 경계선을 따라 부드럽게 이어지고,
+        // 그라데이션 칸(바깥 band + 안쪽 innerBand)은 outsideMaskFadeSubdivisions x 조각으로 잘게 나눠, 정점마다 바닥 경계까지의
+        // 부호 있는 거리로 투명도를 정한다(MaskAlpha). 칸 모양과 상관없이 경계선을 따라 부드럽게 이어지고,
         // 바깥으로 튀어나온 모서리 주변은 자연스럽게 둥글게 어두워진다.
         int sub = Mathf.Max(1, outsideMaskFadeSubdivisions);
-        foreach (Vector2Int cell in band)
+        foreach (Vector2Int cell in band.Concat(innerBand))
         {
             int b = vertices.Count;
             for (int j = 0; j <= sub; j++)
@@ -984,9 +1056,8 @@ public class VillageMapGenerator : MonoBehaviour
                 for (int i = 0; i <= sub; i++)
                 {
                     Vector2 p = new Vector2(cell.x + (float)i / sub, cell.y + (float)j / sub);
-                    float t = Mathf.Clamp01(DistanceToFloor(p) / fade);
                     vertices.Add(new Vector3(p.x, p.y, 0f));
-                    colors.Add(new Color(maskColor.r, maskColor.g, maskColor.b, maskColor.a * t * t * (3f - 2f * t)));
+                    colors.Add(new Color(maskColor.r, maskColor.g, maskColor.b, MaskAlpha(p)));
                 }
             }
             for (int j = 0; j < sub; j++)

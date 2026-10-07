@@ -614,7 +614,7 @@ MonoBehaviour:
   outsideMaskMaterial: {fileID: 2100000, guid: 67ac8126d05722c48b320abae6fec33b, type: 2}
   outsideMaskColor: {r: 0, g: 0, b: 0, a: 1}
   outsideMaskMargin: 40
-  outsideMaskFadeWidth: 0.5
+  outsideMaskFadeWidth: 0
   outsideMaskFadeSubdivisions: 4
   outsideMaskSortingLayer: Floor
   outsideMaskSortingOrder: 100
