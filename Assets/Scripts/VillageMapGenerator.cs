@@ -36,6 +36,9 @@ public class VillageMapGenerator : MonoBehaviour
     [Header("기존 씬 오브젝트 (재배치할 대상)")]
     [SerializeField] private string playerObjectName = "Player";
     [SerializeField] private string truckPointObjectName = "TruckPoint";
+    [Tooltip("트럭(캠핑카) 콜라이더 바깥으로 한 변당 이 거리(칸) 안의 방 장애물은 이번 맵에서만 치워서 트럭 주변을 항상 넓게 비워둔다. " +
+        "가능하면 이 범위가 전부 바닥인 자리에 트럭을 놓고, 그런 자리가 없는 방에서는 최소 여유 폭(1.1칸) 기준으로 자리를 고른다.")]
+    [SerializeField, Min(0f)] private float truckClearanceMarginPerSide = 2.5f;
 
     [Header("밸런스 설정")]
     [SerializeField] private GameBalanceConfig config;
@@ -148,31 +151,48 @@ public class VillageMapGenerator : MonoBehaviour
         PositionExistingObject(playerObjectName, ToSpritePosition(centerRoom, spawnCell));
 
         // 트럭 지점은 1칸짜리 플레이어와 달리 부피가 훨씬 크므로(6배 스케일 모델), 트럭의 실제 콜라이더 크기만큼
-        // 장애물/맵 경계와 겹치지 않는 칸을 고른다. 가능하면 주변 통행 여유 폭(TruckClearanceMarginPerSide)까지
-        // 전부 바닥인 칸을 먼저 찾고, 없으면 트럭 자체만 안 겹치는 칸으로, 그래도 없으면 일반 PickSafeCell로 물러난다.
+        // 장애물/맵 경계와 겹치지 않는 칸을 고른다. 주변 여유 폭(truckClearanceMarginPerSide)까지 전부 바닥인 칸을 먼저 찾고,
+        // 없으면 최소 여유 폭(MinTruckClearanceMarginPerSide)으로, 그다음 트럭 자체만 안 겹치는 칸으로, 그래도 없으면
+        // 일반 PickSafeCell로 물러난다.
         Vector2 truckFootprint = GetTruckFootprintSize();
-        Vector2 truckClearance = truckFootprint + Vector2.one * (TruckClearanceMarginPerSide * 2f);
+        Vector2 truckClearance = truckFootprint + Vector2.one * (truckClearanceMarginPerSide * 2f);
+        Vector2 minTruckClearance = truckFootprint + Vector2.one * (MinTruckClearanceMarginPerSide * 2f);
         Vector2Int truckCell = PickSafeCellForFootprint(centerRoom, spawnCell, truckFootprint, mapFloor, truckClearance)
+            ?? PickSafeCellForFootprint(centerRoom, spawnCell, truckFootprint, mapFloor, minTruckClearance)
             ?? PickSafeCellForFootprint(centerRoom, spawnCell, truckFootprint, null, Vector2.zero)
             ?? PickSafeCell(centerRoom, spawnCell)
             ?? spawnCell;
         Vector2 truckXY = ToWorldXY(centerRoom, truckCell);
         PositionExistingObject(truckPointObjectName, new Vector3(truckXY.x, truckXY.y, 0f));
 
-        // 트럭 바로 옆에 장애물이 붙어있으면 플레이어가 트럭을 사이에 두고 지나다닐 틈이 없다 - 이 맵
-        // 인스턴스에 한해서 주변 장애물은 치운다(원본 방 프리팹은 그대로 둔다).
-        EnsureTruckClearance(placedRooms, truckXY, truckClearance);
+        // 트럭 주변은 항상 넓게 비운다 - 여유 폭 안의 장애물은 이 맵 인스턴스에 한해서 치운다(원본 방 프리팹은 그대로 둔다).
+        // 치운 자리는 처음 구운 NavMesh에 구멍으로 남아 있으므로 다시 굽는다.
+        if (EnsureTruckClearance(placedRooms, truckXY, truckClearance)) RebakeNavMesh(mapRoot, placedRooms);
+        AddTruckNavCarver(mapRoot.transform, truckXY, truckFootprint);
 
-        // 플레이어/트럭 지점이 이미 차지한 칸에는 몬스터나 동물이 겹쳐서 스폰되지 않도록 제외한다.
-        // (센터룸에서만 의미가 있다 - 다른 방에는 플레이어/트럭이 놓이지 않는다.)
-        HashSet<Vector2Int> centerRoomExclusions = new HashSet<Vector2Int> { spawnCell, truckCell };
+        // 플레이어 스폰 칸을 트럭보다 먼저 골랐으므로, 트럭이 플레이어를 덮었으면 트럭 밖의 안전한 칸으로 옮긴다
+        // (트럭 콜라이더가 이제 그 자리를 막고 있으므로 PickSafeCell의 겹침 검사가 트럭을 피한다).
+        Physics2D.SyncTransforms();
+        Vector2 playerXY = ToWorldXY(centerRoom, spawnCell);
+        if (Mathf.Abs(playerXY.x - truckXY.x) < truckFootprint.x * 0.5f + 0.5f && Mathf.Abs(playerXY.y - truckXY.y) < truckFootprint.y * 0.5f + 0.5f)
+        {
+            spawnCell = PickSafeCell(centerRoom, spawnCell) ?? spawnCell;
+            PositionExistingObject(playerObjectName, ToSpritePosition(centerRoom, spawnCell));
+        }
+
+        // 플레이어 칸과 트럭이 덮는 칸(+ 둘레 TruckSpawnGap)에는 몬스터나 동물이 스폰되지 않도록 제외한다.
+        HashSet<Vector2Int> playerAndTruckWorldCells = new HashSet<Vector2Int>(CellsUnderBox(truckXY, truckFootprint + Vector2.one * (TruckSpawnGap * 2f)))
+        {
+            ToWorldCell(centerRoom, spawnCell)
+        };
         Vector2 playerSpawnWorldXY = ToWorldXY(centerRoom, spawnCell);
 
         foreach (RoomInstance room in placedRooms)
         {
-            // 이 방에서 이미 차지된 칸(플레이어/트럭 + 먼저 스폰한 동물/몬스터). 동물과 몬스터가 같은 칸에 겹쳐
-            // 스폰되지 않도록 둘이 함께 쓴다.
-            HashSet<Vector2Int> usedCells = room == centerRoom ? new HashSet<Vector2Int>(centerRoomExclusions) : new HashSet<Vector2Int>();
+            // 이 방에서 이미 차지된 칸(플레이어/트럭 + 먼저 스폰한 동물/몬스터, 방 로컬 칸). 동물과 몬스터가 같은 칸에 겹쳐
+            // 스폰되지 않도록 둘이 함께 쓴다. 트럭이 이웃 방까지 걸쳐 있을 수 있으므로 모든 방에 적용한다.
+            Vector2Int roomOffset = ToWorldCell(room, Vector2Int.zero);
+            HashSet<Vector2Int> usedCells = new HashSet<Vector2Int>(playerAndTruckWorldCells.Select(c => c - roomOffset));
 
             // Parented under each room (not the shared mapRoot) so AnimalRescue's hierarchy-path Id
             // stays unique per room - rooms never repeat a prefab, but animalPrefabs can be picked
@@ -731,34 +751,95 @@ public class VillageMapGenerator : MonoBehaviour
         return new Vector2(box.size.x * Mathf.Abs(scale.x), box.size.y * Mathf.Abs(scale.y));
     }
 
-    // 플레이어가 몸통 폭만큼 여유 있게 트럭 옆을 지나다닐 수 있도록, 트럭 자체 부피 바깥으로
-    // 한 변당 이만큼(월드 유닛) 더 확보한다.
-    private const float TruckClearanceMarginPerSide = 1.1f;
+    // 트럭 주변을 넓게 비울 수 없는 방(좁은 방)에서 물러날 최소 여유 폭 - 플레이어가 몸통 폭만큼 트럭 옆을 지나다닐 수 있는 정도.
+    private const float MinTruckClearanceMarginPerSide = 1.1f;
+
+    // 동물/몬스터를 트럭 콜라이더에서 최소 이만큼(칸) 떨어진 칸에만 스폰한다 - 트럭 안이나 바로 옆에 끼어 나타나지 않게.
+    private const float TruckSpawnGap = 1f;
 
     // 트럭 주변 여유 폭 안에 있는 장애물은 이 맵 인스턴스에서만 치운다(원본 방 프리팹은 그대로 유지).
-    // 몬스터가 그 자리를 피해 다니도록 심어둔 NavMesh 카버도 짝을 맞춰 같이 지운다(안 지워도 안전에는
-    // 문제없지만, 이미 치운 장애물 자리를 몬스터가 계속 없는 장애물처럼 피해 다니는 건 어색하다).
+    // 몬스터가 그 자리를 피해 다니도록 심어둔 NavMesh 카버도 짝을 맞춰 같이 지우고, 방의 장애물 목록에서도 빼서
+    // 뒤이은 스폰/NavMesh 재생성이 치운 자리를 평범한 바닥으로 다루게 한다. 하나라도 치웠으면 true.
     // 방 장애물 목록(GetRoomObstacles)에 있는 충돌체만 치우므로 맵 경계·트럭·캐릭터 같은 다른 충돌체는 건드리지 않는다.
-    private static void EnsureTruckClearance(List<RoomInstance> rooms, Vector2 truckWorldCenter, Vector2 clearance)
+    private static bool EnsureTruckClearance(List<RoomInstance> rooms, Vector2 truckWorldCenter, Vector2 clearance)
     {
-        Dictionary<Collider2D, RoomObstacle> obstacleByCollider = new Dictionary<Collider2D, RoomObstacle>();
+        Dictionary<Collider2D, (RoomInstance room, RoomObstacle obstacle)> obstacleByCollider = new Dictionary<Collider2D, (RoomInstance, RoomObstacle)>();
         foreach (RoomInstance room in rooms)
         {
-            foreach (RoomObstacle obstacle in room.Obstacles) obstacleByCollider[obstacle.Collider] = obstacle;
+            foreach (RoomObstacle obstacle in room.Obstacles) obstacleByCollider[obstacle.Collider] = (room, obstacle);
         }
 
+        HashSet<RoomInstance> changedRooms = new HashSet<RoomInstance>();
         Collider2D[] hits = Physics2D.OverlapBoxAll(truckWorldCenter, clearance, 0f);
         foreach (Collider2D hit in hits)
         {
-            if (hit == null || !obstacleByCollider.TryGetValue(hit, out RoomObstacle obstacle)) continue;
+            if (hit == null || !obstacleByCollider.TryGetValue(hit, out var entry)) continue;
 
-            Debug.Log($"VillageMapGenerator: 트럭 주변 통행 확보를 위해 장애물 '{hit.gameObject.name}'을(를) 이번 맵에서만 제거했습니다.");
+            // Destroy는 프레임 끝에 일어나므로, 같은 프레임의 다음 겹침 검사(플레이어 재배치 등)에서 바로 빠지도록 충돌체부터 끈다.
+            hit.enabled = false;
             Destroy(hit.gameObject);
-            foreach (GameObject carver in obstacle.NavCarvers)
+            foreach (GameObject carver in entry.obstacle.NavCarvers)
             {
                 if (carver != null) Destroy(carver);
             }
-            obstacle.NavCarvers.Clear();
+            entry.obstacle.NavCarvers.Clear();
+            entry.room.Obstacles.Remove(entry.obstacle);
+            changedRooms.Add(entry.room);
+        }
+
+        foreach (RoomInstance room in changedRooms)
+        {
+            room.ObstacleCells = new HashSet<Vector2Int>(room.Obstacles.SelectMany(o => o.Cells));
+        }
+        if (changedRooms.Count > 0)
+        {
+            Debug.Log($"VillageMapGenerator: 트럭 주변을 비우기 위해 장애물 {hits.Count(h => h != null && obstacleByCollider.ContainsKey(h))}개를 이번 맵에서만 제거했습니다.");
+        }
+        return changedRooms.Count > 0;
+    }
+
+    // 몬스터(NavMeshAgent)는 2D 충돌체를 모르기 때문에, 트럭 콜라이더와 같은 크기로 NavMesh를 파내서 플레이어처럼 트럭을 돌아가게 한다.
+    // 카빙은 에이전트 반경만큼 더 넓게 파이므로 몬스터 몸이 트럭에 겹치지도 않는다.
+    private static void AddTruckNavCarver(Transform parent, Vector2 truckWorldCenter, Vector2 footprint)
+    {
+        GameObject carver = new GameObject("TruckNavCarver");
+        carver.transform.SetParent(parent, false);
+        carver.transform.position = new Vector3(truckWorldCenter.x, 0f, truckWorldCenter.y);
+        NavMeshObstacle obstacle = carver.AddComponent<NavMeshObstacle>();
+        obstacle.shape = NavMeshObstacleShape.Box;
+        obstacle.size = new Vector3(footprint.x, 1f, footprint.y);
+        obstacle.carveOnlyStationary = true;
+        obstacle.carving = true;
+    }
+
+    // 장애물을 치운 칸은 NavMesh를 처음 구울 때 구멍으로 빠져 있었다(BuildNavGround) - 바닥 메시를 다시 만들어 다시 굽는다.
+    private static void RebakeNavMesh(GameObject mapRoot, List<RoomInstance> rooms)
+    {
+        List<MeshFilter> meshes = new List<MeshFilter>();
+        foreach (RoomInstance room in rooms)
+        {
+            Transform old = room.Root.transform.Find("NavGround");
+            if (old != null)
+            {
+                old.name = "NavGround (replaced)";
+                MeshFilter oldFilter = old.GetComponent<MeshFilter>();
+                if (oldFilter != null && oldFilter.sharedMesh != null) Destroy(oldFilter.sharedMesh);
+                Destroy(old.gameObject);
+            }
+            meshes.Add(BuildNavGround(room));
+        }
+        BakeNavMesh(mapRoot, meshes);
+    }
+
+    // 월드 좌표 상자가 덮는 칸(월드 칸 좌표). 경계에 딱 닿기만 한 칸은 넣지 않는다.
+    private static IEnumerable<Vector2Int> CellsUnderBox(Vector2 center, Vector2 size)
+    {
+        const float edgeEpsilon = 0.01f;
+        int minX = Mathf.FloorToInt(center.x - size.x * 0.5f + edgeEpsilon), maxX = Mathf.FloorToInt(center.x + size.x * 0.5f - edgeEpsilon);
+        int minY = Mathf.FloorToInt(center.y - size.y * 0.5f + edgeEpsilon), maxY = Mathf.FloorToInt(center.y + size.y * 0.5f - edgeEpsilon);
+        for (int y = minY; y <= maxY; y++)
+        {
+            for (int x = minX; x <= maxX; x++) yield return new Vector2Int(x, y);
         }
     }
 

@@ -273,8 +273,59 @@ public static class VillageMapGenerationTest
                 if (!mapFloor.Contains(cell) || onObstacle) r.Failures.Add($"플레이어가 바닥이 아니거나 장애물 칸 {cell}에 스폰");
             }
 
+            InspectTruck(r, generator, player, mapFloor);
+
             r.NavBuildMs = TimeNavMeshBuild(rooms);
             CaptureIfNew(r, mapFloor);
+        }
+
+        // 트럭: NavMesh에서 파였는지(몬스터가 못 지나감), 위에 스폰된 동물/몬스터가 없는지, 플레이어와 겹치지 않는지,
+        // 주변 여유 폭 안에 장애물이 남지 않았는지, 여유 폭 중 바닥 비율.
+        private static void InspectTruck(RunResult r, VillageMapGenerator generator, GameObject player, HashSet<Vector2Int> mapFloor)
+        {
+            GameObject truck = GameObject.Find(generator != null ? (string)generator.GetType().GetField("truckPointObjectName", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(generator) : "TruckPoint");
+            BoxCollider2D box = truck != null ? truck.GetComponent<BoxCollider2D>() : null;
+            if (box == null) { r.Failures.Add("트럭(TruckPoint) 콜라이더를 찾지 못했다"); return; }
+            Bounds tb = box.bounds;
+
+            int walkableSamples = 0;
+            for (float fx = -0.3f; fx <= 0.31f; fx += 0.3f)
+                for (float fy = -0.4f; fy <= 0.41f; fy += 0.2f)
+                {
+                    Vector3 p = new Vector3(tb.center.x + tb.size.x * fx, 0f, tb.center.y + tb.size.y * fy);
+                    if (NavMesh.SamplePosition(p, out NavMeshHit hit, 0.05f, NavMesh.AllAreas)) walkableSamples++;
+                }
+            if (walkableSamples > 0) r.Failures.Add($"트럭 자리에 NavMesh가 남아 있다 (샘플 {walkableSamples}곳) - 몬스터가 트럭을 지나갈 수 있다");
+
+            Bounds near = tb;
+            near.Expand(new Vector3(0.5f, 0.5f, 100f));
+            foreach (AnimalRescue a in Object.FindObjectsByType<AnimalRescue>(FindObjectsSortMode.None))
+                if (near.Contains(new Vector3(a.transform.position.x, a.transform.position.y, tb.center.z))) r.Failures.Add($"동물 {a.name}이 트럭 위/바로 옆에 스폰");
+            foreach (MonsterHealth m in Object.FindObjectsByType<MonsterHealth>(FindObjectsSortMode.None))
+                if (near.Contains(new Vector3(m.transform.position.x, m.transform.position.z, tb.center.z))) r.Failures.Add($"몬스터 {m.name}이 트럭 위/바로 옆에 스폰");
+
+            if (player != null)
+            {
+                Collider2D pc = player.GetComponent<Collider2D>();
+                if (pc != null && pc.bounds.Intersects(new Bounds(new Vector3(tb.center.x, tb.center.y, pc.bounds.center.z), new Vector3(tb.size.x, tb.size.y, 100f))))
+                    r.Failures.Add("플레이어가 트럭과 겹쳐 스폰");
+            }
+
+            float margin = generator != null ? (float)generator.GetType().GetField("truckClearanceMarginPerSide", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(generator) : 0f;
+            Vector2 clearance = (Vector2)tb.size + Vector2.one * margin * 2f;
+            int left = 0;
+            foreach (Collider2D c in Physics2D.OverlapBoxAll(tb.center, clearance, 0f))
+                if (c != null && c.enabled && !c.isTrigger && c.transform.parent != null && c.transform.parent.name == "Obstacles") left++;
+            if (left > 0) r.Failures.Add($"트럭 주변 여유 폭 안에 장애물 {left}개가 남아 있다");
+
+            int cells = 0, floorCells = 0;
+            for (int y = Mathf.FloorToInt(tb.center.y - clearance.y / 2f); y < Mathf.CeilToInt(tb.center.y + clearance.y / 2f); y++)
+                for (int x = Mathf.FloorToInt(tb.center.x - clearance.x / 2f); x < Mathf.CeilToInt(tb.center.x + clearance.x / 2f); x++)
+                {
+                    cells++;
+                    if (mapFloor.Contains(new Vector2Int(x, y))) floorCells++;
+                }
+            r.JunctionNotes.Add($"트럭 @({tb.center.x:F1},{tb.center.y:F1}) 여유 폭 {margin}칸 안 바닥 {floorCells}/{cells}칸");
         }
 
         private static HashSet<Vector2Int> RoomFloor(Transform room)
