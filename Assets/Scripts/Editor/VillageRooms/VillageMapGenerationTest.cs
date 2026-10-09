@@ -54,11 +54,11 @@ public static class VillageMapGenerationTest
     [MenuItem("Tools/Village Rooms/Run Map Generation Test - Linear (10x, seeds 1-10)")]
     private static void RunLinear10FromMenu() => BeginFromMenu(10, "linear10", 0, 0, 1);
 
-    [MenuItem("Tools/Village Rooms/Run Map Generation Test - Grid 3x4 (10x)")]
-    private static void RunGrid3x4FromMenu() => BeginFromMenu(10, "grid3x4", 3, 4, 1);
+    [MenuItem("Tools/Village Rooms/Run Map Generation Test - Grid 3x4 (30x)")]
+    private static void RunGrid3x4FromMenu() => BeginFromMenu(30, "grid3x4", 3, 4, 1);
 
-    [MenuItem("Tools/Village Rooms/Run Map Generation Test - Grid 4x5 (10x)")]
-    private static void RunGrid4x5FromMenu() => BeginFromMenu(10, "grid4x5", 4, 5, 1);
+    [MenuItem("Tools/Village Rooms/Run Map Generation Test - Grid 4x5 (30x)")]
+    private static void RunGrid4x5FromMenu() => BeginFromMenu(30, "grid4x5", 4, 5, 1);
 
     private static void BeginFromMenu(int runs, string label, int columns, int rows, int seedBase)
     {
@@ -173,12 +173,20 @@ public static class VillageMapGenerationTest
         public bool IsGrid;
         public int CorridorCells;
         public int PathsChecked, PathsComplete;
-        public int Animals, Monsters, TruckRoomMonsters, DuplicateIds;
+        public int Animals, Monsters, TruckRoomMonsters, DuplicateIds, RoomsOverCap;
+        public List<RoomSpawn> RoomSpawns = new List<RoomSpawn>(); // 격자 방별 스폰 수(방 종류별 분포 표용)
         public string TruckRoomPrefab;
         public bool FloorConnected = true, WalkableConnected = true;
 
         public int? Seed;           // 시드 고정 테스트일 때 이 회차의 시드
         public string MaskHash;     // 바깥 마스크 메시(정점 위치 + 색) 해시 - 수정 전후 같은 시드끼리 비교한다
+    }
+
+    private sealed class RoomSpawn
+    {
+        public string Type;
+        public bool TruckRoom;
+        public int Animals, Monsters, MonsterWeight;
     }
 
     private sealed class Runner
@@ -341,6 +349,7 @@ public static class VillageMapGenerationTest
                     r.Monsters = v.Monsters;
                     r.TruckRoomMonsters = v.TruckRoomMonsters;
                     r.DuplicateIds = v.DuplicateIds;
+                    r.RoomsOverCap = v.RoomsOverCap;
                     r.TruckRoomPrefab = v.TruckRoomPrefab;
                     r.JunctionNotes.Add($"스폰: 동물 {v.Animals}, 몬스터 {v.Monsters}, 트럭 방 {v.TruckRoomPrefab}(몬스터 {v.TruckRoomMonsters}), Id 중복 {v.DuplicateIds}");
                     r.PathsChecked = v.PathsChecked;
@@ -350,6 +359,25 @@ public static class VillageMapGenerationTest
                     foreach (string p in v.Problems) r.Failures.Add("격자 검증: " + p);
                     r.JunctionNotes.Add($"격자 {plan?.Columns}x{plan?.Rows}, 연결 {plan?.Edges.Count} (고리 {(plan != null ? GridLayoutPlanner.LoopCount(plan) : 0)}), 길 {r.CorridorCells}칸, " +
                                         $"트럭→방 경로 {v.PathsComplete}/{v.PathsChecked}, 바닥 연결 {(v.FloorConnected ? "O" : "X")}, 걸을 수 있는 바닥 연결 {(v.WalkableConnected ? "O" : "X")}");
+                }
+            }
+
+            if (r.IsGrid && plan != null)
+            {
+                int[] weights = generator.LastGridMonsterWeights;
+                foreach (Transform room in rooms)
+                {
+                    string[] parts = room.name.Split('_');
+                    if (parts.Length != 3 || !int.TryParse(parts[1], out int gx) || !int.TryParse(parts[2], out int gy)) continue;
+                    int index = gy * plan.Columns + gx;
+                    r.RoomSpawns.Add(new RoomSpawn
+                    {
+                        Type = RoomTypeName(room, plan),
+                        TruckRoom = new Vector2Int(gx, gy) == plan.TruckCell,
+                        Animals = room.GetComponentsInChildren<AnimalRescue>(true).Length,
+                        Monsters = room.GetComponentsInChildren<MonsterHealth>(true).Length,
+                        MonsterWeight = weights != null && index < weights.Length ? weights[index] : 0,
+                    });
                 }
             }
 
@@ -667,7 +695,10 @@ public static class VillageMapGenerationTest
                 sb.AppendLine($"== 격자 검증 ({gridRuns.Count}회)");
                 sb.AppendLine($"  트럭→방 중심 NavMesh 경로: {gridRuns.Sum(x => x.PathsComplete)}/{gridRuns.Sum(x => x.PathsChecked)} 성공");
                 sb.AppendLine($"  스폰 총량: 동물 {gridRuns.Min(x => x.Animals)}~{gridRuns.Max(x => x.Animals)}, 몬스터 {gridRuns.Min(x => x.Monsters)}~{gridRuns.Max(x => x.Monsters)}, " +
-                              $"트럭 방 몬스터 합계 {gridRuns.Sum(x => x.TruckRoomMonsters)}, Id 중복 합계 {gridRuns.Sum(x => x.DuplicateIds)}");
+                              $"트럭 방 몬스터 합계 {gridRuns.Sum(x => x.TruckRoomMonsters)}, Id 중복 합계 {gridRuns.Sum(x => x.DuplicateIds)}, 방당 상한 넘은 방 합계 {gridRuns.Sum(x => x.RoomsOverCap)}");
+                sb.AppendLine($"  방당 최대: 동물 {gridRuns.SelectMany(x => x.RoomSpawns).DefaultIfEmpty(new RoomSpawn()).Max(s => s.Animals)}, " +
+                              $"몬스터 {gridRuns.SelectMany(x => x.RoomSpawns).DefaultIfEmpty(new RoomSpawn()).Max(s => s.Monsters)}");
+                AppendRoomSpawnTable(sb, gridRuns);
                 sb.AppendLine("  트럭 방: " + string.Join(", ", gridRuns.GroupBy(x => x.TruckRoomPrefab).OrderBy(g => g.Key).Select(g => $"{g.Key} {g.Count()}회")));
                 sb.AppendLine($"  바닥(방 + 길) 한 덩어리: {gridRuns.Count(x => x.FloorConnected)}/{gridRuns.Count}회, " +
                               $"장애물 뺀 걸을 수 있는 바닥 한 덩어리: {gridRuns.Count(x => x.WalkableConnected)}/{gridRuns.Count}회");
@@ -691,6 +722,24 @@ public static class VillageMapGenerationTest
             File.WriteAllText(path, sb.ToString(), new UTF8Encoding(false));
             Debug.Log(LogPrefix + "보고서: " + Path.GetFullPath(path));
             ExitCode = abortReason == null ? 0 : 1;
+        }
+
+        // 방 종류별 몬스터 분포(트럭 방 제외): 등장 횟수, 몬스터 0/1/2+마리였던 횟수, 2마리 이상 비율, 평균 가중치(스폰 가능 칸).
+        private static void AppendRoomSpawnTable(StringBuilder sb, List<RunResult> gridRuns)
+        {
+            List<RoomSpawn> spawns = gridRuns.SelectMany(x => x.RoomSpawns).Where(s => !s.TruckRoom).ToList();
+            if (spawns.Count == 0) return;
+            int twoPlusTotal = spawns.Count(s => s.Monsters >= 2);
+            sb.AppendLine();
+            sb.AppendLine("== 방 종류별 몬스터 분포 (트럭 방 제외)");
+            sb.AppendLine("  방 종류 | 등장 | 몬스터 0 | 1 | 2+ | 2+ 비율 | 2+ 몰림 중 몫 | 평균 가중치(스폰 가능 칸) | 평균 동물");
+            foreach (var g in spawns.GroupBy(s => s.Type).OrderBy(g => g.Average(s => s.MonsterWeight)))
+            {
+                int n = g.Count(), two = g.Count(s => s.Monsters >= 2);
+                sb.AppendLine($"  {g.Key} | {n} | {g.Count(s => s.Monsters == 0)} | {g.Count(s => s.Monsters == 1)} | {two} | {100.0 * two / n:F0}% | " +
+                              $"{(twoPlusTotal > 0 ? 100.0 * two / twoPlusTotal : 0):F0}% | {g.Average(s => s.MonsterWeight):F0} | {g.Average(s => s.Animals):F2}");
+            }
+            sb.AppendLine($"  합계 | {spawns.Count} | {spawns.Count(s => s.Monsters == 0)} | {spawns.Count(s => s.Monsters == 1)} | {twoPlusTotal} |");
         }
 
         private static string Stat(IEnumerable<double> values, string format = "F1")
