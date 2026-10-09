@@ -45,6 +45,15 @@ public class VillageMapGenerator : MonoBehaviour
     [Tooltip("방 배정과 연결이 실패했을 때 다시 시도할 횟수.")]
     [SerializeField, Min(1)] private int maxLayoutAttempts = 20;
 
+    [Header("격자 맵 스폰 (총량을 방에 나눠 준다 - 한 줄 배치는 animalsPerRoom/monstersPerRoom 그대로)")]
+    [Tooltip("맵 전체 동물 수. 대상 방마다 먼저 하나씩, 남으면 방당 상한까지 바닥이 넓은 방에 더 자주 준다.")]
+    [SerializeField, Min(0)] private int gridAnimalTotal = 18;
+    [SerializeField, Min(0)] private int gridMonsterTotal = 8;
+    [SerializeField, Min(1)] private int gridMaxAnimalsPerRoom = 2;
+    [SerializeField, Min(1)] private int gridMaxMonstersPerRoom = 1;
+    [Tooltip("트럭 칸에서 이 거리(격자 칸, 대각선 포함) 안의 방에는 몬스터를 두지 않는다. 0 = 트럭 방만, -1 = 제외 없음.")]
+    [SerializeField, Min(-1)] private int monsterFreeRoomRadius = 0;
+
     [Header("바닥 타일 시각적 변형 (이끼/얼룩 패치) - 비워두면 변형 없이 기본 바닥 타일만 쓴다")]
     [SerializeField] private TileBase[] floorVariantTiles;
 
@@ -327,6 +336,10 @@ public class VillageMapGenerator : MonoBehaviour
         public int PathsComplete;
         public bool FloorConnected;
         public bool WalkableConnected;
+        public int Animals, Monsters;
+        public int TruckRoomMonsters;
+        public string TruckRoomPrefab;
+        public int DuplicateIds;
         public List<string> Problems = new List<string>();
     }
 
@@ -461,19 +474,116 @@ public class VillageMapGenerator : MonoBehaviour
         Vector2 playerSpawnWorldXY = ToWorldXY(centerRoom, spawnCell);
         MarkGenerationStep("플레이어·트럭 배치");
 
-        foreach (RoomInstance room in placedRooms)
+        // 스폰: 맵 전체 총량을 방에 나눠 준다(DistributeSpawnBudget). 몬스터는 트럭 칸 주변(monsterFreeRoomRadius) 방에서 뺀다.
+        List<Vector2Int> roomCells = new List<Vector2Int>();
+        for (int gy = 0; gy < plan.Rows; gy++)
+            for (int gx = 0; gx < plan.Columns; gx++) roomCells.Add(new Vector2Int(gx, gy));
+        bool MonsterAllowed(int i) => monsterFreeRoomRadius < 0 ||
+            Mathf.Max(Mathf.Abs(roomCells[i].x - plan.TruckCell.x), Mathf.Abs(roomCells[i].y - plan.TruckCell.y)) > monsterFreeRoomRadius;
+        int[] animalCounts = DistributeSpawnBudget(placedRooms, gridAnimalTotal, gridMaxAnimalsPerRoom, i => true, "동물");
+        int[] monsterCounts = DistributeSpawnBudget(placedRooms, gridMonsterTotal, gridMaxMonstersPerRoom, MonsterAllowed, "몬스터");
+        for (int i = 0; i < placedRooms.Count; i++)
         {
+            RoomInstance room = placedRooms[i];
             Vector2Int roomOffset = ToWorldCell(room, Vector2Int.zero);
             HashSet<Vector2Int> usedCells = new HashSet<Vector2Int>(playerAndTruckWorldCells.Select(c => c - roomOffset));
-            SpawnAnimal(room, room.Root.transform, usedCells);
-            SpawnMonster(room, room.Root.transform, playerSpawnWorldXY, usedCells);
+            SpawnGridAnimals(room, animalCounts[i], usedCells);
+            SpawnGridMonsters(room, monsterCounts[i], playerSpawnWorldXY, usedCells);
         }
+        LastGridSpawnCounts = (animalCounts.Sum(), monsterCounts.Sum());
         MarkGenerationStep("동물·몬스터 스폰");
 
         gridRooms = placedRooms;
+        gridRoomCells = roomCells;
         gridFloor = mapFloor;
         gridTruckXY = truckXY;
         return true;
+    }
+
+    /// <summary>격자 맵에서 실제로 배정한 동물/몬스터 총수(DistributeSpawnBudget 결과).</summary>
+    public (int animals, int monsters) LastGridSpawnCounts { get; private set; }
+
+    private List<Vector2Int> gridRoomCells;
+
+    // total마리를 방에 나눈다. allowed인 방 중 아직 상한(cap) 미만인 방에서, 지금까지 받은 수가 가장 적은 방들 가운데 스폰 가능 칸이
+    // 많을수록 잘 뽑히게 하나씩 준다 - 그래서 대상 방마다 먼저 한 마리씩 돌아가고, 남는 수는 넓은 방에 더 간다. 상한까지 다 채워도
+    // 남으면 경고만 남기고 그만큼 덜 둔다.
+    private int[] DistributeSpawnBudget(List<RoomInstance> rooms, int total, int cap, System.Func<int, bool> allowed, string what)
+    {
+        int[] counts = new int[rooms.Count];
+        int[] weights = rooms.Select(InteriorCellCount).ToArray();
+        for (int k = 0; k < total; k++)
+        {
+            List<int> eligible = Enumerable.Range(0, rooms.Count).Where(i => allowed(i) && counts[i] < cap && weights[i] > 0).ToList();
+            if (eligible.Count == 0)
+            {
+                Debug.LogWarning($"{name}: {what} {total}마리 중 {k}마리만 배정했다 - 대상 방이 모두 방당 상한({cap})에 찼다.");
+                break;
+            }
+            int least = eligible.Min(i => counts[i]);
+            List<int> candidates = eligible.Where(i => counts[i] == least).ToList();
+            float pick = Random.value * candidates.Sum(i => weights[i]);
+            int chosen = candidates[candidates.Count - 1];
+            foreach (int i in candidates)
+            {
+                pick -= weights[i];
+                if (pick < 0f) { chosen = i; break; }
+            }
+            counts[chosen]++;
+        }
+        return counts;
+    }
+
+    // PickInteriorCell이 고를 수 있는 칸 수(장애물이 아니고 상하좌우가 모두 바닥인 칸).
+    private static int InteriorCellCount(RoomInstance room)
+    {
+        HashSet<Vector2Int> floor = new HashSet<Vector2Int>(room.FloorCells);
+        return room.FloorCells.Count(c => !room.ObstacleCells.Contains(c) && floor.Contains(c + Vector2Int.up) && floor.Contains(c + Vector2Int.down) &&
+                                          floor.Contains(c + Vector2Int.left) && floor.Contains(c + Vector2Int.right));
+    }
+
+    // 격자 경로의 동물 스폰. 한 마리씩 놓는 방식은 SpawnAnimal과 같다(이름 "{프리팹}_{방 안 번호}", 계층 경로 Id를 미리 계산해 트럭 왕복 전
+    // 저장해둔 위치가 있으면 그 자리에 복원). 다만 마리 수를 방마다 받는다(SpawnAnimal은 animalsPerRoom 고정 - 한 줄 경로용으로 그대로 둔다).
+    private void SpawnGridAnimals(RoomInstance room, int count, HashSet<Vector2Int> usedCells)
+    {
+        if (animalPrefabs == null || animalPrefabs.Length == 0 || room.FloorCells.Count == 0) return;
+        for (int i = 0; i < count; i++)
+        {
+            GameObject prefab = animalPrefabs[Random.Range(0, animalPrefabs.Length)];
+            Vector2Int cell = PickInteriorCell(room, usedCells);
+            usedCells.Add(cell);
+            string animalName = $"{prefab.name}_{i}";
+            string predictedId = $"{MapRootName}/{room.Root.name}/{animalName}";
+            Vector3 savedPosition = default;
+            bool wasFleeing = false;
+            bool hasFieldState = GameManager.Instance != null &&
+                GameManager.Instance.TryGetAnimalFieldState(predictedId, out savedPosition, out wasFleeing);
+
+            Vector3 spawnPosition = hasFieldState ? savedPosition : ToSpritePosition(room, cell);
+            GameObject instance = Instantiate(prefab, spawnPosition, Quaternion.identity, room.Root.transform);
+            AnimalRescue rescue = instance.GetComponent<AnimalRescue>();
+            if (rescue != null) rescue.SourcePrefab = prefab.GetComponent<AnimalRescue>();
+            instance.name = animalName;
+            Debug.Log($"[FieldState] 조회: {predictedId}, found={hasFieldState}" + (hasFieldState ? $", pos={savedPosition}" : ""));
+            if (hasFieldState && wasFleeing)
+            {
+                AnimalFlee flee = instance.GetComponent<AnimalFlee>();
+                if (flee != null) flee.RestoreFleeing();
+            }
+        }
+    }
+
+    // 격자 경로의 몬스터 스폰(SpawnMonster와 같은 방식, 마리 수만 방마다 받는다).
+    private void SpawnGridMonsters(RoomInstance room, int count, Vector2 playerSpawnWorldXY, HashSet<Vector2Int> usedCells)
+    {
+        if (monsterPrefabs == null || monsterPrefabs.Length == 0 || room.FloorCells.Count == 0) return;
+        for (int i = 0; i < count; i++)
+        {
+            GameObject prefab = monsterPrefabs[Random.Range(0, monsterPrefabs.Length)];
+            Vector2Int cell = PickMonsterSpawnCell(room, usedCells, playerSpawnWorldXY, MonsterMinSpawnDistanceFromPlayer);
+            usedCells.Add(cell);
+            SpawnMonsterAt(room, room.Root.transform, prefab, cell, $"{prefab.name}_{i}");
+        }
     }
 
     // 길 둘레에서 안쪽 그라데이션 폭(outsideMaskInnerFadeWidth, 올림) 안에 있는 바닥 아닌 칸. BuildOutsideMask가 이 칸들을 그라데이션
@@ -608,6 +718,32 @@ public class VillageMapGenerator : MonoBehaviour
     {
         GridValidationResult result = new GridValidationResult { Rooms = gridRooms.Count };
 
+        // 트럭 방 종류, 스폰 수, 트럭 방 몬스터, 동물/시체 Id 중복(계층 경로가 같으면 납품·위치 복원이 서로 엉킨다).
+        RoomInstance truckRoom = gridRooms[gridRoomCells.IndexOf(LastGridPlan.TruckCell)];
+        result.TruckRoomPrefab = truckRoom.PrefabName;
+        if (truckRoomPrefabs != null && truckRoomPrefabs.Any(p => p != null) && !truckRoomPrefabs.Any(p => p != null && p.name == truckRoom.PrefabName))
+            result.Problems.Add($"트럭 방이 허용 목록(truckRoomPrefabs)에 없는 {truckRoom.PrefabName}이다");
+        result.Animals = gridRooms.Sum(r => r.Root.GetComponentsInChildren<AnimalRescue>(true).Length);
+        result.Monsters = gridRooms.Sum(r => r.Root.GetComponentsInChildren<MonsterHealth>(true).Length);
+        result.TruckRoomMonsters = truckRoom.Root.GetComponentsInChildren<MonsterHealth>(true).Length;
+        if (animalPrefabs != null && animalPrefabs.Length > 0 && result.Animals != gridAnimalTotal)
+            result.Problems.Add($"동물 {result.Animals}마리 (설정 총량 {gridAnimalTotal})");
+        if (monsterPrefabs != null && monsterPrefabs.Length > 0 && result.Monsters != gridMonsterTotal)
+            result.Problems.Add($"몬스터 {result.Monsters}마리 (설정 총량 {gridMonsterTotal})");
+        if (monsterFreeRoomRadius >= 0 && result.TruckRoomMonsters > 0)
+            result.Problems.Add($"트럭 방({truckRoom.Root.name})에 몬스터 {result.TruckRoomMonsters}마리");
+        List<string> ids = new List<string>();
+        foreach (RoomInstance room in gridRooms)
+        {
+            ids.AddRange(room.Root.GetComponentsInChildren<AnimalRescue>(true).Select(a => HierarchyPath(a.transform)));
+            ids.AddRange(room.Root.GetComponentsInChildren<MonsterCorpsePickup>(true).Select(m => HierarchyPath(m.transform)));
+        }
+        foreach (IGrouping<string, string> dup in ids.GroupBy(id => id).Where(g => g.Count() > 1))
+        {
+            result.DuplicateIds += dup.Count() - 1;
+            result.Problems.Add($"Id 중복: {dup.Key} ({dup.Count()}개)");
+        }
+
         result.FloorConnected = IsConnected(gridFloor);
         if (!result.FloorConnected) result.Problems.Add("바닥(방 + 길)이 한 덩어리로 이어지지 않는다");
         HashSet<Vector2Int> walkable = new HashSet<Vector2Int>(gridFloor);
@@ -653,6 +789,14 @@ public class VillageMapGenerator : MonoBehaviour
             if (NavMesh.SamplePosition(new Vector3(xy.x, 0f, xy.y), out NavMeshHit hit, 0.75f, NavMesh.AllAreas)) return hit.position;
         }
         return null;
+    }
+
+    // AnimalRescue/MonsterCorpsePickup의 Id와 같은 규칙(루트부터 자기까지 이름을 "/"로 이은 경로).
+    private static string HierarchyPath(Transform t)
+    {
+        System.Text.StringBuilder path = new System.Text.StringBuilder(t.name);
+        for (Transform p = t.parent; p != null; p = p.parent) path.Insert(0, "/").Insert(0, p.name);
+        return path.ToString();
     }
 
     private static bool IsConnected(HashSet<Vector2Int> cells)

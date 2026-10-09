@@ -161,6 +161,8 @@ public static class VillageMapGenerationTest
         public bool IsGrid;
         public int CorridorCells;
         public int PathsChecked, PathsComplete;
+        public int Animals, Monsters, TruckRoomMonsters, DuplicateIds;
+        public string TruckRoomPrefab;
         public bool FloorConnected = true, WalkableConnected = true;
 
         public int? Seed;           // 시드 고정 테스트일 때 이 회차의 시드
@@ -313,6 +315,12 @@ public static class VillageMapGenerationTest
                 if (v == null) r.Failures.Add("격자 검증 결과가 없다 (VillageMapGenerator.Start가 돌지 않았다)");
                 else
                 {
+                    r.Animals = v.Animals;
+                    r.Monsters = v.Monsters;
+                    r.TruckRoomMonsters = v.TruckRoomMonsters;
+                    r.DuplicateIds = v.DuplicateIds;
+                    r.TruckRoomPrefab = v.TruckRoomPrefab;
+                    r.JunctionNotes.Add($"스폰: 동물 {v.Animals}, 몬스터 {v.Monsters}, 트럭 방 {v.TruckRoomPrefab}(몬스터 {v.TruckRoomMonsters}), Id 중복 {v.DuplicateIds}");
                     r.PathsChecked = v.PathsChecked;
                     r.PathsComplete = v.PathsComplete;
                     r.FloorConnected = v.FloorConnected;
@@ -356,8 +364,9 @@ public static class VillageMapGenerationTest
                 string name = room.name.Replace("(Clone)", "");
                 AnimalRescue[] animals = room.GetComponentsInChildren<AnimalRescue>(true);
                 MonsterHealth[] monsters = room.GetComponentsInChildren<MonsterHealth>(true);
-                if (hasAnimals && animals.Length != animalsPerRoom) r.Failures.Add($"{name}: 동물 {animals.Length}마리 (기대 {animalsPerRoom})");
-                if (hasMonsters && monsters.Length != monstersPerRoom) r.Failures.Add($"{name}: 몬스터 {monsters.Length}마리 (기대 {monstersPerRoom})");
+                // 격자 배치는 총량을 방에 나눠 주므로 방당 수는 검사하지 않는다(총량·트럭 방은 생성기 검증 결과로 본다).
+                if (!r.IsGrid && hasAnimals && animals.Length != animalsPerRoom) r.Failures.Add($"{name}: 동물 {animals.Length}마리 (기대 {animalsPerRoom})");
+                if (!r.IsGrid && hasMonsters && monsters.Length != monstersPerRoom) r.Failures.Add($"{name}: 몬스터 {monsters.Length}마리 (기대 {monstersPerRoom})");
                 foreach (AnimalRescue animal in animals)
                 {
                     Vector2Int cell = CellOf(animal.transform.position.x, animal.transform.position.y);
@@ -635,6 +644,9 @@ public static class VillageMapGenerationTest
                 sb.AppendLine();
                 sb.AppendLine($"== 격자 검증 ({gridRuns.Count}회)");
                 sb.AppendLine($"  트럭→방 중심 NavMesh 경로: {gridRuns.Sum(x => x.PathsComplete)}/{gridRuns.Sum(x => x.PathsChecked)} 성공");
+                sb.AppendLine($"  스폰 총량: 동물 {gridRuns.Min(x => x.Animals)}~{gridRuns.Max(x => x.Animals)}, 몬스터 {gridRuns.Min(x => x.Monsters)}~{gridRuns.Max(x => x.Monsters)}, " +
+                              $"트럭 방 몬스터 합계 {gridRuns.Sum(x => x.TruckRoomMonsters)}, Id 중복 합계 {gridRuns.Sum(x => x.DuplicateIds)}");
+                sb.AppendLine("  트럭 방: " + string.Join(", ", gridRuns.GroupBy(x => x.TruckRoomPrefab).OrderBy(g => g.Key).Select(g => $"{g.Key} {g.Count()}회")));
                 sb.AppendLine($"  바닥(방 + 길) 한 덩어리: {gridRuns.Count(x => x.FloorConnected)}/{gridRuns.Count}회, " +
                               $"장애물 뺀 걸을 수 있는 바닥 한 덩어리: {gridRuns.Count(x => x.WalkableConnected)}/{gridRuns.Count}회");
                 sb.AppendLine($"  길 칸: 평균 {gridRuns.Average(x => x.CorridorCells):F0}, 바닥 칸(방 + 길): 평균 {gridRuns.Average(x => x.FloorCells):F0}");
