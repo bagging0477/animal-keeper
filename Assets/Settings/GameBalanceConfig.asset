@@ -33,6 +33,10 @@ MonoBehaviour:
   chaseGiveUpSightLostDuration: 2
   chaseDirectionUpdateInterval: 0.25
   monsterMinSpawnDistanceFromPlayer: 6
+  gridAnimalTotal: 27
+  gridMonsterTotal: 12
+  gridMaxAnimalsPerRoom: 3
+  gridMaxMonstersPerRoom: 2
   stunDuration: 0.4
   sleepDelay: 0.6
   sleepDuration: 4.2

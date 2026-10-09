@@ -45,12 +45,7 @@ public class VillageMapGenerator : MonoBehaviour
     [Tooltip("방 배정과 연결이 실패했을 때 다시 시도할 횟수.")]
     [SerializeField, Min(1)] private int maxLayoutAttempts = 20;
 
-    [Header("격자 맵 스폰 (총량을 방에 나눠 준다 - 한 줄 배치는 animalsPerRoom/monstersPerRoom 그대로)")]
-    [Tooltip("맵 전체 동물 수. 대상 방마다 먼저 하나씩, 남으면 방당 상한까지 바닥이 넓은 방에 더 자주 준다.")]
-    [SerializeField, Min(0)] private int gridAnimalTotal = 18;
-    [SerializeField, Min(0)] private int gridMonsterTotal = 8;
-    [SerializeField, Min(1)] private int gridMaxAnimalsPerRoom = 2;
-    [SerializeField, Min(1)] private int gridMaxMonstersPerRoom = 1;
+    [Header("격자 맵 스폰 (총량·방당 상한은 GameBalanceConfig - 한 줄 배치는 animalsPerRoom/monstersPerRoom 그대로)")]
     [Tooltip("트럭 칸에서 이 거리(격자 칸, 대각선 포함) 안의 방에는 몬스터를 두지 않는다. 0 = 트럭 방만, -1 = 제외 없음.")]
     [SerializeField, Min(-1)] private int monsterFreeRoomRadius = 0;
 
@@ -102,6 +97,10 @@ public class VillageMapGenerator : MonoBehaviour
     private float MonsterMinSpawnDistanceFromPlayer => config != null ? config.monsterMinSpawnDistanceFromPlayer : 6f;
     private float FloorPatchNoiseScale => config != null ? config.floorPatchNoiseScale : 0.15f;
     private float FloorPatchThreshold => config != null ? config.floorPatchThreshold : 0.62f;
+    private int GridAnimalTotal => config != null ? config.gridAnimalTotal : 27;
+    private int GridMonsterTotal => config != null ? config.gridMonsterTotal : 12;
+    private int GridMaxAnimalsPerRoom => config != null ? Mathf.Max(1, config.gridMaxAnimalsPerRoom) : 3;
+    private int GridMaxMonstersPerRoom => config != null ? Mathf.Max(1, config.gridMaxMonstersPerRoom) : 2;
 
     // AnimalRescue.Id(계층 경로 기반)를 실제로 Instantiate하기 전에 미리 계산하기 위한 맵 루트 이름.
     // mapRoot 생성 시 이름과 반드시 같아야 한다.
@@ -340,6 +339,7 @@ public class VillageMapGenerator : MonoBehaviour
         public int TruckRoomMonsters;
         public string TruckRoomPrefab;
         public int DuplicateIds;
+        public int RoomsOverCap;
         public List<string> Problems = new List<string>();
     }
 
@@ -480,8 +480,8 @@ public class VillageMapGenerator : MonoBehaviour
             for (int gx = 0; gx < plan.Columns; gx++) roomCells.Add(new Vector2Int(gx, gy));
         bool MonsterAllowed(int i) => monsterFreeRoomRadius < 0 ||
             Mathf.Max(Mathf.Abs(roomCells[i].x - plan.TruckCell.x), Mathf.Abs(roomCells[i].y - plan.TruckCell.y)) > monsterFreeRoomRadius;
-        int[] animalCounts = DistributeSpawnBudget(placedRooms, gridAnimalTotal, gridMaxAnimalsPerRoom, i => true, "동물");
-        int[] monsterCounts = DistributeSpawnBudget(placedRooms, gridMonsterTotal, gridMaxMonstersPerRoom, MonsterAllowed, "몬스터");
+        int[] animalCounts = DistributeSpawnBudget(placedRooms, GridAnimalTotal, GridMaxAnimalsPerRoom, i => true, AnimalSpawnWeight, "동물");
+        int[] monsterCounts = DistributeSpawnBudget(placedRooms, GridMonsterTotal, GridMaxMonstersPerRoom, MonsterAllowed, MonsterSpawnWeight, "몬스터");
         for (int i = 0; i < placedRooms.Count; i++)
         {
             RoomInstance room = placedRooms[i];
@@ -491,6 +491,7 @@ public class VillageMapGenerator : MonoBehaviour
             SpawnGridMonsters(room, monsterCounts[i], playerSpawnWorldXY, usedCells);
         }
         LastGridSpawnCounts = (animalCounts.Sum(), monsterCounts.Sum());
+        LastGridMonsterWeights = placedRooms.Select(MonsterSpawnWeight).ToArray();
         MarkGenerationStep("동물·몬스터 스폰");
 
         gridRooms = placedRooms;
@@ -503,15 +504,18 @@ public class VillageMapGenerator : MonoBehaviour
     /// <summary>격자 맵에서 실제로 배정한 동물/몬스터 총수(DistributeSpawnBudget 결과).</summary>
     public (int animals, int monsters) LastGridSpawnCounts { get; private set; }
 
+    /// <summary>격자 맵 방별 몬스터 스폰 가중치(MonsterSpawnWeight). 순서는 Room_{gx}_{gy}의 gy, gx 순 - 테스트 보고서용.</summary>
+    public int[] LastGridMonsterWeights { get; private set; }
+
     private List<Vector2Int> gridRoomCells;
 
-    // total마리를 방에 나눈다. allowed인 방 중 아직 상한(cap) 미만인 방에서, 지금까지 받은 수가 가장 적은 방들 가운데 스폰 가능 칸이
-    // 많을수록 잘 뽑히게 하나씩 준다 - 그래서 대상 방마다 먼저 한 마리씩 돌아가고, 남는 수는 넓은 방에 더 간다. 상한까지 다 채워도
-    // 남으면 경고만 남기고 그만큼 덜 둔다.
-    private int[] DistributeSpawnBudget(List<RoomInstance> rooms, int total, int cap, System.Func<int, bool> allowed, string what)
+    // total마리를 방에 나눈다. allowed인 방 중 아직 상한(cap) 미만인 방에서, 지금까지 받은 수가 가장 적은 방들 가운데 가중치(weightOf)가
+    // 클수록 잘 뽑히게 하나씩 준다 - 그래서 대상 방마다 먼저 한 마리씩 돌아가고, 남는 수는 가중치가 큰 방에 더 간다. 가중치가 0인 방은
+    // 받지 않는다. 상한까지 다 채워도 남으면 경고만 남기고 그만큼 덜 둔다.
+    private int[] DistributeSpawnBudget(List<RoomInstance> rooms, int total, int cap, System.Func<int, bool> allowed, System.Func<RoomInstance, int> weightOf, string what)
     {
         int[] counts = new int[rooms.Count];
-        int[] weights = rooms.Select(InteriorCellCount).ToArray();
+        int[] weights = rooms.Select(weightOf).ToArray();
         for (int k = 0; k < total; k++)
         {
             List<int> eligible = Enumerable.Range(0, rooms.Count).Where(i => allowed(i) && counts[i] < cap && weights[i] > 0).ToList();
@@ -533,6 +537,11 @@ public class VillageMapGenerator : MonoBehaviour
         }
         return counts;
     }
+
+    // 방이 동물/몬스터 총량에서 얼마나 받을지의 가중치(DistributeSpawnBudget). 지금은 둘 다 스폰 가능 칸 수(넓은 방일수록 더 받는다).
+    // 방 종류별 스폰 규칙(예: 방 프리팹에 붙인 스폰 프로필)이 생기면 여기서 바꾼다.
+    private static int AnimalSpawnWeight(RoomInstance room) => InteriorCellCount(room);
+    private static int MonsterSpawnWeight(RoomInstance room) => InteriorCellCount(room);
 
     // PickInteriorCell이 고를 수 있는 칸 수(장애물이 아니고 상하좌우가 모두 바닥인 칸).
     private static int InteriorCellCount(RoomInstance room)
@@ -726,10 +735,17 @@ public class VillageMapGenerator : MonoBehaviour
         result.Animals = gridRooms.Sum(r => r.Root.GetComponentsInChildren<AnimalRescue>(true).Length);
         result.Monsters = gridRooms.Sum(r => r.Root.GetComponentsInChildren<MonsterHealth>(true).Length);
         result.TruckRoomMonsters = truckRoom.Root.GetComponentsInChildren<MonsterHealth>(true).Length;
-        if (animalPrefabs != null && animalPrefabs.Length > 0 && result.Animals != gridAnimalTotal)
-            result.Problems.Add($"동물 {result.Animals}마리 (설정 총량 {gridAnimalTotal})");
-        if (monsterPrefabs != null && monsterPrefabs.Length > 0 && result.Monsters != gridMonsterTotal)
-            result.Problems.Add($"몬스터 {result.Monsters}마리 (설정 총량 {gridMonsterTotal})");
+        // 배정한 수(LastGridSpawnCounts)와 실제 스폰 수가 같아야 한다. 상한 때문에 설정 총량보다 덜 배정된 경우는 생성 때 경고로 남긴다.
+        if (animalPrefabs != null && animalPrefabs.Length > 0 && result.Animals != LastGridSpawnCounts.animals)
+            result.Problems.Add($"동물 {result.Animals}마리 (배정 {LastGridSpawnCounts.animals}, 설정 총량 {GridAnimalTotal})");
+        if (monsterPrefabs != null && monsterPrefabs.Length > 0 && result.Monsters != LastGridSpawnCounts.monsters)
+            result.Problems.Add($"몬스터 {result.Monsters}마리 (배정 {LastGridSpawnCounts.monsters}, 설정 총량 {GridMonsterTotal})");
+        foreach (RoomInstance room in gridRooms)
+        {
+            int a = room.Root.GetComponentsInChildren<AnimalRescue>(true).Length, m = room.Root.GetComponentsInChildren<MonsterHealth>(true).Length;
+            if (a > GridMaxAnimalsPerRoom) { result.RoomsOverCap++; result.Problems.Add($"{room.Root.name}({room.PrefabName})에 동물 {a}마리 (방당 상한 {GridMaxAnimalsPerRoom})"); }
+            if (m > GridMaxMonstersPerRoom) { result.RoomsOverCap++; result.Problems.Add($"{room.Root.name}({room.PrefabName})에 몬스터 {m}마리 (방당 상한 {GridMaxMonstersPerRoom})"); }
+        }
         if (monsterFreeRoomRadius >= 0 && result.TruckRoomMonsters > 0)
             result.Problems.Add($"트럭 방({truckRoom.Root.name})에 몬스터 {result.TruckRoomMonsters}마리");
         List<string> ids = new List<string>();
