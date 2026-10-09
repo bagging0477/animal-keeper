@@ -26,7 +26,7 @@ public static class VillageMapGenerationTest
 {
     private const string KeyActive = "VMGT.Active", KeyRuns = "VMGT.Runs", KeyLabel = "VMGT.Label", KeyBatch = "VMGT.Batch",
         KeyDone = "VMGT.Done", KeyExit = "VMGT.Exit", KeyGridColumns = "VMGT.GridColumns", KeyGridRows = "VMGT.GridRows",
-        KeyRunInBackground = "VMGT.RunInBackground";
+        KeyRunInBackground = "VMGT.RunInBackground", KeySeedBase = "VMGT.SeedBase";
     private const string LogPrefix = "[MapGenTest] ";
     private const int MinSafeDoorwayWidth = 3; // VillageMapGenerator.MinSafeDoorwayWidth와 같은 기준
 
@@ -45,18 +45,22 @@ public static class VillageMapGenerationTest
         Begin(30, "manual", false);
     }
 
-    // 격자 배치 테스트: 씬 파일(layoutMode)은 그대로 두고 테스트 중에만 Grid와 격자 크기를 덮어쓴다(VillageMapGenerator.EditorLayoutOverride).
+    // 시드 고정 테스트: 회차 i는 시드 i(1부터)로 만든다. 같은 메뉴를 다시 돌리면 같은 맵들이 나와서 수정 전후를 회차별로 비교할 수 있다
+    // (마스크 메시 해시 등). 씬 파일(layoutMode)은 그대로 두고 테스트 중에만 덮어쓴다(VillageMapGenerator.EditorLayoutOverride).
+    [MenuItem("Tools/Village Rooms/Run Map Generation Test - Linear (30x, seeds 1-30)")]
+    private static void RunLinearSeededFromMenu() => BeginFromMenu(30, "linear_seeded", 0, 0, 1);
+
     [MenuItem("Tools/Village Rooms/Run Map Generation Test - Grid 3x4 (10x)")]
-    private static void RunGrid3x4FromMenu() => BeginGridFromMenu(3, 4);
+    private static void RunGrid3x4FromMenu() => BeginFromMenu(10, "grid3x4", 3, 4, 1);
 
     [MenuItem("Tools/Village Rooms/Run Map Generation Test - Grid 4x5 (10x)")]
-    private static void RunGrid4x5FromMenu() => BeginGridFromMenu(4, 5);
+    private static void RunGrid4x5FromMenu() => BeginFromMenu(10, "grid4x5", 4, 5, 1);
 
-    private static void BeginGridFromMenu(int columns, int rows)
+    private static void BeginFromMenu(int runs, string label, int columns, int rows, int seedBase)
     {
         if (EditorApplication.isPlaying) { Debug.LogWarning(LogPrefix + "Play 모드를 끈 뒤 실행해야 한다."); return; }
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
-        Begin(10, $"grid{columns}x{rows}", false, columns, rows);
+        Begin(runs, label, false, columns, rows, seedBase);
     }
 
     public static void RunBatch()
@@ -73,8 +77,10 @@ public static class VillageMapGenerationTest
     }
 
     // gridColumns/gridRows가 0이면 씬 설정(layoutMode) 그대로, 아니면 테스트 중에만 Grid로 덮어쓴다.
-    private static void Begin(int runs, string label, bool batch, int gridColumns = 0, int gridRows = 0)
+    // seedBase가 0이면 회차마다 새 시드, 아니면 회차 i(0부터)를 시드 seedBase + i로 만든다.
+    private static void Begin(int runs, string label, bool batch, int gridColumns = 0, int gridRows = 0, int seedBase = 0)
     {
+        SessionState.SetInt(KeySeedBase, seedBase);
         SessionState.SetBool(KeyActive, true);
         SessionState.SetBool(KeyDone, false);
         SessionState.SetInt(KeyRuns, runs);
@@ -97,7 +103,7 @@ public static class VillageMapGenerationTest
             Application.runInBackground = true;
             int columns = SessionState.GetInt(KeyGridColumns, 0), rows = SessionState.GetInt(KeyGridRows, 0);
             runner = new Runner(SessionState.GetInt(KeyRuns, 30), SessionState.GetString(KeyLabel, "manual"),
-                columns > 0 && rows > 0 ? (MapLayoutMode.Grid, columns, rows) : ((MapLayoutMode, int, int)?)null);
+                columns > 0 && rows > 0, columns, rows, SessionState.GetInt(KeySeedBase, 0));
             EditorApplication.update += Step;
         }
         else if (change == PlayModeStateChange.EnteredEditMode && SessionState.GetBool(KeyDone, false))
@@ -156,13 +162,17 @@ public static class VillageMapGenerationTest
         public int CorridorCells;
         public int PathsChecked, PathsComplete;
         public bool FloorConnected = true, WalkableConnected = true;
+
+        public int? Seed;           // 시드 고정 테스트일 때 이 회차의 시드
+        public string MaskHash;     // 바깥 마스크 메시(정점 위치 + 색) 해시 - 수정 전후 같은 시드끼리 비교한다
     }
 
     private sealed class Runner
     {
         private readonly int runs;
         private readonly string label;
-        private readonly (MapLayoutMode mode, int columns, int rows)? layoutOverride;
+        private readonly bool grid;
+        private readonly int gridColumns, gridRows, seedBase;
         private readonly IEnumerator routine;
         private readonly List<RunResult> results = new List<RunResult>();
         private readonly HashSet<string> captured = new HashSet<string>();
@@ -170,12 +180,28 @@ public static class VillageMapGenerationTest
         private string abortReason;
         public int ExitCode { get; private set; } = 1;
 
-        public Runner(int runs, string label, (MapLayoutMode mode, int columns, int rows)? layoutOverride)
+        public Runner(int runs, string label, bool grid, int gridColumns, int gridRows, int seedBase)
         {
             this.runs = runs;
             this.label = label;
-            this.layoutOverride = layoutOverride;
+            this.grid = grid;
+            this.gridColumns = gridColumns;
+            this.gridRows = gridRows;
+            this.seedBase = seedBase;
             routine = Run();
+        }
+
+        // 회차 i의 덮어쓰기. 격자도 시드 고정도 아니면 null(씬 설정과 새 시드 그대로).
+        private VillageMapGenerator.EditorOverride? OverrideFor(int i)
+        {
+            if (!grid && seedBase == 0) return null;
+            return new VillageMapGenerator.EditorOverride
+            {
+                Mode = grid ? MapLayoutMode.Grid : MapLayoutMode.Linear,
+                Columns = grid ? gridColumns : 3,
+                Rows = grid ? gridRows : 4,
+                Seed = seedBase != 0 ? seedBase + i : (int?)null,
+            };
         }
 
         public bool MoveNext() => routine.MoveNext();
@@ -199,9 +225,10 @@ public static class VillageMapGenerationTest
             Application.logMessageReceived += OnLog;
             for (int i = 0; i < runs; i++)
             {
-                current = new RunResult { Index = i + 1 };
+                VillageMapGenerator.EditorOverride? runOverride = OverrideFor(i);
+                current = new RunResult { Index = i + 1, Seed = runOverride?.Seed };
                 ResetGameManagerSeed();
-                VillageMapGenerator.EditorLayoutOverride = layoutOverride;
+                VillageMapGenerator.EditorLayoutOverride = runOverride;
 
                 bool loaded = false;
                 UnityEngine.Events.UnityAction<Scene, LoadSceneMode> onLoaded = (s, m) => loaded = true;
@@ -371,6 +398,20 @@ public static class VillageMapGenerationTest
             return room.name;
         }
 
+        // 정점 위치(1/1000 단위로 반올림)와 색(1/1000 단위), 삼각형 인덱스를 순서대로 섞은 해시.
+        private static string MeshHash(Mesh mesh)
+        {
+            unchecked
+            {
+                long h = 1469598103934665603L;
+                void Mix(long v) { h = (h ^ v) * 1099511628211L; }
+                foreach (Vector3 v in mesh.vertices) { Mix(Mathf.RoundToInt(v.x * 1000)); Mix(Mathf.RoundToInt(v.y * 1000)); }
+                foreach (Color c in mesh.colors) Mix(Mathf.RoundToInt(c.a * 1000) * 7 + Mathf.RoundToInt(c.r * 1000));
+                foreach (int i in mesh.triangles) Mix(i);
+                return h.ToString("x16");
+            }
+        }
+
         private static void MeasureSizes(RunResult r, VillageMapGenerator generator, GameObject mapRoot)
         {
             if (generator != null) r.GenerationTimings = new List<KeyValuePair<string, double>>(generator.LastGenerationTimings);
@@ -385,6 +426,7 @@ public static class VillageMapGenerationTest
             Transform mask = mapRoot.transform.Find("OutsideMapMask");
             MeshFilter maskFilter = mask != null ? mask.GetComponent<MeshFilter>() : null;
             r.MaskVertices = maskFilter != null && maskFilter.sharedMesh != null ? maskFilter.sharedMesh.vertexCount : 0;
+            r.MaskHash = maskFilter != null && maskFilter.sharedMesh != null ? MeshHash(maskFilter.sharedMesh) : "-";
             Transform boundary = mapRoot.transform.Find("MapBoundary");
             r.BoundaryBoxes = boundary != null ? boundary.GetComponents<BoxCollider2D>().Length : 0;
         }
@@ -418,7 +460,12 @@ public static class VillageMapGenerationTest
             {
                 Collider2D pc = player.GetComponent<Collider2D>();
                 if (pc != null && pc.bounds.Intersects(new Bounds(new Vector3(tb.center.x, tb.center.y, pc.bounds.center.z), new Vector3(tb.size.x, tb.size.y, 100f))))
+                {
                     r.Failures.Add("플레이어가 트럭과 겹쳐 스폰");
+                    int players = Object.FindObjectsByType<Transform>(FindObjectsInactive.Include).Count(t => t.name == player.name);
+                    r.JunctionNotes.Add($"[겹침 진단] 플레이어 {player.transform.position} 충돌체 {pc.bounds.min}~{pc.bounds.max}, 트럭 {tb.min}~{tb.max}, " +
+                                        $"이름이 {player.name}인 오브젝트 {players}개, 씬 {player.scene.name}");
+                }
             }
 
             float margin = generator != null ? (float)generator.GetType().GetField("truckClearanceMarginPerSide", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(generator) : 0f;
@@ -599,7 +646,8 @@ public static class VillageMapGenerationTest
             sb.AppendLine("== 회차별");
             foreach (RunResult x in results)
             {
-                sb.AppendLine($"  #{x.Index:00} {string.Join(" > ", x.Rooms)} | 바닥 {x.FloorCells}칸 | 씬 로드 {x.LoadMs:F0}ms | NavMesh {x.NavBuildMs:F1}ms | 실패 {x.Failures.Count} | 경고·에러 {x.Logs.Count}");
+                sb.AppendLine($"  #{x.Index:00}{(x.Seed.HasValue ? $" 시드 {x.Seed}" : "")} {string.Join(" > ", x.Rooms)} | 바닥 {x.FloorCells}칸 | 씬 로드 {x.LoadMs:F0}ms | NavMesh {x.NavBuildMs:F1}ms | " +
+                              $"마스크 {x.MaskVertices}정점 해시 {x.MaskHash} | 실패 {x.Failures.Count} | 경고·에러 {x.Logs.Count}");
                 foreach (string n in x.JunctionNotes) sb.AppendLine("      " + n);
                 foreach (string f in x.Failures) sb.AppendLine("      [실패] " + f);
             }

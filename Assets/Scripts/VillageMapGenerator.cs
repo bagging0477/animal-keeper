@@ -137,9 +137,9 @@ public class VillageMapGenerator : MonoBehaviour
 #if UNITY_EDITOR
         if (EditorLayoutOverride.HasValue)
         {
-            layoutMode = EditorLayoutOverride.Value.mode;
-            gridColumns = EditorLayoutOverride.Value.columns;
-            gridRows = EditorLayoutOverride.Value.rows;
+            layoutMode = EditorLayoutOverride.Value.Mode;
+            gridColumns = EditorLayoutOverride.Value.Columns;
+            gridRows = EditorLayoutOverride.Value.Rows;
         }
 #endif
 
@@ -149,6 +149,10 @@ public class VillageMapGenerator : MonoBehaviour
         {
             Random.InitState(GameManager.Instance.GetVillageMapSeedForToday());
         }
+#if UNITY_EDITOR
+        // 에디터 테스트가 시드를 정하면 그 시드로 만든다(같은 시드로 수정 전후를 비교하거나 실패를 다시 만들어 보는 용도).
+        if (EditorLayoutOverride.HasValue && EditorLayoutOverride.Value.Seed.HasValue) Random.InitState(EditorLayoutOverride.Value.Seed.Value);
+#endif
 
         // Inspector에서 비어 있는 칸이나 바닥(Ground)이 없는 방 프리팹이 섞여 있으면 생성 도중 예외로 맵이 반쯤
         // 만들어진 채 멈춘다 - 쓸 수 없는 항목은 경고만 남기고 이번 생성에서 뺀다(에셋은 건드리지 않는다).
@@ -303,8 +307,16 @@ public class VillageMapGenerator : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    /// <summary>에디터 테스트 도구(VillageMapGenerationTest)가 씬 파일을 바꾸지 않고 배치 방식과 격자 크기를 바꿔 볼 때 쓴다. null이면 씬 설정 그대로.</summary>
-    public static (MapLayoutMode mode, int columns, int rows)? EditorLayoutOverride;
+    /// <summary>에디터 테스트 도구가 씬 파일을 바꾸지 않고 배치 방식·격자 크기·시드를 정할 때 쓴다.</summary>
+    public struct EditorOverride
+    {
+        public MapLayoutMode Mode;
+        public int Columns, Rows;
+        public int? Seed;   // null이면 평소대로(GameManager 시드 또는 Unity 기본 시드)
+    }
+
+    /// <summary>에디터 테스트 도구(VillageMapGenerationTest)가 설정한다. null이면 씬 설정 그대로.</summary>
+    public static EditorOverride? EditorLayoutOverride;
 #endif
 
     /// <summary>격자 맵을 만든 뒤 개발용 검증 결과(Start에서 채운다). 문제가 없으면 Problems가 비어 있다.</summary>
@@ -407,7 +419,7 @@ public class VillageMapGenerator : MonoBehaviour
         MarkGenerationStep("경계 충돌체");
         BuildWallShadows(mapRoot.transform, WithObstacleOverhang(mapFloor, placedRooms));
         MarkGenerationStep("벽 그림자");
-        BuildOutsideMask(mapRoot.transform, mapFloor, placedRooms);
+        BuildOutsideMask(mapRoot.transform, mapFloor, placedRooms, CorridorFadeExemptCells(corridorCells, mapFloor));
         MarkGenerationStep("바깥 마스크");
 
         // 플레이어/트럭 배치와 스폰은 한 줄 경로(Awake)와 같은 규칙이다. 다만 시작 방이 트럭 칸 방이고, 장애물을 치워 다시 구울 때
@@ -462,6 +474,27 @@ public class VillageMapGenerator : MonoBehaviour
         gridFloor = mapFloor;
         gridTruckXY = truckXY;
         return true;
+    }
+
+    // 길 둘레에서 안쪽 그라데이션 폭(outsideMaskInnerFadeWidth, 올림) 안에 있는 바닥 아닌 칸. BuildOutsideMask가 이 칸들을 그라데이션
+    // 거리 계산에서 빼므로, 길 칸 어디서든 가장 가까운 "바깥"이 그라데이션 폭 이상 떨어져 길 폭 전체가 밝게 남는다.
+    private HashSet<Vector2Int> CorridorFadeExemptCells(List<Vector2Int> corridorCells, HashSet<Vector2Int> mapFloor)
+    {
+        int reach = Mathf.CeilToInt(outsideMaskInnerFadeWidth);
+        HashSet<Vector2Int> exempt = new HashSet<Vector2Int>();
+        if (reach <= 0) return exempt;
+        foreach (Vector2Int c in corridorCells)
+        {
+            for (int dy = -reach; dy <= reach; dy++)
+            {
+                for (int dx = -reach; dx <= reach; dx++)
+                {
+                    Vector2Int n = new Vector2Int(c.x + dx, c.y + dy);
+                    if (!mapFloor.Contains(n)) exempt.Add(n);
+                }
+            }
+        }
+        return exempt;
     }
 
     // 길 칸을 까는 타일맵(Corridors). 방 바닥과 같은 Grid 설정·정렬로 그리고, 타일은 corridorFloorTile(비어 있으면 방 바닥에서 가장 많이 쓰인 타일).
@@ -1459,7 +1492,10 @@ public class VillageMapGenerator : MonoBehaviour
     // 그래서 마스크는 경계 안쪽 outsideMaskInnerFadeWidth칸부터 미리 어두워지기 시작해, 경계 안팎을 하나의 곡선으로 지나간다
     // (그림자 위치/시야 차단 규칙은 그대로라 모서리 너머가 더 보이지는 않는다).
     // 바닥 범위를 outsideMaskMargin만큼 넓힌 사각형 안에서, 완전히 덮는 칸은 줄마다 이어지는 구간을 사각형 하나로 만든다.
-    private void BuildOutsideMask(Transform mapRoot, HashSet<Vector2Int> mapFloor, List<RoomInstance> rooms)
+    // fadeExemptCells(격자 맵의 길 둘레 바깥 칸): 안쪽 그라데이션 거리를 잴 때 이 칸들은 바깥으로 치지 않는다. 그래서 길은 폭 전체가
+    // 방 가운데처럼 밝고, 길과 이어지는 방 가장자리도 그 근처에서는 어두워지지 않아 포트에서 끊겨 보이지 않는다. 칸 자체는 여전히
+    // 맵 바깥이라 완전히 덮인다. null(한 줄 배치)이면 예전과 같다.
+    private void BuildOutsideMask(Transform mapRoot, HashSet<Vector2Int> mapFloor, List<RoomInstance> rooms, HashSet<Vector2Int> fadeExemptCells = null)
     {
         if (mapFloor.Count == 0) return;
 
@@ -1499,7 +1535,8 @@ public class VillageMapGenerator : MonoBehaviour
             {
                 for (int x = px - innerReach; x <= px + innerReach; x++)
                 {
-                    if (mapFloor.Contains(new Vector2Int(x, y))) continue;
+                    Vector2Int cell = new Vector2Int(x, y);
+                    if (mapFloor.Contains(cell) || (fadeExemptCells != null && fadeExemptCells.Contains(cell))) continue;
                     float dx = Mathf.Max(x - p.x, 0f, p.x - (x + 1));
                     float dy = Mathf.Max(y - p.y, 0f, p.y - (y + 1));
                     float d = dx * dx + dy * dy;
