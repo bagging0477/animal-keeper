@@ -46,6 +46,7 @@ public sealed class GridPlannerSettings
 public sealed class GridPlanInput
 {
     public List<GridRoomType> Types = new List<GridRoomType>();
+    public List<GameObject> Prefabs = new List<GameObject>();   // Types와 같은 순서의 방 프리팹
     public GridPlannerSettings Settings = new GridPlannerSettings();
 }
 
@@ -87,6 +88,7 @@ public sealed class GridLayoutPlan
     public string Failure;
     public int Attempts;
     public int CellWidth, CellHeight, CorridorGap;
+    public string[] TypeNames;           // types 인덱스 → 방 이름
     public int[,] RoomType;              // [x, y] → types 인덱스
     public Vector2Int[,] RoomOrigin;     // [x, y] → 방 로컬 칸에 더할 월드 칸 오프셋(칸 가운데에 놓는다)
     public Vector2Int TruckCell;
@@ -146,6 +148,7 @@ public static class GridLayoutPlanner
             CorridorWidth = Mathf.Max(1, settings.CorridorWidth),
         };
         if (types == null || types.Count == 0) return Fail(plan, "방 종류가 없다");
+        plan.TypeNames = types.Select(t => t.Name).ToArray();
         if (plan.CorridorGap < plan.CorridorWidth + 2)
             return Fail(plan, $"칸 사이 틈({plan.CorridorGap})이 길 폭({plan.CorridorWidth}) + 양쪽 여백 2보다 좁다");
         int cellCount = plan.Columns * plan.Rows;

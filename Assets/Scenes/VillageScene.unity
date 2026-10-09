@@ -600,7 +600,8 @@ MonoBehaviour:
   gridRows: 4
   corridorWidth: 4
   corridorGap: 6
-  extraConnectionRatio: 0.25
+  extraConnectionRatio: 0.35
+  corridorFloorTile: {fileID: 0}
   truckPlacement: 0
   truckRoomPrefabs:
   - {fileID: 8453516254361774462, guid: a369de8a6938edb45a8c07c800314236, type: 3}

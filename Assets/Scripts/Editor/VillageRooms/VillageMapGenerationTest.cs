@@ -25,7 +25,8 @@ using Debug = UnityEngine.Debug;
 public static class VillageMapGenerationTest
 {
     private const string KeyActive = "VMGT.Active", KeyRuns = "VMGT.Runs", KeyLabel = "VMGT.Label", KeyBatch = "VMGT.Batch",
-        KeyDone = "VMGT.Done", KeyExit = "VMGT.Exit";
+        KeyDone = "VMGT.Done", KeyExit = "VMGT.Exit", KeyGridColumns = "VMGT.GridColumns", KeyGridRows = "VMGT.GridRows",
+        KeyRunInBackground = "VMGT.RunInBackground";
     private const string LogPrefix = "[MapGenTest] ";
     private const int MinSafeDoorwayWidth = 3; // VillageMapGenerator.MinSafeDoorwayWidth와 같은 기준
 
@@ -44,6 +45,20 @@ public static class VillageMapGenerationTest
         Begin(30, "manual", false);
     }
 
+    // 격자 배치 테스트: 씬 파일(layoutMode)은 그대로 두고 테스트 중에만 Grid와 격자 크기를 덮어쓴다(VillageMapGenerator.EditorLayoutOverride).
+    [MenuItem("Tools/Village Rooms/Run Map Generation Test - Grid 3x4 (10x)")]
+    private static void RunGrid3x4FromMenu() => BeginGridFromMenu(3, 4);
+
+    [MenuItem("Tools/Village Rooms/Run Map Generation Test - Grid 4x5 (10x)")]
+    private static void RunGrid4x5FromMenu() => BeginGridFromMenu(4, 5);
+
+    private static void BeginGridFromMenu(int columns, int rows)
+    {
+        if (EditorApplication.isPlaying) { Debug.LogWarning(LogPrefix + "Play 모드를 끈 뒤 실행해야 한다."); return; }
+        if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+        Begin(10, $"grid{columns}x{rows}", false, columns, rows);
+    }
+
     public static void RunBatch()
     {
         string[] args = System.Environment.GetCommandLineArgs();
@@ -57,7 +72,8 @@ public static class VillageMapGenerationTest
         Begin(runs, label, true);
     }
 
-    private static void Begin(int runs, string label, bool batch)
+    // gridColumns/gridRows가 0이면 씬 설정(layoutMode) 그대로, 아니면 테스트 중에만 Grid로 덮어쓴다.
+    private static void Begin(int runs, string label, bool batch, int gridColumns = 0, int gridRows = 0)
     {
         SessionState.SetBool(KeyActive, true);
         SessionState.SetBool(KeyDone, false);
@@ -65,6 +81,10 @@ public static class VillageMapGenerationTest
         SessionState.SetString(KeyLabel, label);
         SessionState.SetBool(KeyBatch, batch);
         SessionState.SetInt(KeyExit, 1);
+        SessionState.SetInt(KeyGridColumns, gridColumns);
+        SessionState.SetInt(KeyGridRows, gridRows);
+        // 에디터 창이 포커스를 잃으면 Play 모드가 멈추므로 테스트 동안만 켜고 끝나면 원래 값으로 되돌린다.
+        SessionState.SetBool(KeyRunInBackground, PlayerSettings.runInBackground);
         EditorSceneManager.OpenScene(VillageRoomBuilder.ScenePath, OpenSceneMode.Single);
         EditorApplication.EnterPlaymode();
     }
@@ -74,11 +94,16 @@ public static class VillageMapGenerationTest
         if (!SessionState.GetBool(KeyActive, false)) return;
         if (change == PlayModeStateChange.EnteredPlayMode && !SessionState.GetBool(KeyDone, false))
         {
-            runner = new Runner(SessionState.GetInt(KeyRuns, 30), SessionState.GetString(KeyLabel, "manual"));
+            Application.runInBackground = true;
+            int columns = SessionState.GetInt(KeyGridColumns, 0), rows = SessionState.GetInt(KeyGridRows, 0);
+            runner = new Runner(SessionState.GetInt(KeyRuns, 30), SessionState.GetString(KeyLabel, "manual"),
+                columns > 0 && rows > 0 ? (MapLayoutMode.Grid, columns, rows) : ((MapLayoutMode, int, int)?)null);
             EditorApplication.update += Step;
         }
         else if (change == PlayModeStateChange.EnteredEditMode && SessionState.GetBool(KeyDone, false))
         {
+            PlayerSettings.runInBackground = SessionState.GetBool(KeyRunInBackground, false);
+            VillageMapGenerator.EditorLayoutOverride = null;
             SessionState.SetBool(KeyActive, false);
             if (SessionState.GetBool(KeyBatch, false)) EditorApplication.Exit(SessionState.GetInt(KeyExit, 1));
         }
@@ -125,12 +150,19 @@ public static class VillageMapGenerationTest
         public int MaskVertices;
         public int BoundaryBoxes;
         public List<double> FirstFrameMs = new List<double>(); // 로드 직후 프레임들의 실제 프레임 시간(카빙 등 첫 프레임 비용)
+
+        // 격자 배치일 때: 생성기의 개발용 검증 결과(VillageMapGenerator.LastGridValidation).
+        public bool IsGrid;
+        public int CorridorCells;
+        public int PathsChecked, PathsComplete;
+        public bool FloorConnected = true, WalkableConnected = true;
     }
 
     private sealed class Runner
     {
         private readonly int runs;
         private readonly string label;
+        private readonly (MapLayoutMode mode, int columns, int rows)? layoutOverride;
         private readonly IEnumerator routine;
         private readonly List<RunResult> results = new List<RunResult>();
         private readonly HashSet<string> captured = new HashSet<string>();
@@ -138,10 +170,11 @@ public static class VillageMapGenerationTest
         private string abortReason;
         public int ExitCode { get; private set; } = 1;
 
-        public Runner(int runs, string label)
+        public Runner(int runs, string label, (MapLayoutMode mode, int columns, int rows)? layoutOverride)
         {
             this.runs = runs;
             this.label = label;
+            this.layoutOverride = layoutOverride;
             routine = Run();
         }
 
@@ -151,6 +184,7 @@ public static class VillageMapGenerationTest
         {
             abortReason = e.ToString();
             Application.logMessageReceived -= OnLog;
+            VillageMapGenerator.EditorLayoutOverride = null;
             WriteReport();
         }
 
@@ -167,6 +201,7 @@ public static class VillageMapGenerationTest
             {
                 current = new RunResult { Index = i + 1 };
                 ResetGameManagerSeed();
+                VillageMapGenerator.EditorLayoutOverride = layoutOverride;
 
                 bool loaded = false;
                 UnityEngine.Events.UnityAction<Scene, LoadSceneMode> onLoaded = (s, m) => loaded = true;
@@ -191,6 +226,7 @@ public static class VillageMapGenerationTest
             }
             current = null;
             Application.logMessageReceived -= OnLog;
+            VillageMapGenerator.EditorLayoutOverride = null;
             WriteReport();
         }
 
@@ -208,31 +244,61 @@ public static class VillageMapGenerationTest
             GameObject mapRoot = GameObject.Find("GeneratedMap");
             if (mapRoot == null) { r.Failures.Add("GeneratedMap이 없다 (맵 생성 실패)"); return; }
 
+            VillageMapGenerator generator = Object.FindAnyObjectByType<VillageMapGenerator>();
+            Transform corridors = mapRoot.transform.Find("Corridors");
+            r.IsGrid = corridors != null;
+            GridLayoutPlan plan = r.IsGrid && generator != null ? generator.LastGridPlan : null;
+
             List<Transform> rooms = new List<Transform>();
             foreach (Transform child in mapRoot.transform)
                 if (child.name != "OutsideFloorBand" && child.Find("Ground") != null && child.GetComponent<Grid>() != null) rooms.Add(child);
-            rooms.Sort((a, b) => a.position.x.CompareTo(b.position.x));
-            r.Rooms = rooms.Select(t => t.name.Replace("(Clone)", "")).ToList();
+            if (r.IsGrid) rooms.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
+            else rooms.Sort((a, b) => a.position.x.CompareTo(b.position.x));
+            r.Rooms = rooms.Select(t => RoomLabel(t, plan)).ToList();
 
-            // Perlin 바닥 변형: 생성기가 Ground에 칠한 변형 타일(floorVariantTiles) 칸 수를 방별로 센다.
-            TileBase[] variants = ReadArray<TileBase>(Object.FindAnyObjectByType<VillageMapGenerator>(), "floorVariantTiles");
+            // Perlin 바닥 변형: 생성기가 Ground에 칠한 변형 타일(floorVariantTiles) 칸 수를 방 종류별로 센다.
+            TileBase[] variants = ReadArray<TileBase>(generator, "floorVariantTiles");
             foreach (Transform room in rooms)
             {
                 Tilemap ground = room.Find("Ground").GetComponent<Tilemap>();
                 int count = 0;
                 foreach (Vector3Int p in ground.cellBounds.allPositionsWithin)
                     if (variants.Contains(ground.GetTile(p))) count++;
-                r.VariantCells[room.name.Replace("(Clone)", "")] = count;
+                r.VariantCells[RoomTypeName(room, plan)] = count;
             }
 
             Dictionary<Transform, HashSet<Vector2Int>> floor = rooms.ToDictionary(t => t, RoomFloor);
             Dictionary<Transform, HashSet<Vector2Int>> obstacleCells = rooms.ToDictionary(t => t, RoomObstacleCells);
             HashSet<Vector2Int> mapFloor = new HashSet<Vector2Int>(floor.Values.SelectMany(c => c));
+            if (r.IsGrid)
+            {
+                Tilemap corridorTiles = corridors.GetComponentInChildren<Tilemap>();
+                if (corridorTiles != null)
+                    foreach (Vector3Int p in corridorTiles.cellBounds.allPositionsWithin)
+                        if (corridorTiles.HasTile(p) && mapFloor.Add(new Vector2Int(p.x, p.y))) r.CorridorCells++;
+            }
             r.FloorCells = mapFloor.Count;
 
-            // 연결부: 이전 방 맨 오른쪽 열과 다음 방 맨 왼쪽 열이 맞닿는 줄 중 양쪽 모두 장애물이 없는 연속 줄 수.
+            if (r.IsGrid)
+            {
+                // 격자: 생성기의 개발용 검증(Start에서 카빙 반영 후 실행)으로 트럭→모든 방 경로와 바닥 연결을 확인한다.
+                VillageMapGenerator.GridValidationResult v = generator != null ? generator.LastGridValidation : null;
+                if (v == null) r.Failures.Add("격자 검증 결과가 없다 (VillageMapGenerator.Start가 돌지 않았다)");
+                else
+                {
+                    r.PathsChecked = v.PathsChecked;
+                    r.PathsComplete = v.PathsComplete;
+                    r.FloorConnected = v.FloorConnected;
+                    r.WalkableConnected = v.WalkableConnected;
+                    foreach (string p in v.Problems) r.Failures.Add("격자 검증: " + p);
+                    r.JunctionNotes.Add($"격자 {plan?.Columns}x{plan?.Rows}, 연결 {plan?.Edges.Count} (고리 {(plan != null ? GridLayoutPlanner.LoopCount(plan) : 0)}), 길 {r.CorridorCells}칸, " +
+                                        $"트럭→방 경로 {v.PathsComplete}/{v.PathsChecked}, 바닥 연결 {(v.FloorConnected ? "O" : "X")}, 걸을 수 있는 바닥 연결 {(v.WalkableConnected ? "O" : "X")}");
+                }
+            }
+
+            // 연결부(한 줄 배치): 이전 방 맨 오른쪽 열과 다음 방 맨 왼쪽 열이 맞닿는 줄 중 양쪽 모두 장애물이 없는 연속 줄 수.
             List<Vector3> navPoints = rooms.Select(t => RoomNavPoint(floor[t], obstacleCells[t])).ToList();
-            for (int i = 1; i < rooms.Count; i++)
+            for (int i = 1; i < rooms.Count && !r.IsGrid; i++)
             {
                 Transform a = rooms[i - 1], b = rooms[i];
                 int ax = floor[a].Max(c => c.x), bx = floor[b].Min(c => c.x);
@@ -256,7 +322,6 @@ public static class VillageMapGenerationTest
             }
 
             // 스폰: 방마다 기대 수만큼, 바닥 위 장애물 없는 칸에 있는지.
-            VillageMapGenerator generator = Object.FindAnyObjectByType<VillageMapGenerator>();
             int animalsPerRoom = ReadInt(generator, "animalsPerRoom"), monstersPerRoom = ReadInt(generator, "monstersPerRoom");
             bool hasAnimals = ReadArrayLength(generator, "animalPrefabs") > 0, hasMonsters = ReadArrayLength(generator, "monsterPrefabs") > 0;
             foreach (Transform room in rooms)
@@ -288,9 +353,22 @@ public static class VillageMapGenerationTest
 
             InspectTruck(r, generator, player, mapFloor);
 
-            r.NavBuildMs = TimeNavMeshBuild(rooms);
+            r.NavBuildMs = TimeNavMeshBuild(rooms, corridors != null ? corridors.Find("CorridorNavGround") : null);
             MeasureSizes(r, generator, mapRoot);
             CaptureIfNew(r, mapFloor);
+        }
+
+        // 한 줄 배치는 프리팹 이름, 격자 배치는 "Room_x_y:프리팹 이름".
+        private static string RoomLabel(Transform room, GridLayoutPlan plan) =>
+            plan == null ? room.name.Replace("(Clone)", "") : $"{room.name}:{RoomTypeName(room, plan)}";
+
+        private static string RoomTypeName(Transform room, GridLayoutPlan plan)
+        {
+            if (plan == null) return room.name.Replace("(Clone)", "");
+            string[] parts = room.name.Split('_');
+            if (parts.Length == 3 && int.TryParse(parts[1], out int x) && int.TryParse(parts[2], out int y) && x < plan.Columns && y < plan.Rows)
+                return plan.TypeNames[plan.RoomType[x, y]];
+            return room.name;
         }
 
         private static void MeasureSizes(RunResult r, VillageMapGenerator generator, GameObject mapRoot)
@@ -413,14 +491,15 @@ public static class VillageMapGenerationTest
             target == null ? 0 : ((target.GetType().GetField(field, BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(target) as System.Array)?.Length ?? 0);
 
         // VillageMapGenerator.BakeNavMesh와 같은 소스/범위/설정으로 NavMeshData를 다시 만들어 시간을 잰다(결과는 버린다). 5회 중앙값.
-        private static double TimeNavMeshBuild(List<Transform> rooms)
+        private static double TimeNavMeshBuild(List<Transform> rooms, Transform extraNavGround)
         {
             List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
             Bounds bounds = default;
             bool any = false;
-            foreach (Transform room in rooms)
+            List<Transform> navGrounds = rooms.Select(room => room.Find("NavGround")).ToList();
+            if (extraNavGround != null) navGrounds.Add(extraNavGround);
+            foreach (Transform navGround in navGrounds)
             {
-                Transform navGround = room.Find("NavGround");
                 MeshFilter filter = navGround != null ? navGround.GetComponent<MeshFilter>() : null;
                 if (filter == null || filter.sharedMesh == null) continue;
                 sources.Add(new NavMeshBuildSource { shape = NavMeshBuildSourceShape.Mesh, sourceObject = filter.sharedMesh, transform = filter.transform.localToWorldMatrix, area = 0 });
@@ -502,6 +581,17 @@ public static class VillageMapGenerationTest
             AppendTiming(sb, "전체", results);
             AppendTiming(sb, "새 방 포함", results.Where(x => x.Rooms.Any(n => n.StartsWith("Room_"))).ToList());
             AppendTiming(sb, "기존 방만", results.Where(x => x.Rooms.All(n => !n.StartsWith("Room_"))).ToList());
+
+            List<RunResult> gridRuns = results.Where(x => x.IsGrid).ToList();
+            if (gridRuns.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine($"== 격자 검증 ({gridRuns.Count}회)");
+                sb.AppendLine($"  트럭→방 중심 NavMesh 경로: {gridRuns.Sum(x => x.PathsComplete)}/{gridRuns.Sum(x => x.PathsChecked)} 성공");
+                sb.AppendLine($"  바닥(방 + 길) 한 덩어리: {gridRuns.Count(x => x.FloorConnected)}/{gridRuns.Count}회, " +
+                              $"장애물 뺀 걸을 수 있는 바닥 한 덩어리: {gridRuns.Count(x => x.WalkableConnected)}/{gridRuns.Count}회");
+                sb.AppendLine($"  길 칸: 평균 {gridRuns.Average(x => x.CorridorCells):F0}, 바닥 칸(방 + 길): 평균 {gridRuns.Average(x => x.FloorCells):F0}");
+            }
 
             AppendMeasurements(sb, results);
 

@@ -36,7 +36,9 @@ public class VillageMapGenerator : MonoBehaviour
     [Tooltip("격자 칸 사이 틈(칸). 길이 이 틈 안에서 꺾이므로 corridorWidth + 2 이상으로 둔다.")]
     [SerializeField, Min(0)] private int corridorGap = 6;
     [Tooltip("모든 방을 잇는 최소 연결(스패닝 트리) 밖의 이웃 쌍 중 이 비율만큼 연결을 더해 고리 모양 길을 만든다. 0이면 트리만, 1이면 이웃끼리 전부 연결.")]
-    [SerializeField, Range(0f, 1f)] private float extraConnectionRatio = 0.25f;
+    [SerializeField, Range(0f, 1f)] private float extraConnectionRatio = 0.35f;
+    [Tooltip("길 바닥 타일. 비워두면 방 바닥에서 가장 많이 쓰인 기본 바닥 타일을 쓴다.")]
+    [SerializeField] private TileBase corridorFloorTile;
     [SerializeField] private TruckPlacement truckPlacement = TruckPlacement.Center;
     [Tooltip("트럭이 있는 칸에 놓을 수 있는 방. 트럭 주변을 넓게 비울 수 있고 치워지는 장애물이 적은 방으로 고른다. 비워두면 모든 방을 허용한다.")]
     [SerializeField] private GameObject[] truckRoomPrefabs;
@@ -132,10 +134,14 @@ public class VillageMapGenerator : MonoBehaviour
         generationWatch = System.Diagnostics.Stopwatch.StartNew();
         generationLastMarkMs = 0;
 
-        if (layoutMode == MapLayoutMode.Grid)
+#if UNITY_EDITOR
+        if (EditorLayoutOverride.HasValue)
         {
-            Debug.LogWarning($"{name}: 격자 배치(Grid)는 아직 씬 생성이 구현되지 않아 이번에는 한 줄 배치(Linear)로 만든다.");
+            layoutMode = EditorLayoutOverride.Value.mode;
+            gridColumns = EditorLayoutOverride.Value.columns;
+            gridRows = EditorLayoutOverride.Value.rows;
         }
+#endif
 
         // Reuse the same layout every time VillageScene is re-entered on the same Day (e.g. after
         // a truck-scene round trip); only roll a new one when GameManager reports a new Day.
@@ -157,6 +163,13 @@ public class VillageMapGenerator : MonoBehaviour
         }
 
         MarkGenerationStep("준비");
+
+        // 격자 배치는 별도 경로로 만든다(BuildGridMap). 아래 한 줄 배치 경로와 그 Random 순서는 그대로다.
+        if (layoutMode == MapLayoutMode.Grid)
+        {
+            if (BuildGridMap()) return;
+            Debug.LogError($"{name}: 격자 배치 계획에 실패해 한 줄 배치(Linear)로 만든다.");
+        }
 
         GameObject mapRoot = new GameObject(MapRootName);
         List<RoomInstance> placedRooms = BuildRoomChain(mapRoot.transform);
@@ -282,9 +295,350 @@ public class VillageMapGenerator : MonoBehaviour
             if (prefab == null || !seen.Add(prefab)) continue;
             GridRoomType type = GridRoomAnalyzer.Analyze(prefab, width, truckRooms.Count == 0 || truckRooms.Contains(prefab));
             foreach (string warning in type.Warnings) Debug.LogWarning($"{name}: {warning}", prefab);
-            if (type.FloorCells.Count > 0) input.Types.Add(type);
+            if (type.FloorCells.Count == 0) continue;
+            input.Types.Add(type);
+            input.Prefabs.Add(prefab);
         }
         return input;
+    }
+
+#if UNITY_EDITOR
+    /// <summary>에디터 테스트 도구(VillageMapGenerationTest)가 씬 파일을 바꾸지 않고 배치 방식과 격자 크기를 바꿔 볼 때 쓴다. null이면 씬 설정 그대로.</summary>
+    public static (MapLayoutMode mode, int columns, int rows)? EditorLayoutOverride;
+#endif
+
+    /// <summary>격자 맵을 만든 뒤 개발용 검증 결과(Start에서 채운다). 문제가 없으면 Problems가 비어 있다.</summary>
+    public sealed class GridValidationResult
+    {
+        public int Rooms;
+        public int PathsChecked;
+        public int PathsComplete;
+        public bool FloorConnected;
+        public bool WalkableConnected;
+        public List<string> Problems = new List<string>();
+    }
+
+    public GridLayoutPlan LastGridPlan { get; private set; }
+    public GridValidationResult LastGridValidation { get; private set; }
+
+    // 격자 검증(Start)에 넘길 생성 결과.
+    private List<RoomInstance> gridRooms;
+    private HashSet<Vector2Int> gridFloor;
+    private Vector2 gridTruckXY;
+
+    /// <summary>
+    /// 격자 배치 경로. GridLayoutPlanner 계획대로 칸마다 방을 Instantiate하고(이름 Room_{gx}_{gy} - 같은 방 프리팹이 여러 번 나와도
+    /// 동물/시체 계층 경로 Id가 겹치지 않는다), 길을 Corridors 타일맵에 깐다. 길 칸을 mapFloor에 넣으므로 경계 충돌체·벽 그림자·바깥
+    /// 마스크는 한 줄 경로와 같은 함수가 그대로 따라 만든다. 길에도 NavGround 메시를 만들어 NavMesh에 넣는다.
+    /// 트럭과 플레이어는 계획의 트럭 칸 방에 둔다. 동물/몬스터 스폰은 지금은 한 줄 경로와 같은 방당 규칙이다(4단계에서 바꾼다).
+    /// 계획에 실패하면 false(아무것도 만들지 않는다).
+    /// </summary>
+    private bool BuildGridMap()
+    {
+        GridPlanInput input = CreateGridPlanInput();
+        // 같은 Day에 다시 들어오면 Awake의 InitState로 같은 시드가 나오므로 같은 격자가 다시 만들어진다.
+        int planSeed = Random.Range(int.MinValue, int.MaxValue);
+        GridLayoutPlan plan = GridLayoutPlanner.Plan(planSeed, input.Types, input.Settings);
+        LastGridPlan = plan;
+        if (!plan.Success)
+        {
+            Debug.LogError($"{name}: 격자 계획 실패 - {plan.Failure}");
+            return false;
+        }
+        MarkGenerationStep("격자 계획");
+
+        GameObject mapRoot = new GameObject(MapRootName);
+        List<RoomInstance> placedRooms = new List<RoomInstance>();
+        RoomInstance truckRoom = null;
+        for (int gy = 0; gy < plan.Rows; gy++)
+        {
+            for (int gx = 0; gx < plan.Columns; gx++)
+            {
+                GameObject prefab = input.Prefabs[plan.RoomType[gx, gy]];
+                GameObject instance = Instantiate(prefab, Vector3.zero, Quaternion.identity, mapRoot.transform);
+                instance.name = $"Room_{gx}_{gy}";
+                // 장애물 칸은 원점에 있을 때 읽어야 방 로컬 칸이 된다(GetRoomObstacles).
+                List<RoomObstacle> obstacles = GetRoomObstacles(instance);
+                RoomInstance room = new RoomInstance
+                {
+                    Root = instance,
+                    PrefabName = prefab.name,
+                    FloorCells = GetFloorCells(instance),
+                    Obstacles = obstacles,
+                    ObstacleCells = new HashSet<Vector2Int>(obstacles.SelectMany(o => o.Cells))
+                };
+                Vector2Int origin = plan.RoomOrigin[gx, gy];
+                instance.transform.position = new Vector3(origin.x, origin.y, 0f);
+                placedRooms.Add(room);
+                if (new Vector2Int(gx, gy) == plan.TruckCell) truckRoom = room;
+            }
+        }
+        MarkGenerationStep("방 배치");
+
+        HashSet<Vector2Int> mapFloor = new HashSet<Vector2Int>();
+        List<MeshFilter> navGroundMeshes = new List<MeshFilter>();
+        foreach (RoomInstance room in placedRooms)
+        {
+            ApplyFloorVariantPatches(room);
+            navGroundMeshes.Add(BuildGridRoomNavGround(room));
+            foreach (Vector2Int c in room.FloorCells) mapFloor.Add(ToWorldCell(room, c));
+
+            TilemapRenderer groundRenderer = room.Root.transform.Find("Ground")?.GetComponent<TilemapRenderer>();
+            if (groundRenderer != null) groundRenderer.sortingLayerName = floorSortingLayer;
+        }
+        List<Vector2Int> corridorCells = plan.Corridors.SelectMany(c => c.Cells).Where(c => !mapFloor.Contains(c)).Distinct()
+            .OrderBy(c => c.y).ThenBy(c => c.x).ToList();
+        Transform corridors = BuildCorridorTilemap(mapRoot.transform, corridorCells, placedRooms);
+        MeshFilter corridorNavGround = BuildNavGroundForCells(corridors, corridorCells, "CorridorNavGround");
+        navGroundMeshes.Add(corridorNavGround);
+        foreach (Vector2Int c in corridorCells) mapFloor.Add(c);
+        MarkGenerationStep("바닥 패치·NavGround·길");
+
+        BakeNavMesh(mapRoot, navGroundMeshes);
+        MarkGenerationStep("NavMesh 굽기");
+
+        foreach (RoomInstance room in placedRooms)
+        {
+            AddObstacleCarvers(room, mapRoot.transform);
+        }
+        MarkGenerationStep("장애물 카버");
+
+        BuildMapBoundary(mapRoot.transform, mapFloor);
+        MarkGenerationStep("경계 충돌체");
+        BuildWallShadows(mapRoot.transform, WithObstacleOverhang(mapFloor, placedRooms));
+        MarkGenerationStep("벽 그림자");
+        BuildOutsideMask(mapRoot.transform, mapFloor, placedRooms);
+        MarkGenerationStep("바깥 마스크");
+
+        // 플레이어/트럭 배치와 스폰은 한 줄 경로(Awake)와 같은 규칙이다. 다만 시작 방이 트럭 칸 방이고, 장애물을 치워 다시 구울 때
+        // 길 NavGround도 함께 넣는다. 4단계(트럭 배치·스폰 규칙)에서 격자용으로 바뀔 부분이라 한 줄 경로와 따로 둔다.
+        Physics2D.SyncTransforms();
+        RoomInstance centerRoom = truckRoom ?? placedRooms[0];
+        Vector2Int spawnCell = PickSafeCell(centerRoom, null) ?? PickCentralCell(centerRoom);
+        PositionExistingObject(playerObjectName, ToSpritePosition(centerRoom, spawnCell));
+
+        Vector2 truckFootprint = GetTruckFootprintSize();
+        Vector2 truckClearance = truckFootprint + Vector2.one * (truckClearanceMarginPerSide * 2f);
+        Vector2 minTruckClearance = truckFootprint + Vector2.one * (MinTruckClearanceMarginPerSide * 2f);
+        Vector2Int truckCell = PickSafeCellForFootprint(centerRoom, spawnCell, truckFootprint, mapFloor, truckClearance)
+            ?? PickSafeCellForFootprint(centerRoom, spawnCell, truckFootprint, mapFloor, minTruckClearance)
+            ?? PickSafeCellForFootprint(centerRoom, spawnCell, truckFootprint, null, Vector2.zero)
+            ?? PickSafeCell(centerRoom, spawnCell)
+            ?? spawnCell;
+        Vector2 truckXY = ToWorldXY(centerRoom, truckCell);
+        PositionExistingObject(truckPointObjectName, new Vector3(truckXY.x, truckXY.y, 0f));
+
+        if (EnsureTruckClearance(placedRooms, truckXY, truckClearance))
+        {
+            RebakeNavMesh(mapRoot, placedRooms, corridorNavGround);
+        }
+        AddTruckNavCarver(mapRoot.transform, truckXY, truckFootprint);
+
+        Physics2D.SyncTransforms();
+        Vector2 playerXY = ToWorldXY(centerRoom, spawnCell);
+        if (Mathf.Abs(playerXY.x - truckXY.x) < truckFootprint.x * 0.5f + 0.5f && Mathf.Abs(playerXY.y - truckXY.y) < truckFootprint.y * 0.5f + 0.5f)
+        {
+            spawnCell = PickSafeCell(centerRoom, spawnCell) ?? spawnCell;
+            PositionExistingObject(playerObjectName, ToSpritePosition(centerRoom, spawnCell));
+        }
+
+        HashSet<Vector2Int> playerAndTruckWorldCells = new HashSet<Vector2Int>(CellsUnderBox(truckXY, truckFootprint + Vector2.one * (TruckSpawnGap * 2f)))
+        {
+            ToWorldCell(centerRoom, spawnCell)
+        };
+        Vector2 playerSpawnWorldXY = ToWorldXY(centerRoom, spawnCell);
+        MarkGenerationStep("플레이어·트럭 배치");
+
+        foreach (RoomInstance room in placedRooms)
+        {
+            Vector2Int roomOffset = ToWorldCell(room, Vector2Int.zero);
+            HashSet<Vector2Int> usedCells = new HashSet<Vector2Int>(playerAndTruckWorldCells.Select(c => c - roomOffset));
+            SpawnAnimal(room, room.Root.transform, usedCells);
+            SpawnMonster(room, room.Root.transform, playerSpawnWorldXY, usedCells);
+        }
+        MarkGenerationStep("동물·몬스터 스폰");
+
+        gridRooms = placedRooms;
+        gridFloor = mapFloor;
+        gridTruckXY = truckXY;
+        return true;
+    }
+
+    // 길 칸을 까는 타일맵(Corridors). 방 바닥과 같은 Grid 설정·정렬로 그리고, 타일은 corridorFloorTile(비어 있으면 방 바닥에서 가장 많이 쓰인 타일).
+    private Transform BuildCorridorTilemap(Transform mapRoot, List<Vector2Int> cells, List<RoomInstance> rooms)
+    {
+        GameObject gridGO = new GameObject("Corridors");
+        gridGO.transform.SetParent(mapRoot, false);
+        Grid grid = gridGO.AddComponent<Grid>();
+
+        Tilemap template = rooms.Select(r => r.Root.transform.Find("Ground")?.GetComponent<Tilemap>()).FirstOrDefault(t => t != null);
+        TileBase tile = corridorFloorTile;
+        if (tile == null)
+        {
+            Dictionary<TileBase, int> counts = new Dictionary<TileBase, int>();
+            foreach (RoomInstance room in rooms)
+            {
+                Tilemap ground = room.Root.transform.Find("Ground")?.GetComponent<Tilemap>();
+                if (ground == null) continue;
+                foreach (Vector3Int p in ground.cellBounds.allPositionsWithin)
+                {
+                    TileBase t = ground.GetTile(p);
+                    if (t != null) counts[t] = counts.TryGetValue(t, out int n) ? n + 1 : 1;
+                }
+            }
+            tile = counts.OrderByDescending(kv => kv.Value).Select(kv => kv.Key).FirstOrDefault();
+        }
+        if (template != null && template.layoutGrid != null) grid.cellSize = template.layoutGrid.cellSize;
+
+        GameObject tilemapGO = new GameObject("Floor");
+        tilemapGO.transform.SetParent(gridGO.transform, false);
+        Tilemap tilemap = tilemapGO.AddComponent<Tilemap>();
+        TilemapRenderer renderer = tilemapGO.AddComponent<TilemapRenderer>();
+        if (template != null)
+        {
+            tilemap.tileAnchor = template.tileAnchor;
+            tilemap.color = template.color;
+            TilemapRenderer templateRenderer = template.GetComponent<TilemapRenderer>();
+            if (templateRenderer != null)
+            {
+                renderer.sharedMaterial = templateRenderer.sharedMaterial;
+                renderer.sortingOrder = templateRenderer.sortingOrder;
+                renderer.mode = templateRenderer.mode;
+            }
+        }
+        renderer.sortingLayerName = floorSortingLayer;
+
+        if (tile != null && cells.Count > 0)
+        {
+            Vector3Int[] positions = cells.Select(c => new Vector3Int(c.x, c.y, 0)).ToArray();
+            tilemap.SetTiles(positions, Enumerable.Repeat(tile, positions.Length).ToArray());
+        }
+        return gridGO.transform;
+    }
+
+    // 격자 경로의 방 NavGround: 방 바닥 - 장애물 칸을 월드 칸으로 바꿔 만든다(BuildNavGround는 방 루트의 y 오프셋을 높이로 옮겨
+    // 버리므로 방이 y로 크게 떨어져 놓이는 격자에서는 쓸 수 없다). 이름은 "NavGround"로 같아서 다시 굽기·테스트 도구가 그대로 찾는다.
+    private static MeshFilter BuildGridRoomNavGround(RoomInstance room)
+    {
+        List<Vector2Int> cells = room.FloorCells.Where(c => !room.ObstacleCells.Contains(c)).Select(c => ToWorldCell(room, c)).ToList();
+        return BuildNavGroundForCells(room.Root.transform, cells, "NavGround");
+    }
+
+    // 월드 칸 목록으로 NavMesh용 바닥 메시를 만든다(BuildNavGround와 같은 모양의 사각형, 메시 오브젝트는 월드 원점에 둔다).
+    private static MeshFilter BuildNavGroundForCells(Transform parent, List<Vector2Int> cells, string objectName)
+    {
+        List<Vector3> vertices = new List<Vector3>(cells.Count * 4);
+        List<int> triangles = new List<int>(cells.Count * 6);
+        foreach (Vector2Int c in cells)
+        {
+            float x0 = c.x, x1 = c.x + 1f, z0 = c.y, z1 = c.y + 1f;
+            int b = vertices.Count;
+            vertices.Add(new Vector3(x0, 0f, z0));
+            vertices.Add(new Vector3(x0, 0f, z1));
+            vertices.Add(new Vector3(x1, 0f, z1));
+            vertices.Add(new Vector3(x1, 0f, z0));
+            triangles.Add(b); triangles.Add(b + 1); triangles.Add(b + 2);
+            triangles.Add(b); triangles.Add(b + 2); triangles.Add(b + 3);
+        }
+
+        GameObject navGround = new GameObject(objectName);
+        // 칸이 이미 월드 칸이므로 메시 오브젝트는 월드 원점에 둔다. 부모(방 루트)는 2D 좌표 (x, y, 0)에 있어서 그대로 자식으로 두면
+        // 방의 y 오프셋이 NavMesh 평면(x, z)의 z가 아니라 높이(y)로 들어가 버린다.
+        navGround.transform.SetParent(parent, false);
+        navGround.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+        Mesh mesh = new Mesh { name = objectName + "Mesh" };
+        if (vertices.Count > 65000) mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        mesh.SetVertices(vertices);
+        mesh.SetTriangles(triangles, 0);
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+        MeshFilter filter = navGround.AddComponent<MeshFilter>();
+        filter.sharedMesh = mesh;
+        navGround.AddComponent<MeshRenderer>().enabled = false;
+        return filter;
+    }
+
+    // 개발용 격자 검증: 카빙(NavMeshObstacle)이 반영된 뒤 트럭 지점에서 모든 방 중심까지 NavMesh 경로가 끝까지 이어지는지,
+    // 바닥(방 + 길)이 한 덩어리인지 확인한다. 문제가 있으면 에러 로그를 남긴다(출시 빌드에서는 돌지 않는다).
+    private System.Collections.IEnumerator Start()
+    {
+        if (gridRooms == null) yield break;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        yield return null;
+        yield return null;
+        LastGridValidation = ValidateGrid();
+        foreach (string problem in LastGridValidation.Problems) Debug.LogError($"{name}: 격자 맵 검증 실패 - {problem}");
+#endif
+    }
+
+    private GridValidationResult ValidateGrid()
+    {
+        GridValidationResult result = new GridValidationResult { Rooms = gridRooms.Count };
+
+        result.FloorConnected = IsConnected(gridFloor);
+        if (!result.FloorConnected) result.Problems.Add("바닥(방 + 길)이 한 덩어리로 이어지지 않는다");
+        HashSet<Vector2Int> walkable = new HashSet<Vector2Int>(gridFloor);
+        foreach (RoomInstance room in gridRooms)
+            foreach (Vector2Int c in room.ObstacleCells) walkable.Remove(ToWorldCell(room, c));
+        result.WalkableConnected = IsConnected(walkable);
+        if (!result.WalkableConnected) result.Problems.Add("장애물을 뺀 걸을 수 있는 바닥이 한 덩어리로 이어지지 않는다");
+
+        // 트럭은 NavMesh에서 파여 있으므로 트럭에서 가장 가까운 NavMesh 지점에서 출발한다.
+        Vector3 truckNav = new Vector3(gridTruckXY.x, 0f, gridTruckXY.y);
+        if (!NavMesh.SamplePosition(truckNav, out NavMeshHit start, 8f, NavMesh.AllAreas))
+        {
+            result.Problems.Add("트럭 주변에서 NavMesh 지점을 찾지 못했다");
+            return result;
+        }
+        foreach (RoomInstance room in gridRooms)
+        {
+            result.PathsChecked++;
+            Vector3? target = RoomNavCenter(room);
+            NavMeshPath path = new NavMeshPath();
+            if (target.HasValue && NavMesh.CalculatePath(start.position, target.Value, NavMesh.AllAreas, path) && path.status == NavMeshPathStatus.PathComplete)
+                result.PathsComplete++;
+            else
+                result.Problems.Add($"트럭에서 {room.Root.name}({room.PrefabName}) 중심까지 NavMesh 경로가 이어지지 않는다 ({(target.HasValue ? path.status.ToString() : "방 안 NavMesh 지점 없음")})");
+        }
+        return result;
+    }
+
+    // 방 바닥 무게중심에 가장 가까운, 장애물이 아니고 상하좌우가 바닥인 칸 중 NavMesh 위에 있는 지점.
+    private static Vector3? RoomNavCenter(RoomInstance room)
+    {
+        HashSet<Vector2Int> floor = new HashSet<Vector2Int>(room.FloorCells);
+        Vector2 centroid = Vector2.zero;
+        foreach (Vector2Int c in room.FloorCells) centroid += new Vector2(c.x + 0.5f, c.y + 0.5f);
+        centroid /= Mathf.Max(1, room.FloorCells.Count);
+        IEnumerable<Vector2Int> candidates = room.FloorCells
+            .Where(c => !room.ObstacleCells.Contains(c) && floor.Contains(c + Vector2Int.up) && floor.Contains(c + Vector2Int.down) &&
+                        floor.Contains(c + Vector2Int.left) && floor.Contains(c + Vector2Int.right))
+            .OrderBy(c => (new Vector2(c.x + 0.5f, c.y + 0.5f) - centroid).sqrMagnitude);
+        foreach (Vector2Int c in candidates)
+        {
+            Vector2 xy = ToWorldXY(room, c);
+            if (NavMesh.SamplePosition(new Vector3(xy.x, 0f, xy.y), out NavMeshHit hit, 0.75f, NavMesh.AllAreas)) return hit.position;
+        }
+        return null;
+    }
+
+    private static bool IsConnected(HashSet<Vector2Int> cells)
+    {
+        if (cells.Count == 0) return true;
+        Vector2Int first = cells.OrderBy(c => c.y).ThenBy(c => c.x).First();
+        HashSet<Vector2Int> reached = new HashSet<Vector2Int> { first };
+        Stack<Vector2Int> stack = new Stack<Vector2Int>();
+        stack.Push(first);
+        while (stack.Count > 0)
+        {
+            Vector2Int c = stack.Pop();
+            foreach (Vector2Int d in new[] { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down })
+            {
+                Vector2Int n = c + d;
+                if (cells.Contains(n) && reached.Add(n)) stack.Push(n);
+            }
+        }
+        return reached.Count == cells.Count;
     }
 
     private GameObject[] RemoveUnusablePrefabs(GameObject[] prefabs, string fieldName, System.Func<GameObject, bool> isUsable = null, string reason = null)
@@ -898,6 +1252,26 @@ public class VillageMapGenerator : MonoBehaviour
     }
 
     // 장애물을 치운 칸은 NavMesh를 처음 구울 때 구멍으로 빠져 있었다(BuildNavGround) - 바닥 메시를 다시 만들어 다시 굽는다.
+    // 격자 경로용: 방 NavGround를 월드 칸 기준으로 다시 만들고(BuildGridRoomNavGround), 길 NavGround(extraGround)는 그대로 함께 넣어 다시 굽는다.
+    private static void RebakeNavMesh(GameObject mapRoot, List<RoomInstance> rooms, MeshFilter extraGround)
+    {
+        List<MeshFilter> meshes = new List<MeshFilter>();
+        foreach (RoomInstance room in rooms)
+        {
+            Transform old = room.Root.transform.Find("NavGround");
+            if (old != null)
+            {
+                old.name = "NavGround (replaced)";
+                MeshFilter oldFilter = old.GetComponent<MeshFilter>();
+                if (oldFilter != null && oldFilter.sharedMesh != null) Destroy(oldFilter.sharedMesh);
+                Destroy(old.gameObject);
+            }
+            meshes.Add(BuildGridRoomNavGround(room));
+        }
+        if (extraGround != null) meshes.Add(extraGround);
+        BakeNavMesh(mapRoot, meshes);
+    }
+
     private static void RebakeNavMesh(GameObject mapRoot, List<RoomInstance> rooms)
     {
         List<MeshFilter> meshes = new List<MeshFilter>();
