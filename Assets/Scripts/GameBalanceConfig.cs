@@ -143,6 +143,21 @@ public class GameBalanceConfig : ScriptableObject
         "스폰 시점에만 적용되며, 스폰 이후 순찰/배회로 이 범위 안에 들어오는 것은 막지 않는다.")]
     public float monsterMinSpawnDistanceFromPlayer = 6f;
 
+    [Header("격자 맵 길 (VillageScene 격자 배치 전용)")]
+    [Tooltip("방과 방을 잇는 길의 폭(칸). 방의 변마다 이 폭의 차선(입구 안쪽 2칸까지 장애물 없음)이 있어야 그 변으로 이웃과 이어진다. " +
+        "기본 6, 7은 시험용(Forest 남/북, Graveyard 북 입구가 7칸까지 열려 있다).")]
+    [Range(3, 8)]
+    public int gridCorridorWidth = 6;
+
+    [Tooltip("격자 칸 사이 틈(칸). 길이 이 틈 안에서 꺾이므로 길 폭 + 2 이상이어야 한다 - 더 좁으면 그 맵은 폭 + 2로 넓혀 만들고 경고를 남긴다.")]
+    [Min(0)]
+    public int gridCorridorGap = 8;
+
+    [Tooltip("길 가장자리에서 안쪽으로 몇 칸에 걸쳐 어두워질지(방 가장자리의 VillageMapGenerator.outsideMaskInnerFadeWidth와 같은 방식). " +
+        "1이면 폭 6 길의 가운데 4칸은 방 가운데와 같은 밝기로 남는다. 0이면 길 가장자리에서 바로 끊긴다.")]
+    [Range(0f, 4f)]
+    public float gridCorridorFadeDepth = 1f;
+
     [Header("격자 맵 스폰 (VillageScene 격자 배치 전용 - 한 줄 배치는 VillageMapGenerator의 방당 고정 수를 쓴다)")]
     [Tooltip("격자 맵 전체 동물 수. 대상 방마다 먼저 한 마리씩 돌아가고, 남으면 방당 상한까지 바닥이 넓은 방에 더 자주 간다. " +
         "모든 방이 상한에 차서 다 못 놓으면 경고를 남기고 상한까지만 놓는다.")]

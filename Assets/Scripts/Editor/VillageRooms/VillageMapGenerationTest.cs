@@ -172,6 +172,16 @@ public static class VillageMapGenerationTest
         // 격자 배치일 때: 생성기의 개발용 검증 결과(VillageMapGenerator.LastGridValidation).
         public bool IsGrid;
         public int CorridorCells;
+        public int CorridorWidth, CorridorGap;           // 이 맵을 만든 실제 길 폭/틈(GridLayoutPlan)
+        public int MapWidth, MapHeight;                  // 바닥(방 + 길) 외곽 사각형 크기(칸)
+        // 넓어진 길 점검: 가운데 칸(8방향 이웃이 모두 바닥인 길 칸)의 마스크 최대 알파, NavMesh 위에 있는 가운데 칸 수,
+        // 길 옆 바깥 칸 중 경계 충돌체가 없는 칸 수, 길과 바깥이 맞닿은 변 중 벽 그림자 외곽선에 있는 변/소품 스프라이트가 덮는 변/둘 다 아닌 변.
+        // 가운데 칸 중 방 바닥에서 방 가장자리 그라데이션 깊이(outsideMaskInnerFadeWidth) 안에 있는 칸은 포트 입구(방 모서리 그라데이션이 길로
+        // 이어지는 자리)로 따로 센다.
+        public int CorridorCenterCells, CorridorCenterOnNav, CorridorCenterMasked, CorridorPortCells, CorridorPortMasked;
+        public float CorridorCenterMaxAlpha, CorridorPortMaxAlpha;
+        public int CorridorSideCells, CorridorSideUnblocked;
+        public int CorridorEdges, CorridorEdgesShadowed, CorridorEdgesOverhang, CorridorEdgesOpen;
         public int PathsChecked, PathsComplete;
         public int Animals, Monsters, TruckRoomMonsters, DuplicateIds, RoomsOverCap;
         public List<RoomSpawn> RoomSpawns = new List<RoomSpawn>(); // 격자 방별 스폰 수(방 종류별 분포 표용)
@@ -329,14 +339,22 @@ public static class VillageMapGenerationTest
             Dictionary<Transform, HashSet<Vector2Int>> floor = rooms.ToDictionary(t => t, RoomFloor);
             Dictionary<Transform, HashSet<Vector2Int>> obstacleCells = rooms.ToDictionary(t => t, RoomObstacleCells);
             HashSet<Vector2Int> mapFloor = new HashSet<Vector2Int>(floor.Values.SelectMany(c => c));
+            HashSet<Vector2Int> corridorSet = new HashSet<Vector2Int>();
             if (r.IsGrid)
             {
                 Tilemap corridorTiles = corridors.GetComponentInChildren<Tilemap>();
                 if (corridorTiles != null)
                     foreach (Vector3Int p in corridorTiles.cellBounds.allPositionsWithin)
-                        if (corridorTiles.HasTile(p) && mapFloor.Add(new Vector2Int(p.x, p.y))) r.CorridorCells++;
+                        if (corridorTiles.HasTile(p) && mapFloor.Add(new Vector2Int(p.x, p.y))) { r.CorridorCells++; corridorSet.Add(new Vector2Int(p.x, p.y)); }
             }
             r.FloorCells = mapFloor.Count;
+            if (mapFloor.Count > 0)
+            {
+                r.MapWidth = mapFloor.Max(c => c.x) - mapFloor.Min(c => c.x) + 1;
+                r.MapHeight = mapFloor.Max(c => c.y) - mapFloor.Min(c => c.y) + 1;
+            }
+            if (plan != null) { r.CorridorWidth = plan.CorridorWidth; r.CorridorGap = plan.CorridorGap; }
+            if (r.IsGrid) InspectCorridors(r, generator, mapRoot, rooms, mapFloor, corridorSet);
 
             if (r.IsGrid)
             {
@@ -443,6 +461,125 @@ public static class VillageMapGenerationTest
             MeasureSizes(r, generator, mapRoot);
             CaptureIfNew(r, mapFloor);
         }
+
+        // 넓어진 길 점검(격자): 마스크 밝기, NavMesh, 경계 충돌체, 벽 그림자(시야 차단).
+        private static void InspectCorridors(RunResult r, VillageMapGenerator generator, GameObject mapRoot, List<Transform> rooms, HashSet<Vector2Int> mapFloor, HashSet<Vector2Int> corridorSet)
+        {
+            Vector2Int[] eight = { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1),
+                                   new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1) };
+            Vector2Int[] four = { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
+
+            // 가운데 칸: 8방향 이웃이 모두 바닥인 길 칸(폭 6 길이면 가장자리 한 줄씩을 뺀 가운데 4줄).
+            HashSet<Vector2Int> center = new HashSet<Vector2Int>(corridorSet.Where(c => eight.All(d => mapFloor.Contains(c + d))));
+            int roomFade = Mathf.CeilToInt(generator != null ? (float)generator.GetType().GetField("outsideMaskInnerFadeWidth", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(generator) : 2f);
+            bool NearRoom(Vector2Int c)
+            {
+                for (int dy = -roomFade; dy <= roomFade; dy++)
+                    for (int dx = -roomFade; dx <= roomFade; dx++)
+                    {
+                        Vector2Int n = new Vector2Int(c.x + dx, c.y + dy);
+                        if (mapFloor.Contains(n) && !corridorSet.Contains(n)) return true;
+                    }
+                return false;
+            }
+            HashSet<Vector2Int> port = new HashSet<Vector2Int>(center.Where(NearRoom));
+            center.ExceptWith(port);
+            r.CorridorCenterCells = center.Count;
+            r.CorridorPortCells = port.Count;
+            foreach (Vector2Int c in center)
+                if (NavMesh.SamplePosition(new Vector3(c.x + 0.5f, 0f, c.y + 0.5f), out NavMeshHit hit, 0.1f, NavMesh.AllAreas)) r.CorridorCenterOnNav++;
+
+            // 마스크: 가운데 칸 안(경계 포함)에 있는 정점의 알파. 방 가운데에는 마스크 정점이 없으므로(완전히 투명) 0이어야 같은 밝기다.
+            Transform mask = mapRoot.transform.Find("OutsideMapMask");
+            Mesh maskMesh = mask != null ? mask.GetComponent<MeshFilter>()?.sharedMesh : null;
+            if (maskMesh != null)
+            {
+                Vector3[] vertices = maskMesh.vertices;
+                Color[] colors = maskMesh.colors;
+                HashSet<Vector2Int> masked = new HashSet<Vector2Int>(), portMasked = new HashSet<Vector2Int>();
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    if (colors[i].a <= 0.001f) continue;
+                    // 정점은 칸 모서리에 걸칠 수 있으므로 정점을 품는 칸(최대 4개) 중 가운데 칸을 모두 센다.
+                    for (int oy = -1; oy <= 0; oy++)
+                        for (int ox = -1; ox <= 0; ox++)
+                        {
+                            float vx = vertices[i].x, vy = vertices[i].y;
+                            Vector2Int cell = new Vector2Int(Mathf.FloorToInt(vx + (ox < 0 ? -0.001f : 0.001f)), Mathf.FloorToInt(vy + (oy < 0 ? -0.001f : 0.001f)));
+                            if (port.Contains(cell)) { portMasked.Add(cell); r.CorridorPortMaxAlpha = Mathf.Max(r.CorridorPortMaxAlpha, colors[i].a); }
+                            if (!center.Contains(cell)) continue;
+                            masked.Add(cell);
+                            r.CorridorCenterMaxAlpha = Mathf.Max(r.CorridorCenterMaxAlpha, colors[i].a);
+                        }
+                }
+                r.CorridorCenterMasked = masked.Count;
+                r.CorridorPortMasked = portMasked.Count;
+            }
+
+            // 경계 충돌체: 길 칸 8방향의 바닥 아닌 칸마다 MapBoundary 상자가 있어야 길 밖으로 못 나간다.
+            Transform boundary = mapRoot.transform.Find("MapBoundary");
+            HashSet<Vector2Int> sides = new HashSet<Vector2Int>();
+            foreach (Vector2Int c in corridorSet)
+                foreach (Vector2Int d in eight)
+                    if (!mapFloor.Contains(c + d)) sides.Add(c + d);
+            r.CorridorSideCells = sides.Count;
+            foreach (Vector2Int c in sides)
+            {
+                bool blocked = Physics2D.OverlapPointAll(new Vector2(c.x + 0.5f, c.y + 0.5f)).Any(col => col.transform == boundary);
+                if (!blocked) r.CorridorSideUnblocked++;
+            }
+
+            // 벽 그림자: 길 칸과 바깥 칸이 맞닿은 변이 벽 그림자 외곽선 위에 있어야 길 밖이 시야에 드러나지 않는다. 방 소품 스프라이트가 바닥 밖으로
+            // 삐져나온 칸은 생성기가 외곽선을 그만큼 바깥으로 밀어두므로(WithObstacleOverhang) 따로 센다.
+            HashSet<(Vector2Int, Vector2Int)> shadowEdges = new HashSet<(Vector2Int, Vector2Int)>();
+            Transform shadows = mapRoot.transform.Find("WallShadows");
+            if (shadows != null)
+            {
+                foreach (ShadowCaster2D caster in shadows.GetComponentsInChildren<ShadowCaster2D>(true))
+                {
+                    Vector3[] path = caster.shapePath;
+                    if (path == null) continue;
+                    for (int i = 0; i < path.Length; i++)
+                    {
+                        Vector3 a3 = caster.transform.TransformPoint(path[i]), b3 = caster.transform.TransformPoint(path[(i + 1) % path.Length]);
+                        Vector2Int a = new Vector2Int(Mathf.RoundToInt(a3.x), Mathf.RoundToInt(a3.y)), b = new Vector2Int(Mathf.RoundToInt(b3.x), Mathf.RoundToInt(b3.y));
+                        if (a.x != b.x && a.y != b.y) continue;
+                        Vector2Int step = new Vector2Int(System.Math.Sign(b.x - a.x), System.Math.Sign(b.y - a.y));
+                        for (Vector2Int q = a; q != b; q += step) shadowEdges.Add(EdgeKey(q, q + step));
+                    }
+                }
+            }
+            HashSet<Vector2Int> overhang = new HashSet<Vector2Int>();
+            foreach (Transform room in rooms)
+                foreach (SpriteRenderer sprite in room.GetComponentsInChildren<SpriteRenderer>())
+                {
+                    if (sprite.GetComponentInParent<AnimalRescue>() != null || sprite.GetComponentInParent<MonsterHealth>() != null) continue;
+                    Bounds b = sprite.bounds;
+                    for (int y = Mathf.FloorToInt(b.min.y); y <= Mathf.FloorToInt(b.max.y - 0.001f); y++)
+                        for (int x = Mathf.FloorToInt(b.min.x); x <= Mathf.FloorToInt(b.max.x - 0.001f); x++) overhang.Add(new Vector2Int(x, y));
+                }
+            foreach (Vector2Int c in corridorSet)
+                foreach (Vector2Int d in four)
+                {
+                    Vector2Int n = c + d;
+                    if (mapFloor.Contains(n)) continue;
+                    r.CorridorEdges++;
+                    // 칸 c와 n 사이 변의 두 끝점.
+                    Vector2Int p0 = d.x > 0 ? new Vector2Int(c.x + 1, c.y) : d.x < 0 ? new Vector2Int(c.x, c.y) : d.y > 0 ? new Vector2Int(c.x, c.y + 1) : new Vector2Int(c.x, c.y);
+                    Vector2Int p1 = d.x != 0 ? p0 + Vector2Int.up : p0 + Vector2Int.right;
+                    if (shadowEdges.Contains(EdgeKey(p0, p1))) r.CorridorEdgesShadowed++;
+                    else if (overhang.Contains(n)) r.CorridorEdgesOverhang++;
+                    else r.CorridorEdgesOpen++;
+                }
+
+            if (r.CorridorCenterMasked > 0) r.Failures.Add($"길 가운데 칸 {r.CorridorCenterMasked}칸이 어둡다 (최대 알파 {r.CorridorCenterMaxAlpha:F3})");
+            if (r.CorridorCenterOnNav < r.CorridorCenterCells) r.Failures.Add($"길 가운데 칸 중 NavMesh 밖 {r.CorridorCenterCells - r.CorridorCenterOnNav}칸");
+            if (r.CorridorSideUnblocked > 0) r.Failures.Add($"길 옆 바깥 칸 {r.CorridorSideUnblocked}칸에 경계 충돌체가 없다");
+            if (r.CorridorEdgesOpen > 0) r.Failures.Add($"길 가장자리 {r.CorridorEdgesOpen}변이 벽 그림자 외곽선에 없다 (시야가 길 밖으로 샌다)");
+        }
+
+        private static (Vector2Int, Vector2Int) EdgeKey(Vector2Int a, Vector2Int b) =>
+            a.x < b.x || (a.x == b.x && a.y < b.y) ? (a, b) : (b, a);
 
         // 한 줄 배치는 프리팹 이름, 격자 배치는 "Room_x_y:프리팹 이름".
         private static string RoomLabel(Transform room, GridLayoutPlan plan) =>
@@ -703,6 +840,17 @@ public static class VillageMapGenerationTest
                 sb.AppendLine($"  바닥(방 + 길) 한 덩어리: {gridRuns.Count(x => x.FloorConnected)}/{gridRuns.Count}회, " +
                               $"장애물 뺀 걸을 수 있는 바닥 한 덩어리: {gridRuns.Count(x => x.WalkableConnected)}/{gridRuns.Count}회");
                 sb.AppendLine($"  길 칸: 평균 {gridRuns.Average(x => x.CorridorCells):F0}, 바닥 칸(방 + 길): 평균 {gridRuns.Average(x => x.FloorCells):F0}");
+                sb.AppendLine($"  길 폭/틈: {string.Join(", ", gridRuns.Select(x => $"{x.CorridorWidth}/{x.CorridorGap}").Distinct())}, " +
+                              $"맵 외곽 크기(칸): 평균 {gridRuns.Average(x => x.MapWidth):F0} x {gridRuns.Average(x => x.MapHeight):F0}, 최대 {gridRuns.Max(x => x.MapWidth)} x {gridRuns.Max(x => x.MapHeight)}");
+                sb.AppendLine();
+                sb.AppendLine("== 넓어진 길 점검");
+                sb.AppendLine($"  길 가운데 칸(8방향 모두 바닥, 포트 입구 제외): 합계 {gridRuns.Sum(x => x.CorridorCenterCells)}, 마스크가 덮은 칸 {gridRuns.Sum(x => x.CorridorCenterMasked)} " +
+                              $"(최대 알파 {gridRuns.Max(x => x.CorridorCenterMaxAlpha):F3} - 0이면 방 가운데와 같은 밝기), NavMesh 위 {gridRuns.Sum(x => x.CorridorCenterOnNav)}");
+                sb.AppendLine($"  포트 입구 가운데 칸(방 바닥에서 방 그라데이션 깊이 안): 합계 {gridRuns.Sum(x => x.CorridorPortCells)}, 방 모서리 그라데이션이 이어져 어두워진 칸 " +
+                              $"{gridRuns.Sum(x => x.CorridorPortMasked)} (최대 알파 {gridRuns.Max(x => x.CorridorPortMaxAlpha):F3})");
+                sb.AppendLine($"  길 옆 바깥 칸: 합계 {gridRuns.Sum(x => x.CorridorSideCells)}, 경계 충돌체 없음 {gridRuns.Sum(x => x.CorridorSideUnblocked)}");
+                sb.AppendLine($"  길-바깥 경계 변: 합계 {gridRuns.Sum(x => x.CorridorEdges)}, 벽 그림자 외곽선 위 {gridRuns.Sum(x => x.CorridorEdgesShadowed)}, " +
+                              $"소품 스프라이트가 덮어 외곽선이 바깥으로 밀린 변 {gridRuns.Sum(x => x.CorridorEdgesOverhang)}, 둘 다 아님 {gridRuns.Sum(x => x.CorridorEdgesOpen)}");
             }
 
             AppendMeasurements(sb, results);

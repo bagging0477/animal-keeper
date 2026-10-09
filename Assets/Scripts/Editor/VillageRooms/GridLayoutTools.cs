@@ -164,16 +164,16 @@ public static class GridLayoutTools
         }
 
         sb.AppendLine();
-        sb.AppendLine("== 길 폭 5 점검 (폭이 넓어지면 포트가 사라지는 변)");
-        GridPlanInput wide = LoadInputFromVillageScene(5);
+        sb.AppendLine("== 길 폭 7 점검 (시험용 폭 - 폭이 넓어지면 포트가 사라지는 변)");
+        GridPlanInput wide = LoadInputFromVillageScene(7);
         foreach (GridRoomType t in wide.Types)
         {
             GridRoomType normal = input.Types.FirstOrDefault(x => x.Name == t.Name);
             string lanes = string.Join("/", t.OpenLanes);
-            sb.AppendLine($"  {t.Name}: 폭 5 열린 차선 서/동/남/북 {lanes}" + (normal != null ? $" (폭 {input.Settings.CorridorWidth}: {string.Join("/", normal.OpenLanes)})" : ""));
+            sb.AppendLine($"  {t.Name}: 폭 7 열린 차선 서/동/남/북 {lanes}" + (normal != null ? $" (폭 {input.Settings.CorridorWidth}: {string.Join("/", normal.OpenLanes)})" : ""));
             foreach (string w in t.Warnings) sb.AppendLine("    경고: " + w);
         }
-        // 폭 5는 틈 6에 들어가지 않으므로(폭 + 여백 2) 틈을 7로 넓혀서 계획해 본다.
+        // 폭 7은 기본 틈 8에 들어가지 않으므로(폭 + 여백 2) 틈을 9로 넓혀서 계획해 본다(생성기도 같은 규칙으로 넓힌다).
         GridPlannerSettings wideSettings = With(wide.Settings, 3, 4, wide.Settings.ExtraConnectionRatio);
         wideSettings.CorridorGap = Mathf.Max(wideSettings.CorridorGap, wideSettings.CorridorWidth + 2);
         int wideFails = 0, wideProblemCount = 0;
@@ -183,7 +183,7 @@ public static class GridLayoutTools
             if (!p.Success) wideFails++;
             else wideProblemCount += GridLayoutPlanner.Validate(p, wide.Types).Count;
         }
-        sb.AppendLine($"  폭 5, 틈 {wideSettings.CorridorGap}로 3x4 시드 1..{seedsPerSize} 계획: 실패 {wideFails}, 규칙 문제 {wideProblemCount} " +
+        sb.AppendLine($"  폭 7, 틈 {wideSettings.CorridorGap}로 3x4 시드 1..{seedsPerSize} 계획: 실패 {wideFails}, 규칙 문제 {wideProblemCount} " +
                       "(포트 없는 변은 연결 후보에서 빠지고 나머지 변으로 이어진다)");
 
         sb.AppendLine();

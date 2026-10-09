@@ -33,6 +33,9 @@ MonoBehaviour:
   chaseGiveUpSightLostDuration: 2
   chaseDirectionUpdateInterval: 0.25
   monsterMinSpawnDistanceFromPlayer: 6
+  gridCorridorWidth: 6
+  gridCorridorGap: 8
+  gridCorridorFadeDepth: 1
   gridAnimalTotal: 27
   gridMonsterTotal: 12
   gridMaxAnimalsPerRoom: 3
