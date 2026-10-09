@@ -93,8 +93,25 @@ public class VillageMapGenerator : MonoBehaviour
         public readonly List<GameObject> NavCarvers = new List<GameObject>();
     }
 
+    // 이번 맵 생성의 단계별 소요 시간(ms, 생성 순서대로). 측정용 기록일 뿐 생성 결과나 Random 순서에는 영향이 없다 -
+    // VillageMapGenerationTest가 읽어 보고서에 남긴다.
+    public List<KeyValuePair<string, double>> LastGenerationTimings { get; } = new List<KeyValuePair<string, double>>();
+    private System.Diagnostics.Stopwatch generationWatch;
+    private double generationLastMarkMs;
+
+    private void MarkGenerationStep(string step)
+    {
+        double now = generationWatch.Elapsed.TotalMilliseconds;
+        LastGenerationTimings.Add(new KeyValuePair<string, double>(step, now - generationLastMarkMs));
+        generationLastMarkMs = now;
+    }
+
     private void Awake()
     {
+        LastGenerationTimings.Clear();
+        generationWatch = System.Diagnostics.Stopwatch.StartNew();
+        generationLastMarkMs = 0;
+
         // Reuse the same layout every time VillageScene is re-entered on the same Day (e.g. after
         // a truck-scene round trip); only roll a new one when GameManager reports a new Day.
         if (GameManager.Instance != null)
@@ -114,9 +131,12 @@ public class VillageMapGenerator : MonoBehaviour
             return;
         }
 
+        MarkGenerationStep("준비");
+
         GameObject mapRoot = new GameObject(MapRootName);
         List<RoomInstance> placedRooms = BuildRoomChain(mapRoot.transform);
         if (placedRooms.Count == 0) return;
+        MarkGenerationStep("방 배치");
 
         // 방 프리팹에는 벽이 없고 바닥(Ground)만 있다. 방들은 가장자리끼리 딱 붙어 하나의 이어진 바닥이 되며,
         // 그 바깥은 보이지 않는 경계 충돌체가 막고(BuildMapBoundary) 항상 어둡게 칠해진다(BuildOutsideMask).
@@ -131,16 +151,22 @@ public class VillageMapGenerator : MonoBehaviour
             TilemapRenderer groundRenderer = room.Root.transform.Find("Ground")?.GetComponent<TilemapRenderer>();
             if (groundRenderer != null) groundRenderer.sortingLayerName = floorSortingLayer;
         }
+        MarkGenerationStep("바닥 패치·NavGround");
         BakeNavMesh(mapRoot, navGroundMeshes);
+        MarkGenerationStep("NavMesh 굽기");
 
         foreach (RoomInstance room in placedRooms)
         {
             AddObstacleCarvers(room, mapRoot.transform);
         }
+        MarkGenerationStep("장애물 카버");
 
         BuildMapBoundary(mapRoot.transform, mapFloor);
+        MarkGenerationStep("경계 충돌체");
         BuildWallShadows(mapRoot.transform, WithObstacleOverhang(mapFloor, placedRooms));
+        MarkGenerationStep("벽 그림자");
         BuildOutsideMask(mapRoot.transform, mapFloor, placedRooms);
+        MarkGenerationStep("바깥 마스크");
 
         // Obstacle colliders baked into the room prefabs (and the boundary just built) are live at
         // this point, so make sure Physics2D sees their current transforms before we probe for clear spots.
@@ -186,6 +212,7 @@ public class VillageMapGenerator : MonoBehaviour
             ToWorldCell(centerRoom, spawnCell)
         };
         Vector2 playerSpawnWorldXY = ToWorldXY(centerRoom, spawnCell);
+        MarkGenerationStep("플레이어·트럭 배치");
 
         foreach (RoomInstance room in placedRooms)
         {
@@ -200,6 +227,7 @@ public class VillageMapGenerator : MonoBehaviour
             SpawnAnimal(room, room.Root.transform, usedCells);
             SpawnMonster(room, room.Root.transform, playerSpawnWorldXY, usedCells);
         }
+        MarkGenerationStep("동물·몬스터 스폰");
     }
 
     private GameObject[] RemoveUnusablePrefabs(GameObject[] prefabs, string fieldName, System.Func<GameObject, bool> isUsable = null, string reason = null)

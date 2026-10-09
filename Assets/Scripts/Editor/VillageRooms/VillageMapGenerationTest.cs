@@ -116,6 +116,15 @@ public static class VillageMapGenerationTest
         public int FloorCells;
         public double LoadMs;
         public double NavBuildMs;
+
+        // 측정(격자 맵 0단계): 생성기 단계별 시간과, 생성 결과의 크기를 가늠하는 개수들.
+        public List<KeyValuePair<string, double>> GenerationTimings = new List<KeyValuePair<string, double>>();
+        public int NavCarvers;
+        public int ShadowCasters;
+        public int ShadowPathPoints;
+        public int MaskVertices;
+        public int BoundaryBoxes;
+        public List<double> FirstFrameMs = new List<double>(); // 로드 직후 프레임들의 실제 프레임 시간(카빙 등 첫 프레임 비용)
     }
 
     private sealed class Runner
@@ -168,9 +177,13 @@ public static class VillageMapGenerationTest
                 current.LoadMs = sw.Elapsed.TotalMilliseconds;
                 SceneManager.sceneLoaded -= onLoaded;
 
-                // NavMeshObstacle 카빙과 Destroy가 반영되도록 몇 프레임 기다린다.
+                // NavMeshObstacle 카빙과 Destroy가 반영되도록 몇 프레임 기다린다. 그동안의 프레임 시간을 같이 잰다.
                 int frame = Time.frameCount;
-                while (Time.frameCount < frame + 5) yield return null;
+                while (Time.frameCount < frame + 5)
+                {
+                    yield return null;
+                    current.FirstFrameMs.Add(Time.unscaledDeltaTime * 1000.0);
+                }
 
                 Inspect(current);
                 results.Add(current);
@@ -276,7 +289,26 @@ public static class VillageMapGenerationTest
             InspectTruck(r, generator, player, mapFloor);
 
             r.NavBuildMs = TimeNavMeshBuild(rooms);
+            MeasureSizes(r, generator, mapRoot);
             CaptureIfNew(r, mapFloor);
+        }
+
+        private static void MeasureSizes(RunResult r, VillageMapGenerator generator, GameObject mapRoot)
+        {
+            if (generator != null) r.GenerationTimings = new List<KeyValuePair<string, double>>(generator.LastGenerationTimings);
+            r.NavCarvers = mapRoot.GetComponentsInChildren<NavMeshObstacle>(true).Length;
+            Transform shadows = mapRoot.transform.Find("WallShadows");
+            if (shadows != null)
+            {
+                ShadowCaster2D[] casters = shadows.GetComponentsInChildren<ShadowCaster2D>(true);
+                r.ShadowCasters = casters.Length;
+                r.ShadowPathPoints = casters.Sum(c => c.shapePath != null ? c.shapePath.Length : 0);
+            }
+            Transform mask = mapRoot.transform.Find("OutsideMapMask");
+            MeshFilter maskFilter = mask != null ? mask.GetComponent<MeshFilter>() : null;
+            r.MaskVertices = maskFilter != null && maskFilter.sharedMesh != null ? maskFilter.sharedMesh.vertexCount : 0;
+            Transform boundary = mapRoot.transform.Find("MapBoundary");
+            r.BoundaryBoxes = boundary != null ? boundary.GetComponents<BoxCollider2D>().Length : 0;
         }
 
         // 트럭: NavMesh에서 파였는지(몬스터가 못 지나감), 위에 스폰된 동물/몬스터가 없는지, 플레이어와 겹치지 않는지,
@@ -471,6 +503,8 @@ public static class VillageMapGenerationTest
             AppendTiming(sb, "새 방 포함", results.Where(x => x.Rooms.Any(n => n.StartsWith("Room_"))).ToList());
             AppendTiming(sb, "기존 방만", results.Where(x => x.Rooms.All(n => !n.StartsWith("Room_"))).ToList());
 
+            AppendMeasurements(sb, results);
+
             sb.AppendLine();
             sb.AppendLine("== 회차별");
             foreach (RunResult x in results)
@@ -485,6 +519,36 @@ public static class VillageMapGenerationTest
             File.WriteAllText(path, sb.ToString(), new UTF8Encoding(false));
             Debug.Log(LogPrefix + "보고서: " + Path.GetFullPath(path));
             ExitCode = abortReason == null ? 0 : 1;
+        }
+
+        private static string Stat(IEnumerable<double> values, string format = "F1")
+        {
+            List<double> v = values.OrderBy(x => x).ToList();
+            if (v.Count == 0) return "-";
+            return $"평균 {v.Average().ToString(format)} / 중앙값 {v[v.Count / 2].ToString(format)} / 최대 {v[v.Count - 1].ToString(format)}";
+        }
+
+        // 격자 맵 0단계: 생성기 단계별 시간(VillageMapGenerator.LastGenerationTimings)과 생성 결과 크기.
+        private static void AppendMeasurements(StringBuilder sb, List<RunResult> set)
+        {
+            sb.AppendLine();
+            sb.AppendLine("== 생성 단계별 시간 (ms, VillageMapGenerator.Awake 안)");
+            if (set.Count == 0) { sb.AppendLine("  해당 회차 없음"); return; }
+            List<string> steps = set.SelectMany(x => x.GenerationTimings.Select(kv => kv.Key)).Distinct().ToList();
+            foreach (string step in steps)
+                sb.AppendLine($"  {step}: {Stat(set.Select(x => x.GenerationTimings.Where(kv => kv.Key == step).Sum(kv => kv.Value)), "F2")}");
+            sb.AppendLine($"  합계: {Stat(set.Select(x => x.GenerationTimings.Sum(kv => kv.Value)), "F1")}");
+            sb.AppendLine($"  합계 / 바닥 1000칸: {Stat(set.Select(x => x.GenerationTimings.Sum(kv => kv.Value) / Mathf.Max(1, x.FloorCells) * 1000.0), "F1")}");
+
+            sb.AppendLine();
+            sb.AppendLine("== 생성 결과 크기");
+            sb.AppendLine($"  바닥 칸: {Stat(set.Select(x => (double)x.FloorCells), "F0")}");
+            sb.AppendLine($"  NavMesh 카버(NavMeshObstacle): {Stat(set.Select(x => (double)x.NavCarvers), "F0")}");
+            sb.AppendLine($"  벽 그림자 캐스터: {Stat(set.Select(x => (double)x.ShadowCasters), "F0")}, 꼭짓점 합: {Stat(set.Select(x => (double)x.ShadowPathPoints), "F0")}");
+            sb.AppendLine($"  바깥 마스크 정점: {Stat(set.Select(x => (double)x.MaskVertices), "F0")}");
+            sb.AppendLine($"  경계 충돌체 상자: {Stat(set.Select(x => (double)x.BoundaryBoxes), "F0")}");
+            sb.AppendLine($"  로드 직후 5프레임 중 최대 프레임 시간(ms, 에디터 Play 기준): {Stat(set.Select(x => x.FirstFrameMs.DefaultIfEmpty(0).Max()), "F1")}");
+            sb.AppendLine($"  로드 직후 첫 프레임 시간(ms): {Stat(set.Select(x => x.FirstFrameMs.DefaultIfEmpty(0).First()), "F1")}");
         }
 
         private static void AppendTiming(StringBuilder sb, string title, List<RunResult> set)
