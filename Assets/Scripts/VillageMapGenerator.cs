@@ -23,6 +23,26 @@ public class VillageMapGenerator : MonoBehaviour
     [SerializeField] private int minRoomCount = 3;
     [SerializeField] private int maxRoomCount = 4;
 
+    [Header("맵 배치 방식")]
+    [Tooltip("Linear: 방을 동쪽으로 한 줄로 이어붙인다(기존 방식). Grid: gridColumns x gridRows 격자에 방을 놓고 길로 잇는다 " +
+        "(격자 씬 생성은 아직 구현 전이라 지금은 Grid를 골라도 Linear로 만든다 - 계획은 Tools > Village Rooms > Grid 메뉴로 미리 볼 수 있다).")]
+    [SerializeField] private MapLayoutMode layoutMode = MapLayoutMode.Linear;
+
+    [Header("격자 맵 (layoutMode = Grid일 때)")]
+    [SerializeField, Min(1)] private int gridColumns = 3;
+    [SerializeField, Min(1)] private int gridRows = 4;
+    [Tooltip("방과 방을 잇는 길의 폭(칸). 방의 변마다 이 폭의 차선이 들어갈 자리가 있어야 그 변으로 이웃과 이어진다.")]
+    [SerializeField, Range(3, 8)] private int corridorWidth = 4;
+    [Tooltip("격자 칸 사이 틈(칸). 길이 이 틈 안에서 꺾이므로 corridorWidth + 2 이상으로 둔다.")]
+    [SerializeField, Min(0)] private int corridorGap = 6;
+    [Tooltip("모든 방을 잇는 최소 연결(스패닝 트리) 밖의 이웃 쌍 중 이 비율만큼 연결을 더해 고리 모양 길을 만든다. 0이면 트리만, 1이면 이웃끼리 전부 연결.")]
+    [SerializeField, Range(0f, 1f)] private float extraConnectionRatio = 0.25f;
+    [SerializeField] private TruckPlacement truckPlacement = TruckPlacement.Center;
+    [Tooltip("트럭이 있는 칸에 놓을 수 있는 방. 트럭 주변을 넓게 비울 수 있고 치워지는 장애물이 적은 방으로 고른다. 비워두면 모든 방을 허용한다.")]
+    [SerializeField] private GameObject[] truckRoomPrefabs;
+    [Tooltip("방 배정과 연결이 실패했을 때 다시 시도할 횟수.")]
+    [SerializeField, Min(1)] private int maxLayoutAttempts = 20;
+
     [Header("바닥 타일 시각적 변형 (이끼/얼룩 패치) - 비워두면 변형 없이 기본 바닥 타일만 쓴다")]
     [SerializeField] private TileBase[] floorVariantTiles;
 
@@ -111,6 +131,11 @@ public class VillageMapGenerator : MonoBehaviour
         LastGenerationTimings.Clear();
         generationWatch = System.Diagnostics.Stopwatch.StartNew();
         generationLastMarkMs = 0;
+
+        if (layoutMode == MapLayoutMode.Grid)
+        {
+            Debug.LogWarning($"{name}: 격자 배치(Grid)는 아직 씬 생성이 구현되지 않아 이번에는 한 줄 배치(Linear)로 만든다.");
+        }
 
         // Reuse the same layout every time VillageScene is re-entered on the same Day (e.g. after
         // a truck-scene round trip); only roll a new one when GameManager reports a new Day.
@@ -228,6 +253,36 @@ public class VillageMapGenerator : MonoBehaviour
             SpawnMonster(room, room.Root.transform, playerSpawnWorldXY, usedCells);
         }
         MarkGenerationStep("동물·몬스터 스폰");
+    }
+
+    /// <summary>
+    /// 이 생성기의 방 목록과 격자 설정으로 GridLayoutPlanner 입력을 만든다. 같은 프리팹이 목록에 두 번 있어도 종류는 하나로 센다.
+    /// 에디터 도구(Grid Preview/Stress Test)가 씬을 열어 부르며, 맵을 만들지 않고 Random도 쓰지 않는다.
+    /// </summary>
+    public GridPlanInput CreateGridPlanInput()
+    {
+        GridPlanInput input = new GridPlanInput
+        {
+            Settings = new GridPlannerSettings
+            {
+                Columns = gridColumns,
+                Rows = gridRows,
+                CorridorWidth = corridorWidth,
+                CorridorGap = corridorGap,
+                ExtraConnectionRatio = extraConnectionRatio,
+                TruckPlacement = truckPlacement,
+                MaxAttempts = maxLayoutAttempts,
+            }
+        };
+        HashSet<GameObject> truckRooms = new HashSet<GameObject>((truckRoomPrefabs ?? new GameObject[0]).Where(p => p != null));
+        HashSet<GameObject> seen = new HashSet<GameObject>();
+        foreach (GameObject prefab in roomPrefabs ?? new GameObject[0])
+        {
+            if (prefab == null || !seen.Add(prefab)) continue;
+            GridRoomType type = GridRoomAnalyzer.Analyze(prefab, corridorWidth, truckRooms.Count == 0 || truckRooms.Contains(prefab));
+            if (type.FloorCells.Count > 0) input.Types.Add(type);
+        }
+        return input;
     }
 
     private GameObject[] RemoveUnusablePrefabs(GameObject[] prefabs, string fieldName, System.Func<GameObject, bool> isUsable = null, string reason = null)

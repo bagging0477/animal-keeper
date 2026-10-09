@@ -595,6 +595,18 @@ MonoBehaviour:
   - {fileID: 7186287678727500887, guid: b67f91f182be6014cb4b6d9085d1a262, type: 3}
   minRoomCount: 3
   maxRoomCount: 4
+  layoutMode: 0
+  gridColumns: 3
+  gridRows: 4
+  corridorWidth: 4
+  corridorGap: 6
+  extraConnectionRatio: 0.25
+  truckPlacement: 0
+  truckRoomPrefabs:
+  - {fileID: 8453516254361774462, guid: a369de8a6938edb45a8c07c800314236, type: 3}
+  - {fileID: 233379151328233148, guid: aee08adaa603e8848945fd379da60d6c, type: 3}
+  - {fileID: 1896611908410197428, guid: bfc93dd70e597ef43bc44f73a99ae262, type: 3}
+  maxLayoutAttempts: 20
   floorVariantTiles:
   - {fileID: 11400000, guid: b05f468f631b7ef44a7aec08df6d923a, type: 2}
   animalPrefabs:
@@ -609,12 +621,14 @@ MonoBehaviour:
   monstersPerRoom: 1
   playerObjectName: Player
   truckPointObjectName: TruckPoint
+  truckClearanceMarginPerSide: 2.5
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
   boundaryLayerName: Default
   outsideMaskMaterial: {fileID: 2100000, guid: 67ac8126d05722c48b320abae6fec33b, type: 2}
   outsideMaskColor: {r: 0, g: 0, b: 0, a: 1}
   outsideMaskMargin: 40
   outsideMaskFadeWidth: 0
+  outsideMaskInnerFadeWidth: 2
   outsideMaskFadeSubdivisions: 4
   outsideMaskSortingLayer: Floor
   outsideMaskSortingOrder: 100
