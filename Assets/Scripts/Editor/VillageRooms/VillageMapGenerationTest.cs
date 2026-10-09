@@ -16,7 +16,7 @@ using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// Play 모드에서 VillageScene을 여러 번 다시 불러와 VillageMapGenerator가 만든 맵을 검사한다(생성기 코드는 건드리지 않고 결과만 읽는다).
-/// 매 회: 등장한 방, 이웃 방 연결부의 열린 줄 수와 NavMesh 경로, 동물/몬스터 스폰 수와 위치, 플레이어 위치, 콘솔 경고/에러,
+/// 매 회(끝나면 Play 중 프레임 시간도 잰다): 등장한 방, 이웃 방 연결부의 열린 줄 수와 NavMesh 경로, 동물/몬스터 스폰 수와 위치, 플레이어 위치, 콘솔 경고/에러,
 /// NavMesh 빌드 시간(생성기와 같은 소스로 NavMeshBuilder를 다시 돌려 잰다)을 기록하고 Logs/VillageMapGenerationTest_{label}.txt에 쓴다.
 /// 메뉴: Tools > Village Rooms > Run Map Generation Test (30x)
 /// batchmode: -executeMethod VillageMapGenerationTest.RunBatch -mapGenRuns 30 -mapGenLabel baseline  (끝나면 에디터가 종료된다)
@@ -26,9 +26,10 @@ public static class VillageMapGenerationTest
 {
     private const string KeyActive = "VMGT.Active", KeyRuns = "VMGT.Runs", KeyLabel = "VMGT.Label", KeyBatch = "VMGT.Batch",
         KeyDone = "VMGT.Done", KeyExit = "VMGT.Exit", KeyGridColumns = "VMGT.GridColumns", KeyGridRows = "VMGT.GridRows",
-        KeyRunInBackground = "VMGT.RunInBackground", KeySeedBase = "VMGT.SeedBase";
+        KeyRunInBackground = "VMGT.RunInBackground", KeySeedBase = "VMGT.SeedBase", KeyVSync = "VMGT.VSync", KeyTargetFps = "VMGT.TargetFps";
     private const string LogPrefix = "[MapGenTest] ";
     private const int MinSafeDoorwayWidth = 3; // VillageMapGenerator.MinSafeDoorwayWidth와 같은 기준
+    private const float PlaySampleSeconds = 5f; // 회차마다 생성·검사가 끝난 뒤 Play 프레임 시간을 재는 시간(초)
 
     private static Runner runner;
 
@@ -49,6 +50,9 @@ public static class VillageMapGenerationTest
     // (마스크 메시 해시 등). 씬 파일(layoutMode)은 그대로 두고 테스트 중에만 덮어쓴다(VillageMapGenerator.EditorLayoutOverride).
     [MenuItem("Tools/Village Rooms/Run Map Generation Test - Linear (30x, seeds 1-30)")]
     private static void RunLinearSeededFromMenu() => BeginFromMenu(30, "linear_seeded", 0, 0, 1);
+
+    [MenuItem("Tools/Village Rooms/Run Map Generation Test - Linear (10x, seeds 1-10)")]
+    private static void RunLinear10FromMenu() => BeginFromMenu(10, "linear10", 0, 0, 1);
 
     [MenuItem("Tools/Village Rooms/Run Map Generation Test - Grid 3x4 (10x)")]
     private static void RunGrid3x4FromMenu() => BeginFromMenu(10, "grid3x4", 3, 4, 1);
@@ -101,6 +105,11 @@ public static class VillageMapGenerationTest
         if (change == PlayModeStateChange.EnteredPlayMode && !SessionState.GetBool(KeyDone, false))
         {
             Application.runInBackground = true;
+            // Play 중 프레임 시간을 vSync/목표 FPS 대기 없이 재도록 테스트 동안만 끈다(QualitySettings는 Play 모드에서 바꿔도 남으므로 끝나면 되돌린다).
+            SessionState.SetInt(KeyVSync, QualitySettings.vSyncCount);
+            SessionState.SetInt(KeyTargetFps, Application.targetFrameRate);
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = -1;
             int columns = SessionState.GetInt(KeyGridColumns, 0), rows = SessionState.GetInt(KeyGridRows, 0);
             runner = new Runner(SessionState.GetInt(KeyRuns, 30), SessionState.GetString(KeyLabel, "manual"),
                 columns > 0 && rows > 0, columns, rows, SessionState.GetInt(KeySeedBase, 0));
@@ -109,6 +118,8 @@ public static class VillageMapGenerationTest
         else if (change == PlayModeStateChange.EnteredEditMode && SessionState.GetBool(KeyDone, false))
         {
             PlayerSettings.runInBackground = SessionState.GetBool(KeyRunInBackground, false);
+            QualitySettings.vSyncCount = SessionState.GetInt(KeyVSync, QualitySettings.vSyncCount);
+            Application.targetFrameRate = SessionState.GetInt(KeyTargetFps, Application.targetFrameRate);
             VillageMapGenerator.EditorLayoutOverride = null;
             SessionState.SetBool(KeyActive, false);
             if (SessionState.GetBool(KeyBatch, false)) EditorApplication.Exit(SessionState.GetInt(KeyExit, 1));
@@ -156,6 +167,7 @@ public static class VillageMapGenerationTest
         public int MaskVertices;
         public int BoundaryBoxes;
         public List<double> FirstFrameMs = new List<double>(); // 로드 직후 프레임들의 실제 프레임 시간(카빙 등 첫 프레임 비용)
+        public List<double> PlayFrameMs = new List<double>();  // 검사 뒤 PlaySampleSeconds 동안의 프레임 시간(플레이어는 가만히, 동물/몬스터 AI는 돈다)
 
         // 격자 배치일 때: 생성기의 개발용 검증 결과(VillageMapGenerator.LastGridValidation).
         public bool IsGrid;
@@ -251,6 +263,16 @@ public static class VillageMapGenerationTest
 
                 Inspect(current);
                 results.Add(current);
+
+                // Play 중 프레임: 검사(캡처 등) 비용이 섞이지 않게 2프레임 넘긴 뒤 PlaySampleSeconds 동안 잰다.
+                yield return null;
+                yield return null;
+                float sampleStart = Time.realtimeSinceStartup;
+                while (Time.realtimeSinceStartup - sampleStart < PlaySampleSeconds)
+                {
+                    yield return null;
+                    current.PlayFrameMs.Add(Time.unscaledDeltaTime * 1000.0);
+                }
                 Debug.Log(LogPrefix + $"{label} #{current.Index}: {string.Join(" > ", current.Rooms)} / 실패 {current.Failures.Count} / 경고·에러 {current.Logs.Count} / NavMesh {current.NavBuildMs:F1}ms");
             }
             current = null;
@@ -659,7 +681,7 @@ public static class VillageMapGenerationTest
             foreach (RunResult x in results)
             {
                 sb.AppendLine($"  #{x.Index:00}{(x.Seed.HasValue ? $" 시드 {x.Seed}" : "")} {string.Join(" > ", x.Rooms)} | 바닥 {x.FloorCells}칸 | 씬 로드 {x.LoadMs:F0}ms | NavMesh {x.NavBuildMs:F1}ms | " +
-                              $"마스크 {x.MaskVertices}정점 해시 {x.MaskHash} | 실패 {x.Failures.Count} | 경고·에러 {x.Logs.Count}");
+                              $"마스크 {x.MaskVertices}정점 해시 {x.MaskHash} | Play 프레임 평균 {x.PlayFrameMs.DefaultIfEmpty(0).Average():F2}ms 최악 {x.PlayFrameMs.DefaultIfEmpty(0).Max():F2}ms | 실패 {x.Failures.Count} | 경고·에러 {x.Logs.Count}");
                 foreach (string n in x.JunctionNotes) sb.AppendLine("      " + n);
                 foreach (string f in x.Failures) sb.AppendLine("      [실패] " + f);
             }
@@ -699,6 +721,14 @@ public static class VillageMapGenerationTest
             sb.AppendLine($"  경계 충돌체 상자: {Stat(set.Select(x => (double)x.BoundaryBoxes), "F0")}");
             sb.AppendLine($"  로드 직후 5프레임 중 최대 프레임 시간(ms, 에디터 Play 기준): {Stat(set.Select(x => x.FirstFrameMs.DefaultIfEmpty(0).Max()), "F1")}");
             sb.AppendLine($"  로드 직후 첫 프레임 시간(ms): {Stat(set.Select(x => x.FirstFrameMs.DefaultIfEmpty(0).First()), "F1")}");
+
+            List<double> play = set.SelectMany(x => x.PlayFrameMs).OrderBy(v => v).ToList();
+            sb.AppendLine();
+            sb.AppendLine($"== Play 중 프레임 시간 (ms, 에디터 Play, vSync 끔, 회차마다 검사 뒤 {PlaySampleSeconds:F0}초, 플레이어 정지)");
+            if (play.Count == 0) { sb.AppendLine("  측정 없음"); return; }
+            sb.AppendLine($"  전체 {play.Count}프레임: 평균 {play.Average():F2} / 중앙값 {play[play.Count / 2]:F2} / 99% {play[(int)((play.Count - 1) * 0.99)]:F2} / 최악 {play[play.Count - 1]:F2}");
+            sb.AppendLine($"  회차별 평균: {Stat(set.Select(x => x.PlayFrameMs.DefaultIfEmpty(0).Average()), "F2")}");
+            sb.AppendLine($"  회차별 최악: {Stat(set.Select(x => x.PlayFrameMs.DefaultIfEmpty(0).Max()), "F2")}");
         }
 
         private static void AppendTiming(StringBuilder sb, string title, List<RunResult> set)
