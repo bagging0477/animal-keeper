@@ -259,15 +259,16 @@ public class VillageMapGenerator : MonoBehaviour
     /// 이 생성기의 방 목록과 격자 설정으로 GridLayoutPlanner 입력을 만든다. 같은 프리팹이 목록에 두 번 있어도 종류는 하나로 센다.
     /// 에디터 도구(Grid Preview/Stress Test)가 씬을 열어 부르며, 맵을 만들지 않고 Random도 쓰지 않는다.
     /// </summary>
-    public GridPlanInput CreateGridPlanInput()
+    public GridPlanInput CreateGridPlanInput(int? corridorWidthOverride = null)
     {
+        int width = corridorWidthOverride ?? corridorWidth;
         GridPlanInput input = new GridPlanInput
         {
             Settings = new GridPlannerSettings
             {
                 Columns = gridColumns,
                 Rows = gridRows,
-                CorridorWidth = corridorWidth,
+                CorridorWidth = width,
                 CorridorGap = corridorGap,
                 ExtraConnectionRatio = extraConnectionRatio,
                 TruckPlacement = truckPlacement,
@@ -279,7 +280,8 @@ public class VillageMapGenerator : MonoBehaviour
         foreach (GameObject prefab in roomPrefabs ?? new GameObject[0])
         {
             if (prefab == null || !seen.Add(prefab)) continue;
-            GridRoomType type = GridRoomAnalyzer.Analyze(prefab, corridorWidth, truckRooms.Count == 0 || truckRooms.Contains(prefab));
+            GridRoomType type = GridRoomAnalyzer.Analyze(prefab, width, truckRooms.Count == 0 || truckRooms.Contains(prefab));
+            foreach (string warning in type.Warnings) Debug.LogWarning($"{name}: {warning}", prefab);
             if (type.FloorCells.Count > 0) input.Types.Add(type);
         }
         return input;

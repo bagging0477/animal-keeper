@@ -19,8 +19,13 @@ public sealed class GridRoomType
     public int Width, Height;     // 바닥 바운딩 박스 크기(칸)
     public List<Vector2Int> FloorCells = new List<Vector2Int>();
     public HashSet<Vector2Int> ObstacleCells = new HashSet<Vector2Int>();
-    // 변마다 corridorWidth 폭 길이 들어갈 수 있는 차선 수(GridRoomAnalyzer 기준). 0이면 그 변으로는 이웃과 잇지 않는다.
+    // 변마다 corridorWidth 폭 길이 들어갈 수 있는 차선 수(GridRoomAnalyzer 기준). 0이면 그 변으로는 이웃과 잇지 않는다(포트 없음).
     public int[] OpenLanes = new int[4];
+    // 변마다 쓸 수 있는 차선의 시작 줄(로컬 칸; 동/서 변은 y, 남/북 변은 x). 차선은 시작 줄부터 corridorWidth줄이다.
+    public List<int>[] LaneStarts = { new List<int>(), new List<int>(), new List<int>(), new List<int>() };
+    // 변마다 줄별 가장 바깥 바닥 칸의 깊이(로컬 칸; 동/서 변은 줄 y의 x, 남/북 변은 줄 x의 y).
+    public Dictionary<int, int>[] OuterDepth = { new Dictionary<int, int>(), new Dictionary<int, int>(), new Dictionary<int, int>(), new Dictionary<int, int>() };
+    public List<string> Warnings = new List<string>();
     public bool TruckAllowed;
 
     public bool IsOpen(GridSide side) => OpenLanes[(int)side] > 0;
@@ -55,7 +60,25 @@ public readonly struct GridEdge
     public override string ToString() => $"({A.x},{A.y})-({B.x},{B.y}){(IsExtra ? "+" : "")}";
 }
 
-/// <summary>GridLayoutPlanner.Plan의 결과. 씬에 무엇을 만들지는 담지 않고, 칸별 방 종류와 연결만 담는다.</summary>
+/// <summary>길이 방에 들어가는 자리. 방 한 변의 corridorWidth줄짜리 차선이다.</summary>
+public sealed class GridPort
+{
+    public Vector2Int Cell;
+    public GridSide Side;
+    public int LaneStart;                                         // 로컬 칸 기준 차선 시작 줄
+    public List<Vector2Int> EdgeCells = new List<Vector2Int>();   // 차선 각 줄의 가장 바깥 바닥 칸(월드 칸)
+    public List<Vector2Int> EntryCells = new List<Vector2Int>();  // EdgeCells와 그 안쪽 1칸(장애물이 없어야 하는 칸, 월드 칸)
+}
+
+/// <summary>연결 하나를 이루는 길(바닥이 없던 칸에 새로 까는 칸들).</summary>
+public sealed class GridCorridor
+{
+    public GridEdge Edge;
+    public GridPort PortA, PortB;
+    public List<Vector2Int> Cells = new List<Vector2Int>();       // 월드 칸, (y, x) 순 정렬
+}
+
+/// <summary>GridLayoutPlanner.Plan의 결과. 씬 오브젝트는 담지 않고, 칸별 방 종류·위치, 연결, 길 칸만 담는다.</summary>
 public sealed class GridLayoutPlan
 {
     public int Seed;
@@ -68,6 +91,8 @@ public sealed class GridLayoutPlan
     public Vector2Int[,] RoomOrigin;     // [x, y] → 방 로컬 칸에 더할 월드 칸 오프셋(칸 가운데에 놓는다)
     public Vector2Int TruckCell;
     public List<GridEdge> Edges = new List<GridEdge>();
+    public int CorridorWidth;
+    public List<GridCorridor> Corridors = new List<GridCorridor>();
 
     public IEnumerable<GridEdge> TreeEdges => Edges.Where(e => !e.IsExtra);
     public IEnumerable<GridEdge> ExtraEdges => Edges.Where(e => e.IsExtra);
@@ -81,6 +106,13 @@ public sealed class GridLayoutPlan
             for (int x = 0; x < Columns; x++) sb.Append(RoomType[x, y]).Append(',');
         sb.Append('|').Append(TruckCell.x).Append(',').Append(TruckCell.y).Append('|');
         foreach (GridEdge e in Edges) sb.Append(e).Append(';');
+        sb.Append('|');
+        foreach (GridCorridor c in Corridors)
+        {
+            sb.Append(c.Edge).Append(':').Append(c.PortA.LaneStart).Append('/').Append(c.PortB.LaneStart).Append(':');
+            foreach (Vector2Int cell in c.Cells) sb.Append(cell.x).Append(',').Append(cell.y).Append(' ');
+            sb.Append(';');
+        }
         return sb.ToString();
     }
 }
@@ -95,7 +127,9 @@ public sealed class GridLayoutPlan
 /// 3. 양쪽 변이 모두 열린 이웃 쌍을 후보 연결로 두고, 섞은 순서의 Kruskal로 스패닝 트리를 만들어 모든 방이 이어지게 한다.
 ///    트리가 안 만들어지면(열린 변이 부족) 2부터 다시 한다(MaxAttempts).
 /// 4. 트리 밖 후보 중 ceil(남은 수 x ExtraConnectionRatio)개를 더해 고리를 만든다.
-/// 길 칸(포트, Z자 길)은 2단계에서 이 계획 위에 만든다.
+/// 5. 연결마다 양쪽 방의 포트(마주 보는 변의 차선)를 고르고 Z자 길(직선 → 칸 사이 틈에서 한 번 꺾기 → 직선)을 칸으로 계산한다.
+///    가로 연결의 꺾이는 구간은 두 칸 사이 세로 틈 안(그 행의 y 범위)에만, 세로 연결은 가로 틈 안(그 열의 x 범위)에만 생기고
+///    틈 양쪽에 1칸 이상 여백을 두므로, 길끼리 만나거나 다른 방 바닥에 닿지 않는다(ValidateCorridors가 다시 확인한다).
 /// </summary>
 public static class GridLayoutPlanner
 {
@@ -109,8 +143,11 @@ public static class GridLayoutPlanner
             Columns = Mathf.Max(1, settings.Columns),
             Rows = Mathf.Max(1, settings.Rows),
             CorridorGap = Mathf.Max(0, settings.CorridorGap),
+            CorridorWidth = Mathf.Max(1, settings.CorridorWidth),
         };
         if (types == null || types.Count == 0) return Fail(plan, "방 종류가 없다");
+        if (plan.CorridorGap < plan.CorridorWidth + 2)
+            return Fail(plan, $"칸 사이 틈({plan.CorridorGap})이 길 폭({plan.CorridorWidth}) + 양쪽 여백 2보다 좁다");
         int cellCount = plan.Columns * plan.Rows;
         if (types.Count == 1 && cellCount > 1) return Fail(plan, "방 종류가 1개뿐이라 이웃한 칸에 같은 방이 올 수밖에 없다");
         if (!types.Any(t => t.TruckAllowed)) return Fail(plan, "트럭을 둘 수 있는 방 종류(TruckAllowed)가 없다");
@@ -143,6 +180,7 @@ public static class GridLayoutPlanner
             plan.Edges = tree.Concat(rest.Take(extraCount).Select(e => new GridEdge(e.A, e.B, true))).ToList();
             plan.RoomType = assignment;
             plan.RoomOrigin = RoomOrigins(plan, types);
+            plan.Corridors = plan.Edges.Select(e => BuildCorridor(plan, types, e)).ToList();
             plan.Success = true;
             plan.Failure = null;
             return plan;
@@ -199,7 +237,177 @@ public static class GridLayoutPlanner
             }
         }
         if (reached.Count != cellCount) problems.Add($"연결성: 트럭 칸에서 {reached.Count}/{cellCount}칸만 닿는다");
+        if (plan.Corridors.Count != plan.Edges.Count) problems.Add($"길 {plan.Corridors.Count}개 (연결 {plan.Edges.Count}개와 다르다)");
+        problems.AddRange(ValidateCorridors(plan, types));
         return problems;
+    }
+
+    /// <summary>
+    /// 길 검사: 길끼리 겹치거나 닿음("길 교차"), 길이 양 끝 방이 아닌 방의 바닥에 닿음("다른 방 바닥 접촉"), 길이 바닥 위에 깔림,
+    /// 포트 입구(가장 바깥 줄과 그 안쪽 1칸)에 장애물("포트 입구 장애물"), 길 칸마다 그 칸을 포함한 폭 x 폭 정사각형이 걸을 수 있는
+    /// 칸(길 + 양 끝 방 바닥 - 장애물)으로만 채워지는지("길 폭").
+    /// </summary>
+    public static List<string> ValidateCorridors(GridLayoutPlan plan, IReadOnlyList<GridRoomType> types)
+    {
+        List<string> problems = new List<string>();
+        Dictionary<Vector2Int, Vector2Int> floorOwner = new Dictionary<Vector2Int, Vector2Int>();
+        HashSet<Vector2Int> obstacles = new HashSet<Vector2Int>();
+        for (int gy = 0; gy < plan.Rows; gy++)
+        {
+            for (int gx = 0; gx < plan.Columns; gx++)
+            {
+                GridRoomType t = types[plan.RoomType[gx, gy]];
+                Vector2Int o = plan.RoomOrigin[gx, gy];
+                foreach (Vector2Int c in t.FloorCells) floorOwner[c + o] = new Vector2Int(gx, gy);
+                foreach (Vector2Int c in t.ObstacleCells) obstacles.Add(c + o);
+            }
+        }
+
+        Dictionary<Vector2Int, int> corridorOf = new Dictionary<Vector2Int, int>();
+        for (int i = 0; i < plan.Corridors.Count; i++)
+        {
+            foreach (Vector2Int c in plan.Corridors[i].Cells)
+            {
+                if (floorOwner.ContainsKey(c)) problems.Add($"길이 바닥 위에 깔림: {plan.Corridors[i].Edge} {c}");
+                if (corridorOf.TryGetValue(c, out int other)) problems.Add($"길 교차: {plan.Corridors[other].Edge}와 {plan.Corridors[i].Edge}가 {c}에서 겹친다");
+                else corridorOf[c] = i;
+            }
+        }
+
+        Vector2Int[] around = { new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(1, -1), new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(-1, 1), new Vector2Int(0, 1), new Vector2Int(1, 1) };
+        HashSet<(int, int)> touchingPairs = new HashSet<(int, int)>();
+        for (int i = 0; i < plan.Corridors.Count; i++)
+        {
+            GridCorridor corridor = plan.Corridors[i];
+            int w = plan.CorridorWidth;
+            bool touchedOtherRoom = false;
+            foreach (Vector2Int c in corridor.Cells)
+            {
+                foreach (Vector2Int d in around)
+                {
+                    Vector2Int n = c + d;
+                    if (!touchedOtherRoom && floorOwner.TryGetValue(n, out Vector2Int owner) && owner != corridor.Edge.A && owner != corridor.Edge.B)
+                    {
+                        problems.Add($"다른 방 바닥 접촉: {corridor.Edge}의 {c}가 칸 ({owner.x},{owner.y})의 바닥에 닿는다");
+                        touchedOtherRoom = true;
+                    }
+                    if (corridorOf.TryGetValue(n, out int j) && j != i && touchingPairs.Add((Mathf.Min(i, j), Mathf.Max(i, j))))
+                        problems.Add($"길 교차: {corridor.Edge}와 {plan.Corridors[j].Edge}가 {c} 근처에서 닿는다");
+                }
+            }
+
+            foreach (GridPort port in new[] { corridor.PortA, corridor.PortB })
+                foreach (Vector2Int c in port.EntryCells)
+                    if (!floorOwner.ContainsKey(c) || obstacles.Contains(c))
+                        problems.Add($"포트 입구 장애물: {corridor.Edge} 칸 ({port.Cell.x},{port.Cell.y}) {port.Side} 차선 {port.LaneStart}의 {c}");
+
+            HashSet<Vector2Int> walkable = new HashSet<Vector2Int>(corridor.Cells);
+            foreach (KeyValuePair<Vector2Int, Vector2Int> kv in floorOwner)
+                if ((kv.Value == corridor.Edge.A || kv.Value == corridor.Edge.B) && !obstacles.Contains(kv.Key)) walkable.Add(kv.Key);
+            foreach (Vector2Int c in corridor.Cells)
+            {
+                bool fits = false;
+                for (int ox = -(w - 1); ox <= 0 && !fits; ox++)
+                    for (int oy = -(w - 1); oy <= 0 && !fits; oy++)
+                    {
+                        bool all = true;
+                        for (int a = 0; a < w && all; a++)
+                            for (int b = 0; b < w && all; b++) all = walkable.Contains(new Vector2Int(c.x + ox + a, c.y + oy + b));
+                        fits = all;
+                    }
+                if (!fits) { problems.Add($"길 폭: {corridor.Edge}의 {c}에서 폭 {w}을 확보하지 못한다"); break; }
+            }
+        }
+        return problems;
+    }
+
+    /// <summary>연결이 하나뿐인 방(막다른 방) 수.</summary>
+    public static int DeadEndRooms(GridLayoutPlan plan)
+    {
+        Dictionary<Vector2Int, int> degree = new Dictionary<Vector2Int, int>();
+        foreach (GridEdge e in plan.Edges)
+        {
+            degree[e.A] = degree.TryGetValue(e.A, out int a) ? a + 1 : 1;
+            degree[e.B] = degree.TryGetValue(e.B, out int b) ? b + 1 : 1;
+        }
+        return degree.Values.Count(d => d == 1);
+    }
+
+    /// <summary>독립된 고리 수(연결 수 - (방 수 - 1)). 연결된 그래프에서 트리 밖 연결 하나가 고리 하나를 만든다.</summary>
+    public static int LoopCount(GridLayoutPlan plan) => plan.Edges.Count - (plan.Columns * plan.Rows - 1);
+
+    // 한 연결의 길. 가로 연결: A 동쪽 포트 → 동쪽으로 칸 사이 틈의 차선까지 → 위/아래로 B 포트 높이까지 → 동쪽으로 B 서쪽 포트.
+    // 세로 연결은 축을 바꿔 같다. 차선 줄마다 가장 바깥 바닥 칸 바로 다음 칸부터 깔므로 들쭉날쭉한 가장자리도 틈 없이 이어진다.
+    private static GridCorridor BuildCorridor(GridLayoutPlan plan, IReadOnlyList<GridRoomType> types, GridEdge e)
+    {
+        bool horizontal = e.Horizontal;
+        GridPort pa = PickPort(plan, types, e.A, horizontal ? GridSide.East : GridSide.North);
+        GridPort pb = PickPort(plan, types, e.B, horizontal ? GridSide.West : GridSide.South);
+        GridRoomType ta = types[plan.RoomType[e.A.x, e.A.y]], tb = types[plan.RoomType[e.B.x, e.B.y]];
+        Vector2Int oa = plan.RoomOrigin[e.A.x, e.A.y], ob = plan.RoomOrigin[e.B.x, e.B.y];
+        int w = plan.CorridorWidth;
+        HashSet<Vector2Int> cells = new HashSet<Vector2Int>();
+
+        // 축 이름: along = 길이 나아가는 축(가로 연결이면 x), across = 차선 줄 축(가로 연결이면 y).
+        Vector2Int Cell(int along, int across) => horizontal ? new Vector2Int(along, across) : new Vector2Int(across, along);
+        int cellSize = horizontal ? plan.CellWidth : plan.CellHeight;
+        int aIndex = horizontal ? e.A.x : e.A.y;
+        int gapStart = aIndex * (cellSize + plan.CorridorGap) + cellSize;
+        int band0 = gapStart + (plan.CorridorGap - w) / 2, band1 = band0 + w - 1;
+        int offAlongA = horizontal ? oa.x : oa.y, offAcrossA = horizontal ? oa.y : oa.x;
+        int offAlongB = horizontal ? ob.x : ob.y, offAcrossB = horizontal ? ob.y : ob.x;
+        Dictionary<int, int> outerA = ta.OuterDepth[(int)pa.Side], outerB = tb.OuterDepth[(int)pb.Side];
+
+        for (int i = 0; i < w; i++)
+        {
+            int ka = pa.LaneStart + i;
+            for (int along = outerA[ka] + offAlongA + 1; along <= band1; along++) cells.Add(Cell(along, ka + offAcrossA));
+            int kb = pb.LaneStart + i;
+            for (int along = band0; along <= outerB[kb] + offAlongB - 1; along++) cells.Add(Cell(along, kb + offAcrossB));
+        }
+        int lo = Mathf.Min(pa.LaneStart + offAcrossA, pb.LaneStart + offAcrossB);
+        int hi = Mathf.Max(pa.LaneStart + offAcrossA, pb.LaneStart + offAcrossB) + w - 1;
+        for (int along = band0; along <= band1; along++)
+            for (int across = lo; across <= hi; across++) cells.Add(Cell(along, across));
+
+        return new GridCorridor
+        {
+            Edge = e,
+            PortA = pa,
+            PortB = pb,
+            Cells = cells.OrderBy(c => c.y).ThenBy(c => c.x).ToList(),
+        };
+    }
+
+    // 쓸 수 있는 차선 중 가장 바깥 바닥선이 고른 차선(줄마다 깊이 차이가 작은 것)을 먼저, 그다음 변 가운데에 가까운 차선을 고른다.
+    // 고른 바닥선이면 길이 방 가장자리를 따라 옆으로 새는 가는 띠 없이 반듯하게 붙는다.
+    private static GridPort PickPort(GridLayoutPlan plan, IReadOnlyList<GridRoomType> types, Vector2Int cell, GridSide side)
+    {
+        GridRoomType t = types[plan.RoomType[cell.x, cell.y]];
+        Vector2Int o = plan.RoomOrigin[cell.x, cell.y];
+        int w = plan.CorridorWidth;
+        bool vertical = side == GridSide.West || side == GridSide.East;
+        Dictionary<int, int> outer = t.OuterDepth[(int)side];
+        float center = vertical ? t.MinY + (t.Height - 1) * 0.5f : t.MinX + (t.Width - 1) * 0.5f;
+
+        int Spread(int start)
+        {
+            int min = int.MaxValue, max = int.MinValue;
+            for (int k = start; k < start + w; k++) { min = Mathf.Min(min, outer[k]); max = Mathf.Max(max, outer[k]); }
+            return max - min;
+        }
+
+        int lane = t.LaneStarts[(int)side].OrderBy(Spread).ThenBy(s => Mathf.Abs(s + (w - 1) * 0.5f - center)).ThenBy(s => s).First();
+        Vector2Int inward = side == GridSide.East ? Vector2Int.left : side == GridSide.West ? Vector2Int.right : side == GridSide.North ? Vector2Int.down : Vector2Int.up;
+        GridPort port = new GridPort { Cell = cell, Side = side, LaneStart = lane };
+        for (int k = lane; k < lane + w; k++)
+        {
+            Vector2Int edge = (vertical ? new Vector2Int(outer[k], k) : new Vector2Int(k, outer[k])) + o;
+            port.EdgeCells.Add(edge);
+            port.EntryCells.Add(edge);
+            port.EntryCells.Add(edge + inward);
+        }
+        return port;
     }
 
     private static GridLayoutPlan Fail(GridLayoutPlan plan, string reason)
@@ -386,8 +594,30 @@ public static class GridRoomAnalyzer
 
         HashSet<Vector2Int> floor = new HashSet<Vector2Int>(type.FloorCells);
         HashSet<Vector2Int> mainArea = LargestWalkableArea(floor, type.ObstacleCells);
-        for (int side = 0; side < 4; side++) type.OpenLanes[side] = CountOpenLanes(floor, type.ObstacleCells, mainArea, (GridSide)side, Mathf.Max(1, corridorWidth));
+        int width = Mathf.Max(1, corridorWidth);
+        for (int side = 0; side < 4; side++)
+        {
+            type.OuterDepth[side] = OuterDepths(floor, (GridSide)side);
+            type.LaneStarts[side] = OpenLaneStarts(floor, type.ObstacleCells, mainArea, (GridSide)side, type.OuterDepth[side], width);
+            type.OpenLanes[side] = type.LaneStarts[side].Count;
+            if (type.OpenLanes[side] == 0)
+                type.Warnings.Add($"{type.Name}의 {(GridSide)side} 변에는 폭 {width} 차선(입구 안쪽 {EntryDepth}칸까지 장애물 없음)이 없어 포트 없음으로 처리한다 - 이 변으로는 이웃 방과 잇지 않는다.");
+        }
         return type;
+    }
+
+    // 변의 줄마다 가장 바깥 바닥 칸의 깊이. 동/서 변은 줄 y → x, 남/북 변은 줄 x → y.
+    private static Dictionary<int, int> OuterDepths(HashSet<Vector2Int> floor, GridSide side)
+    {
+        bool vertical = side == GridSide.West || side == GridSide.East;
+        bool outward = side == GridSide.East || side == GridSide.North; // 바깥 = 좌표가 큰 쪽
+        Dictionary<int, int> outer = new Dictionary<int, int>();
+        foreach (Vector2Int c in floor)
+        {
+            int key = vertical ? c.y : c.x, depth = vertical ? c.x : c.y;
+            if (!outer.TryGetValue(key, out int d) || (outward ? depth > d : depth < d)) outer[key] = depth;
+        }
+        return outer;
     }
 
     private static HashSet<Vector2Int> LargestWalkableArea(HashSet<Vector2Int> floor, HashSet<Vector2Int> obstacles)
@@ -414,19 +644,13 @@ public static class GridRoomAnalyzer
         return best;
     }
 
-    private static int CountOpenLanes(HashSet<Vector2Int> floor, HashSet<Vector2Int> obstacles, HashSet<Vector2Int> mainArea, GridSide side, int width)
+    private static List<int> OpenLaneStarts(HashSet<Vector2Int> floor, HashSet<Vector2Int> obstacles, HashSet<Vector2Int> mainArea, GridSide side,
+        Dictionary<int, int> outer, int width)
     {
-        bool vertical = side == GridSide.West || side == GridSide.East; // 동/서 변은 줄(y)마다 가장 바깥 x를 본다
-        bool outward = side == GridSide.East || side == GridSide.North;  // 바깥 = 좌표가 큰 쪽
-        Dictionary<int, int> outer = new Dictionary<int, int>();
-        foreach (Vector2Int c in floor)
-        {
-            int key = vertical ? c.y : c.x, depth = vertical ? c.x : c.y;
-            if (!outer.TryGetValue(key, out int d) || (outward ? depth > d : depth < d)) outer[key] = depth;
-        }
+        bool vertical = side == GridSide.West || side == GridSide.East;
         Vector2Int inward = side == GridSide.East ? Vector2Int.left : side == GridSide.West ? Vector2Int.right : side == GridSide.North ? Vector2Int.down : Vector2Int.up;
 
-        int open = 0;
+        List<int> open = new List<int>();
         foreach (int start in outer.Keys.OrderBy(k => k))
         {
             bool ok = true;
@@ -440,7 +664,7 @@ public static class GridRoomAnalyzer
                     ok = floor.Contains(c) && !obstacles.Contains(c) && mainArea.Contains(c);
                 }
             }
-            if (ok) open++;
+            if (ok) open.Add(start);
         }
         return open;
     }
