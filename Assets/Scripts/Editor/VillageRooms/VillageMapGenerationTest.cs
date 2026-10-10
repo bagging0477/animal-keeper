@@ -60,6 +60,13 @@ public static class VillageMapGenerationTest
     [MenuItem("Tools/Village Rooms/Run Map Generation Test - Grid 4x5 (30x)")]
     private static void RunGrid4x5FromMenu() => BeginFromMenu(30, "grid4x5", 4, 5, 1);
 
+    // 격자 크기별 맵 크기·생성 시간 표(3x3 ~ 4x5)를 채우는 용도.
+    [MenuItem("Tools/Village Rooms/Run Map Generation Test - Grid 3x3 (30x)")]
+    private static void RunGrid3x3FromMenu() => BeginFromMenu(30, "grid3x3", 3, 3, 1);
+
+    [MenuItem("Tools/Village Rooms/Run Map Generation Test - Grid 4x4 (30x)")]
+    private static void RunGrid4x4FromMenu() => BeginFromMenu(30, "grid4x4", 4, 4, 1);
+
     private static void BeginFromMenu(int runs, string label, int columns, int rows, int seedBase)
     {
         if (EditorApplication.isPlaying) { Debug.LogWarning(LogPrefix + "Play 모드를 끈 뒤 실행해야 한다."); return; }
