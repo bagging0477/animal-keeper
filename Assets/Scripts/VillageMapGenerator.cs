@@ -24,8 +24,8 @@ public class VillageMapGenerator : MonoBehaviour
     [SerializeField] private int maxRoomCount = 4;
 
     [Header("맵 배치 방식")]
-    [Tooltip("Linear: 방을 동쪽으로 한 줄로 이어붙인다(기존 방식). Grid: gridColumns x gridRows 격자에 방을 놓고 길로 잇는다 " +
-        "(격자 씬 생성은 아직 구현 전이라 지금은 Grid를 골라도 Linear로 만든다 - 계획은 Tools > Village Rooms > Grid 메뉴로 미리 볼 수 있다).")]
+    [Tooltip("Grid(기본): gridColumns x gridRows 격자 칸마다 방을 놓고 이웃 방을 길로 잇는다. 격자 계획에 실패하면 에러를 남기고 Linear로 만든다 " +
+        "(계획은 Tools > Village Rooms > Grid 메뉴로 미리 볼 수 있다). Linear: 방 3~4개를 동쪽으로 한 줄로 이어붙인다(예전 방식).")]
     [SerializeField] private MapLayoutMode layoutMode = MapLayoutMode.Linear;
 
     [Header("격자 맵 (layoutMode = Grid일 때)")]
