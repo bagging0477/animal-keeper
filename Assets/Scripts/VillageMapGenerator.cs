@@ -487,15 +487,23 @@ public class VillageMapGenerator : MonoBehaviour
             Mathf.Max(Mathf.Abs(roomCells[i].x - plan.TruckCell.x), Mathf.Abs(roomCells[i].y - plan.TruckCell.y)) > monsterFreeRoomRadius;
         int[] animalCounts = DistributeSpawnBudget(placedRooms, GridAnimalTotal, GridMaxAnimalsPerRoom, i => true, AnimalSpawnWeight, "동물");
         int[] monsterCounts = DistributeSpawnBudget(placedRooms, GridMonsterTotal, GridMaxMonstersPerRoom, MonsterAllowed, MonsterSpawnWeight, "몬스터");
+        // 이미 놓인 몸체(플레이어·트럭 + 먼저 스폰한 동물/몬스터). 스폰 칸 후보는 이것들과 실제 몸 크기로 겹치지 않아야 한다(GridSpawnSpotFits).
+        List<SpawnBody> placedBodies = new List<SpawnBody>
+        {
+            SpawnBody.Box(playerSpawnWorldXY, Vector2.one),
+            SpawnBody.Box(truckXY, truckFootprint),
+        };
+        int animalShortfall = 0, monsterShortfall = 0;
         for (int i = 0; i < placedRooms.Count; i++)
         {
             RoomInstance room = placedRooms[i];
             Vector2Int roomOffset = ToWorldCell(room, Vector2Int.zero);
             HashSet<Vector2Int> usedCells = new HashSet<Vector2Int>(playerAndTruckWorldCells.Select(c => c - roomOffset));
-            SpawnGridAnimals(room, animalCounts[i], usedCells);
-            SpawnGridMonsters(room, monsterCounts[i], playerSpawnWorldXY, usedCells);
+            animalShortfall += SpawnGridAnimals(room, animalCounts[i], usedCells, placedBodies);
+            monsterShortfall += SpawnGridMonsters(room, monsterCounts[i], playerSpawnWorldXY, usedCells, placedBodies);
         }
-        LastGridSpawnCounts = (animalCounts.Sum(), monsterCounts.Sum());
+        LastGridSpawnCounts = (animalCounts.Sum() - animalShortfall, monsterCounts.Sum() - monsterShortfall);
+        LastGridSpawnShortfall = (animalShortfall, monsterShortfall);
         LastGridMonsterWeights = placedRooms.Select(MonsterSpawnWeight).ToArray();
         MarkGenerationStep("동물·몬스터 스폰");
 
@@ -506,8 +514,11 @@ public class VillageMapGenerator : MonoBehaviour
         return true;
     }
 
-    /// <summary>격자 맵에서 실제로 배정한 동물/몬스터 총수(DistributeSpawnBudget 결과).</summary>
+    /// <summary>격자 맵에서 실제로 스폰한 동물/몬스터 총수(DistributeSpawnBudget 배정 수 - 자리를 못 찾아 줄인 수).</summary>
     public (int animals, int monsters) LastGridSpawnCounts { get; private set; }
+
+    /// <summary>격자 맵에서 겹치지 않는 자리를 못 찾아 배정보다 덜 스폰한 동물/몬스터 수(경고와 함께 남는다).</summary>
+    public (int animals, int monsters) LastGridSpawnShortfall { get; private set; }
 
     /// <summary>격자 맵 방별 몬스터 스폰 가중치(MonsterSpawnWeight). 순서는 Room_{gx}_{gy}의 gy, gx 순 - 테스트 보고서용.</summary>
     public int[] LastGridMonsterWeights { get; private set; }
@@ -557,15 +568,28 @@ public class VillageMapGenerator : MonoBehaviour
     }
 
     // 격자 경로의 동물 스폰. 한 마리씩 놓는 방식은 SpawnAnimal과 같다(이름 "{프리팹}_{방 안 번호}", 계층 경로 Id를 미리 계산해 트럭 왕복 전
-    // 저장해둔 위치가 있으면 그 자리에 복원). 다만 마리 수를 방마다 받는다(SpawnAnimal은 animalsPerRoom 고정 - 한 줄 경로용으로 그대로 둔다).
-    private void SpawnGridAnimals(RoomInstance room, int count, HashSet<Vector2Int> usedCells)
+    // 저장해둔 위치가 있으면 그 자리에 복원). 다만 마리 수를 방마다 받고, 칸은 실제 몸 크기로 겹치지 않는 자리만 고른다(PickGridSpawnCell) -
+    // 한 줄 경로(SpawnAnimal/PickInteriorCell)는 Random 순서를 지키려고 예전 방식 그대로 둔다. 자리를 못 찾으면 그 마리는 건너뛰고(이름 번호는
+    // 비워 둔다 - 같은 시드면 항상 같은 번호가 빠지므로 Id는 그대로 안정적이다) 건너뛴 수를 돌려준다.
+    private int SpawnGridAnimals(RoomInstance room, int count, HashSet<Vector2Int> usedCells, List<SpawnBody> placedBodies)
     {
-        if (animalPrefabs == null || animalPrefabs.Length == 0 || room.FloorCells.Count == 0) return;
+        if (animalPrefabs == null || animalPrefabs.Length == 0 || room.FloorCells.Count == 0) return 0;
+        int skipped = 0;
         for (int i = 0; i < count; i++)
         {
             GameObject prefab = animalPrefabs[Random.Range(0, animalPrefabs.Length)];
-            Vector2Int cell = PickInteriorCell(room, usedCells);
-            usedCells.Add(cell);
+            float radius = SpawnRadius(prefab);
+            Vector2Int? picked = PickGridSpawnCell(room, usedCells, radius, placedBodies);
+            if (!picked.HasValue)
+            {
+                skipped++;
+                Debug.LogWarning($"{name}: {room.Root.name}({room.PrefabName})에 동물 {prefab.name}(반경 {radius:F2})을 겹치지 않게 둘 자리가 없어 한 마리 덜 둔다.");
+                continue;
+            }
+            Vector2Int cell = picked.Value;
+            MarkSpawnUsed(usedCells, cell);
+            // 복원 위치가 아니라 고른 칸으로 등록한다 - 같은 Day 재진입 때도 같은 칸을 고르게(위치 복원은 칸 선택에 영향을 주지 않는다).
+            placedBodies.Add(SpawnBody.Circle(ToWorldXY(room, cell), radius));
             string animalName = $"{prefab.name}_{i}";
             string predictedId = $"{MapRootName}/{room.Root.name}/{animalName}";
             Vector3 savedPosition = default;
@@ -585,19 +609,143 @@ public class VillageMapGenerator : MonoBehaviour
                 if (flee != null) flee.RestoreFleeing();
             }
         }
+        return skipped;
     }
 
-    // 격자 경로의 몬스터 스폰(SpawnMonster와 같은 방식, 마리 수만 방마다 받는다).
-    private void SpawnGridMonsters(RoomInstance room, int count, Vector2 playerSpawnWorldXY, HashSet<Vector2Int> usedCells)
+    // 격자 경로의 몬스터 스폰. 플레이어에게서 MonsterMinSpawnDistanceFromPlayer 이상 떨어진 자리를 우선하는 규칙은 PickMonsterSpawnCell과 같고,
+    // 후보 칸은 PickGridSpawnCell(몸 크기로 겹침 검사)에서 뽑는다. NavMesh에 붙인 뒤의 위치도 다시 검사해서, 겹치면 그 칸을 버리고 다시 고른다.
+    private int SpawnGridMonsters(RoomInstance room, int count, Vector2 playerSpawnWorldXY, HashSet<Vector2Int> usedCells, List<SpawnBody> placedBodies)
     {
-        if (monsterPrefabs == null || monsterPrefabs.Length == 0 || room.FloorCells.Count == 0) return;
+        if (monsterPrefabs == null || monsterPrefabs.Length == 0 || room.FloorCells.Count == 0) return 0;
+        int skipped = 0;
         for (int i = 0; i < count; i++)
         {
             GameObject prefab = monsterPrefabs[Random.Range(0, monsterPrefabs.Length)];
-            Vector2Int cell = PickMonsterSpawnCell(room, usedCells, playerSpawnWorldXY, MonsterMinSpawnDistanceFromPlayer);
-            usedCells.Add(cell);
-            SpawnMonsterAt(room, room.Root.transform, prefab, cell, $"{prefab.name}_{i}");
+            float radius = SpawnRadius(prefab);
+            bool placed = false;
+            for (int attempt = 0; attempt < MonsterSnapRetryCount && !placed; attempt++)
+            {
+                Vector2Int? best = PickGridSpawnCell(room, usedCells, radius, placedBodies);
+                if (!best.HasValue) break;
+                float bestDistance = Vector2.Distance(ToWorldXY(room, best.Value), playerSpawnWorldXY);
+                for (int retry = 1; retry < MonsterSpawnDistanceRetryCount && bestDistance < MonsterMinSpawnDistanceFromPlayer; retry++)
+                {
+                    Vector2Int? candidate = PickGridSpawnCell(room, usedCells, radius, placedBodies);
+                    if (!candidate.HasValue) break;
+                    float distance = Vector2.Distance(ToWorldXY(room, candidate.Value), playerSpawnWorldXY);
+                    if (distance > bestDistance) { bestDistance = distance; best = candidate; }
+                }
+
+                Vector2Int cell = best.Value;
+                MarkSpawnUsed(usedCells, cell);
+                Vector3 desired = ToNavPosition(room, cell);
+                // SpawnMonsterAt과 같은 스냅(반경 1.5, 방 범위 안). 스냅된 자리도 몸 크기로 다시 검사한다.
+                if (!NavMesh.SamplePosition(desired, out NavMeshHit hit, 1.5f, NavMesh.AllAreas) || !IsWithinRoom(room, hit.position)) continue;
+                Vector2 snapped = new Vector2(hit.position.x, hit.position.z);
+                if (!GridSpawnSpotFits(snapped, radius, placedBodies)) continue;
+                Instantiate(prefab, hit.position, Quaternion.identity, room.Root.transform).name = $"{prefab.name}_{i}";
+                placedBodies.Add(SpawnBody.Circle(snapped, radius));
+                placed = true;
+            }
+            if (!placed)
+            {
+                skipped++;
+                Debug.LogWarning($"{name}: {room.Root.name}({room.PrefabName})에 몬스터 {prefab.name}(반경 {radius:F2})을 겹치지 않게 둘 자리가 없어 한 마리 덜 둔다.");
+            }
         }
+        return skipped;
+    }
+
+    // 스폰 겹침 검사에 쓰는 이미 놓인 몸체. 원(동물/몬스터) 또는 상자(플레이어/트럭), 2D 게임 좌표.
+    private readonly struct SpawnBody
+    {
+        public readonly Vector2 Center;
+        public readonly float Radius;      // 0보다 크면 원
+        public readonly Vector2 HalfSize;  // 상자일 때
+
+        private SpawnBody(Vector2 center, float radius, Vector2 halfSize) { Center = center; Radius = radius; HalfSize = halfSize; }
+        public static SpawnBody Circle(Vector2 center, float radius) => new SpawnBody(center, radius, Vector2.zero);
+        public static SpawnBody Box(Vector2 center, Vector2 size) => new SpawnBody(center, 0f, size * 0.5f);
+
+        public bool Overlaps(Vector2 center, float radius)
+        {
+            if (Radius > 0f) return (center - Center).sqrMagnitude < (radius + Radius) * (radius + Radius);
+            Vector2 closest = new Vector2(Mathf.Clamp(center.x, Center.x - HalfSize.x, Center.x + HalfSize.x), Mathf.Clamp(center.y, Center.y - HalfSize.y, Center.y + HalfSize.y));
+            return (center - closest).sqrMagnitude < radius * radius;
+        }
+    }
+
+    // 몬스터 한 마리에 NavMesh 스냅 후 겹침 때문에 칸을 다시 고르는 최대 횟수.
+    private const int MonsterSnapRetryCount = 5;
+
+    // 칸 하나를 고를 때 무작위로 뽑아 보는 최대 횟수. 그래도 못 찾으면 남은 후보를 순서대로 한 번 훑고, 그래도 없으면 null.
+    private const int GridSpawnRandomAttempts = 32;
+
+    // 프리팹의 스폰 몸 반경(칸). 2D 충돌체가 있으면 그 크기(원은 반지름 x 스케일, 그 밖은 상자를 덮는 원), 없으면(몬스터) NavMeshAgent 반경.
+    // 프리팹 에셋의 Collider2D.bounds는 Instantiate 전이라 0이므로 모양 값에서 직접 계산한다.
+    private static float SpawnRadius(GameObject prefab)
+    {
+        Collider2D col = prefab.GetComponentsInChildren<Collider2D>(true).FirstOrDefault(c => !c.isTrigger);
+        if (col != null)
+        {
+            Vector3 scale = col.transform.lossyScale;
+            float maxScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y));
+            if (col is CircleCollider2D circle) return circle.radius * maxScale + circle.offset.magnitude * maxScale;
+            if (col is CapsuleCollider2D capsule) return 0.5f * Mathf.Max(Mathf.Abs(capsule.size.x * scale.x), Mathf.Abs(capsule.size.y * scale.y)) + capsule.offset.magnitude * maxScale;
+            if (col is BoxCollider2D box) return 0.5f * new Vector2(box.size.x * scale.x, box.size.y * scale.y).magnitude + box.offset.magnitude * maxScale;
+            return 0.5f;
+        }
+        NavMeshAgent agent = prefab.GetComponentInChildren<NavMeshAgent>(true);
+        return agent != null ? agent.radius : 0.5f;
+    }
+
+    // 자리 하나의 겹침 검사: 막는 정적 충돌체(장애물·경계·트럭 - 트리거와 움직이는 몸체 제외)와, 이미 놓인 몸체.
+    private static bool GridSpawnSpotFits(Vector2 center, float radius, List<SpawnBody> placedBodies)
+    {
+        foreach (SpawnBody body in placedBodies)
+            if (body.Overlaps(center, radius)) return false;
+        foreach (Collider2D c in Physics2D.OverlapCircleAll(center, radius))
+        {
+            if (c == null || !c.enabled || c.isTrigger) continue;
+            if (c.attachedRigidbody != null && c.attachedRigidbody.bodyType == RigidbodyType2D.Dynamic) continue;
+            return false;
+        }
+        return true;
+    }
+
+    // 격자 경로의 스폰 칸 고르기. 후보는 PickInteriorCell과 같은 칸(장애물 아님, 상하좌우가 바닥, usedCells 아님)이고, 거기서 무작위로 뽑아
+    // GridSpawnSpotFits를 통과하는 칸을 고른다. 실패한 칸은 후보에서 빼므로 같은 칸을 다시 보지 않는다. GridSpawnRandomAttempts번 안에 못 찾으면
+    // 남은 후보를 순서대로 한 번 훑는다(Random을 더 쓰지 않는다). 그래도 없으면 null - 무한히 돌지 않는다.
+    private static Vector2Int? PickGridSpawnCell(RoomInstance room, HashSet<Vector2Int> usedCells, float radius, List<SpawnBody> placedBodies)
+    {
+        HashSet<Vector2Int> floorSet = new HashSet<Vector2Int>(room.FloorCells);
+        List<Vector2Int> candidates = new List<Vector2Int>();
+        foreach (Vector2Int c in room.FloorCells)
+        {
+            if (room.ObstacleCells.Contains(c) || usedCells.Contains(c)) continue;
+            if (floorSet.Contains(c + Vector2Int.up) && floorSet.Contains(c + Vector2Int.down) &&
+                floorSet.Contains(c + Vector2Int.left) && floorSet.Contains(c + Vector2Int.right))
+                candidates.Add(c);
+        }
+
+        for (int attempt = 0; attempt < GridSpawnRandomAttempts && candidates.Count > 0; attempt++)
+        {
+            int index = Random.Range(0, candidates.Count);
+            Vector2Int c = candidates[index];
+            if (GridSpawnSpotFits(ToWorldXY(room, c), radius, placedBodies)) return c;
+            candidates[index] = candidates[candidates.Count - 1];
+            candidates.RemoveAt(candidates.Count - 1);
+        }
+        foreach (Vector2Int c in candidates)
+            if (GridSpawnSpotFits(ToWorldXY(room, c), radius, placedBodies)) return c;
+        return null;
+    }
+
+    // 스폰한 칸과 그 8방향 이웃을 사용한 칸으로 표시한다 - 서로 바로 옆 칸에 붙어 놓이지 않게.
+    private static void MarkSpawnUsed(HashSet<Vector2Int> usedCells, Vector2Int cell)
+    {
+        for (int dy = -1; dy <= 1; dy++)
+            for (int dx = -1; dx <= 1; dx++) usedCells.Add(new Vector2Int(cell.x + dx, cell.y + dy));
     }
 
     // 길 둘레의 바닥 아닌 칸 중 가장 가까운 바닥 칸(칸 가운데끼리 거리)이 방이 아니라 길인 칸(같으면 길 쪽). BuildOutsideMask는 이 칸들까지의

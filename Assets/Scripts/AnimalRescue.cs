@@ -204,6 +204,8 @@ public class AnimalRescue : MonoBehaviour
     private void OnDestroy()
     {
         if (GameManager.Instance == null || isRemovedFromField) return;
+        // Id는 Start에서 정해진다 - 마을을 불러온 바로 그 프레임에 씬을 떠나 Start 전에 파괴되면 아직 null이라 저장할 키가 없다.
+        if (string.IsNullOrEmpty(Id)) return;
 
         AnimalFlee flee = GetComponent<AnimalFlee>();
         bool wasFleeing = flee != null && flee.IsAlarmed;
