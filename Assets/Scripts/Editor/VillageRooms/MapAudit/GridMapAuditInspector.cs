@@ -844,6 +844,10 @@ public static class GridMapAuditInspector
         if (monsters != expectedMonsters) r.Add(CTotals, $"몬스터 {monsters}마리 (기대 {expectedMonsters})");
         r.Stat("동물", animals);
         r.Stat("몬스터", monsters);
+        // 겹치지 않는 자리를 못 찾아 생성기가 줄인 수(VillageMapGenerator.LastGridSpawnShortfall). 줄였으면 위 총량 검사에도 걸린다.
+        (int a, int m) shortfall = gen.LastGridSpawnShortfall;
+        r.Stat("자리 부족으로 줄인 동물", shortfall.a);
+        r.Stat("자리 부족으로 줄인 몬스터", shortfall.m);
     }
 
     private static void BuildSignature(AuditSeedResult r, AuditSnapshot snap, VillageMapGenerator gen, GridLayoutPlan plan, GameObject mapRoot,

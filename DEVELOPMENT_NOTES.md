@@ -28,6 +28,7 @@ VillageScene에 들어갈 때마다 `VillageMapGenerator`(VillageScene의 `MapGe
   4. 트리가 안 만들어지면 처음부터 다시 한다(`maxLayoutAttempts`, 20회). 그래도 실패하면 에러를 남기고 한 줄 배치로 만든다.
   - 계획기는 `System.Random`만 쓰는 순수 계산이다. 같은 시드면 항상 같은 계획이 나온다.
 - **트럭/플레이어**: 트럭 칸 방 안에서 트럭 둘레 2.5칸이 모두 바닥인 자리를 먼저 찾는다. 몬스터는 트럭 방에 두지 않는다(`monsterFreeRoomRadius` 0).
+- **동물/몬스터 스폰 자리** (격자만): 프리팹 몸 반경(동물은 CircleCollider2D x 스케일, 몬스터는 NavMeshAgent 반경)으로 장애물·경계·트럭, 이미 놓인 플레이어·동물·몬스터와 겹치지 않는 칸만 고르고, 고른 칸의 8방향 이웃도 사용한 칸으로 막는다(`PickGridSpawnCell`). 무작위 32번 뒤 남은 후보를 한 번 훑고도 없으면 경고를 남기고 그 마리를 뺀다. 한 줄 배치는 예전 규칙(`PickInteriorCell`) 그대로다.
 - **개발용 검증**: 생성 직후(`Start`) 바닥 연결, 트럭에서 모든 방 중심까지 NavMesh 경로, Id 중복, 방당 상한을 검사해 문제가 있으면 에러 로그를 남긴다.
 
 ### 설정값 위치
@@ -132,3 +133,11 @@ VillageScene에 들어갈 때마다 `VillageMapGenerator`(VillageScene의 `MapGe
   - 새 방의 동/서 입구 높이가 다르면 드러날 수 있다. 격자 경로는 월드 칸으로 메시를 만드는 `BuildGridRoomNavGround`를 따로 써서 이 문제가 없다.
 - **길 가운데의 옅은 어두움 (고치지 않음)**: 포트 입구 근처 길 칸 몇 개에 바깥 마스크가 최대 알파 0.207로 남는다. 맵 생성 테스트에서 "길 가운데 칸 N칸이 어둡다 (최대 알파 0.207)"로 잡히는 것은 이 항목이다. 원인 후보와 영향은 `Logs/map_grid_design.md`에 적었다.
 - **바깥 마스크 생성 시간**: 생성 시간의 대부분(4x5에서 약 600 ms)이 `BuildOutsideMask`다. 격자를 키울 때 씬 로드가 느려지는 주원인이다.
+
+### 알려진 주의사항
+
+2026-10-11 격자 맵 점검(`Logs/map_audit.md`, 도구는 `Tools > Village Rooms > Map Audit`)에서 찾았지만 고치지 않은 것.
+
+- **생성 리소스 해제 (P5)**: 생성기는 코드로 만든 Mesh(NavGround·길·마스크)와 NavMeshData를 직접 `Destroy`하지 않고 씬 언로드 때의 미사용 에셋 정리에 맡긴다 - 씬을 다시 불러오지 않고 같은 씬에서 맵을 다시 만들면 1회당 Mesh 18개·NavMeshData 1개(약 4.7 MB)가 쌓인다.
+- **테스트 도중 Play 중단 (P6)**: `VillageMapGenerationTest`·`GridReentryTest`·`CorridorFadeCapture`·`LinearRegressionDump`·`GridDayCycleTest`는 끝까지 돌았을 때만 `EditorLayoutOverride`를 지운다 - 도중에 Play를 멈추면(도메인 리로드 꺼짐) 다음 Play가 고정 시드·격자 크기로 만들어지고 테스트가 다시 붙을 수 있으니, 에디터를 다시 열거나 같은 테스트를 끝까지 한 번 돌린다.
+- **비(非)Box 장애물과 포트 계산 (P7)**: `GridRoomAnalyzer`는 BoxCollider2D가 아닌 장애물 충돌체를 프리팹 에셋의 `bounds`(Instantiate 전이라 0)로 읽어 포트·차선 계산에서 빠뜨린다 - 지금 방 7종은 모두 Box라 영향이 없지만, 원·폴리곤 장애물을 쓰는 방을 추가하면 포트 입구가 막힐 수 있다.
