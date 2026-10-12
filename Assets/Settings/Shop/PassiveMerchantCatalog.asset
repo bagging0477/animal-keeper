@@ -15,3 +15,5 @@ MonoBehaviour:
   title: "\uD328\uC2DC\uBE0C \uAC15\uD654 \uC0C1\uC778"
   emptyMessage: "\uC900\uBE44 \uC911\uC785\uB2C8\uB2E4"
   entries: []
+  passives:
+  - {fileID: 11400000, guid: 9af6b4841362a6f46abb0cdd2374dc5d, type: 2}

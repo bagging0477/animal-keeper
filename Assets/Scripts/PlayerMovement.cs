@@ -120,16 +120,31 @@ public class PlayerMovement : MonoBehaviour
         // 범위를 벗어나는 값이 생기지 않도록 마지막에 한 번 더 강제한다.
         Stamina = Mathf.Clamp(Stamina, 0f, MaxStamina);
 
-        float classMoveMultiplier = config != null && GameManager.Instance != null
-            ? config.GetClassMoveSpeedMultiplier(GameManager.Instance.CurrentClass)
-            : 1f;
-        float classSprintMultiplier = config != null && GameManager.Instance != null
-            ? config.GetClassSprintSpeedMultiplier(GameManager.Instance.CurrentClass)
-            : 1.25f;
+        currentSpeed = IsSprinting ? SprintSpeed : WalkSpeed;
+    }
 
-        float baseSpeed = (config != null ? config.playerMoveSpeed : 3.75f) * classMoveMultiplier;
-        float sprintSpeed = baseSpeed * classSprintMultiplier;
-        currentSpeed = IsSprinting ? sprintSpeed : baseSpeed;
+    /// <summary>지금 클래스와 패시브로 계산한 걷기 속도: playerMoveSpeed x 클래스 이동속도 배율 x 패시브 이동속도 배율.</summary>
+    public float WalkSpeed
+    {
+        get
+        {
+            float classMoveMultiplier = config != null && GameManager.Instance != null
+                ? config.GetClassMoveSpeedMultiplier(GameManager.Instance.CurrentClass)
+                : 1f;
+            return (config != null ? config.playerMoveSpeed : 3.75f) * classMoveMultiplier * PassiveEffects.MoveSpeedMultiplier;
+        }
+    }
+
+    /// <summary>스프린트 속도: 걷기 속도 x 클래스 스프린트 배율 - 걷기 속도에서 파생되므로 패시브 배율도 함께 붙는다.</summary>
+    public float SprintSpeed
+    {
+        get
+        {
+            float classSprintMultiplier = config != null && GameManager.Instance != null
+                ? config.GetClassSprintSpeedMultiplier(GameManager.Instance.CurrentClass)
+                : 1.25f;
+            return WalkSpeed * classSprintMultiplier;
+        }
     }
 
     private void UpdateLookDirection()

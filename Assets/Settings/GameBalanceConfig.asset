@@ -20,6 +20,10 @@ MonoBehaviour:
   soundReactiveMonsterDetectRange: 1.7255
   soundReactiveMonsterLoseRange: 13.5
   soundReactiveMonsterHearRange: 10.4
+  wolfLeashRadius: 14
+  wolfChaseBurstDuration: 3.5
+  wolfWindedDuration: 1.5
+  wolfWindedSpeedMultiplier: 0.5
   monsterSearchLookDurationMin: 2
   monsterSearchLookDurationMax: 3
   monsterSearchLookTurnInterval: 0.6
@@ -32,6 +36,14 @@ MonoBehaviour:
   monsterWaypointStopDistance: 0.2
   chaseGiveUpSightLostDuration: 2
   chaseDirectionUpdateInterval: 0.25
+  soundReactiveMonsterChaseGiveUpDuration: 3.5
+  animalSoundIntensity: 1
+  sprintSoundIntensity: 0.3
+  sprintSoundInterval: 0.5
+  soundInvestigateApproachFraction: 0.35
+  floorPatchNoiseScale: 0.15
+  floorPatchThreshold: 0.62
+  wolfCorpseWeight: 15
   monsterMinSpawnDistanceFromPlayer: 6
   gridCorridorWidth: 6
   gridCorridorGap: 8
@@ -80,6 +92,7 @@ MonoBehaviour:
   staminaRegenPerSecond: 15
   staminaExhaustionCooldown: 1.5
   targetRescueCount: 3
+  totalCyclesToWin: 10
   mileagePerWeight: 10
   targetBonusMileage: 50
   netDamage: 1.2
@@ -108,3 +121,7 @@ MonoBehaviour:
     price: 40
   - item: 2
     price: 70
+  passivePrices:
+  - passive: {fileID: 11400000, guid: 9af6b4841362a6f46abb0cdd2374dc5d, type: 2}
+    price: 200
+    maxPurchases: 1
