@@ -89,6 +89,20 @@ MonoBehaviour:
   monsterChaseSpeed: 4.3125
   animalWanderSpeed: 1
   animalFleeSpeed: 3.375
+  turtlePrefab: {fileID: 570110514632718333, guid: 055f2d3bde1127441a3e89d9806ff1b9, type: 3}
+  turtleSpawnChance: 0.12
+  turtleSpawnInLinearMode: 0
+  turtleDetectRadius: 5
+  turtleAlertDuration: 0.65
+  turtleFleeDistance: 4
+  turtleFleeSpeedMultiplier: 1.05
+  turtleHideRadius: 5
+  turtleEmergeDelay: 3
+  turtleMaxHiddenTime: 15
+  turtleSleepInterruptsHiding: 1
+  turtleHiddenMessageCooldown: 2
+  turtleMinWeight: 4
+  turtleMaxWeight: 11
   maxStamina: 85
   sprintStaminaDrainPerSecond: 18
   staminaRegenPerSecond: 15

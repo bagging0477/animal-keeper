@@ -577,7 +577,7 @@ public class VillageMapGenerator : MonoBehaviour
         int skipped = 0;
         for (int i = 0; i < count; i++)
         {
-            GameObject prefab = animalPrefabs[Random.Range(0, animalPrefabs.Length)];
+            GameObject prefab = AnimalSpawnPool.Pick(animalPrefabs, config, gridLayout: true);
             float radius = SpawnRadius(prefab);
             Vector2Int? picked = PickGridSpawnCell(room, usedCells, radius, placedBodies);
             if (!picked.HasValue)
@@ -2125,7 +2125,7 @@ public class VillageMapGenerator : MonoBehaviour
 
         for (int i = 0; i < animalsPerRoom; i++)
         {
-            GameObject prefab = animalPrefabs[Random.Range(0, animalPrefabs.Length)];
+            GameObject prefab = AnimalSpawnPool.Pick(animalPrefabs, config, gridLayout: false);
             Vector2Int cell = PickInteriorCell(room, usedCells);
             usedCells.Add(cell);
 
