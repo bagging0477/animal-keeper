@@ -71,6 +71,8 @@ MonoBehaviour:
   scoutFocusedVisionRangePercent: 100
   trapperFocusedVisionRangePercent: 100
   gunnerFocusedVisionRangePercent: 125
+  noFlashlightFocusedRadiusMultiplier: 0.7
+  noFlashlightFocusedAngleMultiplier: 0.7
   scoutMoveSpeedMultiplier: 1.08
   scoutMaxHealthPercent: 100
   trapperMaxHealthPercent: 130
@@ -128,4 +130,7 @@ MonoBehaviour:
     maxPurchases: 1
   - passive: {fileID: 11400000, guid: 476fed807022a4d4b80f0e89030a97e6, type: 2}
     price: 500
+    maxPurchases: 1
+  - passive: {fileID: 11400000, guid: 7c17746ce62db274fb128c459a370d81, type: 2}
+    price: 100
     maxPurchases: 1

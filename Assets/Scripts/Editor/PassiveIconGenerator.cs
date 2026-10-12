@@ -10,6 +10,7 @@ public static class PassiveIconGenerator
     public const string Folder = "Assets/Sprites/Items";
     public const string RunningShoesPath = Folder + "/RunningShoes_placeholder.png";
     public const string InventorySlotPath = Folder + "/InventorySlot_placeholder.png";
+    public const string FlashlightPath = Folder + "/Flashlight_placeholder.png";
 
     private const int Grid = 32;   // 32x32 칸에 그리고
     private const int Scale = 2;   // 2배로 늘려 64x64 PNG로 저장
@@ -28,6 +29,11 @@ public static class PassiveIconGenerator
     private static readonly Color32 Buckle = new Color32(230, 200, 90, 255);
     private static readonly Color32 PlusBadge = new Color32(70, 170, 80, 255);
     private static readonly Color32 PlusMark = new Color32(250, 250, 250, 255);
+    private static readonly Color32 Body = new Color32(60, 66, 80, 255);
+    private static readonly Color32 BodyShine = new Color32(110, 120, 140, 255);
+    private static readonly Color32 Lens = new Color32(255, 250, 200, 255);
+    private static readonly Color32 Beam = new Color32(255, 230, 120, 255);
+    private static readonly Color32 Switch = new Color32(220, 70, 60, 255);
 
     private delegate void Painter(System.Action<int, int, Color32> set);
 
@@ -36,6 +42,7 @@ public static class PassiveIconGenerator
     {
         Debug.Log($"[PassiveIconGenerator] {RunningShoesPath}: {(EnsureRunningShoesIcon() != null ? "준비됨" : "실패")}");
         Debug.Log($"[PassiveIconGenerator] {InventorySlotPath}: {(EnsureInventorySlotIcon() != null ? "준비됨" : "실패")}");
+        Debug.Log($"[PassiveIconGenerator] {FlashlightPath}: {(EnsureFlashlightIcon() != null ? "준비됨" : "실패")}");
     }
 
     /// <summary>러닝화 임시 아이콘 스프라이트. 없으면 그려서 저장한다.</summary>
@@ -43,6 +50,9 @@ public static class PassiveIconGenerator
 
     /// <summary>인벤토리 칸 +1 임시 아이콘 스프라이트. 없으면 그려서 저장한다.</summary>
     public static Sprite EnsureInventorySlotIcon() => EnsureIcon(InventorySlotPath, PaintInventorySlot);
+
+    /// <summary>플래시라이트 임시 아이콘 스프라이트. 없으면 그려서 저장한다.</summary>
+    public static Sprite EnsureFlashlightIcon() => EnsureIcon(FlashlightPath, PaintFlashlight);
 
     private static Sprite EnsureIcon(string path, Painter paint)
     {
@@ -136,6 +146,33 @@ public static class PassiveIconGenerator
             }
         for (int i = -3; i <= 3; i++) { Set(24 + i, 5, PlusMark); Set(24, 5 + i, PlusMark); }
         for (int i = -3; i <= 3; i++) { Set(25 + i, 5, PlusMark); Set(25, 5 + i, PlusMark); }
+    }
+
+    // 오른쪽을 비추는 손전등: 손잡이 / 넓어지는 머리 / 렌즈 + 노란 빛줄기.
+    private static void PaintFlashlight(System.Action<int, int, Color32> Set)
+    {
+        // 손잡이와 스위치
+        for (int x = 2; x <= 13; x++)
+            for (int y = 13; y <= 18; y++) Set(x, y, y == 17 ? BodyShine : Body);
+        Set(9, 19, Switch); Set(10, 19, Switch);
+
+        // 머리: 오른쪽으로 갈수록 넓어진다
+        for (int x = 14; x <= 18; x++)
+        {
+            int half = 3 + (x - 14);
+            for (int y = 16 - half; y <= 15 + half; y++) Set(x, y, y == 14 + half ? BodyShine : Body);
+        }
+
+        // 렌즈
+        for (int y = 9; y <= 22; y++) Set(19, y, Lens);
+
+        // 빛줄기 세 갈래
+        for (int i = 0; i < 9; i++)
+        {
+            Set(21 + i, 15, Beam); Set(21 + i, 16, Beam);
+            Set(21 + i, 19 + i / 2, Beam);
+            Set(21 + i, 12 - i / 2, Beam);
+        }
     }
 
     // 그린 뒤 바깥 테두리(빈 칸 중 채워진 칸에 닿은 곳)를 두르고 Scale배로 늘린다.

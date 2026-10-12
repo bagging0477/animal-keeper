@@ -249,6 +249,17 @@ public class GameBalanceConfig : ScriptableObject
         "체력이 낮은 대신 더 멀리, 더 넓게 보고 안전한 거리에서 대응할 수 있는 컨셉.")]
     public int gunnerFocusedVisionRangePercent = 125;
 
+    [Header("플래시라이트 패시브 - 사기 전 부채꼴 시야 크기 (원형 시야에는 영향 없음)")]
+    [Tooltip("플래시라이트 패시브가 없을 때 부채꼴 시야 반경(안쪽/바깥 모두)에 곱하는 배율. 클래스 배율 뒤에 곱한다 " +
+        "(최종 = focusedVisionRadius x 클래스 배율 x 이 값). 사면 1(지금 크기). 0이면 부채꼴이 꺼진다.")]
+    [Min(0f)]
+    public float noFlashlightFocusedRadiusMultiplier = 0.7f;
+
+    [Tooltip("플래시라이트 패시브가 없을 때 부채꼴 시야 각도(안쪽/바깥 모두)에 곱하는 배율. 클래스 배율 뒤에 곱한다 " +
+        "(최종 = focusedVisionAngle x 클래스 배율 x 이 값). 사면 1(지금 크기). 0이면 부채꼴이 꺼진다.")]
+    [Min(0f)]
+    public float noFlashlightFocusedAngleMultiplier = 0.7f;
+
     [Header("클래스 - 이동속도 / 체력")]
     [Tooltip("스카우트 기본(걷기) 이동속도 배율 - 몬스터 추격 속도(monsterChaseSpeed, 고정값) 대비. " +
         "1.05~1.1 정도로 잡아서 '몬스터보다 여전히 빠르지만 차이는 크지 않은' 상태를 만든다 - 스태미나 없이 그냥 도망만 쳐도 " +

@@ -49,8 +49,15 @@ public class PlayerVision : MonoBehaviour
         // 한 세션 동안 안 바뀌지만, lastClass도 함께 캐싱해서 클래스가 바뀌는 경우에도 즉시 반영한다.
         PlayerClass currentClass = GameManager.Instance != null ? GameManager.Instance.CurrentClass : PlayerClass.Scout;
         float targetAmbientRadius = config.GetClassAmbientVisionRadius(currentClass);
-        float targetFocusedRadius = config.GetClassFocusedVisionRadius(currentClass);
-        float targetFocusedAngle = config.GetClassFocusedVisionAngle(currentClass);
+
+        // 플래시라이트 패시브가 없으면 부채꼴만 config 배율(기본 0.7)로 줄인다: 최종 = 기본 x 클래스 x 플래시라이트 배율.
+        // 산 뒤에는 배율 1이라 예전 크기 그대로다. 원형 시야는 이 배율과 무관하다.
+        bool hasFlashlight = PassiveEffects.HasFlashlight;
+        float flashlightRadiusScale = hasFlashlight ? 1f : config.noFlashlightFocusedRadiusMultiplier;
+        float flashlightAngleScale = hasFlashlight ? 1f : config.noFlashlightFocusedAngleMultiplier;
+        float classFocusedAngle = config.GetClassFocusedVisionAngle(currentClass);
+        float targetFocusedRadius = config.GetClassFocusedVisionRadius(currentClass) * flashlightRadiusScale;
+        float targetFocusedAngle = classFocusedAngle * flashlightAngleScale;
 
         // 두 라이트의 밝기/감쇠 곡선은 항상 같게 맞춘다 - 다르면 겹치는 경계에서 한쪽이 먼저 어두워져 띠가 보인다.
         bool blendChanged = !visionRangesApplied || lastLightIntensity != config.visionLightIntensity ||
@@ -83,7 +90,9 @@ public class PlayerVision : MonoBehaviour
             focusedVisionLight.pointLightOuterAngle = targetFocusedAngle;
             // 부채꼴 옆 가장자리 페이드 폭. 각도 차이는 거리에 비례해 넓어지므로 플레이어 바로 옆에서는 페이드가 아주 좁다 -
             // 한쪽당 각도를 넉넉히 잡아야 원형 시야와 만나는 근거리 경계가 칼선처럼 보이지 않는다.
-            focusedVisionLight.pointLightInnerAngle = Mathf.Max(0f, targetFocusedAngle - 2f * config.focusedVisionEdgeFadeAngle);
+            // 플래시라이트 배율은 안쪽 각도에도 같은 비율로 곱해서, 줄어든 부채꼴도 가장자리 그라데이션 모양이 같다.
+            focusedVisionLight.pointLightInnerAngle =
+                Mathf.Max(0f, classFocusedAngle - 2f * config.focusedVisionEdgeFadeAngle) * flashlightAngleScale;
             focusedVisionLight.shadowSoftness = config.focusedVisionShadowSoftness;
             lastFocusedRadius = targetFocusedRadius;
             lastFocusedAngle = targetFocusedAngle;
@@ -91,6 +100,10 @@ public class PlayerVision : MonoBehaviour
             lastFocusedEdgeFadeAngle = config.focusedVisionEdgeFadeAngle;
             lastFocusedInnerRadiusRatio = config.focusedVisionInnerRadiusRatio;
         }
+
+        // 플래시라이트 없을 때 배율을 0으로 두면 부채꼴을 아예 끈다.
+        bool focusedOn = targetFocusedRadius > 0f && targetFocusedAngle > 0f;
+        if (focusedVisionLight != null && focusedVisionLight.enabled != focusedOn) focusedVisionLight.enabled = focusedOn;
 
         lastLightIntensity = config.visionLightIntensity;
         lastLightFalloff = config.visionLightFalloffStrength;
