@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,12 +15,16 @@ public class InventorySlotUI
     public Image icon;
 }
 
-/// <summary>5칸 인벤토리 + 클래스 고정 무기 슬롯을 화면에 그린다. 선택된 슬롯은 선택용 배경 이미지로
+/// <summary>인벤토리 칸 + 클래스 고정 무기 슬롯을 화면에 그린다. 선택된 슬롯은 선택용 배경 이미지로
 /// 바뀌어 구분되고(ApplySlotBackground), 각 슬롯에는 내용물의 정지 스프라이트 아이콘과 모서리의 작은
-/// 선택 키 번호(1~5)만 표시된다. 무기 슬롯과 숫자 슬롯은 서로 배타적으로만 강조되므로(GameManager.IsWeaponSelected)
-/// 항상 둘 중 하나만 강조된 채로 보인다.</summary>
+/// 선택 키 번호(1부터)만 표시된다. 무기 슬롯과 숫자 슬롯은 서로 배타적으로만 강조되므로(GameManager.IsWeaponSelected)
+/// 항상 둘 중 하나만 강조된 채로 보인다.
+///
+/// 칸 수는 GameManager.InventorySlotCount를 따른다. 씬에 배치한 슬롯(slots)보다 칸이 많으면 마지막 슬롯을 복제해
+/// 같은 크기/배경/번호 스타일의 칸을 더하고, 칸 수가 바뀔 때마다 씬의 칸 간격 그대로 하단 중앙에 다시 늘어놓는다.</summary>
 public class InventoryUI : MonoBehaviour
 {
+    [Tooltip("씬에 배치한 슬롯. 앞의 두 칸 간격이 칸 간격, 마지막 칸이 추가 칸의 복제 원본이 된다.")]
     [SerializeField] private InventorySlotUI[] slots = new InventorySlotUI[0];
 
     [Header("아이템 아이콘")]
@@ -62,12 +67,97 @@ public class InventoryUI : MonoBehaviour
     private readonly System.Collections.Generic.HashSet<InventoryItemType> warnedMissingIcon =
         new System.Collections.Generic.HashSet<InventoryItemType>();
 
+    // 실제로 그리는 칸 목록: 씬의 slots + 칸 수가 늘어 복제해 붙인 칸.
+    private readonly List<InventorySlotUI> slotViews = new List<InventorySlotUI>();
+    private float slotPitch;
+    private int laidOutCount = -1;
+
     private void Awake()
     {
         foreach (InventorySlotUI slot in slots)
         {
             if (slot != null && slot.icon == null && slot.frame != null) slot.icon = CreateIcon(slot);
+            slotViews.Add(slot);
         }
+
+        // 씬에 놓인 앞의 두 칸 간격(현재 183 = 칸 165 + 틈 18)을 그대로 쓴다.
+        if (slots.Length >= 2 && slots[0]?.frame != null && slots[1]?.frame != null)
+        {
+            slotPitch = slots[1].frame.rectTransform.anchoredPosition.x - slots[0].frame.rectTransform.anchoredPosition.x;
+        }
+        else if (slots.Length == 1 && slots[0]?.frame != null)
+        {
+            slotPitch = slots[0].frame.rectTransform.rect.width;
+        }
+    }
+
+    /// <summary>칸 수에 맞게 칸을 더하거나(마지막 칸 복제) 숨기고, 하단 중앙 기준으로 같은 간격으로 늘어놓는다.
+    /// 칸 수가 바뀐 프레임에만 돈다.</summary>
+    private void LayoutSlots(int count)
+    {
+        InventorySlotUI template = slots.Length > 0 ? slots[slots.Length - 1] : null;
+        while (slotViews.Count < count && template?.frame != null)
+        {
+            slotViews.Add(CloneSlot(template, slotViews.Count));
+        }
+
+        int shown = Mathf.Min(count, slotViews.Count);
+        for (int i = 0; i < slotViews.Count; i++)
+        {
+            InventorySlotUI slot = slotViews[i];
+            if (slot?.frame == null) continue;
+
+            bool active = i < shown;
+            slot.frame.gameObject.SetActive(active);
+            if (!active) continue;
+
+            RectTransform rt = slot.frame.rectTransform;
+            rt.anchoredPosition = new Vector2((i - (shown - 1) * 0.5f) * slotPitch, rt.anchoredPosition.y);
+        }
+
+        // 바 자체의 폭도 칸 수에 맞춘다 (칸은 바 가운데 기준이라 위치에는 영향이 없다).
+        if (template?.frame != null && transform is RectTransform bar)
+        {
+            float slotWidth = template.frame.rectTransform.sizeDelta.x;
+            bar.sizeDelta = new Vector2(shown * slotWidth + Mathf.Max(0, shown - 1) * (slotPitch - slotWidth), bar.sizeDelta.y);
+        }
+
+        laidOutCount = count;
+    }
+
+    private InventorySlotUI CloneSlot(InventorySlotUI template, int index)
+    {
+        Transform templateFrame = template.frame.transform;
+        GameObject clone = Instantiate(template.frame.gameObject, templateFrame.parent, false);
+        clone.name = $"Slot{index + 1}Frame";
+
+        InventorySlotUI slot = new InventorySlotUI
+        {
+            frame = clone.GetComponent<Image>(),
+            fill = FindClonePart(template.fill, templateFrame, clone.transform),
+            label = FindClonePart(template.label, templateFrame, clone.transform),
+            icon = FindClonePart(template.icon, templateFrame, clone.transform),
+        };
+        if (slot.fill != null) slot.fill.name = $"Slot{index + 1}Fill";
+        return slot;
+    }
+
+    // 원본 칸 안에서 part가 있던 자리(자식 순서 경로)를 복제본에서 찾는다.
+    private static T FindClonePart<T>(T part, Transform templateRoot, Transform cloneRoot) where T : Component
+    {
+        if (part == null) return null;
+        if (part.transform == templateRoot) return cloneRoot.GetComponent<T>();
+
+        List<int> path = new List<int>();
+        for (Transform t = part.transform; t != null && t != templateRoot; t = t.parent) path.Insert(0, t.GetSiblingIndex());
+
+        Transform current = cloneRoot;
+        foreach (int sibling in path)
+        {
+            if (sibling >= current.childCount) return null;
+            current = current.GetChild(sibling);
+        }
+        return current.GetComponent<T>();
     }
 
     /// <summary>frame 아래에 테두리 안쪽 여백(iconInset)을 둔 아이콘 Image를 만든다. 라벨(키 번호)보다
@@ -98,10 +188,13 @@ public class InventoryUI : MonoBehaviour
 
         bool weaponSelected = GameManager.Instance.IsWeaponSelected;
         int selected = GameManager.Instance.SelectedSlotIndex;
-        int count = Mathf.Min(slots.Length, GameManager.Instance.InventorySlotCount);
+        int slotCount = GameManager.Instance.InventorySlotCount;
+        if (slotCount != laidOutCount) LayoutSlots(slotCount);
+
+        int count = Mathf.Min(slotViews.Count, slotCount);
         for (int i = 0; i < count; i++)
         {
-            InventorySlotUI slot = slots[i];
+            InventorySlotUI slot = slotViews[i];
             if (slot == null) continue;
 
             InventorySlotData data = GameManager.Instance.GetSlot(i);
