@@ -20,7 +20,7 @@ public class InventorySlotUI
 /// 항상 둘 중 하나만 강조된 채로 보인다.</summary>
 public class InventoryUI : MonoBehaviour
 {
-    [SerializeField] private InventorySlotUI[] slots = new InventorySlotUI[GameManager.InventorySlotCount];
+    [SerializeField] private InventorySlotUI[] slots = new InventorySlotUI[0];
 
     [Header("아이템 아이콘")]
     [Tooltip("아이콘 없이 들어온 지뢰(시작 지급/상점 구매)에 쓸 아이콘 - mine-32")]
@@ -98,7 +98,8 @@ public class InventoryUI : MonoBehaviour
 
         bool weaponSelected = GameManager.Instance.IsWeaponSelected;
         int selected = GameManager.Instance.SelectedSlotIndex;
-        for (int i = 0; i < slots.Length; i++)
+        int count = Mathf.Min(slots.Length, GameManager.Instance.InventorySlotCount);
+        for (int i = 0; i < count; i++)
         {
             InventorySlotUI slot = slots[i];
             if (slot == null) continue;

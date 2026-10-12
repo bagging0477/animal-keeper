@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>TruckScene 안의 동물 납품 케이지. 인벤토리에서 현재 선택된(1~5 숫자키) 슬롯이
+/// <summary>TruckScene 안의 동물 납품 케이지. 인벤토리에서 현재 선택된(숫자키) 슬롯이
 /// 동물일 때만 E로 납품한다 - 지뢰/폭탄과 동일하게, 선택되지 않은 슬롯의 동물은 이 지점에서
 /// 상호작용해도 납품되지 않는다.</summary>
 public class AnimalDeliveryPoint : MonoBehaviour

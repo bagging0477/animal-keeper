@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>G키로 현재 선택된 "일반" 인벤토리 슬롯(1~5)의 아이템을 플레이어가 바라보는 방향
+/// <summary>G키로 현재 선택된 "일반" 인벤토리 슬롯(숫자키 칸)의 아이템을 플레이어가 바라보는 방향
 /// 바닥에 내려놓고 슬롯을 비운다. 무기 슬롯(Q)은 GameManager.TryDropSelectedItem이 애초에
 /// 일반 슬롯 배열만 다루므로 대상이 되지 않는다 - 클래스에 고정된 장비라 버릴 수 없다.</summary>
 [RequireComponent(typeof(PlayerMovement))]

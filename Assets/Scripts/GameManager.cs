@@ -6,7 +6,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    public const int InventorySlotCount = 5;
+    /// <summary>config가 아직 연결되지 않았을 때만 쓰이는 인벤토리 기본 칸 수.</summary>
+    private const int FallbackInventoryBaseSlotCount = 5;
 
     /// <summary>config가 아직 연결되지 않았을 때만 쓰이는 안전장치용 기본값.</summary>
     private const int FallbackMaxHealth = 100;
@@ -142,8 +143,9 @@ public class GameManager : MonoBehaviour
         IsGameOver = false;
         IsGameWon = false;
         gameSessionSeedInitialized = false;
-        ResetInventory();
+        // 패시브를 먼저 비워야 ResetInventory가 추가 칸 없이 기본 칸 수로 다시 만든다.
         Passives.Clear();
+        ResetInventory();
         HasSettledCargo = false;
         LastSettlementResult = default;
         NeedsStartingClassSelection = true;
@@ -161,6 +163,7 @@ public class GameManager : MonoBehaviour
         if (!TrySpendMileage(price)) return false;
 
         Passives.Add(passive);
+        GrowInventoryToCapacity();
         return true;
     }
 
@@ -198,7 +201,7 @@ public class GameManager : MonoBehaviour
         // 부상으로 쓰러지면 그동안 주운 동물은 놓치고 돌아간다(지뢰/폭탄은 그대로 유지) -
         // 예전에 IsHeld 동물을 전부 Drop하던 것과 같은 의도를, 이제는 인벤토리의 동물 칸만 비우는
         // 것으로 구현한다.
-        for (int i = 0; i < inventorySlots.Length; i++)
+        for (int i = 0; i < inventorySlots.Count; i++)
         {
             if (inventorySlots[i].Type == InventoryItemType.Animal) inventorySlots[i] = InventorySlotData.Empty;
         }
@@ -393,9 +396,30 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    // 5칸 인벤토리: 동물/지뢰/폭탄이 전부 이 슬롯을 공유해서 나눠 쓴다. 같은 종류라도 절대
+    // 인벤토리: 동물/지뢰/폭탄이 전부 이 슬롯을 공유해서 나눠 쓴다. 같은 종류라도 절대
     // 합쳐지지 않고 슬롯 하나에 1개씩만 들어가므로, 개수가 아니라 점유된 슬롯 수가 곧 소지량이다.
-    private readonly InventorySlotData[] inventorySlots = new InventorySlotData[InventorySlotCount];
+    // 칸 수는 이 리스트 길이 하나뿐이다(InventorySlotCount) - 기본 칸 수(GameBalanceConfig) + 패시브 추가 칸으로
+    // 늘어나기만 하고, 줄어드는 것은 새 게임(ResetGame → ResetInventory)뿐이다.
+    private readonly List<InventorySlotData> inventorySlots = new List<InventorySlotData>();
+
+    /// <summary>지금 인벤토리 칸 수. 슬롯 수가 필요한 곳(숫자키, UI, 범위 확인)은 모두 이 값을 읽는다.</summary>
+    public int InventorySlotCount => inventorySlots.Count;
+
+    private int InventoryCapacityTarget =>
+        Mathf.Max(1, (config != null ? config.inventoryBaseSlotCount : FallbackInventoryBaseSlotCount) + PassiveEffects.ExtraInventorySlots);
+
+    /// <summary>패시브로 칸 수가 늘었으면 뒤에 빈 칸을 붙인다. 기존 칸의 아이템과 선택 상태는 그대로 둔다.
+    /// 목표가 지금보다 작아도(실행 중 config 값을 줄인 경우 등) 줄이지 않는다 - 칸에 든 아이템을 잃지 않게.</summary>
+    private void GrowInventoryToCapacity()
+    {
+        int target = InventoryCapacityTarget;
+        if (target < inventorySlots.Count)
+        {
+            Debug.LogWarning($"GameManager: 인벤토리 목표 칸 수({target})가 지금({inventorySlots.Count})보다 작다 - 새 게임 전까지는 줄이지 않는다.");
+            return;
+        }
+        while (inventorySlots.Count < target) inventorySlots.Add(InventorySlotData.Empty);
+    }
 
     public int SelectedSlotIndex { get; private set; }
 
@@ -407,9 +431,9 @@ public class GameManager : MonoBehaviour
 
     public InventorySlotData GetSlot(int index)
     {
-        if (index < 0 || index >= inventorySlots.Length)
+        if (index < 0 || index >= inventorySlots.Count)
         {
-            Debug.LogWarning($"GameManager.GetSlot: index {index}가 슬롯 범위(0~{inventorySlots.Length - 1})를 벗어났습니다 - 빈 슬롯을 대신 반환합니다.");
+            Debug.LogWarning($"GameManager.GetSlot: index {index}가 슬롯 범위(0~{inventorySlots.Count - 1})를 벗어났습니다 - 빈 슬롯을 대신 반환합니다.");
             return InventorySlotData.Empty;
         }
         return inventorySlots[index];
@@ -431,7 +455,7 @@ public class GameManager : MonoBehaviour
 
     private int FindEmptySlotIndex()
     {
-        for (int i = 0; i < inventorySlots.Length; i++)
+        for (int i = 0; i < inventorySlots.Count; i++)
         {
             if (inventorySlots[i].Type == InventoryItemType.None) return i;
         }
@@ -462,7 +486,7 @@ public class GameManager : MonoBehaviour
     // 아래 네 메서드는 그 값을 그대로 배열 인덱스로 쓰는 유일한 지점들이라 각자 한 번 더 확인해둔다 -
     // 그래야 이 값을 설정하는 경로가 나중에 하나 더 생겨도 IndexOutOfRangeException으로 게임이
     // 죽는 대신 조용히 "아무 일도 없음"으로 처리된다.
-    private bool IsSelectedSlotIndexValid => SelectedSlotIndex >= 0 && SelectedSlotIndex < inventorySlots.Length;
+    private bool IsSelectedSlotIndexValid => SelectedSlotIndex >= 0 && SelectedSlotIndex < inventorySlots.Count;
 
     /// <summary>선택된 슬롯이 지뢰일 때만 소모한다 - 인벤토리 어딘가에 지뢰가 있어도 선택되어 있지
     /// 않으면 아무 일도 일어나지 않는다.</summary>
@@ -498,7 +522,7 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    /// <summary>현재 선택된 "일반" 슬롯(1~5)의 아이템을 꺼내 슬롯을 비운다. 무기 슬롯은 이 배열에
+    /// <summary>현재 선택된 "일반" 슬롯(숫자키 칸)의 아이템을 꺼내 슬롯을 비운다. 무기 슬롯은 이 배열에
     /// 아예 들어있지 않으므로(클래스에 고정된 별도 장비) G로는 절대 버릴 수 없다.</summary>
     public bool TryDropSelectedItem(out InventorySlotData dropped)
     {
@@ -512,9 +536,12 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>새 게임용으로 인벤토리를 기본 칸 수(+ 남아 있는 패시브 추가 칸)의 빈 칸으로 다시 만든다 - 칸 수가 줄어드는
+    /// 유일한 경로. Awake와 ResetGame에서만 부른다.</summary>
     private void ResetInventory()
     {
-        for (int i = 0; i < inventorySlots.Length; i++) inventorySlots[i] = InventorySlotData.Empty;
+        inventorySlots.Clear();
+        GrowInventoryToCapacity();
         SelectedSlotIndex = 0;
         IsWeaponSelected = false;
 

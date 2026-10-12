@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 /// <summary>상점에서 구매하는(현재는 디버그로 기본 지급되는) 1회용 소모품 - 지뢰/폭탄 - 의
 /// 설치/사용을 담당한다. 무기(PlayerWeaponController)와 별개로, 클래스와 상관없이 누구나 쓸 수 있다.
-/// 숫자키 1~5로 인벤토리 슬롯을 고른 뒤, 마우스 클릭으로 그 슬롯의 지뢰/폭탄을 사용한다 - 선택된
+/// 숫자키로 인벤토리 슬롯을 고른 뒤, 마우스 클릭으로 그 슬롯의 지뢰/폭탄을 사용한다 - 선택된
 /// 슬롯이 지뢰/폭탄이 아니면(동물이거나 빈 칸이면) 클릭해도 아무 일도 일어나지 않는다.</summary>
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerGadgetController : MonoBehaviour

@@ -400,6 +400,12 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("화염 스프라이트가 없을 때 대신 쓰는 빨간 원 범위 연출의 색상(알파값이 투명도)")]
     public Color bombEffectColor = new Color(1f, 0f, 0f, 0.5f);
 
+    [Header("인벤토리")]
+    [Tooltip("새 게임을 시작할 때의 인벤토리 칸 수. 패시브(인벤토리 칸 +N)를 사면 이번 판 동안 그만큼 늘어난다. " +
+        "숫자키는 1~9까지만 있어서 9칸이 넘으면 10번째 칸부터는 키로 고를 수 없다.")]
+    [Range(1, 9)]
+    public int inventoryBaseSlotCount = 5;
+
     [Header("소모품 - 디버그 시작 보유량")]
     [Tooltip("디버그용으로 게임 시작 시 기본으로 지급되는 지뢰 개수 (상점 구매 로직 완성 전 테스트용)")]
     public int debugStartingMineCount = 2;
