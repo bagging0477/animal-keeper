@@ -35,7 +35,7 @@ public class AnimalTurtle : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
     private AnimalSleep turtleSleep;
 
     // 도주가 "막혔다"고 볼 때까지 기다리는 시간. 도주 첫 물리 스텝은 아직 움직이지 않은 것으로 재므로 바로 숨지 않게 한다.
-    private const float BlockedGraceTime = 0.3f;
+    private const float BlockedGraceTime = 0.15f;
 
     public TurtleState State =>
         shell == Shell.Hidden ? TurtleState.Hidden
