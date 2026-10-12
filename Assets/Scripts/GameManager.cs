@@ -143,9 +143,25 @@ public class GameManager : MonoBehaviour
         IsGameWon = false;
         gameSessionSeedInitialized = false;
         ResetInventory();
+        Passives.Clear();
         HasSettledCargo = false;
         LastSettlementResult = default;
         NeedsStartingClassSelection = true;
+    }
+
+    /// <summary>이번 판에 산 패시브. ResetDay()("다음 날로")와 씬 전환에서는 유지되고 ResetGame()에서만 비워진다.
+    /// 효과는 PassiveEffects로 조회한다.</summary>
+    public RunPassives Passives { get; } = new RunPassives();
+
+    /// <summary>마일리지를 내고 패시브를 1회 산다. 이미 maxPurchases번 샀거나 마일리지가 모자라면 아무것도 바꾸지 않고
+    /// false - 마일리지 차감과 패시브 추가는 항상 함께 일어난다.</summary>
+    public bool TryPurchasePassive(PassiveDefinition passive, int price, int maxPurchases)
+    {
+        if (passive == null || Passives.GetPurchaseCount(passive) >= maxPurchases) return false;
+        if (!TrySpendMileage(price)) return false;
+
+        Passives.Add(passive);
+        return true;
     }
 
     /// <summary>true면 TruckScene(첫 순찰)에 들어가기 전에 반드시 ClassSelectScene에서 시작 클래스를

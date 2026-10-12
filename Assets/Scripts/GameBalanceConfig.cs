@@ -436,6 +436,36 @@ public class GameBalanceConfig : ScriptableObject
         return 0;
     }
 
+    [Header("패시브 가격 / 최대 구매 횟수")]
+    [Tooltip("패시브 강화 상인에게서 파는 패시브(PassiveDefinition)마다 가격과 이번 판 최대 구매 횟수. " +
+        "여기 없는 패시브는 상점 목록에 있어도 살 수 없다.")]
+    public List<PassivePrice> passivePrices = new List<PassivePrice>();
+
+    [Serializable]
+    public class PassivePrice
+    {
+        public PassiveDefinition passive;
+        public int price;
+        [Min(0)] public int maxPurchases = 1;
+    }
+
+    /// <summary>passive의 가격/최대 구매 횟수 항목. 없으면 에러를 남기고 false.</summary>
+    public bool TryGetPassivePrice(PassiveDefinition passive, out PassivePrice entry)
+    {
+        foreach (PassivePrice candidate in passivePrices)
+        {
+            if (candidate != null && candidate.passive == passive)
+            {
+                entry = candidate;
+                return true;
+            }
+        }
+
+        Debug.LogError($"{name}: 패시브 '{(passive != null ? passive.name : "null")}'의 가격이 passivePrices에 없다 - 살 수 없다.");
+        entry = null;
+        return false;
+    }
+
     public int GetClassMaxHealthPercent(PlayerClass playerClass) => playerClass switch
     {
         PlayerClass.Scout => scoutMaxHealthPercent,
