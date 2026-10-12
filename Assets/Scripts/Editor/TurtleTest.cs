@@ -155,7 +155,7 @@ public static class TurtleTest
         failures = new List<string>();
         config = AssetDatabase.LoadAssetAtPath<GameBalanceConfig>(ConfigPath);
         sb.AppendLine($"TurtleTest {System.DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-        sb.AppendLine($"설정: 감지 {config.turtleDetectRadius}, 놀람 {config.turtleAlertDuration}s, 도주 거리 {config.turtleFleeDistance}, 도주 속도 = 걷기 x {config.turtleFleeSpeedMultiplier}, " +
+        sb.AppendLine($"설정: 감지 {config.turtleDetectRadius}, 놀람 {config.turtleAlertDuration}s, 도주 거리 {config.turtleFleeDistance}, 배회 속도 {config.turtleWanderSpeed}, 도주 속도 {config.turtleFleeSpeed}, " +
                       $"숨음 반경 {config.turtleHideRadius}, 나오기 이탈 {config.turtleEmergeDelay}s, 최대 숨음 {config.turtleMaxHiddenTime}s, 마취 연동 {config.turtleSleepInterruptsHiding}, " +
                       $"스폰 확률 {config.turtleSpawnChance}, 무게 {config.turtleMinWeight}~{config.turtleMaxWeight}");
 
@@ -259,13 +259,35 @@ public static class TurtleTest
         GameObject player = Player();
         PlayerMovement pm = player.GetComponent<PlayerMovement>();
 
-        // --- 스프린트로 다가가되 E는 누르지 않는다: Wander → Alert → Flee → Hidden
+        // --- 배회 속도: 플레이어에게서 멀리 두고 5초 동안 0.25초 구간 이동 속도의 최댓값을 잰다
+        {
+            Teleport(player, lane.Start);
+            AnimalTurtle wanderer = SpawnTurtle(lane.Start + lane.Dir * 12f);
+            yield return WaitFrames(3);
+            float maxWander = 0f;
+            Vector2 last = wanderer.transform.position;
+            float windowStart = Time.time;
+            float until = Time.time + 5f;
+            while (Time.time < until)
+            {
+                yield return WaitFrames(1);
+                if (Time.time - windowStart < 0.25f) continue;
+                maxWander = Mathf.Max(maxWander, Vector2.Distance(last, wanderer.transform.position) / (Time.time - windowStart));
+                last = wanderer.transform.position;
+                windowStart = Time.time;
+            }
+            Check(wanderer.State == AnimalTurtle.TurtleState.Wander && maxWander > 0.05f && maxWander <= config.turtleWanderSpeed + 0.02f,
+                $"배회 최고 속도 {maxWander:0.000} (설정 {config.turtleWanderSpeed})");
+            Object.Destroy(wanderer.gameObject);
+        }
+
+        // --- 스프린트로 다가가되 E는 누르지 않는다(2.5칸 앞에서 멈춤): Wander → Alert → Flee → Hidden
         Teleport(player, lane.Start);
         yield return WaitFull(pm);
         AnimalTurtle turtle = SpawnTurtle(lane.Start + lane.Dir * 7f);
         yield return WaitFrames(3);
         List<string> trace = new List<string>();
-        yield return Approach(turtle, lane, sprint: true, pressE: false, until: t => t.State == AnimalTurtle.TurtleState.Hidden, trace, timeout: 6f);
+        yield return Approach(turtle, lane, sprint: true, pressE: false, until: t => t.State == AnimalTurtle.TurtleState.Hidden, trace, timeout: 20f, stopAt: 2.5f);
         sb.AppendLine("  스프린트 접근(E 안 누름): " + string.Join(" → ", trace));
         Check(trace.Select(s => s.Split(' ')[0]).SequenceEqual(new[] { "Wander", "Alert", "Flee", "Hidden" }), "Wander→Alert→Flee→Hidden 순서");
 
@@ -301,7 +323,7 @@ public static class TurtleTest
         yield return WaitFull(pm);
         turtle = SpawnTurtle(lane.Start + lane.Dir * 7f);
         yield return WaitFrames(3);
-        yield return Approach(turtle, lane, sprint: true, pressE: false, until: t => t.State == AnimalTurtle.TurtleState.Hidden, null, timeout: 6f);
+        yield return Approach(turtle, lane, sprint: true, pressE: false, until: t => t.State == AnimalTurtle.TurtleState.Hidden, null, timeout: 20f, stopAt: 2.5f);
         Teleport(player, (Vector2)turtle.transform.position - lane.Dir * 2f);
         trace.Clear();
         yield return Watch(turtle, t => t.State == AnimalTurtle.TurtleState.Wander || t.State == AnimalTurtle.TurtleState.Alert, trace, config.turtleMaxHiddenTime + 5f);
@@ -320,7 +342,11 @@ public static class TurtleTest
         yield return Watch(turtle, t => t.State == AnimalTurtle.TurtleState.Hidden, trace, 4f);
         sb.AppendLine("  사방이 막힌 자리에서 놀람: " + string.Join(" → ", trace));
         float fleeAt = ParseTime(trace, "Flee"), hideAt = ParseTime(trace, "Hidden");
-        Check(turtle.State == AnimalTurtle.TurtleState.Hidden && hideAt - fleeAt < 0.4f, $"막히면 도주 {hideAt - fleeAt:0.00}초 만에 숨음 (에러 없이)");
+        // 벽(두께 0.2)에 몸이 닿을 때까지는 움직이고, 닿은 뒤 0.3초 안에 숨어야 한다.
+        float gapToWall = 0.85f - 0.1f - config.turtlePrefab.GetComponent<CircleCollider2D>().radius * config.turtlePrefab.transform.localScale.x;
+        float allowed = gapToWall / config.turtleFleeSpeed + 0.4f;
+        Check(turtle.State == AnimalTurtle.TurtleState.Hidden && hideAt - fleeAt < allowed,
+            $"막히면 도주 {hideAt - fleeAt:0.00}초 만에 숨음 (벽까지 {gapToWall:0.00}칸 이동 포함, 기준 {allowed:0.00}초, 에러 없이)");
 
         // --- 숨은 중 마취: 바로 들 수 있고, 깨면 배회
         AnimalSleep sleep = turtle.GetComponent<AnimalSleep>();
@@ -400,9 +426,9 @@ public static class TurtleTest
                     yield return Approach(turtle, lane, sprint, pressE: true,
                         until: t => !t.gameObject.activeSelf || t.State == AnimalTurtle.TurtleState.Hidden, null, 6f, stats);
                     bool caught = !turtle.gameObject.activeSelf;
-                    sb.AppendLine($"  {(withShoes ? "러닝화" : "기본")} {c,-7} {(sprint ? "스프린트" : "걷기   ")} 플레이어 {playerSpeed:0.000} / 거북이 도주 {stats.TurtleFleeSpeed:0.000} (설정 {pm.WalkSpeed * config.turtleFleeSpeedMultiplier:0.000}) " +
+                    sb.AppendLine($"  {(withShoes ? "러닝화" : "기본")} {c,-7} {(sprint ? "스프린트" : "걷기   ")} 플레이어 {playerSpeed:0.000} / 거북이 도주 {stats.TurtleFleeSpeed:0.000} (설정 {config.turtleFleeSpeed:0.000}) " +
                                   $"| 놀람 순간 거리 {stats.DistanceAtAlert:0.00}, 도주 시작 거리 {stats.DistanceAtFlee:0.00}, 최소 거리 {stats.MinDistance:0.00} → {(caught ? $"잡음 ({stats.CaughtState})" : "못 잡음 (숨음)")}");
-                    Check(caught == sprint, $"{(withShoes ? "러닝화 " : "")}{c} {(sprint ? "스프린트는 잡음" : "걷기는 못 잡음")}");
+                    Check(caught == playerSpeed > config.turtleFleeSpeed, $"{(withShoes ? "러닝화 " : "")}{c} {(sprint ? "스프린트" : "걷기")} {playerSpeed:0.00} {(playerSpeed > config.turtleFleeSpeed ? "> 도주 속도라 잡음" : "<= 도주 속도라 못 잡음")}");
                     if (!caught) Object.Destroy(turtle.gameObject);
                     DeliverHeldAnimals(gm);
                 }
@@ -432,7 +458,7 @@ public static class TurtleTest
         GameObject player = Player();
         Teleport(player, (Vector2)turtle.transform.position + Vector2.left * 3f);
         List<string> trace = new List<string>();
-        yield return Watch(turtle, t => t.State == AnimalTurtle.TurtleState.Hidden, trace, 6f);
+        yield return Watch(turtle, t => t.State == AnimalTurtle.TurtleState.Hidden, trace, 15f);
         sb.AppendLine($"  {id}: " + string.Join(" → ", trace));
         Vector3 savedPos = turtle.transform.position;
         AnimalTurtle.TurtleState savedState = turtle.State;
@@ -451,7 +477,7 @@ public static class TurtleTest
     // ================= 도구 =================
 
     private static IEnumerator Approach(AnimalTurtle turtle, Lane lane, bool sprint, bool pressE, System.Func<AnimalTurtle, bool> until,
-        List<string> trace, float timeout, CatchStats stats = null)
+        List<string> trace, float timeout, CatchStats stats = null, float stopAt = 0f)
     {
         GameObject player = Player();
         Key move = lane.Dir.x > 0 ? Key.D : Key.A;
@@ -481,8 +507,10 @@ public static class TurtleTest
             }
 
             eDown = pressE && d <= PickupReach && turtle.CanBePickedUp && !eDown;
-            List<Key> keys = new List<Key> { move };
-            if (sprint) keys.Add(Key.LeftShift);
+            // stopAt 안으로 들어오면 멈춰 선다 - 거북이가 플레이어보다 느려서, 계속 달리면 지나쳐 버려 도주 방향이 뒤집힌다.
+            List<Key> keys = new List<Key>();
+            if (d > stopAt) keys.Add(move);
+            if (sprint && d > stopAt) keys.Add(Key.LeftShift);
             if (eDown) keys.Add(Key.E);
             InputSystem.QueueStateEvent(vkb, new KeyboardState(keys.ToArray()));
             yield return WaitFrames(1);

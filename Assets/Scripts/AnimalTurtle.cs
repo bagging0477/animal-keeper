@@ -4,8 +4,8 @@ using UnityEngine;
 /// 거북이. 배회/놀람/도주는 AnimalFlee(고양이와 같은 코드)를 그대로 쓰고, 도주를 정해진 거리만큼 마치면 등껍질 속에 숨는다.
 /// Wander → (감지 반경) Alert → Flee → Hidden → Emerge → Wander. 값은 모두 GameBalanceConfig의 "동물 - 거북이".
 ///
-/// - 도주 속도는 지금 플레이어의 걷기 속도(PlayerMovement.WalkSpeed, 클래스·러닝화 포함) x turtleFleeSpeedMultiplier라서,
-///   걷기로는 못 따라잡고 스프린트로는 따라잡는다. 놀람(turtleAlertDuration) 동안은 제자리에 있다.
+/// - 배회/도주 속도는 거북이 전용 고정값(turtleWanderSpeed, turtleFleeSpeed)이라 다른 동물보다 훨씬 느리다.
+///   놀람(turtleAlertDuration) 동안은 제자리에 있다.
 /// - 사방이 막혀 도망칠 방향이 없거나, 막혀서 실제로 못 움직이면 바로 숨는다.
 /// - 숨은 동안(나오는 중 포함)은 들 수 없고, E를 누르면 쿨다운을 두고 자막으로 알려준다(IAnimalPickupGate).
 /// - 마취(수면)에 맞으면 도주/숨기를 바로 멈추고 잠들어 들 수 있다(turtleSleepInterruptsHiding). 깨면 배회로 돌아간다.
@@ -31,7 +31,6 @@ public class AnimalTurtle : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
     private Vector2 fleeStart;
     private float fleeTime;
     private float blockedTime;
-    private PlayerMovement playerMovement;
     private AnimalSleep turtleSleep;
 
     // 도주가 "막혔다"고 볼 때까지 기다리는 시간. 도주 첫 물리 스텝은 아직 움직이지 않은 것으로 재므로 바로 숨지 않게 한다.
@@ -59,25 +58,13 @@ public class AnimalTurtle : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
     protected override float AlertRange => DetectRadius;
     protected override float AlertDuration => config != null ? config.turtleAlertDuration : 0.65f;
 
-    protected override float FleeSpeed
-    {
-        get
-        {
-            float walk = playerMovement != null ? playerMovement.WalkSpeed : config != null ? config.playerMoveSpeed : 3.75f;
-            return walk * (config != null ? config.turtleFleeSpeedMultiplier : 1.05f);
-        }
-    }
+    protected override float WanderSpeed => config != null ? config.turtleWanderSpeed : 0.3f;
+    protected override float FleeSpeed => config != null ? config.turtleFleeSpeed : 0.5f;
 
     protected override void Awake()
     {
         base.Awake();
         turtleSleep = GetComponent<AnimalSleep>();
-    }
-
-    protected override void Start()
-    {
-        base.Start();
-        if (Player != null) playerMovement = Player.GetComponent<PlayerMovement>();
     }
 
     public bool TryGetWeightRange(out int min, out int max)

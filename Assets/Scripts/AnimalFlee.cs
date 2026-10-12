@@ -28,7 +28,7 @@ public class AnimalFlee : MonoBehaviour
     [Header("애니메이션 - 실제로 이 속도 이상 움직이고 있을 때만 Walk/Flee 프레임을 재생한다")]
     [SerializeField] private float minMovingSpeed = 0.05f;
 
-    private float WanderSpeed => config != null ? config.animalWanderSpeed : 1.0f;
+    protected virtual float WanderSpeed => config != null ? config.animalWanderSpeed : 1.0f;
 
     // ---- 상속(거북이 AnimalTurtle 등)이 바꿀 수 있는 값과 시점. 기본 구현은 고양이/레서판다의 예전 동작 그대로다. ----
 

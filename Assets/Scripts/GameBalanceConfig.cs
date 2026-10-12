@@ -342,9 +342,11 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("한 번 도망칠 때 움직이는 거리(칸). 다 가면 등껍질 속에 숨는다.")]
     public float turtleFleeDistance = 4f;
 
-    [Tooltip("도주 속도 = 지금 플레이어의 걷기 속도(클래스·러닝화 포함) x 이 값. 1보다 크고 스프린트 배율(스카우트 1.1, 트래퍼/거너 1.3)보다 작아야 " +
-        "걷기로는 못 따라잡고 스프린트로는 따라잡는다.")]
-    public float turtleFleeSpeedMultiplier = 1.05f;
+    [Tooltip("거북이가 평소 배회할 때의 이동속도 (다른 동물은 animalWanderSpeed)")]
+    public float turtleWanderSpeed = 0.3f;
+
+    [Tooltip("거북이가 도망칠 때의 이동속도 (고정값 - 플레이어 속도와 무관)")]
+    public float turtleFleeSpeed = 0.5f;
 
     [Tooltip("숨어 있는 동안 플레이어가 이 거리(칸) 밖에 turtleEmergeDelay초 있으면 나온다")]
     public float turtleHideRadius = 5f;

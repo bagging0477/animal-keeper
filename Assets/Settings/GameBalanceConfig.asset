@@ -95,7 +95,8 @@ MonoBehaviour:
   turtleDetectRadius: 5
   turtleAlertDuration: 0.65
   turtleFleeDistance: 4
-  turtleFleeSpeedMultiplier: 1.05
+  turtleWanderSpeed: 0.3
+  turtleFleeSpeed: 0.5
   turtleHideRadius: 5
   turtleEmergeDelay: 3
   turtleMaxHiddenTime: 15
