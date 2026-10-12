@@ -145,6 +145,8 @@ public static class ShopPurchase
     {
         if (string.IsNullOrEmpty(word)) return word;
         char last = word[word.Length - 1];
+        // 숫자로 끝나면 읽는 소리(영 일 이 삼 사 오 육 칠 팔 구)의 받침으로 고른다 - "인벤토리 칸 +1을".
+        if (last >= '0' && last <= '9') return word + ("0136780".IndexOf(last) >= 0 ? "을" : "를");
         if (last < '가' || last > '힣') return word + "을(를)";
         return word + ((last - '가') % 28 != 0 ? "을" : "를");
     }

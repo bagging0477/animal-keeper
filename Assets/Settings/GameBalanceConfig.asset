@@ -112,6 +112,7 @@ MonoBehaviour:
   bombRadius: 3
   bombEffectDisplayDuration: 0.45
   bombEffectColor: {r: 1, g: 0, b: 0, a: 0.5}
+  inventoryBaseSlotCount: 5
   debugStartingMineCount: 2
   debugStartingBombCount: 1
   shopItemPrices:
@@ -124,4 +125,7 @@ MonoBehaviour:
   passivePrices:
   - passive: {fileID: 11400000, guid: 9af6b4841362a6f46abb0cdd2374dc5d, type: 2}
     price: 200
+    maxPurchases: 1
+  - passive: {fileID: 11400000, guid: 476fed807022a4d4b80f0e89030a97e6, type: 2}
+    price: 500
     maxPurchases: 1

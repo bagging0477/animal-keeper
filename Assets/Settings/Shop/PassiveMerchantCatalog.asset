@@ -17,3 +17,4 @@ MonoBehaviour:
   entries: []
   passives:
   - {fileID: 11400000, guid: 9af6b4841362a6f46abb0cdd2374dc5d, type: 2}
+  - {fileID: 11400000, guid: 476fed807022a4d4b80f0e89030a97e6, type: 2}

@@ -9,6 +9,7 @@ public static class PassiveIconGenerator
 {
     public const string Folder = "Assets/Sprites/Items";
     public const string RunningShoesPath = Folder + "/RunningShoes_placeholder.png";
+    public const string InventorySlotPath = Folder + "/InventorySlot_placeholder.png";
 
     private const int Grid = 32;   // 32x32 칸에 그리고
     private const int Scale = 2;   // 2배로 늘려 64x64 PNG로 저장
@@ -21,24 +22,37 @@ public static class PassiveIconGenerator
     private static readonly Color32 UpperShade = new Color32(40, 100, 175, 255);
     private static readonly Color32 Stripe = new Color32(255, 200, 60, 255);
     private static readonly Color32 Lace = new Color32(250, 250, 250, 255);
+    private static readonly Color32 Bag = new Color32(176, 118, 64, 255);
+    private static readonly Color32 BagShade = new Color32(132, 84, 44, 255);
+    private static readonly Color32 Strap = new Color32(96, 60, 32, 255);
+    private static readonly Color32 Buckle = new Color32(230, 200, 90, 255);
+    private static readonly Color32 PlusBadge = new Color32(70, 170, 80, 255);
+    private static readonly Color32 PlusMark = new Color32(250, 250, 250, 255);
+
+    private delegate void Painter(System.Action<int, int, Color32> set);
 
     [MenuItem("Tools/Items/Generate Placeholder Passive Icons")]
     public static void GenerateAll()
     {
-        Sprite sprite = EnsureRunningShoesIcon();
-        Debug.Log($"[PassiveIconGenerator] {RunningShoesPath}: {(sprite != null ? "준비됨" : "실패")}");
+        Debug.Log($"[PassiveIconGenerator] {RunningShoesPath}: {(EnsureRunningShoesIcon() != null ? "준비됨" : "실패")}");
+        Debug.Log($"[PassiveIconGenerator] {InventorySlotPath}: {(EnsureInventorySlotIcon() != null ? "준비됨" : "실패")}");
     }
 
     /// <summary>러닝화 임시 아이콘 스프라이트. 없으면 그려서 저장한다.</summary>
-    public static Sprite EnsureRunningShoesIcon()
+    public static Sprite EnsureRunningShoesIcon() => EnsureIcon(RunningShoesPath, PaintRunningShoes);
+
+    /// <summary>인벤토리 칸 +1 임시 아이콘 스프라이트. 없으면 그려서 저장한다.</summary>
+    public static Sprite EnsureInventorySlotIcon() => EnsureIcon(InventorySlotPath, PaintInventorySlot);
+
+    private static Sprite EnsureIcon(string path, Painter paint)
     {
-        if (!File.Exists(RunningShoesPath))
+        if (!File.Exists(path))
         {
             Directory.CreateDirectory(Folder);
-            File.WriteAllBytes(RunningShoesPath, DrawRunningShoes().EncodeToPNG());
-            AssetDatabase.ImportAsset(RunningShoesPath);
+            File.WriteAllBytes(path, Draw(paint).EncodeToPNG());
+            AssetDatabase.ImportAsset(path);
 
-            TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(RunningShoesPath);
+            TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(path);
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Single;
             importer.filterMode = FilterMode.Point;
@@ -47,20 +61,12 @@ public static class PassiveIconGenerator
             importer.alphaIsTransparency = true;
             importer.SaveAndReimport();
         }
-        return AssetDatabase.LoadAssetAtPath<Sprite>(RunningShoesPath);
+        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
     }
 
-    // 오른쪽을 보는 운동화 옆모습: 밑창 / 흰 중창 / 파란 갑피 + 노란 줄 / 흰 끈, 마지막에 바깥 테두리.
-    private static Texture2D DrawRunningShoes()
+    // 오른쪽을 보는 운동화 옆모습: 밑창 / 흰 중창 / 파란 갑피 + 노란 줄 / 흰 끈.
+    private static void PaintRunningShoes(System.Action<int, int, Color32> Set)
     {
-        Color32[] px = new Color32[Grid * Grid];
-        for (int i = 0; i < px.Length; i++) px[i] = Clear;
-
-        void Set(int x, int y, Color32 c)
-        {
-            if (x >= 0 && x < Grid && y >= 0 && y < Grid) px[y * Grid + x] = c;
-        }
-
         // 밑창 (앞코가 살짝 들린다)
         for (int x = 4; x <= 27; x++) Set(x, 6, Sole);
         for (int x = 3; x <= 28; x++) Set(x, 7, Sole);
@@ -96,8 +102,52 @@ public static class PassiveIconGenerator
             int y = 19 - i;
             Set(x, y, Lace); Set(x + 1, y, Lace);
         }
+    }
 
-        // 바깥 테두리: 빈 칸 중 채워진 칸에 닿은 곳
+    // 정면 배낭 + 오른쪽 아래 초록 "+" 배지.
+    private static void PaintInventorySlot(System.Action<int, int, Color32> Set)
+    {
+        // 손잡이 고리
+        for (int x = 12; x <= 19; x++) Set(x, 27, Strap);
+        Set(11, 26, Strap); Set(11, 25, Strap); Set(20, 26, Strap); Set(20, 25, Strap);
+
+        // 몸통 (모서리를 깎은 사각형)
+        for (int y = 4; y <= 24; y++)
+        {
+            int inset = y == 4 || y == 24 ? 1 : 0;
+            for (int x = 6 + inset; x <= 25 - inset; x++) Set(x, y, x >= 22 ? BagShade : Bag);
+        }
+
+        // 덮개와 앞주머니
+        for (int x = 6; x <= 25; x++) { Set(x, 17, BagShade); Set(x, 18, BagShade); }
+        for (int y = 7; y <= 13; y++)
+            for (int x = 10; x <= 21; x++) Set(x, y, y == 13 || x == 10 || x == 21 ? Strap : BagShade);
+
+        // 끈과 버클
+        for (int y = 14; y <= 22; y++) { Set(12, y, Strap); Set(19, y, Strap); }
+        Set(12, 16, Buckle); Set(19, 16, Buckle);
+
+        // "+" 배지
+        for (int y = 1; y <= 10; y++)
+            for (int x = 20; x <= 29; x++)
+            {
+                int dx = x - 24, dy = y - 5;
+                if (dx * dx + dy * dy <= 22) Set(x, y, PlusBadge);
+            }
+        for (int i = -3; i <= 3; i++) { Set(24 + i, 5, PlusMark); Set(24, 5 + i, PlusMark); }
+        for (int i = -3; i <= 3; i++) { Set(25 + i, 5, PlusMark); Set(25, 5 + i, PlusMark); }
+    }
+
+    // 그린 뒤 바깥 테두리(빈 칸 중 채워진 칸에 닿은 곳)를 두르고 Scale배로 늘린다.
+    private static Texture2D Draw(Painter paint)
+    {
+        Color32[] px = new Color32[Grid * Grid];
+        for (int i = 0; i < px.Length; i++) px[i] = Clear;
+        paint((x, y, c) =>
+        {
+            if (x >= 0 && x < Grid && y >= 0 && y < Grid) px[y * Grid + x] = c;
+        });
+
         Color32[] filled = (Color32[])px.Clone();
         for (int y = 0; y < Grid; y++)
         {
