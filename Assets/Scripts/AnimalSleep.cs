@@ -37,6 +37,13 @@ public class AnimalSleep : MonoBehaviour, ISleepable
         if (asleepTimer > 0f) asleepTimer -= Time.deltaTime;
     }
 
+    /// <summary>잠들어 있거나 잠들 예정이면 바로 깨운다(숨은 거북이처럼 마취가 듣지 않는 상태용).</summary>
+    public void WakeUp()
+    {
+        sleepPending = false;
+        asleepTimer = 0f;
+    }
+
     public void PutToSleep(float delay, float duration)
     {
         sleepPending = true;

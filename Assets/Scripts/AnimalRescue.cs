@@ -51,6 +51,9 @@ public class AnimalRescue : MonoBehaviour
 
     private Transform player;
 
+    // 줍기를 잠시 막는 행동 스크립트(숨은 거북이 등). 없으면 언제나 주울 수 있다.
+    private IAnimalPickupGate pickupGate;
+
     // OnDestroy에서 "세계에 남아있던(주운 적 없는) 동물인지"를 gameObject.activeInHierarchy로 판단하지
     // 않고 직접 관리한다 - 씬 언로드로 인한 파괴 시퀀스 도중에는 activeInHierarchy가 실제 상태와 다르게
     // (예: 아직 세계에 남아 활동 중이던 동물인데도 false로) 나올 수 있어서, 저장해야 할 위치를
@@ -62,7 +65,15 @@ public class AnimalRescue : MonoBehaviour
     // 먼저 실행된 뒤 나중에 실행되는 Start()의 무작위 굴림이 그 값을 덮어써 버리는 회귀가 생긴다.
     private void Awake()
     {
-        Weight = Random.Range(minWeight, maxWeight + 1); // inclusive
+        // 거북이처럼 무게 범위를 GameBalanceConfig에서 받는 동물은 그 범위를 쓴다. Random 호출 수는 같다.
+        int weightMin = minWeight, weightMax = maxWeight;
+        if (GetComponent<IAnimalWeightRange>() is IAnimalWeightRange range && range.TryGetWeightRange(out int rangeMin, out int rangeMax))
+        {
+            weightMin = rangeMin;
+            weightMax = rangeMax;
+        }
+        Weight = Random.Range(weightMin, weightMax + 1); // inclusive
+        pickupGate = GetComponent<IAnimalPickupGate>();
         BehaviorKind = GetComponent<AnimalSoundFlee>() != null ? AnimalBehaviorKind.SoundFlee
             : GetComponent<AnimalFlee>() != null ? AnimalBehaviorKind.Flee
             : AnimalBehaviorKind.Wander;
@@ -163,14 +174,17 @@ public class AnimalRescue : MonoBehaviour
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
-        if (inRange && GameManager.Instance.HasInventorySpace) SubtitleManager.Show("E를 눌러 구조하세요", SubtitleManager.WhileInRange);
+        bool blocked = pickupGate != null && !pickupGate.CanBePickedUp;
+        if (inRange && !blocked && GameManager.Instance.HasInventorySpace) SubtitleManager.Show("E를 눌러 구조하세요", SubtitleManager.WhileInRange);
 
         if (!inRange) return;
 
         Keyboard kb = GameplayInput.IsBlocked ? null : Keyboard.current;
         if (kb != null && kb.eKey.wasPressedThisFrame)
         {
-            PickUp();
+            // 줍지 못하는 상태에서 E를 누르면 아무 반응 없이 넘어가지 않고 그 이유를 알려준다.
+            if (blocked) pickupGate.OnPickupBlocked();
+            else PickUp();
         }
     }
 

@@ -322,6 +322,49 @@ public class GameBalanceConfig : ScriptableObject
         "평소 배회 속도와 확실히 구분되도록 기존 값(2.5)보다 35% 빠르게 잡았다.")]
     public float animalFleeSpeed = 3.375f;
 
+    [Header("동물 - 거북이 (AnimalTurtle)")]
+    [Tooltip("스폰 풀에 더하는 거북이 프리팹 (VillageMapGenerator.animalPrefabs와 따로 둔다)")]
+    public GameObject turtlePrefab;
+
+    [Tooltip("스폰되는 동물 한 마리가 거북이일 확률 (0~1). 나머지는 기존 동물 풀에서 균등하게 뽑는다 - 총 마리 수는 그대로.")]
+    [Range(0f, 1f)]
+    public float turtleSpawnChance = 0.12f;
+
+    [Tooltip("체크하면 한 줄 배치에서도 거북이가 나온다. 끄면 격자 배치에서만 나오고, 한 줄 배치는 예전과 같은 결과가 나온다.")]
+    public bool turtleSpawnInLinearMode = false;
+
+    [Tooltip("플레이어가 이 거리(칸) 안에 들어오면 놀란 뒤 도망친다")]
+    public float turtleDetectRadius = 5f;
+
+    [Tooltip("놀란 뒤 도망치기 시작할 때까지의 시간(초). 도주 속도가 걷기보다 빨라서, 이 틈에 스프린트로 다가가야 잡을 수 있다.")]
+    public float turtleAlertDuration = 0.65f;
+
+    [Tooltip("한 번 도망칠 때 움직이는 거리(칸). 다 가면 등껍질 속에 숨는다.")]
+    public float turtleFleeDistance = 4f;
+
+    [Tooltip("도주 속도 = 지금 플레이어의 걷기 속도(클래스·러닝화 포함) x 이 값. 1보다 크고 스프린트 배율(스카우트 1.1, 트래퍼/거너 1.3)보다 작아야 " +
+        "걷기로는 못 따라잡고 스프린트로는 따라잡는다.")]
+    public float turtleFleeSpeedMultiplier = 1.05f;
+
+    [Tooltip("숨어 있는 동안 플레이어가 이 거리(칸) 밖에 turtleEmergeDelay초 있으면 나온다")]
+    public float turtleHideRadius = 5f;
+
+    [Tooltip("플레이어가 숨음 반경 밖에 이만큼(초) 계속 있으면 나온다")]
+    public float turtleEmergeDelay = 3f;
+
+    [Tooltip("플레이어가 계속 가까이 있어도 이만큼(초) 숨어 있으면 나온다")]
+    public float turtleMaxHiddenTime = 15f;
+
+    [Tooltip("체크하면 마취(수면)에 맞았을 때 도주/숨기를 바로 멈추고 잠들어 들 수 있다. 끄면 도망치거나 숨어 있는 동안은 마취가 듣지 않는다.")]
+    public bool turtleSleepInterruptsHiding = true;
+
+    [Tooltip("숨은 거북이에게 E를 눌렀을 때 자막을 다시 띄울 수 있을 때까지의 시간(초)")]
+    public float turtleHiddenMessageCooldown = 2f;
+
+    [Tooltip("거북이 무게 범위 (임시값 - 다른 동물은 1~10)")]
+    public int turtleMinWeight = 4;
+    public int turtleMaxWeight = 11;
+
     /// <summary>스카우트의 기본(걷기) 이동속도. 몬스터 추격 속도(고정값)에 scoutMoveSpeedMultiplier를 곱해 구한다.</summary>
     public float ScoutMoveSpeed => monsterChaseSpeed * scoutMoveSpeedMultiplier;
 

@@ -29,7 +29,44 @@ public class AnimalFlee : MonoBehaviour
     [SerializeField] private float minMovingSpeed = 0.05f;
 
     private float WanderSpeed => config != null ? config.animalWanderSpeed : 1.0f;
-    private float FleeSpeed => config != null ? config.animalFleeSpeed : 3.375f;
+
+    // ---- 상속(거북이 AnimalTurtle 등)이 바꿀 수 있는 값과 시점. 기본 구현은 고양이/레서판다의 예전 동작 그대로다. ----
+
+    /// <summary>플레이어가 이 거리 안에 들어오면 놀란다.</summary>
+    protected virtual float AlertRange => alertRange;
+
+    /// <summary>놀란 뒤 도망치기 시작할 때까지의 시간.</summary>
+    protected virtual float AlertDuration => alertDuration;
+
+    protected virtual float FleeSpeed => config != null ? config.animalFleeSpeed : 3.375f;
+
+    /// <summary>도주 중 매 프레임 묻는다. true면 OnStopFleeing을 부르고 이번 프레임은 움직이지 않는다.</summary>
+    protected virtual bool ShouldStopFleeing(float distanceToPlayer) => distanceToPlayer > loseRange;
+
+    /// <summary>도주를 멈출 때. 기본은 그 자리 근처에서 배회를 다시 시작한다.</summary>
+    protected virtual void OnStopFleeing() => ReturnToWander();
+
+    protected Rigidbody2D Body => rb;
+    protected Transform Player => player;
+    protected SimpleFrameAnimator FrameAnimator => frameAnimator;
+    protected bool IsAlertState => state == State.Alert;
+    protected bool IsFleeingState => state == State.Fleeing;
+    protected bool IsActuallyMoving => isActuallyMoving;
+
+    /// <summary>직전 Flee()에서 사방이 막혀 움직일 방향을 못 찾았는지.</summary>
+    protected bool FleeBlocked { get; private set; }
+
+    protected void StopMoving() => moveDirection = Vector2.zero;
+
+    /// <summary>놀람/도주를 그만두고 지금 자리 근처에서 배회를 다시 시작한다 - 도망친 자리에서 원래 스폰 지점까지
+    /// 먼 길을 되돌아가게 하면 부자연스럽다.</summary>
+    protected void ReturnToWander()
+    {
+        state = State.Wander;
+        alertTimer = 0f;
+        origin = rb.position;
+        PickNewWanderDestination();
+    }
 
     private State state = State.Wander;
     private Transform player;
@@ -73,7 +110,7 @@ public class AnimalFlee : MonoBehaviour
     /// 복원한다. Wander부터 다시 플레이어를 감지하게 두면 겁먹고 있던 걸 까먹은 것처럼 보인다.
     /// frameAnimator에도 바로 신호를 줘서, 이 호출 직후 아직 Update()가 한 번도 안 돈 프레임에도
     /// (예: VillageMapGenerator가 스폰 직후 바로 상태를 확인하는 경우) 이미 도주 프레임으로 보인다.</summary>
-    public void RestoreFleeing()
+    public virtual void RestoreFleeing()
     {
         state = State.Fleeing;
         alertTimer = 0f;
@@ -92,7 +129,7 @@ public class AnimalFlee : MonoBehaviour
             ? sharedNoFrictionMaterial
             : sharedNoFrictionMaterial = new PhysicsMaterial2D("AnimalNoFriction") { friction = 0f, bounciness = 0f };
 
-    private void Awake()
+    protected virtual void Awake()
     {
         sleep = GetComponent<AnimalSleep>();
         rb = GetComponent<Rigidbody2D>();
@@ -104,7 +141,7 @@ public class AnimalFlee : MonoBehaviour
         origin = transform.position;
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
@@ -119,7 +156,7 @@ public class AnimalFlee : MonoBehaviour
         PickNewWanderDestination();
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         moveDirection = Vector2.zero;
 
@@ -131,10 +168,10 @@ public class AnimalFlee : MonoBehaviour
         switch (state)
         {
             case State.Wander:
-                if (distance <= alertRange)
+                if (distance <= AlertRange)
                 {
                     state = State.Alert;
-                    alertTimer = alertDuration;
+                    alertTimer = AlertDuration;
                     break;
                 }
                 UpdateWander();
@@ -145,18 +182,15 @@ public class AnimalFlee : MonoBehaviour
                 if (alertTimer <= 0f)
                 {
                     state = State.Fleeing;
+                    FleeBlocked = false;
                     OnStartFleeing();
                 }
                 break;
 
             case State.Fleeing:
-                if (distance > loseRange)
+                if (ShouldStopFleeing(distance))
                 {
-                    state = State.Wander;
-                    // 도망친 자리 근처에서 배회를 다시 시작한다 - 원래 스폰 지점까지 먼 길을
-                    // 되돌아가게 하면 부자연스럽다.
-                    origin = rb.position;
-                    PickNewWanderDestination();
+                    OnStopFleeing();
                     break;
                 }
                 Flee();
@@ -271,6 +305,7 @@ public class AnimalFlee : MonoBehaviour
         if (awayFromPlayer == Vector2.zero) awayFromPlayer = Random.insideUnitCircle.normalized;
 
         moveDirection = FindClearDirection(awayFromPlayer); // stays zero if boxed in
+        FleeBlocked = moveDirection == Vector2.zero;
     }
 
     // Tries the desired direction first, then increasingly wider angles to
