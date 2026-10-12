@@ -80,4 +80,72 @@ public static class ShopPurchase
         Debug.Log($"{entry.displayName} 구매 완료 (-{price} 마일리지)");
         return true;
     }
+
+    // ---------- 패시브 ----------
+
+    public static int GetPassivePrice(GameBalanceConfig config, PassiveDefinition passive) =>
+        config != null && config.TryGetPassivePrice(passive, out GameBalanceConfig.PassivePrice entry) ? entry.price : 0;
+
+    /// <summary>이번 판에 이미 최대 횟수만큼 샀는지.</summary>
+    public static bool IsPassiveSoldOut(GameBalanceConfig config, PassiveDefinition passive)
+    {
+        GameManager gm = GameManager.Instance;
+        if (gm == null || config == null || !config.TryGetPassivePrice(passive, out GameBalanceConfig.PassivePrice entry)) return false;
+        return gm.Passives.GetPurchaseCount(passive) >= entry.maxPurchases;
+    }
+
+    public static string GetPassiveDescription(PassiveDefinition passive)
+    {
+        if (passive == null) return "";
+        string effect = passive.EffectSummary;
+        if (string.IsNullOrEmpty(passive.description)) return effect;
+        return string.IsNullOrEmpty(effect) ? passive.description : $"{passive.description} ({effect})";
+    }
+
+    /// <summary>"러닝화를 구매했습니다"처럼 이름 받침에 맞춰 을/를을 붙인다.</summary>
+    public static string GetPassivePurchasedMessage(PassiveDefinition passive) =>
+        $"{WithObjectParticle(passive.DisplayName)} 구매했습니다";
+
+    /// <summary>패시브를 1회 산다. 구매 횟수와 마일리지를 먼저 확인하고, 마일리지 차감과 효과 적용은
+    /// GameManager.TryPurchasePassive가 함께 처리한다(효과는 PassiveEffects로 바로 보인다).</summary>
+    public static bool TryPurchasePassive(GameBalanceConfig config, PassiveDefinition passive, out string failMessage)
+    {
+        failMessage = null;
+        GameManager gm = GameManager.Instance;
+        if (gm == null || passive == null || config == null || !config.TryGetPassivePrice(passive, out GameBalanceConfig.PassivePrice entry))
+        {
+            failMessage = "지금은 구매할 수 없습니다";
+            return false;
+        }
+
+        if (gm.Passives.GetPurchaseCount(passive) >= entry.maxPurchases)
+        {
+            failMessage = "이미 구매했습니다";
+            return false;
+        }
+
+        if (gm.Mileage < entry.price)
+        {
+            failMessage = "마일리지가 부족합니다";
+            return false;
+        }
+
+        if (!gm.TryPurchasePassive(passive, entry.price, entry.maxPurchases))
+        {
+            failMessage = "구매하지 못했습니다";
+            Debug.LogWarning($"ShopPurchase: 패시브 {passive.name} 구매를 적용하지 못했다 (사전 확인은 통과).");
+            return false;
+        }
+
+        Debug.Log($"{passive.DisplayName} 패시브 구매 (-{entry.price} 마일리지, {gm.Passives.GetPurchaseCount(passive)}/{entry.maxPurchases})");
+        return true;
+    }
+
+    private static string WithObjectParticle(string word)
+    {
+        if (string.IsNullOrEmpty(word)) return word;
+        char last = word[word.Length - 1];
+        if (last < '가' || last > '힣') return word + "을(를)";
+        return word + ((last - '가') % 28 != 0 ? "을" : "를");
+    }
 }

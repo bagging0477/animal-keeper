@@ -3,8 +3,9 @@ using UnityEngine;
 
 /// <summary>상인 한 명이 파는 품목 목록. 상인(ShopMerchant)마다 이 에셋만 다르게 넣으면 같은 상점 메뉴
 /// (ShopMenuUI)가 그 목록으로 그려진다. 품목을 늘리거나 순서/이름/아이콘을 바꿀 때는 이 에셋의 entries만
-/// 고치면 된다 - 가격은 여기 두지 않고 GameBalanceConfig.shopItemPrices를 그대로 쓴다. 목록이 비어 있으면
-/// emptyMessage만 보인다(패시브 강화 상인처럼 아직 품목이 없는 상인).</summary>
+/// 고치면 된다 - 가격은 여기 두지 않고 GameBalanceConfig.shopItemPrices를 그대로 쓴다. 패시브 강화 상인처럼
+/// 패시브를 파는 상인은 passives에 PassiveDefinition을 넣는다(가격은 GameBalanceConfig.passivePrices). 두 목록이
+/// 모두 비어 있으면 emptyMessage만 보인다.</summary>
 [CreateAssetMenu(menuName = "Animal Keeper/Shop Catalog", fileName = "ShopCatalog")]
 public class ShopCatalog : ScriptableObject
 {
@@ -15,6 +16,9 @@ public class ShopCatalog : ScriptableObject
     [TextArea] public string emptyMessage = "준비 중입니다";
 
     public List<ShopCatalogEntry> entries = new List<ShopCatalogEntry>();
+
+    [Tooltip("파는 패시브. 일반 품목(entries) 아래에 이 순서대로 나온다.")]
+    public List<PassiveDefinition> passives = new List<PassiveDefinition>();
 }
 
 [System.Serializable]

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -10,7 +11,8 @@ using UnityEngine.UI;
 /// <summary>
 /// 모든 상인(ShopMerchant)이 함께 쓰는 상점 메뉴. 상인이 Open(목록, 설정)을 부르면 그 ShopCatalog의 품목마다
 /// 아이콘/이름/설명/가격 버튼을 한 줄씩 그리고, 맨 위에 보유 마일리지를 보여준다. 품목을 클릭하면 1개씩 산다.
-/// 목록이 비어 있으면 catalog.emptyMessage("준비 중입니다")만 보인다.
+/// 일반 품목(entries) 아래에 패시브(passives)가 같은 모양의 줄로 나온다 - 최대 횟수만큼 산 패시브는 "구매 완료"로
+/// 바뀌고 버튼이 꺼지며, 그래도 누르면 자막으로 알려준다. 목록이 모두 비어 있으면 catalog.emptyMessage만 보인다.
 ///
 /// - SubtitleManager처럼 씬과 무관하게 하나만 존재하며, 첫 Open 때 자기 전용 오버레이 Canvas를 코드로 만든다
 ///   (씬마다 UI를 배치할 필요가 없다). 글꼴과 머티리얼은 모든 글씨와 같은 UIFont.
@@ -45,9 +47,16 @@ public class ShopMenuUI : MonoBehaviour
     /// 이어지지 않게 GameplayInput이 이 프레임까지 입력을 막는다.</summary>
     public static bool ClosedThisFrame => closedFrame == Time.frameCount;
 
+    private delegate bool TryBuyHandler(out string failMessage);
+
+    // 일반 품목과 패시브가 같은 줄 모양을 쓴다 - 품목 종류마다 다른 것은 가격/매진/구매 함수와 성공 자막뿐이다.
     private class Row
     {
-        public ShopCatalogEntry Entry;
+        public Func<int> GetPrice;
+        public Func<bool> IsSoldOut;
+        public TryBuyHandler TryBuy;
+        public string SuccessMessage;
+        public Button Button;
         public TextMeshProUGUI PriceText;
     }
 
@@ -152,21 +161,22 @@ public class ShopMenuUI : MonoBehaviour
 
     private void OnPurchaseClicked(Row row)
     {
-        // 같은 프레임에 클릭이 두 번 들어와도(연타/중복 이벤트) 한 번만 처리한다.
+        // 같은 프레임에 클릭이 두 번 들어와도(연타/중복 이벤트, 버튼과 구매 완료 클릭 처리가 함께 받는 경우) 한 번만 처리한다.
         if (!isOpen || lastPurchaseFrame == Time.frameCount) return;
         lastPurchaseFrame = Time.frameCount;
 
         // 클릭한 버튼이 선택 상태로 남으면 Space/Enter(Submit)로 또 눌린다 - 선택을 바로 풀어 둔다.
         if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
 
-        if (ShopPurchase.TryPurchase(config, row.Entry, out string failMessage))
+        if (row.TryBuy(out string failMessage))
         {
-            SubtitleManager.Show($"{row.Entry.displayName} 구매 완료", SuccessMessageDuration);
+            SubtitleManager.Show(row.SuccessMessage, SuccessMessageDuration);
         }
         else
         {
             SubtitleManager.Show(failMessage, FailMessageDuration);
         }
+        shownMileage = int.MinValue; // 구매 완료 여부가 바뀌었을 수 있다 - 마일리지가 그대로여도 다시 그린다.
         Refresh();
     }
 
@@ -179,7 +189,16 @@ public class ShopMenuUI : MonoBehaviour
         mileageText.text = $"보유 마일리지  <color=#FFD84D>{mileage}</color>";
         foreach (Row row in rows)
         {
-            int price = ShopPurchase.GetPrice(config, row.Entry.kind);
+            bool soldOut = row.IsSoldOut();
+            row.Button.interactable = !soldOut;
+            if (soldOut)
+            {
+                row.PriceText.text = "구매 완료";
+                row.PriceText.color = SubTextColor;
+                continue;
+            }
+
+            int price = row.GetPrice();
             row.PriceText.text = $"{price} 마일리지";
             row.PriceText.color = mileage >= price ? PriceColor : UnaffordableColor;
         }
@@ -246,7 +265,14 @@ public class ShopMenuUI : MonoBehaviour
         {
             foreach (ShopCatalogEntry entry in catalog.entries)
             {
-                if (entry != null) rows.Add(CreateRow(entry));
+                if (entry != null) rows.Add(CreateItemRow(entry));
+            }
+        }
+        if (catalog.passives != null)
+        {
+            foreach (PassiveDefinition passive in catalog.passives)
+            {
+                if (passive != null) rows.Add(CreatePassiveRow(passive));
             }
         }
 
@@ -256,10 +282,37 @@ public class ShopMenuUI : MonoBehaviour
         rowContainer.gameObject.SetActive(!empty);
     }
 
-    private Row CreateRow(ShopCatalogEntry entry)
+    private Row CreateItemRow(ShopCatalogEntry entry)
     {
-        GameObject go = new GameObject(entry.displayName, typeof(RectTransform), typeof(Image), typeof(Button),
-            typeof(HorizontalLayoutGroup), typeof(LayoutElement));
+        Row row = new Row
+        {
+            GetPrice = () => ShopPurchase.GetPrice(config, entry.kind),
+            IsSoldOut = () => false,
+            TryBuy = (out string failMessage) => ShopPurchase.TryPurchase(config, entry, out failMessage),
+            SuccessMessage = $"{entry.displayName} 구매 완료",
+        };
+        string displayName = string.IsNullOrEmpty(entry.displayName) ? entry.kind.ToString() : entry.displayName;
+        BuildRowObject(row, displayName, entry.icon, ShopPurchase.GetDescription(config, entry.kind));
+        return row;
+    }
+
+    private Row CreatePassiveRow(PassiveDefinition passive)
+    {
+        Row row = new Row
+        {
+            GetPrice = () => ShopPurchase.GetPassivePrice(config, passive),
+            IsSoldOut = () => ShopPurchase.IsPassiveSoldOut(config, passive),
+            TryBuy = (out string failMessage) => ShopPurchase.TryPurchasePassive(config, passive, out failMessage),
+            SuccessMessage = ShopPurchase.GetPassivePurchasedMessage(passive),
+        };
+        BuildRowObject(row, passive.DisplayName, passive.icon, ShopPurchase.GetPassiveDescription(passive));
+        return row;
+    }
+
+    private void BuildRowObject(Row row, string displayName, Sprite iconSprite, string description)
+    {
+        GameObject go = new GameObject(displayName, typeof(RectTransform), typeof(Image), typeof(Button),
+            typeof(HorizontalLayoutGroup), typeof(LayoutElement), typeof(EventTrigger));
         go.transform.SetParent(rowContainer, false);
         go.GetComponent<LayoutElement>().preferredHeight = RowHeight;
 
@@ -273,6 +326,7 @@ public class ShopMenuUI : MonoBehaviour
         colors.highlightedColor = new Color(1.25f, 1.2f, 1.1f, 1f);
         colors.pressedColor = new Color(0.8f, 0.75f, 0.7f, 1f);
         colors.selectedColor = Color.white;
+        colors.disabledColor = new Color(0.65f, 0.65f, 0.65f, 1f);
         button.colors = colors;
 
         HorizontalLayoutGroup layout = go.GetComponent<HorizontalLayoutGroup>();
@@ -290,8 +344,8 @@ public class ShopMenuUI : MonoBehaviour
         Image icon = iconGo.GetComponent<Image>();
         icon.raycastTarget = false;
         icon.preserveAspect = true;
-        icon.sprite = entry.icon;
-        icon.enabled = entry.icon != null;
+        icon.sprite = iconSprite;
+        icon.enabled = iconSprite != null;
 
         GameObject textColumn = new GameObject("Text", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(LayoutElement));
         textColumn.transform.SetParent(go.transform, false);
@@ -303,17 +357,20 @@ public class ShopMenuUI : MonoBehaviour
         columnLayout.childForceExpandWidth = true;
         columnLayout.childForceExpandHeight = false;
 
-        CreateText(textColumn.transform, "Name", 32f, TextAlignmentOptions.Left, TextColor).text =
-            string.IsNullOrEmpty(entry.displayName) ? entry.kind.ToString() : entry.displayName;
-        CreateText(textColumn.transform, "Description", 20f, TextAlignmentOptions.Left, SubTextColor).text =
-            ShopPurchase.GetDescription(config, entry.kind);
+        CreateText(textColumn.transform, "Name", 32f, TextAlignmentOptions.Left, TextColor).text = displayName;
+        CreateText(textColumn.transform, "Description", 20f, TextAlignmentOptions.Left, SubTextColor).text = description;
 
         TextMeshProUGUI price = CreateText(go.transform, "Price", 28f, TextAlignmentOptions.Right, PriceColor);
         price.GetComponent<LayoutElement>().preferredWidth = 170f;
 
-        Row row = new Row { Entry = entry, PriceText = price };
+        row.Button = button;
+        row.PriceText = price;
         button.onClick.AddListener(() => OnPurchaseClicked(row));
-        return row;
+
+        // 꺼진 버튼(구매 완료)은 onClick을 보내지 않는다 - 그래도 누른 것을 자막으로 알려줄 수 있게 클릭을 따로 받는다.
+        EventTrigger.Entry disabledClick = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
+        disabledClick.callback.AddListener(_ => { if (!button.interactable) OnPurchaseClicked(row); });
+        go.GetComponent<EventTrigger>().triggers.Add(disabledClick);
     }
 
     private static TextMeshProUGUI CreateText(Transform parent, string name, float size, TextAlignmentOptions alignment, Color color)
