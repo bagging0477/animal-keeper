@@ -81,7 +81,7 @@ public class AnimalTurtle : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
     public bool CanBePickedUp => shell == Shell.None;
 
     private float DetectRadius => config != null ? config.turtleDetectRadius : 5f;
-    private float FleeDistance => config != null ? config.turtleFleeDistance : 4f;
+    private float FleeDistance => config != null ? config.turtleFleeDistance : 2f;
     private float HideRadius => config != null ? config.turtleHideRadius : 5f;
     private float EmergeDelay => config != null ? config.turtleEmergeDelay : 3f;
     private float MaxHiddenTime => config != null ? config.turtleMaxHiddenTime : 15f;
@@ -90,8 +90,8 @@ public class AnimalTurtle : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
     protected override float AlertRange => DetectRadius;
     protected override float AlertDuration => config != null ? config.turtleAlertDuration : 0.65f;
 
-    protected override float WanderSpeed => config != null ? config.turtleWanderSpeed : 0.3f;
-    protected override float FleeSpeed => config != null ? config.turtleFleeSpeed : 0.5f;
+    protected override float WanderSpeed => config != null ? config.turtleWanderSpeed : 0.36f;
+    protected override float FleeSpeed => config != null ? config.turtleFleeSpeed : 0.6f;
 
     protected override void Awake()
     {
