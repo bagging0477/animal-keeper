@@ -19,11 +19,12 @@ using UnityEngine.SceneManagement;
 /// 3) 잡기: 클래스 3종 x 걷기/스프린트 (러닝화 없이/있게)로 정면에서 다가가며 도주 중 E - 걷기는 못 잡고 스프린트는 잡는지.
 /// 4) 저장/복원: 맵에서 생긴 거북이를 숨게 한 뒤 트럭에 갔다 오면 같은 자리에서 배회로 시작하는지.
 /// 테스트 동안 마을 몬스터와 다른 동물은 끈다(씬 파일은 바꾸지 않는다). 결과: Logs/TurtleTest.txt
+/// batchmode: -executeMethod TurtleTest.RunBatch  (끝나면 에디터가 종료된다, 통과면 0 아니면 1)
 /// </summary>
 [InitializeOnLoad]
 public static class TurtleTest
 {
-    private const string KeyActive = "TT.Active", KeyDone = "TT.Done";
+    private const string KeyActive = "TT.Active", KeyDone = "TT.Done", KeyBatch = "TT.Batch", KeyPassed = "TT.Passed";
     private const string ReportPath = "Logs/TurtleTest.txt";
     private const string ConfigPath = "Assets/Settings/GameBalanceConfig.asset";
     private const string RunningShoesPath = "Assets/Settings/Passives/RunningShoes.asset";
@@ -51,8 +52,17 @@ public static class TurtleTest
     {
         if (EditorApplication.isPlaying) { Debug.LogWarning("[TurtleTest] Play 모드를 끈 뒤 실행해야 한다."); return; }
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+        Begin(false);
+    }
+
+    public static void RunBatch() => Begin(true);
+
+    private static void Begin(bool batch)
+    {
         SessionState.SetBool(KeyActive, true);
         SessionState.SetBool(KeyDone, false);
+        SessionState.SetBool(KeyBatch, batch);
+        SessionState.SetBool(KeyPassed, false);
         EditorSceneManager.OpenScene("Assets/Scenes/TitleScene.unity", OpenSceneMode.Single);
         EditorApplication.EnterPlaymode();
     }
@@ -80,6 +90,7 @@ public static class TurtleTest
         else if (change == PlayModeStateChange.EnteredEditMode && SessionState.GetBool(KeyDone, false))
         {
             SessionState.SetBool(KeyActive, false);
+            if (SessionState.GetBool(KeyBatch, false)) EditorApplication.Exit(SessionState.GetBool(KeyPassed, false) ? 0 : 1);
         }
     }
 
@@ -186,6 +197,7 @@ public static class TurtleTest
         foreach (string f in failures) sb.AppendLine("  " + f);
         Directory.CreateDirectory("Logs");
         File.WriteAllText(ReportPath, sb.ToString(), new UTF8Encoding(false));
+        SessionState.SetBool(KeyPassed, failures.Count == 0);
         Debug.Log("[TurtleTest] " + (failures.Count == 0 ? "통과" : $"실패 {failures.Count}건") + " - " + Path.GetFullPath(ReportPath));
     }
 
@@ -290,14 +302,17 @@ public static class TurtleTest
         yield return Approach(turtle, lane, sprint: true, pressE: false, until: t => t.State == AnimalTurtle.TurtleState.Hidden, trace, timeout: 20f, stopAt: 2.5f);
         sb.AppendLine("  스프린트 접근(E 안 누름): " + string.Join(" → ", trace));
         Check(trace.Select(s => s.Split(' ')[0]).SequenceEqual(new[] { "Wander", "Alert", "Flee", "Hidden" }), "Wander→Alert→Flee→Hidden 순서");
+        Check(turtle.HideSoundCount == 1 && turtle.EmergeSoundCount == 0, $"숨을 때 hide 소리 {turtle.HideSoundCount}번, emerge 소리 {turtle.EmergeSoundCount}번");
 
-        // --- 숨은 거북이 옆에서 E: 못 줍고 자막, 쿨다운
+        // --- 숨은 거북이 옆에서 E: 못 줍고 자막, 쿨다운 (hide 소리도 자막과 같은 쿨다운)
         Teleport(player, (Vector2)turtle.transform.position - lane.Dir * 1f);
         yield return WaitFrames(3);
         int before = turtle.HiddenMessageCount;
+        int soundBefore = turtle.HideSoundCount;
         yield return Press(Key.E);
         yield return Press(Key.E);
         int afterTwo = turtle.HiddenMessageCount;
+        int soundAfterTwo = turtle.HideSoundCount;
         yield return WaitRealtime(0.4f); // 자막은 앞 문구가 페이드 아웃된 뒤 바뀐다
         string subtitleAfterFirst = Subtitle();
         yield return WaitRealtime(config.turtleHiddenMessageCooldown + 0.2f);
@@ -306,6 +321,23 @@ public static class TurtleTest
         Check(subtitleAfterFirst == "거북이가 등껍질 속에 숨었습니다", $"자막: \"{subtitleAfterFirst}\"");
         Check(afterTwo == before + 1 && turtle.HiddenMessageCount == before + 2,
             $"자막 쿨다운: 바로 두 번 눌러 {afterTwo - before}번, {config.turtleHiddenMessageCooldown}초 뒤 다시 눌러 {turtle.HiddenMessageCount - before}번");
+        Check(soundAfterTwo == soundBefore + 1 && turtle.HideSoundCount == soundBefore + 2,
+            $"거절 hide 소리 쿨다운: 바로 두 번 눌러 {soundAfterTwo - soundBefore}번, {config.turtleHiddenMessageCooldown}초 뒤 다시 눌러 {turtle.HideSoundCount - soundBefore}번");
+
+        // --- ESC 일시정지 중: E를 눌러도, 멀어져 나오기 시간이 지나도 소리가 나지 않는다
+        yield return Press(Key.Escape);
+        bool paused = PauseMenu.IsPaused;
+        int pausedHide = turtle.HideSoundCount, pausedMessages = turtle.HiddenMessageCount;
+        yield return Press(Key.E);
+        yield return WaitRealtime(config.turtleHiddenMessageCooldown + 0.2f);
+        yield return Press(Key.E);
+        Teleport(player, (Vector2)turtle.transform.position - lane.Dir * (config.turtleHideRadius + 3f));
+        yield return WaitRealtime(config.turtleEmergeDelay + 0.5f);
+        bool silent = turtle.HideSoundCount == pausedHide && turtle.EmergeSoundCount == 0 && turtle.HiddenMessageCount == pausedMessages;
+        AnimalTurtle.TurtleState stateWhilePaused = turtle.State;
+        yield return Press(Key.Escape);
+        Check(paused && !PauseMenu.IsPaused && silent && stateWhilePaused == AnimalTurtle.TurtleState.Hidden,
+            $"ESC 일시정지 {paused}: E 두 번 + {config.turtleEmergeDelay + 0.5f:0.0}초 이탈 동안 hide {turtle.HideSoundCount - pausedHide}번, emerge {turtle.EmergeSoundCount}번, 상태 {stateWhilePaused} → 재개 {!PauseMenu.IsPaused}");
 
         // --- 멀어지면 이탈 시간 뒤 Emerge → Wander
         Teleport(player, (Vector2)turtle.transform.position - lane.Dir * (config.turtleHideRadius + 3f));
@@ -316,6 +348,7 @@ public static class TurtleTest
         float emergeAt = ParseTime(trace, "Emerge");
         Check(trace.Any(s => s.StartsWith("Emerge")) && turtle.State == AnimalTurtle.TurtleState.Wander && Mathf.Abs(emergeAt - config.turtleEmergeDelay) < 0.3f,
             $"이탈 {emergeAt:0.00}초 뒤 나오기 시작(설정 {config.turtleEmergeDelay}초) → 배회");
+        Check(turtle.EmergeSoundCount == 1, $"나올 때 emerge 소리 {turtle.EmergeSoundCount}번");
         Object.Destroy(turtle.gameObject);
 
         // --- 가까이 붙어 있어도 최대 숨음 시간 뒤 나온다
@@ -356,6 +389,7 @@ public static class TurtleTest
         Teleport(player, boxCenter - lane.Dir * 9f);
         yield return WaitRealtime(2.3f);
         Check(!sleep.IsAsleep && turtle.State == AnimalTurtle.TurtleState.Wander, $"깬 뒤 상태 {turtle.State}");
+
         Object.Destroy(turtle.gameObject);
 
         // --- 마취 연동을 끄면 숨은 중에는 마취가 안 듣는다 (설정을 잠시 바꿨다 되돌림)

@@ -176,6 +176,18 @@ MonoBehaviour:
   - {fileID: -2144344855, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: 1890124037, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   hiddenMessage: "\uAC70\uBD81\uC774\uAC00 \uB4F1\uAECD\uC9C8 \uC18D\uC5D0 \uC228\uC5C8\uC2B5\uB2C8\uB2E4"
+  hideSound:
+    clip: {fileID: 0}
+    volume: 1
+    playSegment: 0
+    startTime: 0
+    endTime: 1
+  emergeSound:
+    clip: {fileID: 0}
+    volume: 1
+    playSegment: 0
+    startTime: 0
+    endTime: 1
 --- !u!50 &5701105146326097001
 Rigidbody2D:
   serializedVersion: 5
