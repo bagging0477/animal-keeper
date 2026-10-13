@@ -390,6 +390,31 @@ public static class TurtleTest
         yield return WaitRealtime(2.3f);
         Check(!sleep.IsAsleep && turtle.State == AnimalTurtle.TurtleState.Wander, $"깬 뒤 상태 {turtle.State}");
 
+        // --- 마취 맞은 직후(잠들기 전)는 14번에 멈춰 있고, 잠들면 26~31번을 반복한다
+        {
+            SpriteRenderer sr = turtle.GetComponent<SpriteRenderer>();
+            sleep.PutToSleep(0.5f, 1.5f);
+            yield return WaitFrames(3);
+            Vector2 stunPos = turtle.transform.position;
+            yield return WaitRealtime(0.3f);
+            string stunSprite = sr.sprite != null ? sr.sprite.name : "-";
+            float stunMove = Vector2.Distance(stunPos, turtle.transform.position);
+            float sleepUntil = Time.realtimeSinceStartup + 1f;
+            while (!sleep.IsAsleep && Time.realtimeSinceStartup < sleepUntil) yield return null;
+            HashSet<string> sleepSprites = new HashSet<string>();
+            float watchUntil = Time.realtimeSinceStartup + 1.2f;
+            while (sleep.IsAsleep && Time.realtimeSinceStartup < watchUntil)
+            {
+                if (sr.sprite != null) sleepSprites.Add(sr.sprite.name);
+                yield return null;
+            }
+            HashSet<string> expected = new HashSet<string>(Enumerable.Range(26, 6).Select(i => $"turtle_{i}"));
+            Check(stunSprite == "turtle_14" && stunMove < 0.01f, $"잠들기 전 기절 프레임 {stunSprite}, 이동 {stunMove:0.000}");
+            Check(sleepSprites.Count >= 3 && sleepSprites.IsSubsetOf(expected), $"잠든 동안 프레임 {string.Join(",", sleepSprites.OrderBy(s => s))}");
+            yield return WaitRealtime(1f);
+            string awakeSprite = sr.sprite != null ? sr.sprite.name : "-";
+            Check(!sleep.IsAsleep && !expected.Contains(awakeSprite) && awakeSprite != "turtle_14", $"깬 뒤 프레임 {awakeSprite}");
+        }
         Object.Destroy(turtle.gameObject);
 
         // --- 마취 연동을 끄면 숨은 중에는 마취가 안 듣는다 (설정을 잠시 바꿨다 되돌림)

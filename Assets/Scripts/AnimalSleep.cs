@@ -20,6 +20,9 @@ public class AnimalSleep : MonoBehaviour, ISleepable
     private float pendingSleepDuration;
 
     public bool IsAsleep => asleepTimer > 0f;
+
+    /// <summary>마취에 맞았지만 아직 잠들기 전(sleepDelay 동안)인지. 거북이는 이 동안 기절 프레임에 멈춰 있다.</summary>
+    public bool IsSleepPending => sleepPending;
     public Vector2 GamePosition => transform.position;
 
     private void Update()

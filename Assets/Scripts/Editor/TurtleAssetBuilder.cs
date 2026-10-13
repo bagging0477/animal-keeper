@@ -11,7 +11,7 @@ using UnityEngine;
 /// 2) 고양이 프리팹(AnimalFlee)을 복사해 AnimalTurtle 프리팹을 만든다 - 같은 부품(Rigidbody2D, AnimalRescue, AnimalSleep,
 ///    SimpleFrameAnimator, AnimalFacingFlipper, 줍기 효과음)을 그대로 쓰고 행동 스크립트만 AnimalTurtle로 바꾼다(AnimalFlee의 필드는 이어받는다).
 /// 3) GameBalanceConfig.turtlePrefab에 연결한다.
-/// 프레임 매핑(아래 행 번호)은 임시다 - 프리팹의 SimpleFrameAnimator/AnimalTurtle 배열을 바꾸면 된다. 다시 실행하면 프리팹을 새로 만든다.
+/// 프레임 매핑: 걷기/도주 18~25, 기절(잠들기 전) 14, 잠 26~31 반복, 숨기 37~41(나오기는 그 역순). 다시 실행하면 프리팹을 새로 만든다.
 /// </summary>
 public static class TurtleAssetBuilder
 {
@@ -49,8 +49,8 @@ public static class TurtleAssetBuilder
 
     private static int RowStart(int row) => FramesPerRow.Take(row).Sum();
 
-    private static Sprite[] Row(Sprite[] frames, int row, int from, int to) =>
-        Enumerable.Range(RowStart(row) + from, to - from + 1).Select(i => frames[i]).ToArray();
+    private static Sprite[] Frames(Sprite[] frames, int from, int to) =>
+        Enumerable.Range(from, to - from + 1).Select(i => frames[i]).ToArray();
 
     private static void SliceSheet()
     {
@@ -124,9 +124,11 @@ public static class TurtleAssetBuilder
         root = PrefabUtility.LoadPrefabContents(PrefabPath);
         try
         {
+            // 번호는 turtle_N(시트 전체 순서). 배회와 도주는 같은 걸음 프레임을 쓰고 도주만 더 빠르게 재생한다.
             Sprite idle = frames[RowStart(0)];
-            Sprite[] walk = Row(frames, 1, 0, 9);
-            Sprite[] hide = Row(frames, 5, 0, 5);
+            Sprite[] walk = Frames(frames, 18, 25);
+            Sprite[] sleep = Frames(frames, 26, 31);
+            Sprite[] hide = Frames(frames, 37, 41);
             Sprite[] emerge = hide.Reverse().ToArray();
 
             root.GetComponent<SpriteRenderer>().sprite = idle;
@@ -135,13 +137,16 @@ public static class TurtleAssetBuilder
             animator.FindProperty("idleSprite").objectReferenceValue = idle;
             SetArray(animator.FindProperty("walkFrames"), walk);
             SetArray(animator.FindProperty("fleeFrames"), walk);
-            animator.FindProperty("fleeFrameRate").floatValue = 16f;
-            animator.FindProperty("knockedOutSprite").objectReferenceValue = frames[RowStart(3)];
+            animator.FindProperty("fleeFrameRate").floatValue = 20f;
+            animator.FindProperty("knockedOutSprite").objectReferenceValue = sleep[0];
+            SetArray(animator.FindProperty("knockedOutFrames"), sleep);
+            animator.FindProperty("knockedOutFrameRate").floatValue = 5f;
             animator.ApplyModifiedPropertiesWithoutUndo();
 
             SerializedObject turtle = new SerializedObject(root.GetComponent<AnimalTurtle>());
             SetArray(turtle.FindProperty("hideFrames"), hide);
             SetArray(turtle.FindProperty("emergeFrames"), emerge);
+            turtle.FindProperty("stunnedSprite").objectReferenceValue = frames[14];
             turtle.ApplyModifiedPropertiesWithoutUndo();
 
             CircleCollider2D collider = root.GetComponent<CircleCollider2D>();

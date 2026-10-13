@@ -40,6 +40,10 @@ public class SimpleFrameAnimator : MonoBehaviour
 
     [Header("기절 - 마취/스턴 중에 고정해서 보여줄 스프라이트. 비워 두면 idleSprite를 쓴다")]
     [SerializeField] private Sprite knockedOutSprite;
+    [Tooltip("지정하면 기절 중에 knockedOutSprite 대신 이 프레임들을 반복 재생한다(거북이의 잠자는 모습).")]
+    [SerializeField] private Sprite[] knockedOutFrames;
+    [Tooltip("knockedOutFrames 재생 속도. 0이면 frameRate를 그대로 쓴다.")]
+    [SerializeField] private float knockedOutFrameRate = 0f;
 
     private SpriteRenderer spriteRenderer;
     private ISleepable sleepable;
@@ -52,6 +56,7 @@ public class SimpleFrameAnimator : MonoBehaviour
     private Sprite[] activeOneShotFrames;
     private float oneShotTimeRemaining;
     private float hurtFlashTimeRemaining;
+    private bool wasKnockedOut;
 
     /// <summary>Idle 스프라이트. 인벤토리 아이콘 기본값으로 쓰인다.</summary>
     public Sprite IdleSprite => idleSprite;
@@ -191,16 +196,28 @@ public class SimpleFrameAnimator : MonoBehaviour
 
     private void Update()
     {
-        // 기절 중에는 기절 스프라이트(없으면 Idle)에 멈춰 있는다. 피격/사망 모션은 그대로 재생하고, 진행 중이던 공격은 끊는다.
+        // 기절 중에는 기절 프레임을 반복하거나(knockedOutFrames) 기절 스프라이트(없으면 Idle)에 멈춰 있는다.
+        // 피격/사망 모션은 그대로 재생하고, 진행 중이던 공격은 끊는다.
         if (IsKnockedOut && mode != Mode.Hurt && mode != Mode.Dead)
         {
             if (mode == Mode.Attack || mode == Mode.Once || mode == Mode.Hold) mode = Mode.Idle;
-            frameIndex = 0;
-            frameTimer = 0f;
-            Sprite knockedOut = knockedOutSprite != null ? knockedOutSprite : idleSprite;
+            if (!wasKnockedOut)
+            {
+                frameIndex = 0;
+                frameTimer = 0f;
+            }
+            wasKnockedOut = true;
+            Sprite knockedOut = KnockedOutFrame();
             if (knockedOut != null) spriteRenderer.sprite = knockedOut;
             UpdateHurtFlash();
             return;
+        }
+
+        if (wasKnockedOut)
+        {
+            wasKnockedOut = false;
+            frameIndex = 0;
+            frameTimer = 0f;
         }
 
         if (IsOneShotMode)
@@ -235,6 +252,21 @@ public class SimpleFrameAnimator : MonoBehaviour
 
         spriteRenderer.sprite = frames[frameIndex % frames.Length];
         UpdateHurtFlash();
+    }
+
+    private Sprite KnockedOutFrame()
+    {
+        if (knockedOutFrames == null || knockedOutFrames.Length == 0) return knockedOutSprite != null ? knockedOutSprite : idleSprite;
+
+        float rate = knockedOutFrameRate > 0f ? knockedOutFrameRate : frameRate;
+        frameTimer += Time.deltaTime;
+        float frameDuration = rate > 0f ? 1f / rate : 0f;
+        if (frameDuration > 0f && frameTimer >= frameDuration)
+        {
+            frameTimer -= frameDuration;
+            frameIndex = (frameIndex + 1) % knockedOutFrames.Length;
+        }
+        return knockedOutFrames[frameIndex % knockedOutFrames.Length];
     }
 
     // Dead 상태에서는 MonsterHealth가 spriteRenderer.color를 deadColor로 직접 바꿔 시체 연출을
