@@ -619,6 +619,29 @@ public static class LegacyTextToTMP
                 ReportTexts("ClassSelectScene 직업 팝업", panelRoot);
                 break;
             }
+            case 3:
+            {
+                // ShelterScene: 정산 뒤에 뜨는 세 패널을 실제 Show로 하나씩 띄운다(ShelterSettlement가 넘기는 문자열 그대로).
+                SceneManager.LoadScene("ShelterScene");
+                yield return WaitFrames(30);
+                var panels = new List<(string label, MonoBehaviour panel, Action show)>();
+                DayClearPanel day = Object.FindAnyObjectByType<DayClearPanel>(FindObjectsInactive.Include);
+                GameClearPanel clear = Object.FindAnyObjectByType<GameClearPanel>(FindObjectsInactive.Include);
+                GameOverPanel over = Object.FindAnyObjectByType<GameOverPanel>(FindObjectsInactive.Include);
+                if (day != null) panels.Add(("DayClearPanel", day, () => day.Show("Day 클리어!")));
+                if (clear != null) panels.Add(("GameClearPanel", clear, () => clear.Show($"{GameManager.Instance.TotalCyclesToWin}일간의 여정을 무사히 마쳤습니다!")));
+                if (over != null) panels.Add(("GameOverPanel", over, () => over.Show()));
+                if (panels.Count < 3) smokeLogs.Add($"[Smoke] ShelterScene 패널 {panels.Count}/3개만 찾음");
+                foreach ((string label, MonoBehaviour panel, Action show) in panels)
+                {
+                    show();
+                    yield return WaitFrames(3);
+                    ReportTexts($"ShelterScene {label}", panel.gameObject);
+                    panel.gameObject.SetActive(false);
+                    Time.timeScale = 1f;
+                }
+                break;
+            }
             default:
                 smokeReport.AppendLine($"stage {stage}: 아직 정의하지 않았다");
                 break;
