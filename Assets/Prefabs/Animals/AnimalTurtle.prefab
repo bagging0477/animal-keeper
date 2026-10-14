@@ -176,14 +176,14 @@ MonoBehaviour:
   hiddenMessage: "\uAC70\uBD81\uC774\uAC00 \uB4F1\uAECD\uC9C8 \uC18D\uC5D0 \uC228\uC5C8\uC2B5\uB2C8\uB2E4"
   stunnedSprite: {fileID: 640754399, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   hideSound:
-    clip: {fileID: 0}
-    volume: 1
+    clip: {fileID: 8300000, guid: ad65a35dfd5ec4748b1900b994b6c084, type: 3}
+    volume: 0.58
     playSegment: 0
     startTime: 0
     endTime: 1
   emergeSound:
-    clip: {fileID: 0}
-    volume: 1
+    clip: {fileID: 8300000, guid: ad65a35dfd5ec4748b1900b994b6c084, type: 3}
+    volume: 0.58
     playSegment: 0
     startTime: 0
     endTime: 1

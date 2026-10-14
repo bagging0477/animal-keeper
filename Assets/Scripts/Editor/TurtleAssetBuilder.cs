@@ -10,7 +10,7 @@ using UnityEngine;
 ///    PPU 32, Point 필터, 피벗은 몸통 가운데(칸 왼쪽에서 14px, 아래에서 7px) - 충돌체를 오프셋 없이 몸통에 맞추고 좌우 반전도 몸통 기준이 된다.
 /// 2) 고양이 프리팹(AnimalFlee)을 복사해 AnimalTurtle 프리팹을 만든다 - 같은 부품(Rigidbody2D, AnimalRescue, AnimalSleep,
 ///    SimpleFrameAnimator, AnimalFacingFlipper)을 그대로 쓰고 행동 스크립트만 AnimalTurtle로 바꾼다(AnimalFlee의 필드는 이어받는다).
-///    줍기 소리는 animal_turtle_pickup.wav로 바꾼다.
+///    줍기 소리는 animal_turtle_pickup.wav, 숨기/나오기 소리는 둘 다 animal_turtle_hide and emerge.wav로 둔다.
 /// 3) GameBalanceConfig.turtlePrefab에 연결한다.
 /// 프레임 매핑: 걷기/도주 23~26, 기절(잠들기 전) 14, 잠 26~31 반복, 숨기 37~41(나오기는 그 역순). 다시 실행하면 프리팹을 새로 만든다.
 /// </summary>
@@ -22,6 +22,7 @@ public static class TurtleAssetBuilder
     private const string ConfigPath = "Assets/Settings/GameBalanceConfig.asset";
     private const string TurtleScriptPath = "Assets/Scripts/AnimalTurtle.cs";
     private const string PickupSoundPath = "Assets/Audio/animal_turtle_pickup.wav";
+    private const string ShellSoundPath = "Assets/Audio/animal_turtle_hide and emerge.wav";
 
     private const int Cell = 32;
     private static readonly Vector2 BodyPivot = new Vector2(14f / Cell, 7f / Cell);
@@ -149,6 +150,14 @@ public static class TurtleAssetBuilder
             SetArray(turtle.FindProperty("hideFrames"), hide);
             SetArray(turtle.FindProperty("emergeFrames"), emerge);
             turtle.FindProperty("stunnedSprite").objectReferenceValue = frames[14];
+            // 숨기/나오기 소리는 같은 파일을 통째로 쓴다. 볼륨 0.58은 50ms 최대 RMS -14.2dBFS를 다른 효과음 수준(-19dBFS)에 맞춘 값.
+            AudioClip shellClip = AssetDatabase.LoadAssetAtPath<AudioClip>(ShellSoundPath);
+            foreach (string slot in new[] { "hideSound", "emergeSound" })
+            {
+                turtle.FindProperty(slot + ".clip").objectReferenceValue = shellClip;
+                turtle.FindProperty(slot + ".volume").floatValue = 0.58f;
+                turtle.FindProperty(slot + ".playSegment").boolValue = false;
+            }
             turtle.ApplyModifiedPropertiesWithoutUndo();
 
             CircleCollider2D collider = root.GetComponent<CircleCollider2D>();
