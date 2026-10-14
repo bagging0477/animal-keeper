@@ -95,8 +95,8 @@ public class AnimalTurtle : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
     protected override float AlertRange => DetectRadius;
     protected override float AlertDuration => config != null ? config.turtleAlertDuration : 0.65f;
 
-    protected override float WanderSpeed => config != null ? config.turtleWanderSpeed : 0.36f;
-    protected override float FleeSpeed => config != null ? config.turtleFleeSpeed : 0.6f;
+    protected override float WanderSpeed => config != null ? config.turtleWanderSpeed : 0.8f;
+    protected override float FleeSpeed => config != null ? config.turtleFleeSpeed : 0.8f;
 
     protected override void Awake()
     {

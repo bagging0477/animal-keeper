@@ -343,10 +343,10 @@ public class GameBalanceConfig : ScriptableObject
     public float turtleFleeDistance = 2f;
 
     [Tooltip("거북이가 평소 배회할 때의 이동속도 (다른 동물은 animalWanderSpeed)")]
-    public float turtleWanderSpeed = 0.36f;
+    public float turtleWanderSpeed = 0.8f;
 
     [Tooltip("거북이가 도망칠 때의 이동속도 (고정값 - 플레이어 속도와 무관)")]
-    public float turtleFleeSpeed = 0.6f;
+    public float turtleFleeSpeed = 0.8f;
 
     [Tooltip("숨어 있는 동안 플레이어가 이 거리(칸) 밖에 turtleEmergeDelay초 있으면 나온다")]
     public float turtleHideRadius = 5f;
