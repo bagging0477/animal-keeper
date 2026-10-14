@@ -126,11 +126,11 @@ MonoBehaviour:
   interactionRange: 1.8
   minWeight: 1
   maxWeight: 10
-  pickupSound: {fileID: 8300000, guid: bef158e49cf76bc43a024c7dc290df42, type: 3}
-  pickupSoundVolume: 0.25
-  playPickupSoundSegment: 0
-  pickupSoundStartTime: 7
-  pickupSoundEndTime: 8
+  pickupSound: {fileID: 8300000, guid: 7599da782cdad044784c329890ed4fc9, type: 3}
+  pickupSoundVolume: 0.48
+  playPickupSoundSegment: 1
+  pickupSoundStartTime: 0
+  pickupSoundEndTime: 1
   inventoryIcon: {fileID: 0}
   sheetFirstFrameIcon: {fileID: 1997067307, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
 --- !u!114 &5220942028165541938

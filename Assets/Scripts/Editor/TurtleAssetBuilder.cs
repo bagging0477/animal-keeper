@@ -9,7 +9,8 @@ using UnityEngine;
 /// 1) Turtle Sprite Sheet를 32px 칸으로 자른다(그림이 있는 칸만, 위 행부터 왼쪽→오른쪽 순서로 turtle_0, turtle_1, ...).
 ///    PPU 32, Point 필터, 피벗은 몸통 가운데(칸 왼쪽에서 14px, 아래에서 7px) - 충돌체를 오프셋 없이 몸통에 맞추고 좌우 반전도 몸통 기준이 된다.
 /// 2) 고양이 프리팹(AnimalFlee)을 복사해 AnimalTurtle 프리팹을 만든다 - 같은 부품(Rigidbody2D, AnimalRescue, AnimalSleep,
-///    SimpleFrameAnimator, AnimalFacingFlipper, 줍기 효과음)을 그대로 쓰고 행동 스크립트만 AnimalTurtle로 바꾼다(AnimalFlee의 필드는 이어받는다).
+///    SimpleFrameAnimator, AnimalFacingFlipper)을 그대로 쓰고 행동 스크립트만 AnimalTurtle로 바꾼다(AnimalFlee의 필드는 이어받는다).
+///    줍기 소리는 animal_turtle_pickup.wav로 바꾼다.
 /// 3) GameBalanceConfig.turtlePrefab에 연결한다.
 /// 프레임 매핑: 걷기/도주 18~25, 기절(잠들기 전) 14, 잠 26~31 반복, 숨기 37~41(나오기는 그 역순). 다시 실행하면 프리팹을 새로 만든다.
 /// </summary>
@@ -20,6 +21,7 @@ public static class TurtleAssetBuilder
     private const string PrefabPath = "Assets/Prefabs/Animals/AnimalTurtle.prefab";
     private const string ConfigPath = "Assets/Settings/GameBalanceConfig.asset";
     private const string TurtleScriptPath = "Assets/Scripts/AnimalTurtle.cs";
+    private const string PickupSoundPath = "Assets/Audio/animal_turtle_pickup.wav";
 
     private const int Cell = 32;
     private static readonly Vector2 BodyPivot = new Vector2(14f / Cell, 7f / Cell);
@@ -153,8 +155,19 @@ public static class TurtleAssetBuilder
             collider.offset = Vector2.zero;
             collider.radius = ColliderRadius;
 
+            // 줍기 소리: 파일이 10초짜리(같은 소리가 1초마다 작아지며 반복)라 가장 큰 첫 1초만 재생한다.
+            // 볼륨 0.48은 import 설정(Force To Mono + Normalize) 뒤 50ms 최대 RMS -12.6dBFS를 다른 효과음 수준(-19dBFS)에 맞춘 값.
             SerializedObject rescue = new SerializedObject(root.GetComponent<AnimalRescue>());
             rescue.FindProperty("sheetFirstFrameIcon").objectReferenceValue = frames[0];
+            AudioClip pickup = AssetDatabase.LoadAssetAtPath<AudioClip>(PickupSoundPath);
+            if (pickup != null)
+            {
+                rescue.FindProperty("pickupSound").objectReferenceValue = pickup;
+                rescue.FindProperty("pickupSoundVolume").floatValue = 0.48f;
+                rescue.FindProperty("playPickupSoundSegment").boolValue = true;
+                rescue.FindProperty("pickupSoundStartTime").floatValue = 0f;
+                rescue.FindProperty("pickupSoundEndTime").floatValue = 1f;
+            }
             rescue.ApplyModifiedPropertiesWithoutUndo();
 
             PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
