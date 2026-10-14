@@ -1,5 +1,5 @@
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>ClassSelectScene의 직업 스탠드(ClassInteractPoint) 3개가 공유하는 정보 팝업.
 /// 매 프레임 Show가 호출되지 않으면(=아무 스탠드도 범위 안에 없으면) LateUpdate에서 자동으로 숨긴다 -
@@ -7,9 +7,9 @@ using UnityEngine.UI;
 public class ClassInfoPopup : MonoBehaviour
 {
     [SerializeField] private GameObject panelRoot;
-    [SerializeField] private Text nameText;
-    [SerializeField] private Text statsText;
-    [SerializeField] private Text priceText;
+    [SerializeField] private TMP_Text nameText;
+    [SerializeField] private TMP_Text statsText;
+    [SerializeField] private TMP_Text priceText;
 
     [Header("월드 좌표 추적 (스탠드 바로 위에 띄우기, 좌우로도 따라 움직임)")]
     [SerializeField] private RectTransform canvasRect;
