@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent), typeof(MonsterHealth))]
 public class SoundReactiveMonsterAI : MonoBehaviour
 {
-    private enum State { Wander, Investigate, Chase }
+    private enum State { Wander, Investigate, Chase, Search }
 
     [Header("Visual (2D sprite object this brain drives)")]
     [SerializeField] private Transform visual;
@@ -38,6 +39,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private MonsterHealth health;
     private SimpleFrameAnimator frameAnimator;
     private AnimalFacingFlipper facingFlipper;
+    private SpriteRenderer visualRenderer;
     private Transform player;
     private Vector3 origin;
     private State state = State.Wander;
@@ -47,6 +49,13 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private bool caughtLogged;
     private float sightLostTimer;
     private float chaseDestinationTimer;
+    private float chaseTimer;
+    private Vector3 lastSeenPlayerPosition;
+    private float searchTimer;
+    private bool searchLooking;
+    private float searchLookDuration;
+    private float searchTurnTimer;
+    private Vector3 searchCenter;
 
     private float WanderSpeed => config != null ? config.soundReactiveMonsterWanderSpeed : 2.4f;
     private float ChaseSpeed => config != null ? config.monsterChaseSpeed : 4.3125f;
@@ -56,6 +65,16 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     // 순찰형(MonsterAI)과 공유하는 chaseGiveUpSightLostDuration 대신, blood 몬스터 전용 값을 쓴다 -
     // 순찰형까지 같이 늘어나지 않도록 분리된 필드.
     private float ChaseGiveUpSightLostDuration => config != null ? config.soundReactiveMonsterChaseGiveUpDuration : 3.5f;
+    // 0 이하면 무제한 - 시야를 놓쳐야만 추격을 끝낸다.
+    private float MaxChaseDuration => config != null ? config.soundReactiveMonsterMaxChaseDuration : 10f;
+    // 탐색(Search) 동작 값은 순찰형과 같은 monsterSearch* 필드를 그대로 읽는다.
+    private float SearchLookDurationMin => config != null ? config.monsterSearchLookDurationMin : 2f;
+    private float SearchLookDurationMax => config != null ? config.monsterSearchLookDurationMax : 3f;
+    private float SearchLookTurnInterval => config != null ? config.monsterSearchLookTurnInterval : 0.6f;
+    private float SearchTravelTimeout => config != null ? config.monsterSearchTravelTimeout : 5f;
+    private float SearchStepChance => config != null ? config.monsterSearchStepChance : 0.4f;
+    private float SearchStepRadius => config != null ? config.monsterSearchStepRadius : 0.8f;
+    private float SearchStepSpeed => config != null ? config.monsterSearchStepSpeed : 1.2f;
     private float ChaseDirectionUpdateInterval => config != null ? config.chaseDirectionUpdateInterval : 0.25f;
     private float CatchRange => config != null ? config.soundReactiveMonsterCatchRange : 0.7f;
     private float WaypointStopDistance => config != null ? config.monsterWaypointStopDistance : 0.2f;
@@ -67,6 +86,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
         health = GetComponent<MonsterHealth>();
         frameAnimator = visual != null ? visual.GetComponent<SimpleFrameAnimator>() : null;
         facingFlipper = visual != null ? visual.GetComponent<AnimalFacingFlipper>() : null;
+        visualRenderer = visual != null ? visual.GetComponent<SpriteRenderer>() : null;
         agent.updateRotation = false;
         agent.updateUpAxis = false;
         agent.speed = WanderSpeed;
@@ -152,7 +172,10 @@ public class SoundReactiveMonsterAI : MonoBehaviour
             if (state != State.Chase && distanceToPlayer <= DetectRange)
             {
                 state = State.Chase;
+                searchLooking = false;
                 sightLostTimer = 0f;
+                chaseTimer = 0f;
+                lastSeenPlayerPosition = PlayerNavPosition;
                 chaseDestinationTimer = ChaseDirectionUpdateInterval; // 발견한 그 프레임에 바로 추격을 시작한다.
                 // autoBraking은 목적지에 부드럽게 도착하려고 미리 감속하는 기능이다. Chase 중에는
                 // 목적지가 플레이어 위치로 계속 갱신되는 "움직이는 표적"이라 속도를 늦출 이유가
@@ -167,6 +190,10 @@ public class SoundReactiveMonsterAI : MonoBehaviour
                 bool blocked = IsSightBlocked(GamePosition, PlayerGamePosition);
                 bool sightLost = distanceToPlayer > LoseRange || blocked;
 
+                // 실제로 보이는 동안의 위치만 기억해둔다 - 포기했을 때 벽 뒤로 숨은 플레이어의
+                // 현재 위치가 아니라 "마지막으로 목격한 곳"으로 가서 찾게 하려는 것이다.
+                if (!sightLost) lastSeenPlayerPosition = PlayerNavPosition;
+
                 // 놓친 시간은 빠르게 쌓이지만 되찾았을 때는 그 절반 속도로만 줄어들게 해서, 모퉁이를
                 // 도는 순간 단 한 프레임만 다시 보여도 지금까지 쌓은 진행이 통째로 0으로 리셋되는 것을
                 // 막는다 - 몬스터 자신도 같은 모퉁이를 0.25초 뒤처져 따라 돌기 때문에 완전히 끊기지
@@ -175,16 +202,15 @@ public class SoundReactiveMonsterAI : MonoBehaviour
                     ? sightLostTimer + Time.deltaTime
                     : Mathf.Max(0f, sightLostTimer - Time.deltaTime * 2f);
 
-                if (sightLostTimer >= ChaseGiveUpSightLostDuration)
+                // 시야가 계속 확보돼도 추격이 MaxChaseDuration을 넘기면 끝낸다(0이면 무제한).
+                chaseTimer += Time.deltaTime;
+                bool chaseTimedOut = MaxChaseDuration > 0f && chaseTimer >= MaxChaseDuration;
+
+                if (sightLostTimer >= ChaseGiveUpSightLostDuration || chaseTimedOut)
                 {
-                    // 순간적으로 스친 정도가 아니라 일정 시간 이상 계속 놓쳤을 때만 포기한다. 순찰형과 달리
-                    // 탐색(두리번거리기) 단계 없이 곧바로 배회로 돌아간다 - 소리로 움직이는 몬스터라
-                    // 눈으로 찾아다니는 행동이 어울리지 않는다.
-                    agent.autoBraking = true; // Chase 중에 꺼둔 감속을 배회용으로 다시 켠다.
-                    // 배회 지점은 origin 주변에서 고르므로, 그대로 두면 처음 스폰된 곳까지 걸어서 되돌아간다.
-                    // 추격을 멈춘 이 자리를 새 배회 중심으로 삼아 그 근처에서 이어서 배회하게 한다.
-                    origin = transform.position;
-                    ReturnToWander();
+                    // 순간적으로 스친 정도가 아니라 일정 시간 이상 계속 놓쳤거나 최대 추격 시간이 지났을 때만
+                    // 추격을 끝내고, 마지막으로 본 위치로 가서 잠시 수색한다.
+                    EnterSearch(lastSeenPlayerPosition);
                 }
             }
 
@@ -232,6 +258,10 @@ public class SoundReactiveMonsterAI : MonoBehaviour
                     }
                     break;
 
+                case State.Search:
+                    UpdateSearch();
+                    break;
+
                 case State.Investigate:
                     if (!agent.pathPending && agent.remainingDistance <= WaypointStopDistance)
                     {
@@ -266,15 +296,19 @@ public class SoundReactiveMonsterAI : MonoBehaviour
             // Chase/Investigate는 모두 평소 배회보다 급박하게 움직이는 상태라 걷기보다
             // 우선하는 프레임(IsFleeing 슬롯 재사용)을 쓰고, Wander 중에는 실제로 속도가 나올 때만
             // Walk, 목적지에 도착해 대기 중이거나 정지해 있으면 Idle로 자연스럽게 떨어진다.
-            frameAnimator.IsFleeing = state == State.Chase || state == State.Investigate;
-            frameAnimator.IsMoving = state == State.Wander && agent.velocity.sqrMagnitude > MinMovingSpeed * MinMovingSpeed;
+            // 탐색 중 두리번거릴 때는 순찰형과 같이 Idle 프레임 + 좌우 반전으로 "둘러보는" 느낌을 내고,
+            // 사이사이 몇 걸음 옮길 때만 Walk 프레임을 쓴다.
+            frameAnimator.IsFleeing = state == State.Chase || state == State.Investigate || (state == State.Search && !searchLooking);
+            frameAnimator.IsMoving = (state == State.Wander || (state == State.Search && searchLooking)) &&
+                agent.velocity.sqrMagnitude > MinMovingSpeed * MinMovingSpeed;
         }
 
         // 동물(AnimalWander/AnimalFlee)과 동일한 좌우 반전 컴포넌트를 재사용한다 - agent.velocity의
         // x/z가 이 몬스터의 2D 좌표계(x, z)에서 그대로 가로/세로 이동 성분이므로 별도 변환이 필요 없다.
         // Wander/Investigate/Chase 등 상태와 무관하게 매 프레임 실제 이동 방향을 그대로 넘기면,
         // 좌우 성분이 거의 없을 때(위/아래 이동, 정지) AnimalFacingFlipper가 알아서 마지막 방향을 유지한다.
-        if (facingFlipper != null)
+        // 두리번거리며 제자리에 서 있을 때는 UpdateSearch가 방향을 직접 정하므로, 몇 걸음 옮기는 중(hasPath)에만 이동 방향을 따른다.
+        if (facingFlipper != null && !(state == State.Search && searchLooking && !agent.hasPath))
         {
             facingFlipper.SetMoveDirection(new Vector2(agent.velocity.x, agent.velocity.z));
         }
@@ -284,6 +318,77 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     {
         state = State.Wander;
         PickNewWanderDestination();
+    }
+
+    // 추격 종료 -> 탐색(Search): 순찰형과 같은 방식으로 마지막 목격 위치로 이동한 뒤, 도착하면 제자리에서
+    // 좌우로 방향을 바꿔가며 잠시 두리번거리고, 그래도 못 찾으면 배회로 돌아간다. 탐색 중 플레이어가
+    // DetectRange 안에 다시 들어오면 Update 맨 위의 발견 분기가 그대로 Chase로 되돌린다.
+    private void EnterSearch(Vector3 searchPoint)
+    {
+        state = State.Search;
+        agent.autoBraking = true; // Search는 고정된 한 지점으로 가서 서는 게 맞으므로 다시 켠다.
+        agent.speed = ChaseSpeed;
+        searchTimer = 0f;
+        searchLooking = false;
+        if (agent.isOnNavMesh)
+        {
+            Vector3 destination = NavMesh.SamplePosition(searchPoint, out NavMeshHit searchHit, 2f, NavMesh.AllAreas)
+                ? searchHit.position
+                : searchPoint;
+            agent.SetDestination(destination);
+        }
+    }
+
+    private void UpdateSearch()
+    {
+        searchTimer += Time.deltaTime;
+
+        if (!searchLooking)
+        {
+            // 목적지에 도착했거나, 길이 막혀 끝까지 못 가거나, 너무 오래 걸리면 그 자리에서 두리번거리기 시작한다.
+            bool arrived = !agent.pathPending && agent.remainingDistance <= WaypointStopDistance;
+            bool stuck = !agent.pathPending && agent.pathStatus != NavMeshPathStatus.PathComplete;
+            if (!arrived && !stuck && searchTimer < SearchTravelTimeout) return;
+
+            searchLooking = true;
+            searchTimer = 0f;
+            searchLookDuration = Random.Range(SearchLookDurationMin, SearchLookDurationMax);
+            searchTurnTimer = SearchLookTurnInterval;
+            searchCenter = transform.position;
+            agent.speed = SearchStepSpeed;
+            agent.ResetPath();
+            return;
+        }
+
+        // 제자리에서 좌우로 고개만 돌리면 너무 기계적이라, 방향을 바꿀 차례마다 일정 확률로 도착 지점
+        // 주변(searchCenter 기준이라 점점 멀리 벗어나지 않는다)의 가까운 곳으로 몇 걸음 천천히 옮긴다.
+        searchTurnTimer -= Time.deltaTime;
+        if (searchTurnTimer <= 0f)
+        {
+            searchTurnTimer += SearchLookTurnInterval;
+            Vector2 stepOffset = Random.insideUnitCircle * SearchStepRadius;
+            Vector3 stepPoint = searchCenter + new Vector3(stepOffset.x, 0f, stepOffset.y);
+            if (Random.value < SearchStepChance &&
+                NavMesh.SamplePosition(stepPoint, out NavMeshHit stepHit, SearchStepRadius, NavMesh.AllAreas))
+            {
+                agent.SetDestination(stepHit.position);
+            }
+            else
+            {
+                agent.ResetPath();
+                bool turnLeft = visualRenderer != null && !visualRenderer.flipX; // 지금 바라보는 반대쪽으로 돌아본다
+                facingFlipper?.SetMoveDirection(turnLeft ? Vector2.left : Vector2.right);
+            }
+        }
+
+        if (searchTimer >= searchLookDuration)
+        {
+            searchLooking = false;
+            // 배회 지점은 origin 주변에서 고르므로, 그대로 두면 처음 스폰된 곳까지 걸어서 되돌아간다.
+            // 탐색을 마친 이 자리를 새 배회 중심으로 삼아 그 근처에서 이어서 배회하게 한다.
+            origin = transform.position;
+            ReturnToWander();
+        }
     }
 
     private void PickNewWanderDestination()
@@ -310,6 +415,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
 
     private Vector2 GamePosition => new Vector2(transform.position.x, transform.position.z);
     private Vector2 PlayerGamePosition => new Vector2(player.position.x, player.position.y);
+    private Vector3 PlayerNavPosition => new Vector3(player.position.x, 0f, player.position.y);
 
     // 문처럼 폭이 좁은 연결부에서는 중심선 하나만으로 시야 차단을 판정하면, 몬스터나 플레이어가
     // 문 한가운데에서 살짝만 벗어나 있어도 선이 문틀 모서리에 걸려 "완전히 막힌 것"으로 잘못
@@ -327,14 +433,34 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private bool IsSightBlocked(Vector2 from, Vector2 to)
     {
         int blockedLines = 0;
-        if (Physics2D.Linecast(from, to, sightBlockingMask).collider != null) blockedLines++;
+        if (IsLineBlocked(from, to)) blockedLines++;
 
         Vector2 delta = to - from;
         Vector2 offset = new Vector2(-delta.y, delta.x).normalized * SightSampleOffset;
-        if (Physics2D.Linecast(from + offset, to + offset, sightBlockingMask).collider != null) blockedLines++;
-        if (Physics2D.Linecast(from - offset, to - offset, sightBlockingMask).collider != null) blockedLines++;
+        if (IsLineBlocked(from + offset, to + offset)) blockedLines++;
+        if (IsLineBlocked(from - offset, to - offset)) blockedLines++;
 
         return blockedLines >= 2;
+    }
+
+    private readonly List<RaycastHit2D> sightHits = new List<RaycastHit2D>();
+
+    // 선이 끝나는 지점은 플레이어 한가운데라 플레이어 자신의 콜라이더에 항상 걸린다 - 예전에는 첫 번째
+    // 충돌만 보고 판정해서 세 줄이 전부 "막힘"으로 나왔고, 시야 안에 서 있는 플레이어도
+    // ChaseGiveUpSightLostDuration 뒤에 놓친 것으로 처리됐다. 순찰형(MonsterAI)과 같이 트리거와
+    // 움직이는 리지드바디(플레이어, 동물)는 건너뛰고, 벽처럼 고정된 콜라이더만 시야를 가린 것으로 친다.
+    private bool IsLineBlocked(Vector2 from, Vector2 to)
+    {
+        ContactFilter2D filter = new ContactFilter2D { useTriggers = false };
+        filter.SetLayerMask(sightBlockingMask);
+        int hitCount = Physics2D.Linecast(from, to, filter, sightHits);
+        for (int i = 0; i < hitCount; i++)
+        {
+            Rigidbody2D body = sightHits[i].rigidbody;
+            if (body != null && body.bodyType != RigidbodyType2D.Static) continue;
+            return true;
+        }
+        return false;
     }
 
     private void HandleCatch()
