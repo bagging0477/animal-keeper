@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,7 +10,7 @@ using UnityEngine.UI;
 public class DayClearPanel : MonoBehaviour
 {
     [SerializeField] private Button confirmButton;
-    [SerializeField] private Text titleText;
+    [SerializeField] private TMP_Text titleText;
     [SerializeField] private string truckSceneName = "TruckScene";
 
     private void Awake()

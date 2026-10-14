@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,7 +10,7 @@ public class GameClearPanel : MonoBehaviour
 {
     [SerializeField] private string truckSceneName = "TruckScene";
     [SerializeField] private Button restartButton;
-    [SerializeField] private Text messageText;
+    [SerializeField] private TMP_Text messageText;
 
     private void Awake()
     {
