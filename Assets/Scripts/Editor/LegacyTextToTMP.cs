@@ -10,6 +10,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.TextCore;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
@@ -49,8 +50,8 @@ public static class LegacyTextToTMP
     // 캡처 때 실행 중에만 채워지는 빈 글씨에 넣어 보는 견본 문자열(저장하지 않는다). 가장 긴 경우를 고른다.
     private static readonly Dictionary<string, string> SampleTexts = new Dictionary<string, string>
     {
-        { "NameText", "트래퍼" },
-        { "StatsText", "체력 4 · 이동 속도 5.5\n스태미나 120 · 시야 7.7\n무기: 마취총 · 시작 아이템 지뢰 2" },
+        { "NameText", "스카우트" },
+        { "StatsText", "체력: 100%\n이동속도: 평균의 1.05배\n무기: 원거리 (마취총)" },
         { "PriceText", "1200 마일리지 - E를 눌러 구매 후 장착" },
     };
 
@@ -145,6 +146,7 @@ public static class LegacyTextToTMP
         // 글씨가 사라질 수 있으므로 넘침(Overflow)으로 두고, 넘치는 곳은 Verify가 따로 알려 준다.
         tmp.overflowMode = TextOverflowModes.Overflow;
         tmp.lineSpacing = (lineSpacing - 1f) * 100f;
+        bool matchedPitch = hWrap == HorizontalWrapMode.Wrap && MatchLegacyLinePitch(tmp, lineSpacing);
         tmp.margin = Vector4.zero;
         tmp.extraPadding = false;
 
@@ -157,6 +159,7 @@ public static class LegacyTextToTMP
         if (mileage) notes.Add("노란색 프리셋");
         if (bestFit) notes.Add("BestFit 껐음");
         if (style == FontStyle.Bold || style == FontStyle.BoldAndItalic) notes.Add("Bold 뺌");
+        if (matchedPitch) notes.Add($"줄 간격 {tmp.lineSpacing:0.#}(레거시와 같은 줄 높이)");
         if (vWrap == VerticalWrapMode.Truncate) notes.Add("세로 Truncate→Overflow");
         if (scaleNoise) notes.Add($"Scale {scale.x:0.#######}→1");
         else if (scale != Vector3.one) notes.Add($"Scale {scale.x:0.######} 그대로(확인 필요)");
@@ -176,6 +179,56 @@ public static class LegacyTextToTMP
         TextAnchor.LowerCenter => TextAlignmentOptions.Bottom,
         _ => TextAlignmentOptions.BottomRight,
     };
+
+    /// <summary>
+    /// NotoSansKR(TMP)은 레거시 내장 폰트보다 줄 높이가 커서 여러 줄 글씨가 상자 밖으로 밀려난다. 줄바꿈되는 글씨는
+    /// 줄과 줄 사이 거리를 레거시 때와 같게 lineSpacing(1/100 em 단위)으로 맞춘다. 한 줄일 때는 영향이 없다.
+    /// </summary>
+    private static bool MatchLegacyLinePitch(TMP_Text tmp, float legacyLineSpacing)
+    {
+        float legacyPitch = LegacyLinePitch(Mathf.RoundToInt(tmp.fontSize), legacyLineSpacing);
+        FaceInfo face = tmp.font.faceInfo;
+        if (legacyPitch <= 0f || face.pointSize <= 0f || tmp.fontSize <= 0f) return false;
+        float tmpPitch = face.lineHeight * tmp.fontSize / face.pointSize;
+        tmp.lineSpacing = Mathf.Round((legacyPitch - tmpPitch) / (tmp.fontSize * 0.01f) * 10f) / 10f;
+        return true;
+    }
+
+    private static float LegacyLinePitch(int fontSize, float lineSpacing)
+    {
+        Font builtin = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        if (builtin == null) return 0f;
+        var settings = new TextGenerationSettings
+        {
+            font = builtin, fontSize = fontSize, lineSpacing = lineSpacing, scaleFactor = 1f, color = Color.white,
+            generationExtents = new Vector2(1000f, 1000f), pivot = Vector2.zero, richText = false, textAnchor = TextAnchor.UpperLeft,
+            horizontalOverflow = HorizontalWrapMode.Overflow, verticalOverflow = VerticalWrapMode.Overflow, updateBounds = true,
+        };
+        var generator = new TextGenerator();
+        generator.Populate("가\n가", settings);
+        return generator.lineCount < 2 ? 0f : generator.lines[0].topY - generator.lines[1].topY;
+    }
+
+    /// <summary>이미 변환한 단계의 줄바꿈 글씨에 MatchLegacyLinePitch를 적용한다(-tmpStage). 레거시 줄 간격은 1이었다.</summary>
+    public static void MatchLineSpacing() => RunBatch(() =>
+    {
+        int stage = RequireStage();
+        var report = new StringBuilder($"LegacyTextToTMP.MatchLineSpacing stage {stage} {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n");
+        foreach (string assetPath in StageAssets[stage])
+        {
+            report.AppendLine($"\n== {assetPath}");
+            EditAsset(assetPath, true, roots =>
+            {
+                foreach (TMP_Text t in roots.SelectMany(r => r.GetComponentsInChildren<TMP_Text>(true)))
+                {
+                    if (t.textWrappingMode != TextWrappingModes.Normal || !MatchLegacyLinePitch(t, 1f)) continue;
+                    EditorUtility.SetDirty(t);
+                    report.AppendLine($"  줄 간격 {t.lineSpacing:0.#}: {PathOf(t.transform)} (size {t.fontSize})");
+                }
+            });
+        }
+        WriteReport($"stage{stage}_linespacing.txt", report);
+    });
 
     private static int LegacyLineCount(Text text)
     {
@@ -561,7 +614,9 @@ public static class LegacyTextToTMP
                     yield return null;
                 }
                 popup.Show(SampleTexts["NameText"], SampleTexts["StatsText"], SampleTexts["PriceText"], stand != null ? stand.transform : popup.transform);
-                ReportTexts("ClassSelectScene 직업 팝업", popup.gameObject.scene.GetRootGameObjects().First(r => r.GetComponentInChildren<ClassInfoPopup>(true) != null));
+                GameObject panelRoot = PrivateField<GameObject>(popup, "panelRoot");
+                if (panelRoot == null || !panelRoot.activeInHierarchy) { smokeLogs.Add("[Smoke] 직업 팝업 패널이 켜지지 않았다"); yield break; }
+                ReportTexts("ClassSelectScene 직업 팝업", panelRoot);
                 break;
             }
             default:
