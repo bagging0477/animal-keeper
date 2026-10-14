@@ -132,13 +132,8 @@ public static class LegacyTextToTMP
         tmp.text = content;
         tmp.enableAutoSizing = false;
         tmp.fontSize = fontSize;
-        tmp.fontStyle = style switch
-        {
-            FontStyle.Bold => FontStyles.Bold,
-            FontStyle.Italic => FontStyles.Italic,
-            FontStyle.BoldAndItalic => FontStyles.Bold | FontStyles.Italic,
-            _ => FontStyles.Normal,
-        };
+        // UIFont SDF는 이미 NotoSansKR-Bold로 만든 폰트라 Bold 스타일을 더하면 외곽선과 합쳐 덩어리처럼 보인다 - 폰트 자체 굵기만 쓴다.
+        tmp.fontStyle = style == FontStyle.Italic || style == FontStyle.BoldAndItalic ? FontStyles.Italic : FontStyles.Normal;
         tmp.alignment = MapAlignment(anchor);
         tmp.color = mileage ? Color.white : color;
         tmp.raycastTarget = raycast;
@@ -161,6 +156,7 @@ public static class LegacyTextToTMP
         var notes = new List<string>();
         if (mileage) notes.Add("노란색 프리셋");
         if (bestFit) notes.Add("BestFit 껐음");
+        if (style == FontStyle.Bold || style == FontStyle.BoldAndItalic) notes.Add("Bold 뺌");
         if (vWrap == VerticalWrapMode.Truncate) notes.Add("세로 Truncate→Overflow");
         if (scaleNoise) notes.Add($"Scale {scale.x:0.#######}→1");
         else if (scale != Vector3.one) notes.Add($"Scale {scale.x:0.######} 그대로(확인 필요)");
@@ -188,6 +184,28 @@ public static class LegacyTextToTMP
         generator.Populate(text.text, text.GetGenerationSettings(((RectTransform)text.transform).rect.size));
         return generator.lineCount;
     }
+
+    /// <summary>Bold 스타일을 그대로 옮기던 때 바꾼 단계의 TMP에서 Bold를 뺀다(-tmpStage). 이 단계 에셋의 TMP는 모두 변환으로 만든 것이다.</summary>
+    public static void ClearBold() => RunBatch(() =>
+    {
+        int stage = RequireStage();
+        var report = new StringBuilder($"LegacyTextToTMP.ClearBold stage {stage} {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n");
+        foreach (string assetPath in StageAssets[stage])
+        {
+            report.AppendLine($"\n== {assetPath}");
+            EditAsset(assetPath, true, roots =>
+            {
+                foreach (TMP_Text t in roots.SelectMany(r => r.GetComponentsInChildren<TMP_Text>(true)))
+                {
+                    if ((t.fontStyle & FontStyles.Bold) == 0) continue;
+                    t.fontStyle &= ~FontStyles.Bold;
+                    EditorUtility.SetDirty(t);
+                    report.AppendLine($"  Bold 뺌: {PathOf(t.transform)} \"{OneLine(t.text)}\"");
+                }
+            });
+        }
+        WriteReport($"stage{stage}_clearbold.txt", report);
+    });
 
     // ===================== Relink =====================
 
@@ -514,6 +532,36 @@ public static class LegacyTextToTMP
                 yield return WaitFrames(3);
                 ReportTexts("GameOverPanel", panel);
                 Time.timeScale = 1f;
+                break;
+            }
+            case 2:
+            {
+                // TitleScene: 시작 버튼과 설정 창.
+                Canvas title = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include).FirstOrDefault(c => c.name == "TitleCanvas");
+                if (title == null) { smokeLogs.Add("[Smoke] TitleCanvas가 없다"); yield break; }
+                ReportTexts("TitleScene 버튼", title.gameObject);
+                Transform settings = title.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name == "SettingsPanel");
+                if (settings != null)
+                {
+                    settings.gameObject.SetActive(true);
+                    yield return WaitFrames(3);
+                    ReportTexts("TitleScene 설정 창", settings.gameObject);
+                    settings.gameObject.SetActive(false);
+                }
+
+                // ClassSelectScene: 직업 정보 팝업(실제 스탠드 위에 띄운다)과 보유 마일리지.
+                SceneManager.LoadScene("ClassSelectScene");
+                yield return WaitFrames(30);
+                ClassInfoPopup popup = Object.FindAnyObjectByType<ClassInfoPopup>(FindObjectsInactive.Include);
+                ClassInteractPoint stand = Object.FindAnyObjectByType<ClassInteractPoint>();
+                if (popup == null) { smokeLogs.Add("[Smoke] ClassInfoPopup이 없다"); yield break; }
+                for (int i = 0; i < 5; i++)
+                {
+                    popup.Show(SampleTexts["NameText"], SampleTexts["StatsText"], SampleTexts["PriceText"], stand != null ? stand.transform : popup.transform);
+                    yield return null;
+                }
+                popup.Show(SampleTexts["NameText"], SampleTexts["StatsText"], SampleTexts["PriceText"], stand != null ? stand.transform : popup.transform);
+                ReportTexts("ClassSelectScene 직업 팝업", popup.gameObject.scene.GetRootGameObjects().First(r => r.GetComponentInChildren<ClassInfoPopup>(true) != null));
                 break;
             }
             default:
