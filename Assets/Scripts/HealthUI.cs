@@ -1,10 +1,11 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HealthUI : MonoBehaviour
 {
     [SerializeField] private Image fillImage;
-    [SerializeField] private Text healthText;
+    [SerializeField] private TMP_Text healthText;
     [SerializeField] [Range(0f, 1f)] private float lowHealthRatio = 0.3f;
     [SerializeField] private Color normalColor = new Color(0.3f, 0.8f, 0.35f);
     [SerializeField] private Color lowColor = new Color(0.85f, 0.2f, 0.2f);

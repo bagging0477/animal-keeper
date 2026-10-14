@@ -1,13 +1,14 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TruckSceneUI : MonoBehaviour
 {
-    [SerializeField] private Text dayText;
-    [SerializeField] private Text cargoText;
-    [SerializeField] private Text targetText;
+    [SerializeField] private TMP_Text dayText;
+    [SerializeField] private TMP_Text cargoText;
+    [SerializeField] private TMP_Text targetText;
     [SerializeField] private Image targetFillImage;
-    [SerializeField] private Text mileageText;
+    [SerializeField] private TMP_Text mileageText;
 
     private void Start()
     {

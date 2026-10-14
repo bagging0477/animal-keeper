@@ -499,9 +499,9 @@ public static class InventorySlotTest
         Check(shown.Count == expected && centered && even && sameSize,
             $"UI {shown.Count}칸 (기대 {expected}), x = [{xs}], 간격 {pitch:0.#}, 크기 {(shown.Count > 0 ? shown[0].sizeDelta.ToString() : "-")}, 가운데 정렬 {centered}");
 
-        List<Text> labels = shown.Select(s => s.GetComponentsInChildren<Text>(true).FirstOrDefault()).ToList();
+        List<TMP_Text> labels = shown.Select(s => s.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault()).ToList();
         string labelTexts = string.Join(",", labels.Select(l => l != null ? l.text : "?"));
-        Text first = labels.FirstOrDefault();
+        TMP_Text first = labels.FirstOrDefault();
         bool sameStyle = first != null && labels.All(l => l != null && l.fontSize == first.fontSize && l.font == first.font
             && l.alignment == first.alignment && ((RectTransform)l.transform).anchoredPosition == ((RectTransform)first.transform).anchoredPosition);
         string expectedLabels = string.Join(",", Enumerable.Range(1, expected));

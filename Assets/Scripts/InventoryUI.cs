@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +9,7 @@ public class InventorySlotUI
 {
     public Image frame;
     public Image fill;
-    public Text label;
+    public TMP_Text label;
 
     /// <summary>슬롯에 담긴 아이템의 스프라이트(동물/지뢰/폭탄 아이콘)를 그리는 Image. 비워두면
     /// InventoryUI가 실행 시 frame 아래에 안쪽 여백을 둔 Image를 만들어 채운다. 빈 슬롯에서는 꺼진다.</summary>

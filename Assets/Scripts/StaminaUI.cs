@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,7 +7,7 @@ using UnityEngine.UI;
 public class StaminaUI : MonoBehaviour
 {
     [SerializeField] private Image fillImage;
-    [SerializeField] private Text staminaText;
+    [SerializeField] private TMP_Text staminaText;
     [SerializeField] private Color normalColor = new Color(0.95f, 0.8f, 0.25f);
     [SerializeField] private Color sprintingColor = new Color(0.95f, 0.5f, 0.15f);
     [SerializeField] [Range(0f, 1f)] private float lowStaminaRatio = 0.25f;
