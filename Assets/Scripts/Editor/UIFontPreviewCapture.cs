@@ -155,7 +155,7 @@ public static class UIFontPreviewCapture
         return canvas;
     }
 
-    private static Canvas CreateCanvas(string name)
+    internal static Canvas CreateCanvas(string name)
     {
         var go = new GameObject(name, typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
         go.layer = 5;
@@ -190,7 +190,7 @@ public static class UIFontPreviewCapture
 
     // ---------- 렌더링 ----------
 
-    private static void Render(string file, IList<Canvas> canvases, Vector2Int res)
+    internal static void Render(string file, IList<Canvas> canvases, Vector2Int res)
     {
         var camGo = new GameObject("PreviewCamera");
         camGo.transform.position = new Vector3(100000f, 100000f, -10f); // 씬의 월드 오브젝트가 찍히지 않게 멀리 둔다
