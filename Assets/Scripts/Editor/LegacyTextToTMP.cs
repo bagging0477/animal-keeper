@@ -55,6 +55,15 @@ public static class LegacyTextToTMP
         { "PriceText", "1200 마일리지 - E를 눌러 구매 후 장착" },
     };
 
+    // 저장된 값과 달리 실행 중에 더 길어지는 HUD 글씨(InventoryUI, TruckSceneUI가 넣는 형식)도 캡처 때 바꿔 넣어 본다.
+    private static readonly Dictionary<string, string> RuntimeTexts = new Dictionary<string, string>
+    {
+        { "WeaponSlotLabel", "Q\n마취총\n3/3" },
+        { "DayText", "Day 10" },
+        { "CargoText", "적재량 12마리 · 128kg" },
+        { "TargetText", "목표 진행 10/10" },
+    };
+
     private static int Stage => ArgInt("-tmpStage", 0);
     private static string Tag => ArgString("-tmpTag", "after");
 
@@ -153,6 +162,8 @@ public static class LegacyTextToTMP
         rt.anchorMin = aMin; rt.anchorMax = aMax; rt.anchoredPosition = pos; rt.sizeDelta = size; rt.pivot = pivot;
         bool scaleNoise = (scale - Vector3.one).sqrMagnitude > 0f && Mathf.Abs(scale.x - 1f) < 1e-3f && Mathf.Abs(scale.y - 1f) < 1e-3f && Mathf.Abs(scale.z - 1f) < 1e-3f;
         if (scaleNoise) rt.localScale = Vector3.one;
+        string baked = null;
+        if (!scaleNoise && scale != Vector3.one) baked = BakeScale(rt, tmp, scale);
         EditorUtility.SetDirty(go);
 
         var notes = new List<string>();
@@ -162,9 +173,27 @@ public static class LegacyTextToTMP
         if (matchedPitch) notes.Add($"줄 간격 {tmp.lineSpacing:0.#}(레거시와 같은 줄 높이)");
         if (vWrap == VerticalWrapMode.Truncate) notes.Add("세로 Truncate→Overflow");
         if (scaleNoise) notes.Add($"Scale {scale.x:0.#######}→1");
-        else if (scale != Vector3.one) notes.Add($"Scale {scale.x:0.######} 그대로(확인 필요)");
+        else if (baked != null) notes.Add(baked);
         return $"{PathOf(go.transform)}: \"{OneLine(content)}\" size {fontSize} {style} {anchor}→{tmp.alignment} 줄 {legacyLines}" +
                (notes.Count > 0 ? "  [" + string.Join(", ", notes) + "]" : "");
+    }
+
+    /// <summary>
+    /// 고르게 줄어든 글씨(Scale s)를 Scale 1로 바꾸고 같은 겉보기가 되게 글자 크기와 상자 크기에 s를 곱한다. 피벗이 고정점이라
+    /// anchoredPosition은 그대로다. 앵커가 벌어진 축은 보이는 길이 s * (부모 길이 * 앵커 폭 + sizeDelta)가 같아지도록 sizeDelta를 구한다.
+    /// </summary>
+    private static string BakeScale(RectTransform rt, TMP_Text tmp, Vector3 scale)
+    {
+        if (Mathf.Abs(scale.x - scale.y) > 1e-4f || rt.parent is not RectTransform parent) return $"Scale {scale} 그대로(고르지 않음, 확인 필요)";
+        float s = scale.x;
+        Vector2 parentSize = parent.rect.size, before = rt.sizeDelta, stretch = rt.anchorMax - rt.anchorMin;
+        Vector2 visibleBefore = new Vector2(s * (parentSize.x * stretch.x + before.x), s * (parentSize.y * stretch.y + before.y));
+        rt.sizeDelta = new Vector2(s * before.x + (s - 1f) * parentSize.x * stretch.x, s * before.y + (s - 1f) * parentSize.y * stretch.y);
+        rt.localScale = Vector3.one;
+        float fontBefore = tmp.fontSize;
+        tmp.fontSize = Mathf.Round(fontBefore * s * 100f) / 100f;
+        Vector2 visibleAfter = rt.rect.size;
+        return $"Scale {s:0.######}→1, 글자 {fontBefore}→{tmp.fontSize}, sizeDelta {before}→{rt.sizeDelta}, 보이는 크기 {visibleBefore}→{visibleAfter}";
     }
 
     private static TextAlignmentOptions MapAlignment(TextAnchor a) => a switch
@@ -473,7 +502,8 @@ public static class LegacyTextToTMP
         foreach (Component c in canvas.GetComponentsInChildren<TMP_Text>(true).Cast<Component>().Concat(canvas.GetComponentsInChildren<Text>(true)))
         {
             string current = c is TMP_Text tmp ? tmp.text : ((Text)c).text;
-            if (!string.IsNullOrEmpty(current) || !SampleTexts.TryGetValue(c.gameObject.name, out string sample)) continue;
+            if (!RuntimeTexts.TryGetValue(c.gameObject.name, out string sample) &&
+                (!string.IsNullOrEmpty(current) || !SampleTexts.TryGetValue(c.gameObject.name, out sample))) continue;
             restore.Add((c, current));
             SetText(c, sample);
         }
@@ -640,6 +670,35 @@ public static class LegacyTextToTMP
                     panel.gameObject.SetActive(false);
                     Time.timeScale = 1f;
                 }
+                break;
+            }
+            case 4:
+            {
+                // 새 게임이면 TruckScene이 직업 선택으로 돌려보내므로 시작 직업을 고른 것으로 처리하고, 무기 칸이 보이게 거너로 둔다.
+                GameManager gm = GameManager.Instance;
+                if (gm == null) { smokeLogs.Add("[Smoke] GameManager가 없다"); yield break; }
+                if (gm.NeedsStartingClassSelection) gm.CompleteStartingClassSelection();
+                gm.SelectClass(PlayerClass.Gunner);
+
+                SceneManager.LoadScene("TruckScene");
+                yield return WaitFrames(40);
+                Canvas truckHud = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include).FirstOrDefault(c => c.isRootCanvas && c.name == "Canvas");
+                if (truckHud == null) { smokeLogs.Add("[Smoke] TruckScene Canvas가 없다"); yield break; }
+                ReportTexts("TruckScene HUD", truckHud.gameObject);
+                Transform hub = truckHud.GetComponentsInChildren<Transform>(true).FirstOrDefault(t => t.name == "HubMenuPanel");
+                if (hub != null)
+                {
+                    hub.gameObject.SetActive(true);
+                    yield return WaitFrames(3);
+                    ReportTexts("TruckScene 허브 메뉴", hub.gameObject);
+                    hub.gameObject.SetActive(false);
+                }
+
+                SceneManager.LoadScene("VillageScene");
+                yield return WaitFrames(60);
+                Canvas villageHud = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include).FirstOrDefault(c => c.isRootCanvas && c.name == "PromptCanvas");
+                if (villageHud == null) { smokeLogs.Add("[Smoke] VillageScene PromptCanvas가 없다"); yield break; }
+                ReportTexts("VillageScene HUD (거너, 무기 칸 포함)", villageHud.gameObject);
                 break;
             }
             default:

@@ -213,8 +213,10 @@ public static class UIFontPreviewCapture
             canvas.planeDistance = 1f + saved.Count * 0.01f;
             if (scaler != null && scaler.enabled)
             {
-                canvas.scaleFactor = ScaleFactorFor(scaler, res);
+                // CanvasScaler는 꺼질 때 scaleFactor를 1로 되돌리므로 먼저 끄고 나서 해상도에 맞는 배율을 넣는다.
+                float factor = ScaleFactorFor(scaler, res);
                 scaler.enabled = false;
+                canvas.scaleFactor = factor;
             }
         }
 
