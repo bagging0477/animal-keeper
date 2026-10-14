@@ -12,7 +12,7 @@ using UnityEngine;
 ///    SimpleFrameAnimator, AnimalFacingFlipper)을 그대로 쓰고 행동 스크립트만 AnimalTurtle로 바꾼다(AnimalFlee의 필드는 이어받는다).
 ///    줍기 소리는 animal_turtle_pickup.wav로 바꾼다.
 /// 3) GameBalanceConfig.turtlePrefab에 연결한다.
-/// 프레임 매핑: 걷기/도주 18~25, 기절(잠들기 전) 14, 잠 26~31 반복, 숨기 37~41(나오기는 그 역순). 다시 실행하면 프리팹을 새로 만든다.
+/// 프레임 매핑: 걷기/도주 23~26, 기절(잠들기 전) 14, 잠 26~31 반복, 숨기 37~41(나오기는 그 역순). 다시 실행하면 프리팹을 새로 만든다.
 /// </summary>
 public static class TurtleAssetBuilder
 {
@@ -128,7 +128,7 @@ public static class TurtleAssetBuilder
         {
             // 번호는 turtle_N(시트 전체 순서). 배회와 도주는 같은 걸음 프레임을 쓰고 도주만 더 빠르게 재생한다.
             Sprite idle = frames[RowStart(0)];
-            Sprite[] walk = Frames(frames, 18, 25);
+            Sprite[] walk = Frames(frames, 23, 26);
             Sprite[] sleep = Frames(frames, 26, 31);
             Sprite[] hide = Frames(frames, 37, 41);
             Sprite[] emerge = hide.Reverse().ToArray();

@@ -413,7 +413,9 @@ public static class TurtleTest
             Check(sleepSprites.Count >= 3 && sleepSprites.IsSubsetOf(expected), $"잠든 동안 프레임 {string.Join(",", sleepSprites.OrderBy(s => s))}");
             yield return WaitRealtime(1f);
             string awakeSprite = sr.sprite != null ? sr.sprite.name : "-";
-            Check(!sleep.IsAsleep && !expected.Contains(awakeSprite) && awakeSprite != "turtle_14", $"깬 뒤 프레임 {awakeSprite}");
+            // 걷기 프레임(23~26)이 잠 첫 프레임 26을 함께 쓰므로, 깬 뒤에는 잠에만 있는 27~31과 기절 14가 아니어야 한다.
+            bool sleepOnlyFrame = awakeSprite != "turtle_26" && expected.Contains(awakeSprite);
+            Check(!sleep.IsAsleep && !sleepOnlyFrame && awakeSprite != "turtle_14", $"깬 뒤 프레임 {awakeSprite}");
         }
         Object.Destroy(turtle.gameObject);
 

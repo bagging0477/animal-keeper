@@ -277,23 +277,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SimpleFrameAnimator
   idleSprite: {fileID: 1997067307, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   walkFrames:
-  - {fileID: -296871923, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -1809784832, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -1759901489, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: 139886115, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -2059907373, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: -1892884235, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: -1816720621, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: 516143585, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: 544513911, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   fleeFrames:
-  - {fileID: -296871923, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -1809784832, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -1759901489, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: 139886115, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -2059907373, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: -1892884235, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: -1816720621, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: 516143585, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: 544513911, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   frameRate: 10
   fleeFrameRate: 20
   attack1Frames: []
