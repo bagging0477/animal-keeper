@@ -233,6 +233,7 @@ public static class TurtleTest
                 GameObject root = GameObject.Find("GeneratedMap");
                 AnimalRescue[] all = root.GetComponentsInChildren<AnimalRescue>(true);
                 int seedTurtles = all.Count(a => a.GetComponent<AnimalTurtle>() != null);
+                sb.AppendLine($"    격자 {cols}x{rows} 시드 {seed}: 거위 {all.Count(a => a.GetComponent<AnimalGoose>() != null)}");
                 int monsters = root.GetComponentsInChildren<MonsterHealth>(true).Length;
                 animals += all.Length;
                 turtles += seedTurtles;
