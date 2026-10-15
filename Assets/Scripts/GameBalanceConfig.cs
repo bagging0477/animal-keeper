@@ -162,19 +162,19 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("격자 맵 전체 동물 수. 대상 방마다 먼저 한 마리씩 돌아가고, 남으면 방당 상한까지 바닥이 넓은 방에 더 자주 간다. " +
         "모든 방이 상한에 차서 다 못 놓으면 경고를 남기고 상한까지만 놓는다.")]
     [Min(0)]
-    public int gridAnimalTotal = 27;
+    public int gridAnimalTotal = 41;
 
     [Tooltip("격자 맵 전체 몬스터 수. 트럭 방(과 VillageMapGenerator.monsterFreeRoomRadius 안의 방)에는 두지 않고, 나머지 방에 동물과 같은 규칙으로 나눈다.")]
     [Min(0)]
-    public int gridMonsterTotal = 12;
+    public int gridMonsterTotal = 18;
 
     [Tooltip("격자 맵에서 방 하나에 둘 수 있는 동물 최대 수")]
     [Min(1)]
-    public int gridMaxAnimalsPerRoom = 3;
+    public int gridMaxAnimalsPerRoom = 6;
 
     [Tooltip("격자 맵에서 방 하나에 둘 수 있는 몬스터 최대 수")]
     [Min(1)]
-    public int gridMaxMonstersPerRoom = 2;
+    public int gridMaxMonstersPerRoom = 4;
 
     [Header("상태이상 - 포획망 스턴 / 마취총 수면")]
     [Tooltip("포획망에 맞은 몬스터가 스턴 상태가 되는 시간(초)")]

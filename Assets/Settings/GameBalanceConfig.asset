@@ -48,10 +48,10 @@ MonoBehaviour:
   gridCorridorWidth: 6
   gridCorridorGap: 8
   gridCorridorFadeDepth: 1
-  gridAnimalTotal: 27
-  gridMonsterTotal: 12
-  gridMaxAnimalsPerRoom: 3
-  gridMaxMonstersPerRoom: 2
+  gridAnimalTotal: 41
+  gridMonsterTotal: 18
+  gridMaxAnimalsPerRoom: 6
+  gridMaxMonstersPerRoom: 4
   stunDuration: 0.4
   sleepDelay: 0.6
   sleepDuration: 4.2
