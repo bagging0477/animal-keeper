@@ -14,8 +14,9 @@ public class AnimalSleep : MonoBehaviour, ISleepable
     private void OnEnable() => Active.Add(this);
     private void OnDisable() => Active.Remove(this);
 
-    [Tooltip("체크하면 마취에 맞는 즉시(sleepDelay 없이) 잠든다. 거위 전용 - 다른 동물은 끈 채로 둔다.")]
-    [SerializeField] private bool sleepImmediately;
+    /// <summary>0보다 크면 맞은 뒤 넘겨받은 delay 대신 이 시간 동안 쓰러지는 동작을 한 다음 잠든다. 거위 전용 - AnimalGoose가 Awake에서
+    /// GameBalanceConfig.gooseDownDuration으로 정한다. 다른 동물은 0 그대로라 예전처럼 delay 뒤에 잠든다.</summary>
+    public float DownDuration { get; set; }
 
     private float asleepTimer;
     private bool sleepPending;
@@ -52,11 +53,16 @@ public class AnimalSleep : MonoBehaviour, ISleepable
 
     public void PutToSleep(float delay, float duration)
     {
-        if (sleepImmediately)
+        if (DownDuration > 0f)
         {
-            sleepPending = false;
-            asleepTimer = duration;
-            return;
+            // 이미 잠들어 있으면 다시 쓰러지지 않고 기절 시간만 새로 채운다. 쓰러지는 중에 다시 맞으면 무시한다(시간이 늘어나지 않는다).
+            if (IsAsleep)
+            {
+                asleepTimer = duration;
+                return;
+            }
+            if (sleepPending) return;
+            delay = DownDuration;
         }
 
         sleepPending = true;

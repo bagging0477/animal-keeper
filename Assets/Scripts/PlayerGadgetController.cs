@@ -88,5 +88,18 @@ public class PlayerGadgetController : MonoBehaviour
 
             Debug.Log($"{monster.name}가 폭탄 범위에 맞음! 데미지: {damage}, 스턴: {stunDuration}초");
         }
+
+        // 거위만 폭탄에 잠든다 - 마취 다트와 같은 PutToSleep을 써서 쓰러지는 동작 뒤에 잠들고(AnimalSleep.DownDuration),
+        // 수면 시간과 깬 뒤 동작도 마취총과 같다. 데미지는 주지 않는다.
+        float sleepDelay = config != null ? config.sleepDelay : 1f;
+        float sleepDuration = config != null ? config.sleepDuration : 3.5f;
+        for (int i = AnimalSleep.Active.Count - 1; i >= 0; i--)
+        {
+            AnimalSleep animal = AnimalSleep.Active[i];
+            if (animal.GetComponent<AnimalGoose>() == null) continue;
+            if (Vector2.Distance(origin, animal.GamePosition) > radius) continue;
+
+            animal.PutToSleep(sleepDelay, sleepDuration);
+        }
     }
 }

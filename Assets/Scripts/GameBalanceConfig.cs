@@ -395,6 +395,10 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("도망을 마친 뒤 제자리에 멈춰 있는 시간(초). 끝나면 다시 느리게 배회한다.")]
     public float gooseRestDuration = 2f;
 
+    [Tooltip("마취총/폭탄에 맞은 뒤 제자리에서 쓰러지는 동작(시트 6번째 줄 8프레임)을 하는 시간(초). 이 동안은 들 수 없고, 끝나면 기절(수면)한다. " +
+        "다시 맞아도 늘어나지 않는다. 0.8 = 8프레임 / 10fps(프리팹 SimpleFrameAnimator.frameRate)로 애니메이션 한 번 길이다.")]
+    public float gooseDownDuration = 0.8f;
+
     [Tooltip("거위 무게 범위 (스폰마다 이 사이의 정수, 양 끝 포함)")]
     public int gooseMinWeight = 14;
     public int gooseMaxWeight = 21;

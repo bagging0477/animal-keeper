@@ -182,11 +182,8 @@ public static class GooseAssetBuilder
 
             SerializedObject goose = new SerializedObject(root.GetComponent<AnimalGoose>());
             goose.FindProperty("cryClip").objectReferenceValue = cry;
+            SetArray(goose.FindProperty("downFrames"), frames.Skip(40).Take(8).ToArray());
             goose.ApplyModifiedPropertiesWithoutUndo();
-
-            SerializedObject sleep = new SerializedObject(root.GetComponent<AnimalSleep>());
-            sleep.FindProperty("sleepImmediately").boolValue = true;
-            sleep.ApplyModifiedPropertiesWithoutUndo();
 
             CircleCollider2D collider = root.GetComponent<CircleCollider2D>();
             collider.offset = Vector2.zero;

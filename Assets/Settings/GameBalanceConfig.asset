@@ -112,6 +112,7 @@ MonoBehaviour:
   gooseFleeSpeed: 7.17255
   gooseFleeDistance: 12
   gooseRestDuration: 2
+  gooseDownDuration: 0.8
   gooseMinWeight: 14
   gooseMaxWeight: 21
   maxStamina: 85

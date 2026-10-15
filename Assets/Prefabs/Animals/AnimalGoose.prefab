@@ -111,7 +111,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84876a3928a3ebc4bad55b5eac83816e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalSleep
-  sleepImmediately: 1
 --- !u!114 &5374135412694625701
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,6 +163,15 @@ MonoBehaviour:
   minMovingSpeed: 0.05
   cryClip: {fileID: 0}
   cryVolume: 1
+  downFrames:
+  - {fileID: -8141919227879365361, guid: ef45a3b829e1ccf45a4d533513e0bda6, type: 3}
+  - {fileID: -3252436058574046933, guid: ef45a3b829e1ccf45a4d533513e0bda6, type: 3}
+  - {fileID: 6088087777703898083, guid: ef45a3b829e1ccf45a4d533513e0bda6, type: 3}
+  - {fileID: -2583036695417831512, guid: ef45a3b829e1ccf45a4d533513e0bda6, type: 3}
+  - {fileID: 4104223505403961676, guid: ef45a3b829e1ccf45a4d533513e0bda6, type: 3}
+  - {fileID: 5606176837361014351, guid: ef45a3b829e1ccf45a4d533513e0bda6, type: 3}
+  - {fileID: -1507845997739483736, guid: ef45a3b829e1ccf45a4d533513e0bda6, type: 3}
+  - {fileID: -7366354283027394322, guid: ef45a3b829e1ccf45a4d533513e0bda6, type: 3}
 --- !u!50 &5701105146326097001
 Rigidbody2D:
   serializedVersion: 5
