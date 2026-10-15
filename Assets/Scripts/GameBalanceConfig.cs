@@ -389,11 +389,11 @@ public class GameBalanceConfig : ScriptableObject
         "마취 다트 속도(PlayerWeaponController.dartSpeed 12)의 약 60%라 날아가는 중에도 맞출 수 있다.")]
     public float gooseFleeSpeed = 7.17255f;
 
-    [Tooltip("한 번 도망칠 때 날아가는 거리(칸). 다 가면 멈춘다.")]
-    public float gooseFleeDistance = 12f;
+    [Tooltip("한 번 도망칠 때 날아가는 거리(칸). 다 가면 멈춘다. 이만큼 갈 수 없으면 걸어서 갈 수 있는 가장 먼 곳까지 간다.")]
+    public float gooseFleeDistance = 24f;
 
-    [Tooltip("도망을 마친 뒤 제자리에 멈춰 있는 시간(초). 끝나면 다시 느리게 배회한다.")]
-    public float gooseRestDuration = 2f;
+    [Tooltip("도망을 마친 뒤 제자리에 멈춰 있는 시간(초). 끝났을 때 플레이어가 감지 반경(gooseDetectRadius) 안에 있으면 바로 다시 도망치고, 밖이면 느리게 배회한다.")]
+    public float gooseRestDuration = 0.5f;
 
     [Tooltip("마취총/폭탄에 맞은 뒤 제자리에서 쓰러지는 동작(시트 6번째 줄 8프레임)을 하는 시간(초). 이 동안은 들 수 없고, 끝나면 기절(수면)한다. " +
         "다시 맞아도 늘어나지 않는다. 0.8 = 8프레임 / 10fps(프리팹 SimpleFrameAnimator.frameRate)로 애니메이션 한 번 길이다.")]
@@ -462,6 +462,9 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("마취총(TranquilizerDart)이 날아가는 최대 사거리. 안전한 거리에서 대응할 수 있다는 거너만의 " +
         "확실한 강점이 되도록 다른 무기보다 멀리 잡는다. 다트의 실제 비행 시간은 이 값과 발사 속도(PlayerWeaponController.dartSpeed)로부터 계산된다.")]
     public float tranquilizerRange = 43.2f;
+
+    [Tooltip("마취총 다트가 몬스터에 맞았을 때 주는 데미지(포획망/폭탄/지뢰와 같은 MonsterHealth.Health 단위). 수면 효과와 따로 더해진다. 동물에게는 주지 않는다.")]
+    public float tranquilizerDamage = 0.8f;
 
     [Header("소모품 - 지뢰 (임시값)")]
     [Tooltip("지뢰가 몬스터에게 주는 데미지")]

@@ -110,8 +110,8 @@ MonoBehaviour:
   gooseDetectRadius: 3
   gooseWanderSpeed: 0.32
   gooseFleeSpeed: 7.17255
-  gooseFleeDistance: 12
-  gooseRestDuration: 2
+  gooseFleeDistance: 24
+  gooseRestDuration: 0.5
   gooseDownDuration: 0.8
   gooseMinWeight: 14
   gooseMaxWeight: 21
@@ -131,6 +131,7 @@ MonoBehaviour:
   tranquilizerMaxAmmo: 10
   tranquilizerAmmoRefillAmount: 5
   tranquilizerRange: 43.2
+  tranquilizerDamage: 0.8
   mineDamage: 2
   mineStunDuration: 1.5
   minePlacementDistance: 1.2

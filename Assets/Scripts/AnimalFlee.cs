@@ -179,12 +179,7 @@ public class AnimalFlee : MonoBehaviour
 
             case State.Alert:
                 alertTimer -= Time.deltaTime;
-                if (alertTimer <= 0f)
-                {
-                    state = State.Fleeing;
-                    FleeBlocked = false;
-                    OnStartFleeing();
-                }
+                if (alertTimer <= 0f) StartFleeing();
                 break;
 
             case State.Fleeing:
@@ -299,13 +294,27 @@ public class AnimalFlee : MonoBehaviour
         rb.MovePosition(rb.position + moveDirection * speed * Time.fixedDeltaTime);
     }
 
+    /// <summary>놀람 없이 바로 도주를 시작한다(놀람 시간이 끝났을 때와 같은 처리).</summary>
+    protected void StartFleeing()
+    {
+        state = State.Fleeing;
+        FleeBlocked = false;
+        OnStartFleeing();
+    }
+
     private void Flee()
+    {
+        moveDirection = FleeDirection(); // stays zero if boxed in
+        FleeBlocked = moveDirection == Vector2.zero;
+    }
+
+    /// <summary>도주 중 이번 프레임에 움직일 방향. 기본은 플레이어 반대 방향에서 막히지 않은 쪽(사방이 막히면 0)이다.</summary>
+    protected virtual Vector2 FleeDirection()
     {
         Vector2 awayFromPlayer = (rb.position - (Vector2)player.position).normalized;
         if (awayFromPlayer == Vector2.zero) awayFromPlayer = Random.insideUnitCircle.normalized;
 
-        moveDirection = FindClearDirection(awayFromPlayer); // stays zero if boxed in
-        FleeBlocked = moveDirection == Vector2.zero;
+        return FindClearDirection(awayFromPlayer);
     }
 
     // Tries the desired direction first, then increasingly wider angles to
