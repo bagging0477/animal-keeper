@@ -126,11 +126,11 @@ MonoBehaviour:
   interactionRange: 1.8
   minWeight: 1
   maxWeight: 10
-  pickupSound: {fileID: 8300000, guid: bef158e49cf76bc43a024c7dc290df42, type: 3}
-  pickupSoundVolume: 0.25
-  playPickupSoundSegment: 0
-  pickupSoundStartTime: 7
-  pickupSoundEndTime: 8
+  pickupSound: {fileID: 8300000, guid: 7599da782cdad044784c329890ed4fc9, type: 3}
+  pickupSoundVolume: 0.48
+  playPickupSoundSegment: 1
+  pickupSoundStartTime: 0
+  pickupSoundEndTime: 1
   inventoryIcon: {fileID: 0}
   sheetFirstFrameIcon: {fileID: 1997067307, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
 --- !u!114 &5220942028165541938
@@ -167,15 +167,26 @@ MonoBehaviour:
   - {fileID: -1324036423, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: -1205197723, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: -1325731045, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: 624511106, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   emergeFrames:
-  - {fileID: 624511106, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: -1325731045, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: -1205197723, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: -1324036423, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: -2144344855, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   - {fileID: 1890124037, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   hiddenMessage: "\uAC70\uBD81\uC774\uAC00 \uB4F1\uAECD\uC9C8 \uC18D\uC5D0 \uC228\uC5C8\uC2B5\uB2C8\uB2E4"
+  stunnedSprite: {fileID: 640754399, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  hideSound:
+    clip: {fileID: 8300000, guid: ad65a35dfd5ec4748b1900b994b6c084, type: 3}
+    volume: 0.58
+    playSegment: 0
+    startTime: 0
+    endTime: 1
+  emergeSound:
+    clip: {fileID: 8300000, guid: ad65a35dfd5ec4748b1900b994b6c084, type: 3}
+    volume: 0.58
+    playSegment: 0
+    startTime: 0
+    endTime: 1
 --- !u!50 &5701105146326097001
 Rigidbody2D:
   serializedVersion: 5
@@ -266,29 +277,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SimpleFrameAnimator
   idleSprite: {fileID: 1997067307, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   walkFrames:
-  - {fileID: -1236770667, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: 1314662465, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: 640754399, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: 1440853053, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -238870520, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: 1510591624, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -296871923, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -1809784832, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -1759901489, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: 139886115, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: -2059907373, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: -1892884235, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: -1816720621, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: 516143585, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   fleeFrames:
-  - {fileID: -1236770667, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: 1314662465, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: 640754399, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: 1440853053, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -238870520, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: 1510591624, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -296871923, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -1809784832, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: -1759901489, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
-  - {fileID: 139886115, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: -2059907373, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: -1892884235, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: -1816720621, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: 516143585, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
   frameRate: 10
-  fleeFrameRate: 16
+  fleeFrameRate: 20
   attack1Frames: []
   attack2Frames: []
   hurtFrames: []
@@ -296,3 +295,11 @@ MonoBehaviour:
   hurtFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
   hurtFlashDuration: 0.15
   knockedOutSprite: {fileID: 544513911, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  knockedOutFrames:
+  - {fileID: 544513911, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: -1015419442, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: 810897117, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: -1931256688, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: -228048922, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  - {fileID: 195209707, guid: e862a6ecc820d9742b0cdbe1b6c6e141, type: 3}
+  knockedOutFrameRate: 5
