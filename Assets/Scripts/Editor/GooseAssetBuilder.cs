@@ -12,12 +12,26 @@ using UnityEngine;
 /// 2) 행마다 AnimationClip(SpriteRenderer.m_Sprite 키프레임)을 Assets/Animations/Goose에 만든다. 다시 실행하면 같은 파일을 덮어써 GUID가 유지된다.
 /// 이 프로젝트의 동물은 SimpleFrameAnimator(Sprite 배열)로 재생하므로, 나중에 거위를 붙일 때는 아래 Rows의 번호를 그대로 배열에 쓰면 된다.
 /// batchmode: -executeMethod GooseAssetBuilder.BuildBatch
+///
+/// Tools > Animals > Build Goose Prefab: 이미 잘라 둔 시트로 거위 프리팹을 만든다(시트는 다시 자르지 않는다).
+/// 고양이 프리팹(AnimalFlee)을 복사해 행동 스크립트만 AnimalGoose로 바꾸고(TurtleAssetBuilder와 같은 방식), 프레임/충돌체/소리를 채운 뒤
+/// GameBalanceConfig.goosePrefab에 연결한다. 프레임은 대기 0, 걷기 0~7(Goose_Idle 행), 도주 16~23(Goose_FlyFlap 행), 수면 48(Goose_Down).
+/// 소리 파일(animal_goose_cry.wav, animal_goose_pickup.wav)이 없으면 그 필드는 비워 둔다. 다시 실행하면 프리팹을 새로 만든다.
+/// batchmode: -executeMethod GooseAssetBuilder.BuildPrefabBatch
 /// </summary>
 public static class GooseAssetBuilder
 {
     private const string SheetPath = "Assets/Sprites/Animals/Seagull Sprite Sheet.png";
     private const string ClipFolder = "Assets/Animations/Goose";
     private const string SpritePrefix = "Seagull Sprite Sheet_";
+
+    private const string SourcePrefabPath = "Assets/Prefabs/Animals/AnimalFlee.prefab";
+    private const string PrefabPath = "Assets/Prefabs/Animals/AnimalGoose.prefab";
+    private const string ConfigPath = "Assets/Settings/GameBalanceConfig.asset";
+    private const string GooseScriptPath = "Assets/Scripts/AnimalGoose.cs";
+    private const string CryClipPath = "Assets/Audio/animal_goose_cry.wav";
+    private const string PickupClipPath = "Assets/Audio/animal_goose_pickup.wav";
+    private const float ColliderRadius = 0.22f; // 로컬 단위(스케일 2.02 전) - 선 몸통이 칸 가운데 14x13px
 
     private const int Cell = 32;
     private const float FrameRate = 10f;
@@ -106,6 +120,105 @@ public static class GooseAssetBuilder
         names?.SetNameFileIdPairs(rects.Select(r => new SpriteNameFileIdPair(r.name, r.spriteID)));
         provider.Apply();
         importer.SaveAndReimport();
+    }
+
+    [MenuItem("Tools/Animals/Build Goose Prefab")]
+    public static void BuildPrefab() => TryBuildPrefab();
+
+    public static void BuildPrefabBatch() => EditorApplication.Exit(TryBuildPrefab() ? 0 : 1);
+
+    private static bool TryBuildPrefab()
+    {
+        Sprite[] frames = LoadFrames();
+        int expected = Rows.Sum(r => r.Count);
+        if (frames.Length != expected)
+        {
+            Debug.LogError($"[GooseAssetBuilder] 시트 프레임 수 {frames.Length}개 (기대 {expected}개) - 먼저 Build Goose Animations로 시트를 자른다.");
+            return false;
+        }
+
+        if (AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath) != null) AssetDatabase.DeleteAsset(PrefabPath);
+        AssetDatabase.CopyAsset(SourcePrefabPath, PrefabPath);
+
+        // 행동 스크립트만 AnimalFlee → AnimalGoose로 바꾼다. AnimalFlee의 직렬화 필드(config, alertRange 등)는 그대로 이어진다.
+        // 스크립트를 바꾼 컴포넌트는 다시 불러와야 새 타입으로 잡히므로 한 번 저장하고 다시 연다.
+        GameObject root = PrefabUtility.LoadPrefabContents(PrefabPath);
+        try
+        {
+            root.name = "AnimalGoose";
+            SerializedObject fleeSo = new SerializedObject(root.GetComponent<AnimalFlee>());
+            fleeSo.FindProperty("m_Script").objectReferenceValue = AssetDatabase.LoadAssetAtPath<MonoScript>(GooseScriptPath);
+            fleeSo.ApplyModifiedPropertiesWithoutUndo();
+            PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
+
+        AudioClip cry = AssetDatabase.LoadAssetAtPath<AudioClip>(CryClipPath);
+        AudioClip pickup = AssetDatabase.LoadAssetAtPath<AudioClip>(PickupClipPath);
+        if (cry == null) Debug.Log($"[GooseAssetBuilder] {CryClipPath} 없음 - 울음소리 필드를 비워 둔다.");
+        if (pickup == null) Debug.Log($"[GooseAssetBuilder] {PickupClipPath} 없음 - 줍기 소리 필드를 비워 둔다(기본 줍기 소리가 난다).");
+
+        root = PrefabUtility.LoadPrefabContents(PrefabPath);
+        try
+        {
+            Sprite idle = frames[0];
+            Sprite[] walk = frames.Skip(0).Take(8).ToArray();
+            Sprite[] fly = frames.Skip(16).Take(8).ToArray();
+            Sprite down = frames[48];
+
+            root.GetComponent<SpriteRenderer>().sprite = idle;
+
+            SerializedObject animator = new SerializedObject(root.GetComponent<SimpleFrameAnimator>());
+            animator.FindProperty("idleSprite").objectReferenceValue = idle;
+            SetArray(animator.FindProperty("walkFrames"), walk);
+            SetArray(animator.FindProperty("fleeFrames"), fly);
+            animator.FindProperty("frameRate").floatValue = FrameRate;
+            animator.FindProperty("fleeFrameRate").floatValue = 0f;
+            animator.FindProperty("knockedOutSprite").objectReferenceValue = down;
+            animator.ApplyModifiedPropertiesWithoutUndo();
+
+            SerializedObject goose = new SerializedObject(root.GetComponent<AnimalGoose>());
+            goose.FindProperty("cryClip").objectReferenceValue = cry;
+            goose.ApplyModifiedPropertiesWithoutUndo();
+
+            SerializedObject sleep = new SerializedObject(root.GetComponent<AnimalSleep>());
+            sleep.FindProperty("sleepImmediately").boolValue = true;
+            sleep.ApplyModifiedPropertiesWithoutUndo();
+
+            CircleCollider2D collider = root.GetComponent<CircleCollider2D>();
+            collider.offset = Vector2.zero;
+            collider.radius = ColliderRadius;
+
+            SerializedObject rescue = new SerializedObject(root.GetComponent<AnimalRescue>());
+            rescue.FindProperty("pickupSound").objectReferenceValue = pickup;
+            rescue.FindProperty("pickupSoundVolume").floatValue = 1f;
+            rescue.FindProperty("inventoryIcon").objectReferenceValue = null;
+            rescue.FindProperty("sheetFirstFrameIcon").objectReferenceValue = frames[0];
+            rescue.ApplyModifiedPropertiesWithoutUndo();
+
+            PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
+
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+        GameBalanceConfig config = AssetDatabase.LoadAssetAtPath<GameBalanceConfig>(ConfigPath);
+        config.goosePrefab = prefab;
+        EditorUtility.SetDirty(config);
+        AssetDatabase.SaveAssets();
+        Debug.Log($"[GooseAssetBuilder] {PrefabPath} 완료 - config.goosePrefab 연결");
+        return true;
+    }
+
+    private static void SetArray(SerializedProperty property, Sprite[] sprites)
+    {
+        property.arraySize = sprites.Length;
+        for (int i = 0; i < sprites.Length; i++) property.GetArrayElementAtIndex(i).objectReferenceValue = sprites[i];
     }
 
     private static Sprite[] LoadFrames() =>

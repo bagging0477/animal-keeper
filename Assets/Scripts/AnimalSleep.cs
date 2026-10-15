@@ -14,6 +14,9 @@ public class AnimalSleep : MonoBehaviour, ISleepable
     private void OnEnable() => Active.Add(this);
     private void OnDisable() => Active.Remove(this);
 
+    [Tooltip("체크하면 마취에 맞는 즉시(sleepDelay 없이) 잠든다. 거위 전용 - 다른 동물은 끈 채로 둔다.")]
+    [SerializeField] private bool sleepImmediately;
+
     private float asleepTimer;
     private bool sleepPending;
     private float pendingSleepTimer;
@@ -46,6 +49,13 @@ public class AnimalSleep : MonoBehaviour, ISleepable
 
     public void PutToSleep(float delay, float duration)
     {
+        if (sleepImmediately)
+        {
+            sleepPending = false;
+            asleepTimer = duration;
+            return;
+        }
+
         sleepPending = true;
         pendingSleepTimer = delay;
         pendingSleepDuration = duration;

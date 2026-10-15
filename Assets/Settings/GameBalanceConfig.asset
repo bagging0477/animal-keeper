@@ -104,6 +104,16 @@ MonoBehaviour:
   turtleHiddenMessageCooldown: 2
   turtleMinWeight: 4
   turtleMaxWeight: 11
+  goosePrefab: {fileID: 570110514632718333, guid: c0e16df506746764cad091ecbc63625f, type: 3}
+  gooseSpawnChance: 0.184
+  gooseSpawnInLinearMode: 0
+  gooseDetectRadius: 3
+  gooseWanderSpeed: 0.32
+  gooseFleeSpeed: 7.17255
+  gooseFleeDistance: 12
+  gooseRestDuration: 2
+  gooseMinWeight: 14
+  gooseMaxWeight: 21
   maxStamina: 85
   sprintStaminaDrainPerSecond: 18
   staminaRegenPerSecond: 15

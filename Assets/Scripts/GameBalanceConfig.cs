@@ -367,6 +367,38 @@ public class GameBalanceConfig : ScriptableObject
     public int turtleMinWeight = 4;
     public int turtleMaxWeight = 11;
 
+    [Header("동물 - 거위 (AnimalGoose)")]
+    [Tooltip("스폰 풀에 더하는 거위 프리팹 (VillageMapGenerator.animalPrefabs와 따로 둔다)")]
+    public GameObject goosePrefab;
+
+    [Tooltip("스폰되는 동물 한 마리가 거위일 확률 (0~1). 거북이 확률과 겹치지 않게 그 다음 구간을 쓰고, 나머지는 기존 동물 풀에서 " +
+        "균등하게 뽑는다 - 총 마리 수는 그대로. 0.184는 거위를 뺀 다른 동물 4종 평균(20.4%)의 약 90%다.")]
+    [Range(0f, 1f)]
+    public float gooseSpawnChance = 0.184f;
+
+    [Tooltip("체크하면 한 줄 배치에서도 거위가 나온다. 끄면 격자 배치에서만 나오고, 한 줄 배치는 예전과 같은 결과가 나온다.")]
+    public bool gooseSpawnInLinearMode = false;
+
+    [Tooltip("플레이어가 이 거리(칸) 안에 들어오면 놀란 뒤 날아서 도망친다 (고양이 AnimalFlee.alertRange와 같은 값)")]
+    public float gooseDetectRadius = 3f;
+
+    [Tooltip("거위가 평소 배회할 때의 이동속도 (웜뱃 AnimalWander.wanderSpeed 0.8의 0.4배)")]
+    public float gooseWanderSpeed = 0.32f;
+
+    [Tooltip("거위가 날아서 도망칠 때의 이동속도 (고정값). 플레이어 스프린트 최대 속도(러닝화 없이, 스카우트 4.3125 x 1.08 x 1.1 = 5.12325)의 1.4배. " +
+        "마취 다트 속도(PlayerWeaponController.dartSpeed 12)의 약 60%라 날아가는 중에도 맞출 수 있다.")]
+    public float gooseFleeSpeed = 7.17255f;
+
+    [Tooltip("한 번 도망칠 때 날아가는 거리(칸). 다 가면 멈춘다.")]
+    public float gooseFleeDistance = 12f;
+
+    [Tooltip("도망을 마친 뒤 제자리에 멈춰 있는 시간(초). 끝나면 다시 느리게 배회한다.")]
+    public float gooseRestDuration = 2f;
+
+    [Tooltip("거위 무게 범위 (스폰마다 이 사이의 정수, 양 끝 포함)")]
+    public int gooseMinWeight = 14;
+    public int gooseMaxWeight = 21;
+
     /// <summary>스카우트의 기본(걷기) 이동속도. 몬스터 추격 속도(고정값)에 scoutMoveSpeedMultiplier를 곱해 구한다.</summary>
     public float ScoutMoveSpeed => monsterChaseSpeed * scoutMoveSpeedMultiplier;
 
