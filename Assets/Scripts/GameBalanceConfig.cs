@@ -56,7 +56,7 @@ public class GameBalanceConfig : ScriptableObject
 
     [Header("몬스터 - 탐색(Searching) 상태")]
     [Tooltip("추격을 포기한 순찰형 몬스터가 마지막 목격 위치에 도착한 뒤 두리번거리는 시간(초)의 최솟값. " +
-        "실제 시간은 최솟값~최댓값 사이에서 매번 랜덤으로 정해지고, 끝나면 순찰로 돌아간다. 소리반응형 몬스터는 탐색 없이 바로 배회로 돌아간다.")]
+        "실제 시간은 최솟값~최댓값 사이에서 매번 랜덤으로 정해지고, 끝나면 순찰로 돌아간다. 소리반응형 몬스터도 같은 값으로 탐색하고, 끝나면 배회로 돌아간다.")]
     public float monsterSearchLookDurationMin = 2f;
 
     [Tooltip("두리번거리는 시간(초)의 최댓값 - 위 최솟값과 함께 랜덤 범위를 정한다.")]
@@ -102,6 +102,10 @@ public class GameBalanceConfig : ScriptableObject
         "순찰형(MonsterAI)과 공유하는 값이라 그대로 늘리면 순찰형까지 같이 바뀌므로, blood 몬스터만 따로 더 오래 " +
         "쫓아오게 하려고 분리했다 - 순찰형은 이 필드와 무관하게 항상 chaseGiveUpSightLostDuration을 그대로 쓴다.")]
     public float soundReactiveMonsterChaseGiveUpDuration = 3.5f;
+
+    [Tooltip("소리반응형 몬스터(SoundReactiveMonsterAI) 전용 최대 추격 지속 시간(초). 시야가 계속 확보돼도 추격이 이 시간을 " +
+        "넘기면 추격을 끝내고 마지막 목격 위치로 가서 탐색(Search)한다. 0이면 무제한 - 시야를 놓쳐야만 포기한다.")]
+    public float soundReactiveMonsterMaxChaseDuration = 10f;
 
     [Header("몬스터 - 소리 강도 (Blood 몬스터 전용: 감지 범위와 Investigate 접근 거리 모두 이 값에 비례한다)")]
     [Tooltip("소리 내는 동물(AnimalSoundFlee)이 내는 소리의 강도. 기준값 1.0 - 감지 범위/접근 거리를 그대로(배율 1) 적용한다.")]
