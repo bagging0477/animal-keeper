@@ -28,7 +28,7 @@ public static class GooseAssetBuilder
     private const string SourcePrefabPath = "Assets/Prefabs/Animals/AnimalFlee.prefab";
     private const string PrefabPath = "Assets/Prefabs/Animals/AnimalGoose.prefab";
     private const string ConfigPath = "Assets/Settings/GameBalanceConfig.asset";
-    private const string GooseScriptPath = "Assets/Scripts/AnimalGoose.cs";
+    private const string GooseScriptPath = "Assets/Scripts/Animals/AnimalGoose.cs";
     private const string CryClipPath = "Assets/Audio/animal_goose_cry.wav";
     private const string PickupClipPath = "Assets/Audio/animal_goose_pickup.wav";
     private const float ColliderRadius = 0.22f; // 로컬 단위(스케일 2.02 전) - 선 몸통이 칸 가운데 14x13px

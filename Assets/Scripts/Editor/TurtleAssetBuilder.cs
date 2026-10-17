@@ -20,7 +20,7 @@ public static class TurtleAssetBuilder
     private const string SourcePrefabPath = "Assets/Prefabs/Animals/AnimalFlee.prefab";
     private const string PrefabPath = "Assets/Prefabs/Animals/AnimalTurtle.prefab";
     private const string ConfigPath = "Assets/Settings/GameBalanceConfig.asset";
-    private const string TurtleScriptPath = "Assets/Scripts/AnimalTurtle.cs";
+    private const string TurtleScriptPath = "Assets/Scripts/Animals/AnimalTurtle.cs";
     private const string PickupSoundPath = "Assets/Audio/animal_turtle_pickup.wav";
     private const string ShellSoundPath = "Assets/Audio/animal_turtle_hide and emerge.wav";
 
