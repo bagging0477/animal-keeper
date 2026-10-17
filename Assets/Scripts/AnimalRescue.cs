@@ -35,6 +35,14 @@ public class AnimalRescue : MonoBehaviour
     /// 물려준다 - 이게 없으면 Awake에서 새로 무작위 굴림을 해서 내려놓을 때마다 무게가 바뀐다.</summary>
     public void SetWeight(int weight) => Weight = weight;
 
+    // G로 내려놓은 동물이 이어받을 Id(PlayerItemDropper가 Instantiate 직후, Start 전에 넣는다). 비어 있으면 계층 경로로 만든다.
+    private string droppedId;
+
+    /// <summary>G키로 인벤토리에서 꺼내 내려놓을 때, 주울 때의 Id(맵에서 생긴 동물이면 GeneratedMap/Room_{gx}_{gy}/이름_번호)를
+    /// 그대로 물려준다 - 부모 없이 Instantiate된 동물의 계층 경로는 "프리팹(Clone)"이라 같은 종끼리 Id가 겹친다.
+    /// 그 동물은 한 번에 한 곳(필드 또는 인벤토리)에만 있으므로 원래 Id를 쓰면 다른 동물과 겹치지 않는다.</summary>
+    public void UseDroppedId(string id) => droppedId = id;
+
     /// <summary>계층 경로 기반 안정적 식별자. GameObject.name만 쓰면 서로 다른 부모 아래
     /// 이름이 같은 동물(맵에 그룹별로 복제 배치할 때 흔함)이 서로의 구조 기록을 덮어쓸 수 있다.</summary>
     public string Id { get; private set; }
@@ -98,7 +106,7 @@ public class AnimalRescue : MonoBehaviour
     // 최종 확정된 뒤의 값을 쓴다.
     private void Start()
     {
-        Id = BuildHierarchyId();
+        Id = string.IsNullOrEmpty(droppedId) ? BuildHierarchyId() : droppedId;
 
         // 오늘 이미 납품했거나(IsAnimalRescuedToday), 아직 납품 전이지만 인벤토리에 들고 있는 중(IsAnimalCurrentlyHeld)
         // 이면 다시 스폰하지 않는다 - 후자를 빼먹으면 트럭에 들렀다가(납품 안 하고) 마을로 돌아왔을 때

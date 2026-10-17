@@ -59,6 +59,7 @@ public class PlayerItemDropper : MonoBehaviour
                 {
                     AnimalRescue droppedAnimal = Instantiate(animalPrefab, position, Quaternion.identity);
                     droppedAnimal.SetWeight(dropped.AnimalWeight);
+                    droppedAnimal.UseDroppedId(dropped.AnimalId);
                     droppedAnimal.SourcePrefab = animalPrefab;
                 }
                 break;
