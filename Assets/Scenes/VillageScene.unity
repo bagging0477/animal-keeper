@@ -4056,6 +4056,7 @@ MonoBehaviour:
   droppedSoundFleeAnimalPrefab: {fileID: 5605487046576930516, guid: 16bae85f36edc594d946c87bdfa9d872, type: 3}
   droppedMinePickupPrefab: {fileID: 5186902151380567768, guid: a17523d811097ef4491be97146034bff, type: 3}
   droppedBombPickupPrefab: {fileID: 1095351029876509033, guid: fffc9f1ef6d35564d9dacdafaac5bd46, type: 3}
+  droppedMonsterCorpsePrefab: {fileID: 5000000000000000005, guid: 5b86696969f0f8e48ba300b904e7fcaf, type: 3}
 --- !u!114 &9100000000000000065
 MonoBehaviour:
   m_ObjectHideFlags: 0

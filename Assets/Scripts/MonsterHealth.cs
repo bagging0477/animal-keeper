@@ -101,11 +101,21 @@ public class MonsterHealth : MonoBehaviour, ISleepable
         pendingSleepDuration = duration;
     }
 
+    /// <summary>같은 Day 재진입 때 처치해 둔 시체를 되살린다(MonsterCorpsePickup). 데미지 없이, 사망 애니메이션도 재생하지 않고
+    /// 쓰러진 마지막 모습으로 바로 시체가 된다.</summary>
+    public void RestoreAsCorpse()
+    {
+        if (IsDead) return;
+        Health = 0f;
+        Die(skipDeathAnimation: true);
+    }
+
     // 죽어도 씬에서 제거하지 않고 색만 바꿔 시체로 남긴다.
-    private void Die()
+    private void Die(bool skipDeathAnimation = false)
     {
         IsDead = true;
-        frameAnimator?.PlayDeath();
+        if (skipDeathAnimation) frameAnimator?.ShowDeadPose();
+        else frameAnimator?.PlayDeath();
         if (spriteRenderer != null) spriteRenderer.color = deadColor;
         if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
 

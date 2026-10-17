@@ -127,6 +127,16 @@ public class SimpleFrameAnimator : MonoBehaviour
         StartOneShot(deathFrames, Mode.Dead);
     }
 
+    /// <summary>PlayDeath와 같은 Dead 상태로 들어가되 재생 없이 deathFrames의 마지막 프레임(시체 정지 이미지)을 바로 보여 준다 -
+    /// 같은 Day 재진입 때 되살린 몬스터 시체용(MonsterHealth.RestoreAsCorpse). deathFrames가 비어 있으면 아무 일도 하지 않는다.</summary>
+    public void ShowDeadPose()
+    {
+        if (mode == Mode.Dead || deathFrames == null || deathFrames.Length == 0) return;
+        StartOneShot(deathFrames, Mode.Dead);
+        frameIndex = deathFrames.Length - 1;
+        if (spriteRenderer != null) spriteRenderer.sprite = deathFrames[frameIndex];
+    }
+
     /// <summary>frames를 한 번만 재생한 뒤 그 시점의 이동 상태로 돌아간다(Attack/Hurt와 같은 규칙). 비어 있으면 아무 일도 없다.</summary>
     public void PlayOnce(Sprite[] frames)
     {

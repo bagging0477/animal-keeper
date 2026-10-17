@@ -91,6 +91,18 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
+    // 처치했지만 아직 줍지 않은 늑대 시체의 자리(NavMesh 좌표). 같은 Day에 마을로 다시 들어오면 MonsterCorpsePickup이
+    // 같은 Id로 새로 생긴 늑대를 이 자리의 시체로 되돌린다. 납품했거나 들고 있는 시체는 동물과 같이 Id 기록으로 다시 나오지 않는다.
+    private readonly Dictionary<string, Vector3> monsterCorpsePositions = new Dictionary<string, Vector3>();
+
+    /// <summary>MonsterCorpsePickup.OnDestroy에서(VillageScene이 언로드되기 직전) 줍지 않은 시체의 자리를 남긴다.</summary>
+    public void SaveMonsterCorpse(string monsterId, Vector3 position) => monsterCorpsePositions[monsterId] = position;
+
+    public bool TryGetMonsterCorpse(string monsterId, out Vector3 position) => monsterCorpsePositions.TryGetValue(monsterId, out position);
+
+    /// <summary>시체를 주워 인벤토리에 넣는 순간 그 자리 기록을 지운다 - 주운 뒤 버려도 예전 자리에 다시 나타나지 않게.</summary>
+    public void ForgetMonsterCorpse(string monsterId) => monsterCorpsePositions.Remove(monsterId);
+
     public int TotalWeight
     {
         get
@@ -117,6 +129,7 @@ public class GameManager : MonoBehaviour
         RescuedCount = 0;
         rescuedAnimalIdsToday.Clear();
         animalFieldStates.Clear();
+        monsterCorpsePositions.Clear();
         Health = MaxHealth;
         gameSessionSeedInitialized = false;
 
@@ -133,6 +146,7 @@ public class GameManager : MonoBehaviour
         CycleCount = 1;
         rescuedAnimalIdsToday.Clear();
         animalFieldStates.Clear();
+        monsterCorpsePositions.Clear();
         Mileage = 0;
         cargoWeights.Clear();
         RescuedCount = 0;

@@ -33,6 +33,12 @@ public class MonsterCorpsePickup : MonoBehaviour
     private Sprite resolvedIcon;
     private string id;
 
+    // 주워서 필드에서 치웠거나 이미 납품/보유 중이라 감췄는지. 이때는 OnDestroy에서 시체 자리를 남기지 않는다(AnimalRescue와 같다).
+    private bool isRemovedFromField;
+
+    // G로 내려놓아 만든 시체인지(PlaceDroppedCorpse). 이때 id는 계층 경로가 아니라 원래 늑대의 Id다.
+    private bool isDroppedCorpse;
+
     private int Weight => config != null ? config.wolfCorpseWeight : 15;
 
     private void Awake()
@@ -40,9 +46,24 @@ public class MonsterCorpsePickup : MonoBehaviour
         health = GetComponent<MonsterHealth>();
     }
 
+    // 같은 Day 재진입 때 늑대는 같은 시드와 같은 스폰 순서로 같은 Id에 다시 생긴다. 오늘 납품했거나 들고 있는 시체의 늑대는
+    // 동물처럼 감추고, 처치만 하고 남겨 둔 늑대는 그 자리의 시체로 되돌린다. 처치하지 않은 늑대는 그대로 새로 생긴 채 둔다.
+    // G로 내려놓은 시체(PlaceDroppedCorpse)는 이미 시체이고 Id도 받았으므로 이 확인을 건너뛴다.
     private void Start()
     {
-        id = BuildHierarchyId();
+        if (!isDroppedCorpse)
+        {
+            id = BuildHierarchyId();
+
+            GameManager gm = GameManager.Instance;
+            if (gm != null && (gm.IsAnimalRescuedToday(id) || gm.IsAnimalCurrentlyHeld(id)))
+            {
+                isRemovedFromField = true;
+                gameObject.SetActive(false);
+                return;
+            }
+            if (gm != null && gm.TryGetMonsterCorpse(id, out Vector3 corpsePosition)) RestoreCorpse(corpsePosition);
+        }
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
@@ -57,9 +78,31 @@ public class MonsterCorpsePickup : MonoBehaviour
         resolvedIcon = inventoryIcon != null ? inventoryIcon : ResolveDefaultIcon();
     }
 
-    // AnimalRescue.Id와 같은 방식(계층 경로)으로 만든다 - GameManager.TryAddAnimal이 요구하는
-    // 문자열 식별자일 뿐, 동물처럼 오늘 구조 기록/재입장 시 재스폰 방지에 쓰이지는 않는다
-    // (몬스터는 애초에 필드 상태가 저장되지 않아 트럭 왕복 시 항상 새로 스폰된다).
+    /// <summary>PlayerItemDropper가 G로 내려놓은 시체를 만든 직후(Start 전) 부른다. 원래 늑대의 Id를 그대로 이어받고, 사망 애니메이션 없이
+    /// 쓰러진 모습으로 지금 자리에 둔다. 마을을 떠날 때 OnDestroy가 이 자리를 그 Id의 시체 자리로 남겨, 재진입 때 원래 늑대가 여기 시체로 돌아온다.</summary>
+    public void PlaceDroppedCorpse(string monsterId)
+    {
+        isDroppedCorpse = true;
+        id = monsterId;
+        RestoreCorpse(transform.position);
+    }
+
+    // 남겨 둔 시체 자리로 옮기고 바로 시체로 만든다. 죽은 늑대는 MonsterAI.Update가 Visual을 따라 옮기지 않으므로 여기서 한 번 맞춘다
+    // (MonsterAI와 같은 매핑: NavMesh x,z → 2D x,y).
+    private void RestoreCorpse(Vector3 position)
+    {
+        UnityEngine.AI.NavMeshAgent agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (agent != null && agent.isOnNavMesh) agent.Warp(position);
+        else transform.position = position;
+
+        SimpleFrameAnimator visual = GetComponentInChildren<SimpleFrameAnimator>();
+        if (visual != null) visual.transform.position = new Vector3(transform.position.x, transform.position.z, 0f);
+
+        health.RestoreAsCorpse();
+    }
+
+    // AnimalRescue.Id와 같은 방식(계층 경로)으로 만든다 - VillageMapGenerator가 늑대 이름을 방 안 번호로 붙이므로
+    // (GeneratedMap/Room_{gx}_{gy}/PatrolMonster_{i}) 같은 Day 재진입 때도 같은 Id가 나와 납품 기록과 시체 자리를 찾을 수 있다.
     private string BuildHierarchyId()
     {
         var path = new System.Text.StringBuilder(name);
@@ -114,6 +157,7 @@ public class MonsterCorpsePickup : MonoBehaviour
     private void PickUp()
     {
         if (!GameManager.Instance.TryAddAnimal(id, Weight, AnimalBehaviorKind.MonsterCorpse, resolvedIcon)) return; // 인벤토리가 가득 찼을 때의 로그는 GameManager가 찍는다.
+        GameManager.Instance.ForgetMonsterCorpse(id);
 
         if (pickupSound == null)
         {
@@ -125,6 +169,19 @@ public class MonsterCorpsePickup : MonoBehaviour
         }
         Debug.Log($"{name}: 몬스터 시체를 인벤토리에 담았다");
 
+        isRemovedFromField = true;
         gameObject.SetActive(false);
+    }
+
+    // VillageScene을 나갈 때(트럭으로 이동하거나 부상으로 강제 복귀할 때) 처치만 하고 줍지 않은 시체의 자리를 남긴다.
+    // 살아 있는 늑대는 남기지 않는다 - 재진입 때 예전처럼 새로 생긴다.
+    private void OnDestroy()
+    {
+        // 씬 언로드 중에는 같은 오브젝트의 MonsterHealth가 먼저 파괴됐을 수 있어 Unity의 == null 대신 참조만 본다(IsDead는 C# 값이라 읽을 수 있다).
+        if (GameManager.Instance == null || isRemovedFromField || ReferenceEquals(health, null) || !health.IsDead) return;
+        // Id는 Start에서 정해진다 - 마을을 불러온 바로 그 프레임에 씬을 떠나 Start 전에 파괴되면 아직 null이라 저장할 키가 없다.
+        if (string.IsNullOrEmpty(id)) return;
+
+        GameManager.Instance.SaveMonsterCorpse(id, transform.position);
     }
 }
