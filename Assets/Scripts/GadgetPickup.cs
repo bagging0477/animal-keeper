@@ -15,6 +15,9 @@ public class GadgetPickup : MonoBehaviour
     private Transform player;
     private Sprite resolvedIcon;
 
+    // 인벤토리가 가득 찼다는 안내를 이번에 범위에 들어와 이미 띄웠는지(InventoryFullNotice).
+    private bool fullNoticeShown;
+
     private void Start()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -39,6 +42,7 @@ public class GadgetPickup : MonoBehaviour
         bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
         if (inRange && GameManager.Instance.HasInventorySpace) SubtitleManager.Show("E를 눌러 줍기", SubtitleManager.WhileInRange);
+        InventoryFullNotice.Update(inRange, ref fullNoticeShown);
 
         if (!inRange) return;
 

@@ -39,6 +39,9 @@ public class MonsterCorpsePickup : MonoBehaviour
     // G로 내려놓아 만든 시체인지(PlaceDroppedCorpse). 이때 id는 계층 경로가 아니라 원래 늑대의 Id다.
     private bool isDroppedCorpse;
 
+    // 인벤토리가 가득 찼다는 안내를 이번에 범위에 들어와 이미 띄웠는지(InventoryFullNotice). 살아 있는 늑대는 Update가 먼저 빠져나가 띄우지 않는다.
+    private bool fullNoticeShown;
+
     private int Weight => config != null ? config.wolfCorpseWeight : 15;
 
     private void Awake()
@@ -144,6 +147,7 @@ public class MonsterCorpsePickup : MonoBehaviour
         bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
         if (inRange && GameManager.Instance.HasInventorySpace) SubtitleManager.Show("E를 눌러 사체를 획득하세요", SubtitleManager.WhileInRange);
+        InventoryFullNotice.Update(inRange, ref fullNoticeShown);
 
         if (!inRange) return;
 
