@@ -131,6 +131,7 @@ MonoBehaviour:
   playPickupSoundSegment: 0
   pickupSoundStartTime: 7
   pickupSoundEndTime: 8
+  playPickupSound: 0
   inventoryIcon: {fileID: 0}
   sheetFirstFrameIcon: {fileID: 3848786266109995209, guid: ef45a3b829e1ccf45a4d533513e0bda6, type: 3}
 --- !u!114 &5220942028165541938
@@ -161,8 +162,18 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   minMovingSpeed: 0.05
-  cryClip: {fileID: 0}
-  cryVolume: 1
+  hitSound:
+    clip: {fileID: 8300000, guid: 253af672e6d5cc048965bd59801a7b38, type: 3}
+    volume: 1
+    playSegment: 0
+    startTime: 0
+    endTime: 1
+  flySound:
+    clip: {fileID: 8300000, guid: f82bf3101acb4314f9291f6b5ea6bd61, type: 3}
+    volume: 1
+    playSegment: 1
+    startTime: 0
+    endTime: 0.8
   downFrames:
   - {fileID: -8141919227879365361, guid: ef45a3b829e1ccf45a4d533513e0bda6, type: 3}
   - {fileID: -3252436058574046933, guid: ef45a3b829e1ccf45a4d533513e0bda6, type: 3}

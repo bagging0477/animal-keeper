@@ -11,9 +11,10 @@ using UnityEngine.AI;
 ///   지점을 고른다(목표 근처까지 우회하는 경로, 또는 그 방향으로 막히기 전까지 곧게 갈 수 있는 가장 먼 점). 이동 중에 막히면 그 자리에서
 ///   다시 찾는다(MaxFleeRepaths번까지). 도주를 시작할 때 경로를 못 찾으면(NavMesh가 없는 곳 등) 예전처럼 AnimalFlee의 방향 회피를 쓴다.
 ///
-/// - 도망치기 시작할 때 울고(cryClip), 레서판다(AnimalSoundFlee)처럼 소리 이벤트를 내 소리반응형 몬스터를 부른다.
-///   레서판다와 같이 도주를 시작할 때 한 번만 울고, 강도는 animalSoundIntensity를 쓴다.
-/// - 잠든 동안에만 들 수 있다(IAnimalPickupGate). 마취총/폭탄에 맞으면 그 자리에 멈춰 downFrames를 한 번 재생하고(gooseDownDuration 동안,
+/// - 도망치기 시작할 때 날아오르는 소리(flySound)를 한 번 내고, 마취총/폭탄/포획망에 맞아 쓰러지기 시작할 때 피격 소리(hitSound)를 한 번 낸다.
+///   둘 다 레서판다(AnimalSoundFlee)처럼 소리 이벤트를 내 소리반응형 몬스터를 부르고, 강도는 animalSoundIntensity를 쓴다. 소리 파일이 없어도 이벤트는 낸다.
+/// - 잠든 동안에만 들 수 있고(IAnimalPickupGate), 들 때 줍기 소리는 내지 않는다(AnimalRescue.playPickupSound 끔).
+///   마취총/폭탄/포획망에 맞으면 그 자리에 멈춰 downFrames를 한 번 재생하고(gooseDownDuration 동안,
 ///   AnimalSleep.DownDuration), 그 뒤 잠든다. 쓰러지는 동안은 들 수 없고, 다시 맞아도 시간이 늘거나 처음부터 다시 재생되지 않는다.
 /// - 맞으면 놀람/도주/멈춤을 바로 그만두고, 깨면 배회로 돌아간다.
 /// - 같은 Day 재진입 때는 마지막 위치에서 배회로 시작한다(도주 중에 저장돼도 RestoreFleeing을 무시한다). 수면은 저장하지 않아 깬 채로 나온다.
@@ -23,10 +24,31 @@ public class AnimalGoose : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
 {
     public enum GooseState { Wander, Alert, Flee, Rest, Down, Asleep }
 
-    [Header("거위 - 울음소리 (비워 두면 소리 없이 소리 이벤트만 낸다)")]
-    [SerializeField] private AudioClip cryClip;
-    [Tooltip("cryClip의 재생 볼륨. 원본 파일마다 녹음 크기가 달라서 다른 효과음과 체감 크기를 맞추는 보정값이다.")]
-    [SerializeField, Range(0f, 1f)] private float cryVolume = 1f;
+    [Header("거위 - 소리 (AudioManager의 SFX 믹서 그룹으로 재생, 클립을 비워 두면 소리 없이 소리 이벤트만 낸다)")]
+    [Tooltip("마취총/폭탄/포획망에 맞아 쓰러지기 시작할 때 한 번 재생한다. 쓰러지는 중에 다시 맞아도 다시 재생하지 않는다.")]
+    [SerializeField] private GooseSound hitSound = new GooseSound();
+    [Tooltip("도주를 시작할 때(날아오를 때) 한 번 재생한다. playSegment를 켜면 startTime~endTime 구간만 재생한다(파일이 더 짧으면 파일 끝까지).")]
+    [SerializeField] private GooseSound flySound = new GooseSound { playSegment = true, startTime = 0f, endTime = 0.8f };
+
+    // AnimalTurtle의 ShellSound, AnimalRescue의 픽업음 설정(pickupSound/Volume/playPickupSoundSegment/StartTime/EndTime)과 같은 모양.
+    [System.Serializable]
+    private class GooseSound
+    {
+        public AudioClip clip;
+        [Tooltip("원본 파일마다 녹음 크기가 달라서 다른 효과음과 체감 크기를 맞추는 보정값이다.")]
+        [Range(0f, 1f)] public float volume = 1f;
+        [Tooltip("체크하면 clip 전체가 아니라 아래 구간(초)만 잘라서 재생한다.")]
+        public bool playSegment;
+        public float startTime;
+        public float endTime = 1f;
+
+        public void Play()
+        {
+            if (clip == null || AudioManager.Instance == null) return;
+            if (playSegment) AudioManager.Instance.PlaySfxSegment(clip, startTime, endTime, volume);
+            else AudioManager.Instance.PlaySfx(clip, volume);
+        }
+    }
 
     [Header("거위 - 쓰러짐 (마취/폭탄에 맞은 뒤 잠들기 전까지 한 번 재생하고 마지막 프레임에 멈춘다)")]
     [SerializeField] private Sprite[] downFrames;
@@ -65,8 +87,11 @@ public class AnimalGoose : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
         : IsAlertState ? GooseState.Alert
         : GooseState.Wander;
 
-    /// <summary>울음(소리 이벤트)을 낸 횟수.</summary>
-    public int CryCount { get; private set; }
+    /// <summary>날아오르며 소리 이벤트를 낸 횟수(도주 시작마다 1).</summary>
+    public int FlyCount { get; private set; }
+
+    /// <summary>맞아서 쓰러지며 소리 이벤트를 낸 횟수(쓰러짐마다 1).</summary>
+    public int HitCount { get; private set; }
 
     public bool CanBePickedUp => IsAsleep;
 
@@ -110,8 +135,14 @@ public class AnimalGoose : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
         // 처음부터 경로를 못 찾으면(NavMesh가 없거나 더 멀어질 곳이 없으면) 이번 도주는 예전 방향 회피로 한다.
         navFlee = TryPlanFleePath();
 
-        CryCount++;
-        AudioManager.Instance?.PlaySfx(cryClip, cryVolume);
+        FlyCount++;
+        flySound.Play();
+        EmitSoundEvent();
+    }
+
+    // 레서판다(AnimalSoundFlee)와 같은 소리 이벤트 - 소리반응형 몬스터가 반응한다. 소리 파일이 없어도 이벤트는 낸다.
+    private void EmitSoundEvent()
+    {
         float intensity = config != null ? config.animalSoundIntensity : 1f;
         SoundEvents.Emit(transform.position, intensity);
     }
@@ -278,6 +309,11 @@ public class AnimalGoose : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
         if (!pending || downed) return;
         downed = true;
         StopMoving();
+        // 맞아서 쓰러지기 시작하는 순간에 한 번만 - 쓰러지는 중에 다시 맞으면 AnimalSleep이 무시하고(downed도 이미 true), 잠든 중에 맞으면
+        // 수면 시간만 갱신되어 여기로 다시 오지 않는다.
+        HitCount++;
+        hitSound.Play();
+        EmitSoundEvent();
         if (FrameAnimator == null) return;
         FrameAnimator.IsFleeing = false;
         FrameAnimator.IsMoving = false;

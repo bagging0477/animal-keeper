@@ -75,6 +75,21 @@ public class PlayerWeaponController : MonoBehaviour
             monster.TakeDamage(netDamage);
             monster.Stun(netStunDuration);
         }
+
+        // 거위만 같은 부채꼴 안에서 포획망에 맞는다 - 마취 다트, 폭탄과 같은 PutToSleep으로 쓰러지는 동작 뒤에 잠들고(AnimalSleep.DownDuration),
+        // 수면 시간과 깬 뒤 동작도 같다. 데미지는 주지 않는다. 다른 동물은 포획망에 맞지 않는다.
+        float sleepDelay = config != null ? config.sleepDelay : 1f;
+        float sleepDuration = config != null ? config.sleepDuration : 3.5f;
+        for (int i = AnimalSleep.Active.Count - 1; i >= 0; i--)
+        {
+            AnimalSleep animal = AnimalSleep.Active[i];
+            if (animal.GetComponent<AnimalGoose>() == null) continue;
+            Vector2 toAnimal = animal.GamePosition - origin;
+            if (toAnimal.magnitude > netRange) continue;
+            if (Vector2.Angle(aimDirection, toAnimal) > netAngle * 0.5f) continue;
+
+            animal.PutToSleep(sleepDelay, sleepDuration);
+        }
     }
 
     private void FireTranquilizerGun()

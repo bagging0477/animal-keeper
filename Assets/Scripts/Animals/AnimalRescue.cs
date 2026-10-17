@@ -19,6 +19,9 @@ public class AnimalRescue : MonoBehaviour
     [SerializeField] private float pickupSoundStartTime = 7f;
     [SerializeField] private float pickupSoundEndTime = 8f;
 
+    [Tooltip("끄면 주울 때 어떤 소리도 내지 않는다(pickupSound가 비어 있을 때의 기본 픽업음도 내지 않는다). 거위처럼 줍기 소리가 없는 동물용.")]
+    [SerializeField] private bool playPickupSound = true;
+
     [Tooltip("인벤토리 슬롯에 표시할 아이콘. 비워두면 이 동물 스프라이트 시트의 첫 번째 프레임을 자동으로 사용한다.")]
     [SerializeField] private Sprite inventoryIcon;
 
@@ -204,7 +207,11 @@ public class AnimalRescue : MonoBehaviour
     {
         if (!GameManager.Instance.TryAddAnimal(Id, Weight, BehaviorKind, InventoryIcon, SourcePrefab)) return; // 인벤토리가 가득 찼을 때의 로그는 GameManager가 찍는다.
 
-        if (pickupSound == null)
+        if (!playPickupSound)
+        {
+            // 줍기 소리가 없는 동물 - 기본 픽업음도 내지 않는다.
+        }
+        else if (pickupSound == null)
         {
             AudioManager.Instance?.PlayPickup();
         }

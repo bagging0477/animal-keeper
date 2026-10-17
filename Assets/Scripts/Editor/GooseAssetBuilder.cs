@@ -16,7 +16,8 @@ using UnityEngine;
 /// Tools > Animals > Build Goose Prefab: 이미 잘라 둔 시트로 거위 프리팹을 만든다(시트는 다시 자르지 않는다).
 /// 고양이 프리팹(AnimalFlee)을 복사해 행동 스크립트만 AnimalGoose로 바꾸고(TurtleAssetBuilder와 같은 방식), 프레임/충돌체/소리를 채운 뒤
 /// GameBalanceConfig.goosePrefab에 연결한다. 프레임은 대기 0, 걷기 0~7(Goose_Idle 행), 도주 16~23(Goose_FlyFlap 행), 수면 48(Goose_Down).
-/// 소리 파일(animal_goose_cry.wav, animal_goose_pickup.wav)이 없으면 그 필드는 비워 둔다. 다시 실행하면 프리팹을 새로 만든다.
+/// 소리는 피격(animal_goose_hit.mp3)과 날아오를 때(animal_goose_fly.mp3, 앞 0.8초만) 두 가지이고, 파일이 없으면 그 필드는 비워 둔다.
+/// 거위는 줍기 소리가 없다(AnimalRescue.playPickupSound 끔). 다시 실행하면 프리팹을 새로 만든다.
 /// batchmode: -executeMethod GooseAssetBuilder.BuildPrefabBatch
 /// </summary>
 public static class GooseAssetBuilder
@@ -29,8 +30,9 @@ public static class GooseAssetBuilder
     private const string PrefabPath = "Assets/Prefabs/Animals/AnimalGoose.prefab";
     private const string ConfigPath = "Assets/Settings/GameBalanceConfig.asset";
     private const string GooseScriptPath = "Assets/Scripts/Animals/AnimalGoose.cs";
-    private const string CryClipPath = "Assets/Audio/animal_goose_cry.wav";
-    private const string PickupClipPath = "Assets/Audio/animal_goose_pickup.wav";
+    private const string HitClipPath = "Assets/Audio/animal_goose_hit.mp3";
+    private const string FlyClipPath = "Assets/Audio/animal_goose_fly.mp3";
+    private const float FlySoundEndTime = 0.8f; // 날아오를 때 소리는 파일 앞 0.8초만 재생한다
     private const float ColliderRadius = 0.22f; // 로컬 단위(스케일 2.02 전) - 선 몸통이 칸 가운데 14x13px
 
     private const int Cell = 32;
@@ -156,10 +158,10 @@ public static class GooseAssetBuilder
             PrefabUtility.UnloadPrefabContents(root);
         }
 
-        AudioClip cry = AssetDatabase.LoadAssetAtPath<AudioClip>(CryClipPath);
-        AudioClip pickup = AssetDatabase.LoadAssetAtPath<AudioClip>(PickupClipPath);
-        if (cry == null) Debug.Log($"[GooseAssetBuilder] {CryClipPath} 없음 - 울음소리 필드를 비워 둔다.");
-        if (pickup == null) Debug.Log($"[GooseAssetBuilder] {PickupClipPath} 없음 - 줍기 소리 필드를 비워 둔다(기본 줍기 소리가 난다).");
+        AudioClip hitClip = AssetDatabase.LoadAssetAtPath<AudioClip>(HitClipPath);
+        AudioClip flyClip = AssetDatabase.LoadAssetAtPath<AudioClip>(FlyClipPath);
+        if (hitClip == null) Debug.Log($"[GooseAssetBuilder] {HitClipPath} 없음 - 피격 소리 필드를 비워 둔다.");
+        if (flyClip == null) Debug.Log($"[GooseAssetBuilder] {FlyClipPath} 없음 - 날아오를 때 소리 필드를 비워 둔다.");
 
         root = PrefabUtility.LoadPrefabContents(PrefabPath);
         try
@@ -181,7 +183,12 @@ public static class GooseAssetBuilder
             animator.ApplyModifiedPropertiesWithoutUndo();
 
             SerializedObject goose = new SerializedObject(root.GetComponent<AnimalGoose>());
-            goose.FindProperty("cryClip").objectReferenceValue = cry;
+            goose.FindProperty("hitSound.clip").objectReferenceValue = hitClip;
+            goose.FindProperty("hitSound.playSegment").boolValue = false;
+            goose.FindProperty("flySound.clip").objectReferenceValue = flyClip;
+            goose.FindProperty("flySound.playSegment").boolValue = true;
+            goose.FindProperty("flySound.startTime").floatValue = 0f;
+            goose.FindProperty("flySound.endTime").floatValue = FlySoundEndTime;
             SetArray(goose.FindProperty("downFrames"), frames.Skip(40).Take(8).ToArray());
             goose.ApplyModifiedPropertiesWithoutUndo();
 
@@ -190,8 +197,9 @@ public static class GooseAssetBuilder
             collider.radius = ColliderRadius;
 
             SerializedObject rescue = new SerializedObject(root.GetComponent<AnimalRescue>());
-            rescue.FindProperty("pickupSound").objectReferenceValue = pickup;
+            rescue.FindProperty("pickupSound").objectReferenceValue = null;
             rescue.FindProperty("pickupSoundVolume").floatValue = 1f;
+            rescue.FindProperty("playPickupSound").boolValue = false;
             rescue.FindProperty("inventoryIcon").objectReferenceValue = null;
             rescue.FindProperty("sheetFirstFrameIcon").objectReferenceValue = frames[0];
             rescue.ApplyModifiedPropertiesWithoutUndo();
