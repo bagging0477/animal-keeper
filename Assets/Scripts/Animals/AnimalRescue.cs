@@ -223,6 +223,10 @@ public class AnimalRescue : MonoBehaviour
         {
             AudioManager.Instance?.PlaySfx(pickupSound, pickupSoundVolume);
         }
+
+        // 소리반응형 몬스터가 듣는 줍기 소리 이벤트 - 위의 효과음 재생(끔/클립 없음 포함)과 상관없이 모든 동물이 한 번 낸다.
+        GameBalanceConfig config = GameManager.Instance.Config;
+        SoundEvents.Emit(transform.position, config != null ? config.animalPickupSoundIntensity : 0.6f);
         Debug.Log($"{name}: 인벤토리에 동물을 담았다");
 
         // 인벤토리에 데이터(무게, Id)만 옮겨졌으므로 원본 오브젝트는 더 이상 필요 없다 - 세계에서 치운다.
