@@ -12,6 +12,10 @@ public class TruckSceneUI : MonoBehaviour
 
     private void Start()
     {
+        // 목표 진행 글자·바가 연결되지 않았으면 에러 대신 경고만 남기고 그 부분만 건너뛴다(Refresh의 null 확인).
+        // 마일리지는 같은 화면의 MileageBadgeUI가 보여 주므로 mileageText는 비어 있어도 된다.
+        if (targetText == null) Debug.LogWarning($"{name}: targetText가 연결되지 않아 목표 진행 글자를 표시하지 않는다.");
+        if (targetFillImage == null) Debug.LogWarning($"{name}: targetFillImage가 연결되지 않아 목표 진행 바를 표시하지 않는다.");
         Refresh();
     }
 

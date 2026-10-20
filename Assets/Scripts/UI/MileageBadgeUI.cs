@@ -14,6 +14,7 @@ public class MileageBadgeUI : MonoBehaviour
     private void OnEnable()
     {
         shownMileage = int.MinValue;
+        if (mileageText == null) Debug.LogWarning($"{name}: mileageText가 연결되지 않아 보유 마일리지를 표시하지 않는다.");
         Refresh();
     }
 
