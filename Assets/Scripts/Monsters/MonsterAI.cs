@@ -39,16 +39,9 @@ public class MonsterAI : MonsterBrain
     // 달리 항상 정확하므로, 동물처럼 FixedUpdate에서 위치 변화량을 직접 잴 필요가 없다.
     private const float MinMovingSpeed = 0.05f;
 
-    private SpriteRenderer visualRenderer;
     private Vector3[] waypoints;
     private int targetIndex;
     private State state = State.Patrol;
-    private Vector3 lastSeenPlayerPosition;
-    private float searchTimer;
-    private bool searchLooking;
-    private float searchLookDuration;
-    private float searchTurnTimer;
-    private Vector3 searchCenter;
     private float sightLostTimer;
     private float chaseDestinationTimer;
     private bool patrolWaiting;
@@ -58,16 +51,9 @@ public class MonsterAI : MonsterBrain
     private float windedTimer;
 
     private float PatrolSpeed => config != null ? config.patrolMonsterPatrolSpeed : 1.6f;
-    private float ChaseSpeed => config != null ? config.monsterChaseSpeed : 4.3125f;
+    protected override float ChaseSpeed => config != null ? config.monsterChaseSpeed : 4.3125f;
     private float DetectRange => config != null ? config.patrolMonsterDetectRange : 4.05f;
     private float LoseRange => config != null ? config.patrolMonsterLoseRange : 10f;
-    private float SearchLookDurationMin => config != null ? config.monsterSearchLookDurationMin : 2f;
-    private float SearchLookDurationMax => config != null ? config.monsterSearchLookDurationMax : 3f;
-    private float SearchLookTurnInterval => config != null ? config.monsterSearchLookTurnInterval : 0.6f;
-    private float SearchTravelTimeout => config != null ? config.monsterSearchTravelTimeout : 5f;
-    private float SearchStepChance => config != null ? config.monsterSearchStepChance : 0.4f;
-    private float SearchStepRadius => config != null ? config.monsterSearchStepRadius : 0.8f;
-    private float SearchStepSpeed => config != null ? config.monsterSearchStepSpeed : 1.2f;
     private float ChaseGiveUpSightLostDuration => config != null ? config.chaseGiveUpSightLostDuration : 2f;
     private float ChaseDirectionUpdateInterval => config != null ? config.chaseDirectionUpdateInterval : 0.25f;
     protected override float CatchRange => config != null ? config.patrolMonsterCatchRange : 0.7f;
@@ -79,7 +65,9 @@ public class MonsterAI : MonsterBrain
     protected override bool IsChaseState => state == State.Chase;
     protected override bool IsSearchState => state == State.Search;
     protected override bool SearchLooking => searchLooking;
-    private float WaypointStopDistance => config != null ? config.monsterWaypointStopDistance : 0.2f;
+    protected override GameBalanceConfig Config => config;
+    protected override void EnterSearchState() => state = State.Search;
+    protected override float WaypointStopDistance => config != null ? config.monsterWaypointStopDistance : 0.2f;
     private float LeashRadius => config != null ? config.wolfLeashRadius : 14f;
     private float ChaseBurstDuration => config != null ? config.wolfChaseBurstDuration : 3.5f;
     private float WindedDuration => config != null ? config.wolfWindedDuration : 1.5f;
@@ -297,74 +285,11 @@ public class MonsterAI : MonsterBrain
 
     private bool IsPlayerInTerritory => Vector2.Distance(homeGamePosition, PlayerGamePosition) <= LeashRadius;
 
-    // 추격 포기 -> 탐색(Search): 마지막 목격 위치로 이동한 뒤, 도착하면 제자리에서 좌우로 방향을
-    // 바꿔가며 잠시 두리번거리고, 그래도 못 찾으면 순찰로 돌아간다. 탐색 중 플레이어가 DetectRange
-    // 안에 다시 들어오면 Update 맨 위의 발견 분기가 그대로 Chase로 되돌린다.
-    private void EnterSearch(Vector3 searchPoint)
+    protected override void OnSearchFinished()
     {
-        state = State.Search;
-        agent.autoBraking = true; // Search는 고정된 한 지점으로 가서 서는 게 맞으므로 다시 켠다.
-        agent.speed = ChaseSpeed;
-        searchTimer = 0f;
-        searchLooking = false;
-        if (agent.isOnNavMesh)
-        {
-            Vector3 destination = NavMesh.SamplePosition(searchPoint, out NavMeshHit searchHit, 2f, NavMesh.AllAreas)
-                ? searchHit.position
-                : searchPoint;
-            agent.SetDestination(destination);
-        }
-    }
-
-    private void UpdateSearch()
-    {
-        searchTimer += Time.deltaTime;
-
-        if (!searchLooking)
-        {
-            // 목적지에 도착했거나, 길이 막혀 끝까지 못 가거나, 너무 오래 걸리면 그 자리에서 두리번거리기 시작한다.
-            bool arrived = !agent.pathPending && agent.remainingDistance <= WaypointStopDistance;
-            bool stuck = !agent.pathPending && agent.pathStatus != NavMeshPathStatus.PathComplete;
-            if (!arrived && !stuck && searchTimer < SearchTravelTimeout) return;
-
-            searchLooking = true;
-            searchTimer = 0f;
-            searchLookDuration = Random.Range(SearchLookDurationMin, SearchLookDurationMax);
-            searchTurnTimer = SearchLookTurnInterval;
-            searchCenter = transform.position;
-            agent.speed = SearchStepSpeed;
-            agent.ResetPath();
-            return;
-        }
-
-        // 제자리에서 좌우로 고개만 돌리면 너무 기계적이라, 방향을 바꿀 차례마다 일정 확률로 도착 지점
-        // 주변(searchCenter 기준이라 점점 멀리 벗어나지 않는다)의 가까운 곳으로 몇 걸음 천천히 옮긴다.
-        searchTurnTimer -= Time.deltaTime;
-        if (searchTurnTimer <= 0f)
-        {
-            searchTurnTimer += SearchLookTurnInterval;
-            Vector2 stepOffset = Random.insideUnitCircle * SearchStepRadius;
-            Vector3 stepPoint = searchCenter + new Vector3(stepOffset.x, 0f, stepOffset.y);
-            if (Random.value < SearchStepChance &&
-                NavMesh.SamplePosition(stepPoint, out NavMeshHit stepHit, SearchStepRadius, NavMesh.AllAreas))
-            {
-                agent.SetDestination(stepHit.position);
-            }
-            else
-            {
-                agent.ResetPath();
-                bool turnLeft = visualRenderer != null && !visualRenderer.flipX; // 지금 바라보는 반대쪽으로 돌아본다
-                facingFlipper?.SetMoveDirection(turnLeft ? Vector2.left : Vector2.right);
-            }
-        }
-
-        if (searchTimer >= searchLookDuration)
-        {
-            searchLooking = false;
-            state = State.Patrol;
-            patrolWaiting = false;
-            agent.speed = PatrolSpeed;
-            if (waypoints.Length > 0) agent.SetDestination(waypoints[targetIndex]);
-        }
+        state = State.Patrol;
+        patrolWaiting = false;
+        agent.speed = PatrolSpeed;
+        if (waypoints.Length > 0) agent.SetDestination(waypoints[targetIndex]);
     }
 }

@@ -13,6 +13,14 @@ public abstract class MonsterBrain : MonoBehaviour
     protected NavMeshAgent agent;
     protected MonsterHealth health;
     protected AnimalFacingFlipper facingFlipper;
+    // 탐색(Search)에 쓰는 값(직렬화되지 않는다). visualRenderer는 각 두뇌의 Awake가 채운다.
+    protected SpriteRenderer visualRenderer;
+    protected Vector3 lastSeenPlayerPosition;
+    protected float searchTimer;
+    protected bool searchLooking;
+    protected float searchLookDuration;
+    protected float searchTurnTimer;
+    protected Vector3 searchCenter;
 
     // 각 두뇌의 직렬화 필드·설정을 기반 코드에 넘기는 연결
     protected abstract LayerMask SightBlockingMask { get; }
@@ -24,6 +32,21 @@ public abstract class MonsterBrain : MonoBehaviour
     protected abstract bool IsChaseState { get; }
     protected abstract bool IsSearchState { get; }
     protected abstract bool SearchLooking { get; }
+    protected abstract GameBalanceConfig Config { get; }
+    protected abstract float ChaseSpeed { get; }
+    protected abstract float WaypointStopDistance { get; }
+    /// <summary>EnterSearch가 맨 처음에 부른다 - 두뇌의 상태를 Search로 바꾼다.</summary>
+    protected abstract void EnterSearchState();
+    /// <summary>탐색 두리번거리기가 끝났을 때 UpdateSearch가 부른다(searchLooking을 끈 바로 뒤) - 각 두뇌의 평소 상태로 돌아간다.</summary>
+    protected abstract void OnSearchFinished();
+
+    private float SearchLookDurationMin => Config != null ? Config.monsterSearchLookDurationMin : 2f;
+    private float SearchLookDurationMax => Config != null ? Config.monsterSearchLookDurationMax : 3f;
+    private float SearchLookTurnInterval => Config != null ? Config.monsterSearchLookTurnInterval : 0.6f;
+    private float SearchTravelTimeout => Config != null ? Config.monsterSearchTravelTimeout : 5f;
+    private float SearchStepChance => Config != null ? Config.monsterSearchStepChance : 0.4f;
+    private float SearchStepRadius => Config != null ? Config.monsterSearchStepRadius : 0.8f;
+    private float SearchStepSpeed => Config != null ? Config.monsterSearchStepSpeed : 1.2f;
 
     // Update는 마취로 무력화되면 맨 앞에서 빠져나가 state가 Chase로 남을 수 있어서, 추격음 보고는
     // 무력화 여부까지 반영해 LateUpdate에서 매 프레임 한다.
@@ -125,5 +148,73 @@ public abstract class MonsterBrain : MonoBehaviour
         frameAnimator?.PlayRandomAttack();
         int damage = CatchDamage;
         GameManager.Instance?.TakeDamage(damage, MonsterTypeName);
+    }
+
+    // 추격 포기 -> 탐색(Search): 마지막 목격 위치로 이동한 뒤, 도착하면 제자리에서 좌우로 방향을
+    // 바꿔가며 잠시 두리번거리고, 그래도 못 찾으면 각 두뇌의 평소 상태로 돌아간다(OnSearchFinished). 탐색 중 플레이어가 DetectRange
+    // 안에 다시 들어오면 각 두뇌의 Update 맨 위 발견 분기가 그대로 Chase로 되돌린다.
+    protected void EnterSearch(Vector3 searchPoint)
+    {
+        EnterSearchState();
+        agent.autoBraking = true; // Search는 고정된 한 지점으로 가서 서는 게 맞으므로 다시 켠다.
+        agent.speed = ChaseSpeed;
+        searchTimer = 0f;
+        searchLooking = false;
+        if (agent.isOnNavMesh)
+        {
+            Vector3 destination = NavMesh.SamplePosition(searchPoint, out NavMeshHit searchHit, 2f, NavMesh.AllAreas)
+                ? searchHit.position
+                : searchPoint;
+            agent.SetDestination(destination);
+        }
+    }
+
+    protected void UpdateSearch()
+    {
+        searchTimer += Time.deltaTime;
+
+        if (!searchLooking)
+        {
+            // 목적지에 도착했거나, 길이 막혀 끝까지 못 가거나, 너무 오래 걸리면 그 자리에서 두리번거리기 시작한다.
+            bool arrived = !agent.pathPending && agent.remainingDistance <= WaypointStopDistance;
+            bool stuck = !agent.pathPending && agent.pathStatus != NavMeshPathStatus.PathComplete;
+            if (!arrived && !stuck && searchTimer < SearchTravelTimeout) return;
+
+            searchLooking = true;
+            searchTimer = 0f;
+            searchLookDuration = Random.Range(SearchLookDurationMin, SearchLookDurationMax);
+            searchTurnTimer = SearchLookTurnInterval;
+            searchCenter = transform.position;
+            agent.speed = SearchStepSpeed;
+            agent.ResetPath();
+            return;
+        }
+
+        // 제자리에서 좌우로 고개만 돌리면 너무 기계적이라, 방향을 바꿀 차례마다 일정 확률로 도착 지점
+        // 주변(searchCenter 기준이라 점점 멀리 벗어나지 않는다)의 가까운 곳으로 몇 걸음 천천히 옮긴다.
+        searchTurnTimer -= Time.deltaTime;
+        if (searchTurnTimer <= 0f)
+        {
+            searchTurnTimer += SearchLookTurnInterval;
+            Vector2 stepOffset = Random.insideUnitCircle * SearchStepRadius;
+            Vector3 stepPoint = searchCenter + new Vector3(stepOffset.x, 0f, stepOffset.y);
+            if (Random.value < SearchStepChance &&
+                NavMesh.SamplePosition(stepPoint, out NavMeshHit stepHit, SearchStepRadius, NavMesh.AllAreas))
+            {
+                agent.SetDestination(stepHit.position);
+            }
+            else
+            {
+                agent.ResetPath();
+                bool turnLeft = visualRenderer != null && !visualRenderer.flipX; // 지금 바라보는 반대쪽으로 돌아본다
+                facingFlipper?.SetMoveDirection(turnLeft ? Vector2.left : Vector2.right);
+            }
+        }
+
+        if (searchTimer >= searchLookDuration)
+        {
+            searchLooking = false;
+            OnSearchFinished();
+        }
     }
 }
