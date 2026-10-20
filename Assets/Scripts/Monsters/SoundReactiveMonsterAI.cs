@@ -61,7 +61,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private float ChaseSpeed => config != null ? config.monsterChaseSpeed : 4.3125f;
     private float DetectRange => config != null ? config.soundReactiveMonsterDetectRange : 2.03f;
     private float LoseRange => config != null ? config.soundReactiveMonsterLoseRange : 9f;
-    private float SoundHearRange => config != null ? config.soundReactiveMonsterHearRange : 10.4f;
+    private float SoundHearRange => config != null ? config.soundReactiveMonsterHearRange : 15f;
     // 순찰형(MonsterAI)과 공유하는 chaseGiveUpSightLostDuration 대신, blood 몬스터 전용 값을 쓴다 -
     // 순찰형까지 같이 늘어나지 않도록 분리된 필드.
     private float ChaseGiveUpSightLostDuration => config != null ? config.soundReactiveMonsterChaseGiveUpDuration : 3.5f;

@@ -38,7 +38,7 @@ public class GameBalanceConfig : ScriptableObject
     public float soundReactiveMonsterLoseRange = 13.5f;
 
     [Tooltip("소리반응형 몬스터가 동물 소리를 듣고 반응하는 거리")]
-    public float soundReactiveMonsterHearRange = 10.4f;
+    public float soundReactiveMonsterHearRange = 15f;
 
     [Header("몬스터 - 늑대(순찰형) 전용: 영역과 추격 피로")]
     [Tooltip("늑대의 영역 반경. 스폰 위치(홈)에서 플레이어까지의 거리가 이 값을 넘으면 추격을 포기하고 홈으로 걸어 돌아간다. " +
@@ -124,6 +124,16 @@ public class GameBalanceConfig : ScriptableObject
         "플레이어가 계속 스프린트하면) 매번 이만큼씩 더 다가가는 식으로 누적된다.")]
     [Range(0f, 1f)]
     public float soundInvestigateApproachFraction = 0.35f;
+
+    [Tooltip("동물을 주울 때(AnimalRescue) 한 번 내는 소리 이벤트의 강도. 줍기 효과음 재생 여부와 상관없이 낸다.")]
+    public float animalPickupSoundIntensity = 0.6f;
+
+    [Tooltip("도망치는 동물(AnimalFlee와 그 하위)이 도주하는 동안 내는 소리 이벤트의 강도. 도주 시작 때 한 번, 그 뒤 animalFleeSoundInterval마다 낸다. " +
+        "도주 시작 때 이미 울음/날갯짓 소리 이벤트(animalSoundIntensity)를 내는 레서판다·거위는 시작 때 이 이벤트를 따로 내지 않는다.")]
+    public float animalFleeSoundIntensity = 0.6f;
+
+    [Tooltip("도망치는 동물이 도주하는 동안 소리 이벤트를 반복해서 내는 주기(초).")]
+    public float animalFleeSoundInterval = 0.5f;
 
     [Header("바닥 타일 변형 (VillageScene 절차적 생성 전용)")]
     [Tooltip("Perlin Noise 샘플링 좌표에 곱해지는 배율. 값이 작을수록 노이즈가 넓게 퍼져서 " +

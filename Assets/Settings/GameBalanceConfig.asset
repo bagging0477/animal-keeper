@@ -19,7 +19,7 @@ MonoBehaviour:
   patrolMonsterLoseRange: 5.5
   soundReactiveMonsterDetectRange: 1.7255
   soundReactiveMonsterLoseRange: 13.5
-  soundReactiveMonsterHearRange: 10.4
+  soundReactiveMonsterHearRange: 15
   wolfLeashRadius: 14
   wolfChaseBurstDuration: 3.5
   wolfWindedDuration: 1.5
