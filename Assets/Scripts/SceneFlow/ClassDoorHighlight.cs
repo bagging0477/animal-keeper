@@ -14,7 +14,7 @@ public class ClassDoorHighlight : MonoBehaviour
     private float elapsed;
 
     private float Duration => config != null ? config.classDoorHighlightDuration : 1.5f;
-    private Color HighlightColor => config != null ? config.classDoorHighlightColor : new Color(1f, 0.85f, 0.2f, 1f);
+    private Color HighlightColor => config != null ? config.classDoorHighlightColor : new Color(1f, 0.75f, 0f, 1f);
     private float PulsesPerSecond => config != null ? config.classDoorHighlightPulsesPerSecond : 2f;
 
     private void Awake()

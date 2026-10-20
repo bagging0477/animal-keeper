@@ -163,5 +163,5 @@ MonoBehaviour:
     maxPurchases: 1
   classRequiredNoticeCooldown: 2
   classDoorHighlightDuration: 1.5
-  classDoorHighlightColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  classDoorHighlightColor: {r: 1, g: 0.75, b: 0, a: 1}
   classDoorHighlightPulsesPerSecond: 2

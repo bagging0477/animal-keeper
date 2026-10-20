@@ -575,7 +575,7 @@ public class GameBalanceConfig : ScriptableObject
     [Min(0f)] public float classDoorHighlightDuration = 1.5f;
 
     [Tooltip("클래스 선택 문을 강조할 때 섞는 색. 원래 색과 이 색 사이를 부드럽게 오간다.")]
-    public Color classDoorHighlightColor = new Color(1f, 0.85f, 0.2f, 1f);
+    public Color classDoorHighlightColor = new Color(1f, 0.75f, 0f, 1f);
 
     [Tooltip("강조 중 1초에 깜빡이는 횟수(원래 색 → 강조 색 → 원래 색이 한 번).")]
     [Min(0.1f)] public float classDoorHighlightPulsesPerSecond = 2f;
