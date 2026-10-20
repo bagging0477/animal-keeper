@@ -125,6 +125,30 @@ public class GameBalanceConfig : ScriptableObject
     [Range(0f, 1f)]
     public float soundInvestigateApproachFraction = 0.35f;
 
+    [Tooltip("동물을 주울 때(AnimalRescue) 한 번 내는 소리 이벤트의 강도. 줍기 효과음 재생 여부와 상관없이 낸다.")]
+    public float animalPickupSoundIntensity = 0.6f;
+
+    [Tooltip("도망치는 동물(AnimalFlee와 그 하위)이 도주하는 동안 내는 소리 이벤트의 강도. 도주 시작 때 한 번, 그 뒤 animalFleeSoundInterval마다 낸다. " +
+        "도주 시작 때 이미 울음/날갯짓 소리 이벤트(animalSoundIntensity)를 내는 레서판다·거위는 시작 때 이 이벤트를 따로 내지 않는다.")]
+    public float animalFleeSoundIntensity = 0.6f;
+
+    [Tooltip("도망치는 동물이 도주하는 동안 소리 이벤트를 반복해서 내는 주기(초).")]
+    public float animalFleeSoundInterval = 0.5f;
+
+    [Header("몬스터 - 소리 누적 (소리반응형 몬스터 전용: 들은 소리가 쌓이면 플레이어를 직접 추격한다)")]
+    [Tooltip("들을 수 있는 거리 안에서 소리 이벤트가 날 때마다 쌓이는 양 = 소리 강도 x 이 값. 몬스터마다 따로 쌓인다.")]
+    public float soundReactiveMonsterNoisePerIntensity = 1f;
+
+    [Tooltip("누적량이 1초에 줄어드는 양.")]
+    public float soundReactiveMonsterNoiseDecayPerSecond = 0.2f;
+
+    [Tooltip("누적량이 이 값 이상이 되면 소리 난 곳이 아니라 플레이어를 직접 추격한다. 누적량은 이 값보다 커지지 않는다 - " +
+        "그래서 소리를 멈춘 뒤 추격이 끝날 때까지의 시간은 (이 값 - 추격 유지 기준) / 줄어드는 속도로 정해진다.")]
+    public float soundReactiveMonsterChaseStartNoise = 1.4f;
+
+    [Tooltip("추격 중 누적량이 이 값 아래로 떨어지면 추격을 끝내고 마지막으로 들은 소리 위치를 탐색한다. 추격 시작 기준보다 낮아야 경계에서 왔다 갔다 하지 않는다.")]
+    public float soundReactiveMonsterChaseHoldNoise = 0.6f;
+
     [Header("바닥 타일 변형 (VillageScene 절차적 생성 전용)")]
     [Tooltip("Perlin Noise 샘플링 좌표에 곱해지는 배율. 값이 작을수록 노이즈가 넓게 퍼져서 " +
         "변형 타일 패치(이끼/얼룩)가 더 크고 완만하게 뭉친다. 값이 크면 패치가 잘게 쪼개져 " +

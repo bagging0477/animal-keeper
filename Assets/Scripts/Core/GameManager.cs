@@ -23,6 +23,9 @@ public class GameManager : MonoBehaviour
     /// ResetDay()가 호출될 때마다(정산 후든, 필드에서 바로든) 1씩 늘어난다.</summary>
     public int CycleCount { get; private set; } = 1;
 
+    /// <summary>밸런스 설정. 자기 config 필드가 없는 컴포넌트(AnimalRescue의 줍기 소리 이벤트 등)가 읽는다.</summary>
+    public GameBalanceConfig Config => config;
+
     public int TargetCount => config != null ? config.targetRescueCount : 3;
     public int TotalCyclesToWin => config != null ? config.totalCyclesToWin : 10;
     public int RescuedCount { get; private set; }

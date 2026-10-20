@@ -69,17 +69,18 @@ public class PlayerMovement : MonoBehaviour
 
     // 스프린트로 실제 이동 중일 때만(제자리에서 Shift만 누르고 있는 경우는 제외) 일정 주기로
     // SoundEvents를 발생시켜, 소리반응형 몬스터(SoundReactiveMonsterAI)가 동물 울음소리보다
-    // 약한 강도(sprintSoundIntensity)로 감지할 수 있게 한다.
+    // 약한 강도(sprintSoundIntensity)로 감지할 수 있게 한다. 달리기 시작한 프레임에 한 번 바로 내고, 그 뒤로 주기마다 낸다.
+    // 탈진(스태미나 0 뒤 쿨다운) 중에는 IsSprinting이 false라 내지 않는다.
     private void UpdateSprintSound()
     {
+        float interval = config != null ? config.sprintSoundInterval : 0.5f;
         if (!IsSprinting || moveInput.sqrMagnitude <= 0.0001f)
         {
-            sprintSoundTimer = 0f;
+            sprintSoundTimer = interval;
             return;
         }
 
         sprintSoundTimer += Time.deltaTime;
-        float interval = config != null ? config.sprintSoundInterval : 0.5f;
         if (sprintSoundTimer < interval) return;
 
         sprintSoundTimer -= interval;
