@@ -8,8 +8,6 @@ public class AnimalSoundFlee : AnimalFlee
     [Tooltip("cryClip의 재생 볼륨. 원본 파일마다 녹음 크기가 달라서 다른 효과음과 체감 크기를 맞추는 보정값이다.")]
     [SerializeField, Range(0f, 1f)] private float cryVolume = 1f;
 
-    protected override bool EmitsFleeStartSoundEvent => true;
-
     protected override void OnStartFleeing()
     {
         Debug.Log($"동물이 소리를 냈다! 위치:({transform.position.x:F1}, {transform.position.y:F1})");

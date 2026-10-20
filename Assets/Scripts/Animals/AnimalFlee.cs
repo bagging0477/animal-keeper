@@ -46,9 +46,6 @@ public class AnimalFlee : MonoBehaviour
     /// <summary>도주를 멈출 때. 기본은 그 자리 근처에서 배회를 다시 시작한다.</summary>
     protected virtual void OnStopFleeing() => ReturnToWander();
 
-    /// <summary>OnStartFleeing에서 이미 소리 이벤트를 내는 동물(레서판다 울음, 거위 날갯짓)은 true - 도주 시작 소리 이벤트를 두 번 내지 않는다.</summary>
-    protected virtual bool EmitsFleeStartSoundEvent => false;
-
     protected Rigidbody2D Body => rb;
     protected Transform Player => player;
     protected SimpleFrameAnimator FrameAnimator => frameAnimator;
@@ -85,7 +82,6 @@ public class AnimalFlee : MonoBehaviour
     private AnimalFacingFlipper facingFlipper;
     private float alertTimer;
     private Vector2 moveDirection;
-    private float fleeSoundTimer;
 
     // 평소 배회(Wander) 전용 상태 - AnimalWander(코알라)와 동일한 패턴.
     private Vector2 origin;
@@ -193,7 +189,6 @@ public class AnimalFlee : MonoBehaviour
                     break;
                 }
                 Flee();
-                UpdateFleeSound();
                 break;
         }
 
@@ -304,25 +299,7 @@ public class AnimalFlee : MonoBehaviour
     {
         state = State.Fleeing;
         FleeBlocked = false;
-        fleeSoundTimer = 0f;
         OnStartFleeing();
-        if (!EmitsFleeStartSoundEvent) EmitFleeSound();
-    }
-
-    // 도주 중 소리 이벤트(소리반응형 몬스터가 듣는다). 소리 파일 재생은 하지 않는다. 도주 상태의 Update에서만 불리므로
-    // 도주가 끝나거나(멈춤/숨음/쉼) 잠들거나 쓰러지거나 주워지면 Update가 여기까지 오지 않아 바로 멈춘다.
-    private void UpdateFleeSound()
-    {
-        float interval = config != null ? config.animalFleeSoundInterval : 0.5f;
-        fleeSoundTimer += Time.deltaTime;
-        if (fleeSoundTimer < interval) return;
-        fleeSoundTimer -= interval;
-        EmitFleeSound();
-    }
-
-    private void EmitFleeSound()
-    {
-        SoundEvents.Emit(transform.position, config != null ? config.animalFleeSoundIntensity : 0.6f);
     }
 
     private void Flee()

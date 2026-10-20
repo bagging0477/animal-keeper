@@ -56,10 +56,6 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private float searchLookDuration;
     private float searchTurnTimer;
     private Vector3 searchCenter;
-    // 이 몬스터가 들은 소리의 누적량(몬스터마다 따로). 소리를 들을 때 쌓이고 시간이 지나면 줄어든다.
-    private float noise;
-    // 마지막으로 들은 소리 위치(NavMesh 좌표). 추격이 끝나면 여기를 탐색한다.
-    private Vector3 lastHeardSoundPosition;
 
     private float WanderSpeed => config != null ? config.soundReactiveMonsterWanderSpeed : 2.4f;
     private float ChaseSpeed => config != null ? config.monsterChaseSpeed : 4.3125f;
@@ -83,10 +79,6 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private float CatchRange => config != null ? config.soundReactiveMonsterCatchRange : 0.7f;
     private float WaypointStopDistance => config != null ? config.monsterWaypointStopDistance : 0.2f;
     private float InvestigateApproachFraction => config != null ? config.soundInvestigateApproachFraction : 0.35f;
-    private float NoisePerIntensity => config != null ? config.soundReactiveMonsterNoisePerIntensity : 1f;
-    private float NoiseDecayPerSecond => config != null ? config.soundReactiveMonsterNoiseDecayPerSecond : 0.2f;
-    private float ChaseStartNoise => config != null ? config.soundReactiveMonsterChaseStartNoise : 1.4f;
-    private float ChaseHoldNoise => config != null ? config.soundReactiveMonsterChaseHoldNoise : 0.6f;
 
     private void Awake()
     {
@@ -137,6 +129,7 @@ public class SoundReactiveMonsterAI : MonoBehaviour
 
     private void HandleSoundEmitted(Vector3 soundPosition, float intensity)
     {
+        if (state == State.Chase) return;
         if (health != null && health.IsIncapacitated) return;
 
         // 감지 범위 자체가 소리 강도에 비례한다 - 강도 1.0(동물 울음소리)은 기존 감지 범위 그대로,
@@ -147,22 +140,9 @@ public class SoundReactiveMonsterAI : MonoBehaviour
         Vector2 soundGamePos = new Vector2(soundPosition.x, soundPosition.y);
         if (Vector2.Distance(GamePosition, soundGamePos) > effectiveHearRange) return;
 
-        Vector3 navTarget = new Vector3(soundPosition.x, 0f, soundPosition.y);
-
-        // 들은 소리는 상태와 상관없이(추격 중에도) 누적량에 쌓는다. 누적량은 추격 시작 기준보다 커지지 않는다 -
-        // 소리를 멈춘 뒤 추격이 끝날 때까지의 시간이 오래 달린 만큼 늘어나지 않게 한다.
-        noise = Mathf.Min(noise + intensity * NoisePerIntensity, ChaseStartNoise);
-        lastHeardSoundPosition = navTarget;
-
-        if (state == State.Chase) return;
         if (!agent.isOnNavMesh) return;
 
-        // 누적량이 기준에 닿으면 소리 난 곳이 아니라 플레이어를 직접 추격한다.
-        if (player != null && noise >= ChaseStartNoise)
-        {
-            EnterChase();
-            return;
-        }
+        Vector3 navTarget = new Vector3(soundPosition.x, 0f, soundPosition.y);
 
         // 소리 지점까지 한 번에 이동하지 않고, 현재 위치에서 그 방향으로 강도에 비례한 만큼만 거리를
         // 좁힌다("확인하러 조금 다가가기"). 같은 소리가 반복되면(동물이 계속 울거나 플레이어가 계속
@@ -183,31 +163,54 @@ public class SoundReactiveMonsterAI : MonoBehaviour
 
     private void Update()
     {
-        // 누적량은 무력화 중에도 시간에 따라 줄어든다.
-        noise = Mathf.Max(0f, noise - NoiseDecayPerSecond * Time.deltaTime);
-
         if (health != null && health.IsIncapacitated) return;
 
         if (player != null)
         {
             float distanceToPlayer = Vector2.Distance(GamePosition, PlayerGamePosition);
 
-            // 시야/근접 거리로는 플레이어를 발견하지 않는다 - 추격은 소리 누적량으로만 시작한다(HandleSoundEmitted).
-            if (state == State.Chase)
+            if (state != State.Chase && distanceToPlayer <= DetectRange)
             {
-                // 소리가 끊겨 누적량이 유지 기준 아래로 떨어지면 추격을 끝낸다. 시작 기준보다 낮게 둬서 경계에서 왔다 갔다 하지 않는다.
-                bool tooQuiet = noise < ChaseHoldNoise;
+                state = State.Chase;
+                searchLooking = false;
+                sightLostTimer = 0f;
+                chaseTimer = 0f;
+                lastSeenPlayerPosition = PlayerNavPosition;
+                chaseDestinationTimer = ChaseDirectionUpdateInterval; // 발견한 그 프레임에 바로 추격을 시작한다.
+                // autoBraking은 목적지에 부드럽게 도착하려고 미리 감속하는 기능이다. Chase 중에는
+                // 목적지가 플레이어 위치로 계속 갱신되는 "움직이는 표적"이라 속도를 늦출 이유가
+                // 없는데, 목적지가 하필 문처럼 좁은 통로 한가운데로 갱신되는 순간 "거의 도착"으로
+                // 오판해 감속하면서 연결부 근처에서 순간적으로 멈추는 것처럼 보였다. Chase 중에는 꺼둔다.
+                agent.autoBraking = false;
+            }
+            else if (state == State.Chase)
+            {
+                // 거리가 너무 벌어졌거나(LoseRange 초과) 벽/장애물에 가려 시야가 막힌 상태가
+                // 이 프레임에도 계속되는지 판정한다. 둘 중 하나라도 '완전히 놓친' 상태로 친다.
+                bool blocked = IsSightBlocked(GamePosition, PlayerGamePosition);
+                bool sightLost = distanceToPlayer > LoseRange || blocked;
 
-                // 소리가 계속 들려도 추격이 MaxChaseDuration을 넘기면 끝낸다(0이면 무제한). 이때는 누적량을 비워서
-                // 다음 소리에 바로 다시 추격하지 않고, 처음처럼 소리가 다시 쌓여야 추격하게 한다.
+                // 실제로 보이는 동안의 위치만 기억해둔다 - 포기했을 때 벽 뒤로 숨은 플레이어의
+                // 현재 위치가 아니라 "마지막으로 목격한 곳"으로 가서 찾게 하려는 것이다.
+                if (!sightLost) lastSeenPlayerPosition = PlayerNavPosition;
+
+                // 놓친 시간은 빠르게 쌓이지만 되찾았을 때는 그 절반 속도로만 줄어들게 해서, 모퉁이를
+                // 도는 순간 단 한 프레임만 다시 보여도 지금까지 쌓은 진행이 통째로 0으로 리셋되는 것을
+                // 막는다 - 몬스터 자신도 같은 모퉁이를 0.25초 뒤처져 따라 돌기 때문에 완전히 끊기지
+                // 않고 아주 잠깐씩 다시 보이는 경우가 흔해서, 즉시 리셋이면 사실상 영원히 못 놓친다.
+                sightLostTimer = sightLost
+                    ? sightLostTimer + Time.deltaTime
+                    : Mathf.Max(0f, sightLostTimer - Time.deltaTime * 2f);
+
+                // 시야가 계속 확보돼도 추격이 MaxChaseDuration을 넘기면 끝낸다(0이면 무제한).
                 chaseTimer += Time.deltaTime;
                 bool chaseTimedOut = MaxChaseDuration > 0f && chaseTimer >= MaxChaseDuration;
-                if (chaseTimedOut) noise = 0f;
 
-                if (tooQuiet || chaseTimedOut)
+                if (sightLostTimer >= ChaseGiveUpSightLostDuration || chaseTimedOut)
                 {
-                    // 마지막으로 들은 소리 위치로 가서 잠시 수색한 뒤 배회로 돌아간다.
-                    EnterSearch(lastHeardSoundPosition);
+                    // 순간적으로 스친 정도가 아니라 일정 시간 이상 계속 놓쳤거나 최대 추격 시간이 지났을 때만
+                    // 추격을 끝내고, 마지막으로 본 위치로 가서 잠시 수색한다.
+                    EnterSearch(lastSeenPlayerPosition);
                 }
             }
 
@@ -317,22 +320,9 @@ public class SoundReactiveMonsterAI : MonoBehaviour
         PickNewWanderDestination();
     }
 
-    private void EnterChase()
-    {
-        state = State.Chase;
-        searchLooking = false;
-        chaseTimer = 0f;
-        chaseDestinationTimer = ChaseDirectionUpdateInterval; // 추격을 시작한 그 프레임에 바로 플레이어 쪽으로 간다.
-        // autoBraking은 목적지에 부드럽게 도착하려고 미리 감속하는 기능이다. Chase 중에는
-        // 목적지가 플레이어 위치로 계속 갱신되는 "움직이는 표적"이라 속도를 늦출 이유가
-        // 없는데, 목적지가 하필 문처럼 좁은 통로 한가운데로 갱신되는 순간 "거의 도착"으로
-        // 오판해 감속하면서 연결부 근처에서 순간적으로 멈추는 것처럼 보였다. Chase 중에는 꺼둔다.
-        agent.autoBraking = false;
-    }
-
-    // 추격 종료 -> 탐색(Search): 순찰형과 같은 방식으로 마지막으로 들은 소리 위치로 이동한 뒤, 도착하면 제자리에서
-    // 좌우로 방향을 바꿔가며 잠시 두리번거리고, 그래도 못 찾으면 배회로 돌아간다. 탐색 중 소리가 들리면
-    // HandleSoundEmitted가 조사(또는 누적량이 기준에 닿으면 추격)로 바꾼다.
+    // 추격 종료 -> 탐색(Search): 순찰형과 같은 방식으로 마지막 목격 위치로 이동한 뒤, 도착하면 제자리에서
+    // 좌우로 방향을 바꿔가며 잠시 두리번거리고, 그래도 못 찾으면 배회로 돌아간다. 탐색 중 플레이어가
+    // DetectRange 안에 다시 들어오면 Update 맨 위의 발견 분기가 그대로 Chase로 되돌린다.
     private void EnterSearch(Vector3 searchPoint)
     {
         state = State.Search;
