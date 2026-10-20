@@ -56,6 +56,8 @@ public class SoundReactiveMonsterAI : MonoBehaviour
     private float searchLookDuration;
     private float searchTurnTimer;
     private Vector3 searchCenter;
+    // 계층 경로 Id(GeneratedMap/Room_{gx}_{gy}/이름_번호). 늑대 시체(MonsterCorpsePickup)와 같은 규칙이라 같은 Day 재진입 때 같은 값이 나온다.
+    private string id;
 
     private float WanderSpeed => config != null ? config.soundReactiveMonsterWanderSpeed : 2.4f;
     private float ChaseSpeed => config != null ? config.monsterChaseSpeed : 4.3125f;
@@ -106,6 +108,32 @@ public class SoundReactiveMonsterAI : MonoBehaviour
         }
 
         PickNewWanderDestination();
+
+        // 오늘 이미 죽인 소리반응형이면 다시 나타나지 않는다. 늑대 시체와 같은 "오늘 죽은 몬스터" 기록(SaveMonsterCorpse)을 쓴다 -
+        // ResetDay/ResetGame에서 비워진다. 난수 호출 순서가 바뀌지 않게 위의 PickNewWanderDestination 뒤에서 확인한다.
+        id = BuildHierarchyId();
+        if (GameManager.Instance != null && GameManager.Instance.TryGetMonsterCorpse(id, out _))
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
+    // 죽은 채로 마을을 떠나면(씬 언로드) 오늘 죽은 몬스터로 기록한다. 살아 있으면 기록하지 않아 재진입 때 새로 생긴다.
+    private void OnDestroy()
+    {
+        // 씬 언로드 중에는 MonsterHealth가 먼저 파괴됐을 수 있어 Unity의 == null 대신 참조만 본다(MonsterCorpsePickup과 같다).
+        if (GameManager.Instance == null || ReferenceEquals(health, null) || !health.IsDead || string.IsNullOrEmpty(id)) return;
+        GameManager.Instance.SaveMonsterCorpse(id, transform.position);
+    }
+
+    private string BuildHierarchyId()
+    {
+        var path = new System.Text.StringBuilder(name);
+        for (Transform t = transform.parent; t != null; t = t.parent)
+        {
+            path.Insert(0, "/").Insert(0, t.name);
+        }
+        return path.ToString();
     }
 
     private void OnEnable()
