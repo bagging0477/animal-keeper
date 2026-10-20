@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>몬스터 두뇌(MonsterAI, SoundReactiveMonsterAI)가 똑같이 쓰던 위치 도우미, 시야 판정, 접촉(잡기) 처리를 모은 기반 클래스.
 /// Unity 메시지(Awake/Start/Update 등)는 두지 않는다 - 실행 순서는 각 두뇌가 그대로 정한다. 직렬화 필드도 두지 않는다(프리팹 값은 각 두뇌에 남는다);
@@ -9,12 +10,51 @@ public abstract class MonsterBrain : MonoBehaviour
     protected SimpleFrameAnimator frameAnimator;
     protected Transform player;
     protected bool caughtLogged;
+    protected NavMeshAgent agent;
+    protected MonsterHealth health;
+    protected AnimalFacingFlipper facingFlipper;
 
     // 각 두뇌의 직렬화 필드·설정을 기반 코드에 넘기는 연결
     protected abstract LayerMask SightBlockingMask { get; }
     protected abstract float CatchRange { get; }
     protected abstract int CatchDamage { get; }
     protected abstract string MonsterTypeName { get; }
+    protected abstract Transform Visual { get; }
+    protected abstract AudioClip ChaseClip { get; }
+    protected abstract bool IsChaseState { get; }
+    protected abstract bool IsSearchState { get; }
+    protected abstract bool SearchLooking { get; }
+
+    // Update는 마취로 무력화되면 맨 앞에서 빠져나가 state가 Chase로 남을 수 있어서, 추격음 보고는
+    // 무력화 여부까지 반영해 LateUpdate에서 매 프레임 한다.
+    private void LateUpdate()
+    {
+        bool chasing = IsChaseState && (health == null || !health.IsIncapacitated);
+        AudioManager.Instance?.SetChasing(this, chasing, ChaseClip);
+    }
+
+    /// <summary>NavMesh(x, z) 위의 몸 위치를 2D 그림(Visual)의 (x, y)로 옮긴다. 각 두뇌의 Update 끝, 애니메이션 갱신 앞에서 부른다.</summary>
+    protected void UpdateVisualPosition()
+    {
+        if (Visual != null)
+        {
+            Visual.position = new Vector3(transform.position.x, transform.position.z, 0f);
+        }
+    }
+
+    /// <summary>각 두뇌의 Update 끝, 애니메이션 갱신 뒤에서 부른다.</summary>
+    protected void UpdateFacing()
+    {
+        // 동물(AnimalWander/AnimalFlee)과 동일한 좌우 반전 컴포넌트를 재사용한다 - agent.velocity의
+        // x/z가 이 몬스터의 2D 좌표계(x, z)에서 그대로 가로/세로 이동 성분이므로 별도 변환이 필요 없다.
+        // 상태와 무관하게 매 프레임 실제 이동 방향을 그대로 넘기면, 좌우 성분이
+        // 거의 없을 때(위/아래 이동, 정지) AnimalFacingFlipper가 알아서 마지막 방향을 유지해준다.
+        // 두리번거리며 제자리에 서 있을 때는 UpdateSearch가 방향을 직접 정하므로, 몇 걸음 옮기는 중(hasPath)에만 이동 방향을 따른다.
+        if (facingFlipper != null && !(IsSearchState && SearchLooking && !agent.hasPath))
+        {
+            facingFlipper.SetMoveDirection(new Vector2(agent.velocity.x, agent.velocity.z));
+        }
+    }
 
     protected Vector2 GamePosition => new Vector2(transform.position.x, transform.position.z);
     protected Vector2 PlayerGamePosition => new Vector2(player.position.x, player.position.y);

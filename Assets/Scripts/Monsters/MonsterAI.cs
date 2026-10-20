@@ -39,9 +39,6 @@ public class MonsterAI : MonsterBrain
     // 달리 항상 정확하므로, 동물처럼 FixedUpdate에서 위치 변화량을 직접 잴 필요가 없다.
     private const float MinMovingSpeed = 0.05f;
 
-    private NavMeshAgent agent;
-    private MonsterHealth health;
-    private AnimalFacingFlipper facingFlipper;
     private SpriteRenderer visualRenderer;
     private Vector3[] waypoints;
     private int targetIndex;
@@ -77,6 +74,11 @@ public class MonsterAI : MonsterBrain
     protected override int CatchDamage => config != null ? config.patrolMonsterDamage : 47;
     protected override LayerMask SightBlockingMask => sightBlockingMask;
     protected override string MonsterTypeName => monsterTypeName;
+    protected override Transform Visual => visual;
+    protected override AudioClip ChaseClip => chaseClip;
+    protected override bool IsChaseState => state == State.Chase;
+    protected override bool IsSearchState => state == State.Search;
+    protected override bool SearchLooking => searchLooking;
     private float WaypointStopDistance => config != null ? config.monsterWaypointStopDistance : 0.2f;
     private float LeashRadius => config != null ? config.wolfLeashRadius : 14f;
     private float ChaseBurstDuration => config != null ? config.wolfChaseBurstDuration : 3.5f;
@@ -126,14 +128,6 @@ public class MonsterAI : MonsterBrain
     private void OnDisable()
     {
         AudioManager.Instance?.SetChasing(this, false);
-    }
-
-    // Update는 마취로 무력화되면 맨 앞에서 빠져나가 state가 Chase로 남을 수 있어서, 추격음 보고는
-    // 무력화 여부까지 반영해 LateUpdate에서 매 프레임 한다.
-    private void LateUpdate()
-    {
-        bool chasing = state == State.Chase && (health == null || !health.IsIncapacitated);
-        AudioManager.Instance?.SetChasing(this, chasing, chaseClip);
     }
 
     private void Update()
@@ -250,10 +244,7 @@ public class MonsterAI : MonsterBrain
             }
         }
 
-        if (visual != null)
-        {
-            visual.position = new Vector3(transform.position.x, transform.position.z, 0f);
-        }
+        UpdateVisualPosition();
 
         if (frameAnimator != null)
         {
@@ -268,15 +259,7 @@ public class MonsterAI : MonsterBrain
                 agent.velocity.sqrMagnitude > MinMovingSpeed * MinMovingSpeed;
         }
 
-        // 동물(AnimalWander/AnimalFlee)과 동일한 좌우 반전 컴포넌트를 재사용한다 - agent.velocity의
-        // x/z가 이 몬스터의 2D 좌표계(x, z)에서 그대로 가로/세로 이동 성분이므로 별도 변환이 필요 없다.
-        // Patrol/Chase/Search 등 상태와 무관하게 매 프레임 실제 이동 방향을 그대로 넘기면, 좌우 성분이
-        // 거의 없을 때(위/아래 이동, 정지) AnimalFacingFlipper가 알아서 마지막 방향을 유지해준다.
-        // 두리번거리며 제자리에 서 있을 때는 UpdateSearch가 방향을 직접 정하므로, 몇 걸음 옮기는 중(hasPath)에만 이동 방향을 따른다.
-        if (facingFlipper != null && !(state == State.Search && searchLooking && !agent.hasPath))
-        {
-            facingFlipper.SetMoveDirection(new Vector2(agent.velocity.x, agent.velocity.z));
-        }
+        UpdateFacing();
     }
 
     // 전속력 추격이 ChaseBurstDuration만큼 이어지면 WindedDuration 동안 숨을 고르며 느려진다. 추격 속도가
