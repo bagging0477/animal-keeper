@@ -31,23 +31,16 @@ public class SoundReactiveMonsterAI : MonsterBrain
     [Tooltip("Chase 중 플레이어와의 사이에 이 레이어의 콜라이더(벽, 장애물)가 있으면 시야가 막힌 것으로 취급한다.")]
     [SerializeField] private LayerMask sightBlockingMask = ~0;
 
-    // 실제로 이 정도 이상 속도로 움직이고 있을 때만 Walk 프레임을 재생한다 - NavMeshAgent의
-    // velocity는 항상 정확하므로, 동물처럼 FixedUpdate에서 위치 변화량을 직접 잴 필요가 없다.
-    private const float MinMovingSpeed = 0.05f;
-
     private Vector3 origin;
     private State state = State.Wander;
     private float wanderWaitTimer;
     private float wanderWaitDuration;
     private float lookAroundTimer;
-    private float sightLostTimer;
-    private float chaseDestinationTimer;
     private float chaseTimer;
     // 계층 경로 Id(GeneratedMap/Room_{gx}_{gy}/이름_번호). 늑대 시체(MonsterCorpsePickup)와 같은 규칙이라 같은 Day 재진입 때 같은 값이 나온다.
     private string id;
 
     private float WanderSpeed => config != null ? config.soundReactiveMonsterWanderSpeed : 2.4f;
-    protected override float ChaseSpeed => config != null ? config.monsterChaseSpeed : 4.3125f;
     private float DetectRange => config != null ? config.soundReactiveMonsterDetectRange : 2.03f;
     private float LoseRange => config != null ? config.soundReactiveMonsterLoseRange : 9f;
     private float SoundHearRange => config != null ? config.soundReactiveMonsterHearRange : 15f;
@@ -57,7 +50,6 @@ public class SoundReactiveMonsterAI : MonsterBrain
     // 0 이하면 무제한 - 시야를 놓쳐야만 추격을 끝낸다.
     private float MaxChaseDuration => config != null ? config.soundReactiveMonsterMaxChaseDuration : 10f;
     // 탐색(Search) 동작 값은 순찰형과 같은 monsterSearch* 필드를 그대로 읽는다.
-    private float ChaseDirectionUpdateInterval => config != null ? config.chaseDirectionUpdateInterval : 0.25f;
     protected override float CatchRange => config != null ? config.soundReactiveMonsterCatchRange : 0.7f;
     protected override int CatchDamage => config != null ? config.soundReactiveMonsterDamage : 47;
     protected override LayerMask SightBlockingMask => sightBlockingMask;
@@ -66,10 +58,8 @@ public class SoundReactiveMonsterAI : MonsterBrain
     protected override AudioClip ChaseClip => chaseClip;
     protected override bool IsChaseState => state == State.Chase;
     protected override bool IsSearchState => state == State.Search;
-    protected override bool SearchLooking => searchLooking;
     protected override GameBalanceConfig Config => config;
     protected override void EnterSearchState() => state = State.Search;
-    protected override float WaypointStopDistance => config != null ? config.monsterWaypointStopDistance : 0.2f;
     private float InvestigateApproachFraction => config != null ? config.soundInvestigateApproachFraction : 0.35f;
 
     private void Awake()

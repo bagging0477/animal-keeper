@@ -34,16 +34,9 @@ public class MonsterAI : MonsterBrain
     [Tooltip("Chase 중 플레이어와의 사이에 이 레이어의 콜라이더(벽, 장애물)가 있으면 시야가 막힌 것으로 취급한다.")]
     [SerializeField] private LayerMask sightBlockingMask = ~0;
 
-    // 실제로 이 정도 이상 속도로 움직이고 있을 때만 Walk 프레임을 재생한다 - NavMeshAgent의
-    // velocity는 애니메이션이 필요로 하는 Rigidbody2D.MovePosition 케이스(AnimalWander 등)와
-    // 달리 항상 정확하므로, 동물처럼 FixedUpdate에서 위치 변화량을 직접 잴 필요가 없다.
-    private const float MinMovingSpeed = 0.05f;
-
     private Vector3[] waypoints;
     private int targetIndex;
     private State state = State.Patrol;
-    private float sightLostTimer;
-    private float chaseDestinationTimer;
     private bool patrolWaiting;
     private float patrolWaitTimer;
     private Vector2 homeGamePosition;
@@ -51,11 +44,9 @@ public class MonsterAI : MonsterBrain
     private float windedTimer;
 
     private float PatrolSpeed => config != null ? config.patrolMonsterPatrolSpeed : 1.6f;
-    protected override float ChaseSpeed => config != null ? config.monsterChaseSpeed : 4.3125f;
     private float DetectRange => config != null ? config.patrolMonsterDetectRange : 4.05f;
     private float LoseRange => config != null ? config.patrolMonsterLoseRange : 10f;
     private float ChaseGiveUpSightLostDuration => config != null ? config.chaseGiveUpSightLostDuration : 2f;
-    private float ChaseDirectionUpdateInterval => config != null ? config.chaseDirectionUpdateInterval : 0.25f;
     protected override float CatchRange => config != null ? config.patrolMonsterCatchRange : 0.7f;
     protected override int CatchDamage => config != null ? config.patrolMonsterDamage : 47;
     protected override LayerMask SightBlockingMask => sightBlockingMask;
@@ -64,10 +55,8 @@ public class MonsterAI : MonsterBrain
     protected override AudioClip ChaseClip => chaseClip;
     protected override bool IsChaseState => state == State.Chase;
     protected override bool IsSearchState => state == State.Search;
-    protected override bool SearchLooking => searchLooking;
     protected override GameBalanceConfig Config => config;
     protected override void EnterSearchState() => state = State.Search;
-    protected override float WaypointStopDistance => config != null ? config.monsterWaypointStopDistance : 0.2f;
     private float LeashRadius => config != null ? config.wolfLeashRadius : 14f;
     private float ChaseBurstDuration => config != null ? config.wolfChaseBurstDuration : 3.5f;
     private float WindedDuration => config != null ? config.wolfWindedDuration : 1.5f;

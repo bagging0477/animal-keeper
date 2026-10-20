@@ -10,6 +10,8 @@ public abstract class MonsterBrain : MonoBehaviour
     protected SimpleFrameAnimator frameAnimator;
     protected Transform player;
     protected bool caughtLogged;
+    protected float sightLostTimer;
+    protected float chaseDestinationTimer;
     protected NavMeshAgent agent;
     protected MonsterHealth health;
     protected AnimalFacingFlipper facingFlipper;
@@ -31,15 +33,21 @@ public abstract class MonsterBrain : MonoBehaviour
     protected abstract AudioClip ChaseClip { get; }
     protected abstract bool IsChaseState { get; }
     protected abstract bool IsSearchState { get; }
-    protected abstract bool SearchLooking { get; }
     protected abstract GameBalanceConfig Config { get; }
-    protected abstract float ChaseSpeed { get; }
-    protected abstract float WaypointStopDistance { get; }
     /// <summary>EnterSearch가 맨 처음에 부른다 - 두뇌의 상태를 Search로 바꾼다.</summary>
     protected abstract void EnterSearchState();
     /// <summary>탐색 두리번거리기가 끝났을 때 UpdateSearch가 부른다(searchLooking을 끈 바로 뒤) - 각 두뇌의 평소 상태로 돌아간다.</summary>
     protected abstract void OnSearchFinished();
 
+    // 실제로 이 정도 이상 속도로 움직이고 있을 때만 Walk 프레임을 재생한다 - NavMeshAgent의
+    // velocity는 애니메이션이 필요로 하는 Rigidbody2D.MovePosition 케이스(AnimalWander 등)와
+    // 달리 항상 정확하므로, 동물처럼 FixedUpdate에서 위치 변화량을 직접 잴 필요가 없다.
+    protected const float MinMovingSpeed = 0.05f;
+
+    protected bool SearchLooking => searchLooking;
+    protected float ChaseSpeed => Config != null ? Config.monsterChaseSpeed : 4.3125f;
+    protected float ChaseDirectionUpdateInterval => Config != null ? Config.chaseDirectionUpdateInterval : 0.25f;
+    protected float WaypointStopDistance => Config != null ? Config.monsterWaypointStopDistance : 0.2f;
     private float SearchLookDurationMin => Config != null ? Config.monsterSearchLookDurationMin : 2f;
     private float SearchLookDurationMax => Config != null ? Config.monsterSearchLookDurationMax : 3f;
     private float SearchLookTurnInterval => Config != null ? Config.monsterSearchLookTurnInterval : 0.6f;
