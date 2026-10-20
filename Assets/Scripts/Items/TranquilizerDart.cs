@@ -3,6 +3,8 @@ using UnityEngine;
 public class TranquilizerDart : MonoBehaviour
 {
     [SerializeField] private float hitRadius = 0.3f;
+    [Tooltip("다트를 막는 충돌체의 레이어. 이 중 트리거와 움직이는 리지드바디는 건너뛰고 고정 충돌체만 벽으로 본다(몬스터 시야와 같은 규칙).")]
+    [SerializeField] private LayerMask wallMask = ~0;
 
     private Vector2 velocity;
     private float sleepDelay;
@@ -28,7 +30,17 @@ public class TranquilizerDart : MonoBehaviour
 
     private void Update()
     {
-        transform.position += (Vector3)(velocity * Time.deltaTime);
+        // 이번 프레임에 지나간 구간 전체를 고정 충돌체(맵 경계, 장애물, 트럭)로 검사한다 - 빠르게 날아도 얇은 벽을 건너뛰지 않고,
+        // 총구가 벽 안에 있으면 거리 0에서 걸려 바로 사라진다. 판정 규칙은 몬스터 시야와 같다(StaticBlockerLine).
+        Vector2 from = transform.position;
+        Vector2 to = from + velocity * Time.deltaTime;
+        if (StaticBlockerLine.TryGetFirstHit(from, to, wallMask, out RaycastHit2D wall))
+        {
+            transform.position = new Vector3(wall.point.x, wall.point.y, transform.position.z);
+            Destroy(gameObject);
+            return;
+        }
+        transform.position = new Vector3(to.x, to.y, transform.position.z);
 
         lifeTimer -= Time.deltaTime;
         if (lifeTimer <= 0f)
@@ -37,7 +49,7 @@ public class TranquilizerDart : MonoBehaviour
             return;
         }
 
-        Vector2 position = transform.position;
+        Vector2 position = to;
 
         for (int i = MonsterHealth.Active.Count - 1; i >= 0; i--)
         {
@@ -59,6 +71,8 @@ public class TranquilizerDart : MonoBehaviour
     private bool TryHit(ISleepable target, Vector2 dartPosition)
     {
         if (Vector2.Distance(dartPosition, target.GamePosition) > hitRadius) return false;
+        // 맞힘 반경(hitRadius) 안이어도 다트와 대상 사이에 벽이 있으면(얇은 벽 바로 뒤) 맞지 않는다.
+        if (StaticBlockerLine.IsBlocked(dartPosition, target.GamePosition, wallMask)) return false;
 
         target.PutToSleep(sleepDelay, sleepDuration);
         Destroy(gameObject);

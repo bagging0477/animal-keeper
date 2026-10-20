@@ -471,24 +471,13 @@ public class SoundReactiveMonsterAI : MonoBehaviour
         return blockedLines >= 2;
     }
 
-    private readonly List<RaycastHit2D> sightHits = new List<RaycastHit2D>();
-
     // 선이 끝나는 지점은 플레이어 한가운데라 플레이어 자신의 콜라이더에 항상 걸린다 - 예전에는 첫 번째
     // 충돌만 보고 판정해서 세 줄이 전부 "막힘"으로 나왔고, 시야 안에 서 있는 플레이어도
     // ChaseGiveUpSightLostDuration 뒤에 놓친 것으로 처리됐다. 순찰형(MonsterAI)과 같이 트리거와
     // 움직이는 리지드바디(플레이어, 동물)는 건너뛰고, 벽처럼 고정된 콜라이더만 시야를 가린 것으로 친다.
     private bool IsLineBlocked(Vector2 from, Vector2 to)
     {
-        ContactFilter2D filter = new ContactFilter2D { useTriggers = false };
-        filter.SetLayerMask(sightBlockingMask);
-        int hitCount = Physics2D.Linecast(from, to, filter, sightHits);
-        for (int i = 0; i < hitCount; i++)
-        {
-            Rigidbody2D body = sightHits[i].rigidbody;
-            if (body != null && body.bodyType != RigidbodyType2D.Static) continue;
-            return true;
-        }
-        return false;
+        return StaticBlockerLine.IsBlocked(from, to, sightBlockingMask);
     }
 
     private void HandleCatch()

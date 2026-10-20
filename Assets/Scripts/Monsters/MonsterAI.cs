@@ -432,24 +432,13 @@ public class MonsterAI : MonoBehaviour
         return blockedLines >= 2;
     }
 
-    private readonly List<RaycastHit2D> sightHits = new List<RaycastHit2D>();
-
     // 선이 끝나는 지점은 플레이어 한가운데라 플레이어 자신의 콜라이더(1x1 박스)에 항상 걸린다 - 예전에는
     // 이것 때문에 세 줄이 전부 "막힘"으로 판정되어 추격 내내 시야가 가려진 것으로 취급됐고, 마지막
     // 목격 위치도 추격 시작 지점에서 전혀 갱신되지 않았다. 트리거(아이템/포인트/벽 그림자용 상자 등)와
     // 움직이는 리지드바디(플레이어, 동물)는 건너뛰고, 벽처럼 고정된 콜라이더만 시야를 가린 것으로 친다.
     private bool IsLineBlocked(Vector2 from, Vector2 to)
     {
-        ContactFilter2D filter = new ContactFilter2D { useTriggers = false };
-        filter.SetLayerMask(sightBlockingMask);
-        int hitCount = Physics2D.Linecast(from, to, filter, sightHits);
-        for (int i = 0; i < hitCount; i++)
-        {
-            Rigidbody2D body = sightHits[i].rigidbody;
-            if (body != null && body.bodyType != RigidbodyType2D.Static) continue;
-            return true;
-        }
-        return false;
+        return StaticBlockerLine.IsBlocked(from, to, sightBlockingMask);
     }
 
     private void HandleCatch()
