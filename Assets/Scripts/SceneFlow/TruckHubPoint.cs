@@ -113,6 +113,7 @@ public class TruckHubPoint : MonoBehaviour
         if (GameManager.Instance != null && GameManager.Instance.RescuedCount < GameManager.Instance.TargetCount)
         {
             GameManager.Instance.FinishCycle();
+            AudioManager.Instance?.PlayDayFail();
             if (gameOverPanel != null) gameOverPanel.Show();
             return;
         }
