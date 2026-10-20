@@ -29,6 +29,7 @@ VillageScene에 들어갈 때마다 `VillageMapGenerator`(VillageScene의 `MapGe
   - 계획기는 `System.Random`만 쓰는 순수 계산이다. 같은 시드면 항상 같은 계획이 나온다.
 - **트럭/플레이어**: 트럭 칸 방 안에서 트럭 둘레 2.5칸이 모두 바닥인 자리를 먼저 찾는다. 몬스터는 트럭 방에 두지 않는다(`monsterFreeRoomRadius` 0).
 - **동물/몬스터 스폰 자리** (격자만): 프리팹 몸 반경(동물은 CircleCollider2D x 스케일, 몬스터는 NavMeshAgent 반경)으로 장애물·경계·트럭, 이미 놓인 플레이어·동물·몬스터와 겹치지 않는 칸만 고르고, 고른 칸의 8방향 이웃도 사용한 칸으로 막는다(`PickGridSpawnCell`). 무작위 32번 뒤 남은 후보를 한 번 훑고도 없으면 경고를 남기고 그 마리를 뺀다. 한 줄 배치는 예전 규칙(`PickInteriorCell`) 그대로다.
+- **거북이·거위**: 격자에서는 동물 한 마리를 고를 때마다 거북이 12%(`turtleSpawnChance`), 거위 18.4%(`gooseSpawnChance`) 확률로 그 자리를 대신한다(총량은 그대로). 한 줄 배치에서는 나오지 않는다(`turtleSpawnInLinearMode`/`gooseSpawnInLinearMode` 꺼짐).
 - **개발용 검증**: 생성 직후(`Start`) 바닥 연결, 트럭에서 모든 방 중심까지 NavMesh 경로, Id 중복, 방당 상한을 검사해 문제가 있으면 에러 로그를 남긴다.
 
 ### 설정값 위치
@@ -46,8 +47,8 @@ VillageScene에 들어갈 때마다 `VillageMapGenerator`(VillageScene의 `MapGe
 | 길 폭 `gridCorridorWidth` | `Assets/Settings/GameBalanceConfig.asset` | 6 |
 | 칸 사이 틈 `gridCorridorGap` | 〃 | 8 |
 | 길 가장자리 그라데이션 `gridCorridorFadeDepth` | 〃 | 1 |
-| 동물/몬스터 총량 `gridAnimalTotal` / `gridMonsterTotal` | 〃 | 27 / 12 |
-| 방당 상한 `gridMaxAnimalsPerRoom` / `gridMaxMonstersPerRoom` | 〃 | 3 / 2 |
+| 동물/몬스터 총량 `gridAnimalTotal` / `gridMonsterTotal` | 〃 | 41 / 18 |
+| 방당 상한 `gridMaxAnimalsPerRoom` / `gridMaxMonstersPerRoom` | 〃 | 6 / 4 |
 
 - 한 줄 배치의 방 수(`minRoomCount`/`maxRoomCount`)와 방당 스폰 수(`animalsPerRoom`/`monstersPerRoom`)는 MapGenerator에 그대로 있다. 격자에서는 쓰지 않는다.
 - 씬 파일에 `corridorWidth`/`corridorGap` 항목이 남아 있지만 예전 필드라 쓰이지 않는다. 길 폭과 틈은 GameBalanceConfig 값만 쓴다.
@@ -91,11 +92,11 @@ VillageScene에 들어갈 때마다 `VillageMapGenerator`(VillageScene의 `MapGe
 
 ### 격자 크기와 스폰 밀도
 
-- 동물/몬스터 수는 **격자 크기와 상관없이 맵 전체 총량이 고정**이다(`gridAnimalTotal` 27, `gridMonsterTotal` 12).
+- 동물/몬스터 수는 **격자 크기와 상관없이 맵 전체 총량이 고정**이다(`gridAnimalTotal` 41, `gridMonsterTotal` 18).
   - 동물은 방마다 먼저 한 마리씩 돌아가고, 남는 수는 스폰 가능 칸이 넓은 방에 더 간다(방당 상한까지).
   - 몬스터는 트럭 방을 뺀 방에 같은 규칙으로 나눈다.
 - 그래서 **격자를 키우면 밀도가 낮아진다.** 크기를 바꿀 때는 총량도 같이 조정해야 체감 난이도가 유지된다.
-- 반대로 줄이면 상한에 걸릴 수 있다. 총량이 `방 수 x 방당 상한`보다 크면 경고를 남기고 상한까지만 둔다(예: 3x3 = 9방 x 3 = 동물 27까지).
+- 반대로 줄이면 상한에 걸릴 수 있다. 총량이 `방 수 x 방당 상한`보다 크면 경고를 남기고 상한까지만 둔다(예: 3x3 = 9방 x 6 = 동물 54까지).
 
 | 격자 | 방 수 | 방당 평균 동물 | 몬스터 대상 방당 평균 몬스터 (트럭 방 제외) | 동물 1마리당 바닥 칸 |
 |---|---|---|---|---|
