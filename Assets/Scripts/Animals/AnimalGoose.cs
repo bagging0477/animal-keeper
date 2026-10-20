@@ -124,8 +124,6 @@ public class AnimalGoose : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
     {
     }
 
-    protected override bool EmitsFleeStartSoundEvent => true;
-
     protected override void OnStartFleeing()
     {
         fleeStart = Body.position;
