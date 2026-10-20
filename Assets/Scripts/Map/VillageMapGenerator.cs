@@ -620,7 +620,7 @@ public class VillageMapGenerator : MonoBehaviour
         int skipped = 0;
         for (int i = 0; i < count; i++)
         {
-            GameObject prefab = monsterPrefabs[Random.Range(0, monsterPrefabs.Length)];
+            GameObject prefab = MonsterSpawnPool.Pick(monsterPrefabs, config, gridLayout: true);
             float radius = SpawnRadius(prefab);
             bool placed = false;
             for (int attempt = 0; attempt < MonsterSnapRetryCount && !placed; attempt++)
@@ -2192,7 +2192,7 @@ public class VillageMapGenerator : MonoBehaviour
 
         for (int i = 0; i < monstersPerRoom; i++)
         {
-            GameObject prefab = monsterPrefabs[Random.Range(0, monsterPrefabs.Length)];
+            GameObject prefab = MonsterSpawnPool.Pick(monsterPrefabs, config, gridLayout: false);
             Vector2Int cell = PickMonsterSpawnCell(room, usedCells, playerSpawnWorldXY, MonsterMinSpawnDistanceFromPlayer);
             usedCells.Add(cell);
             // 같은 방에 같은 몬스터 프리팹이 둘 이상 뽑혀도 MonsterCorpsePickup의 계층 경로 Id가 겹치지 않게 번호를 붙인다

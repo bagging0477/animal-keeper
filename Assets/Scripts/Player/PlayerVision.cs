@@ -35,9 +35,50 @@ public class PlayerVision : MonoBehaviour
     private float lastFocusedEdgeFadeAngle;
     private float lastFocusedInnerRadiusRatio;
 
+    /// <summary>지금 마을에서 켜져 있는 플레이어 시야. 몬스터 등이 매 프레임 Find 없이 시야를 물을 때 쓴다(없으면 null).</summary>
+    public static PlayerVision Current { get; private set; }
+
+    // 도메인 리로드를 끈 에디터에서 이전 Play의 파괴된 시야가 남지 않게 한다.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetCurrent() => Current = null;
+
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
+    }
+
+    private void OnEnable() => Current = this;
+
+    private void OnDisable()
+    {
+        if (Current == this) Current = null;
+    }
+
+    /// <summary>월드 위치(x, y)가 지금 플레이어 시야 안인지. 플레이어나 시야가 없으면 false.</summary>
+    public static bool IsVisibleToPlayer(Vector2 point) => Current != null && Current.IsPointVisible(point);
+
+    /// <summary>월드 위치(x, y)가 지금 이 시야 안인지 - 화면에 그려지는 두 라이트의 실제 값(반경, 부채꼴 각도와 방향, 켜짐, 그림자)을 그대로 읽는다.
+    /// 그래서 클래스 배율, 플래시라이트 배율(없으면 0.7배), 마우스 방향이 화면과 똑같이 반영된다.
+    /// - 원형 시야: 라이트 중심에서 반경 안
+    /// - 부채꼴 시야: 반경 안이고, 라이트가 향한 방향(transform.up)에서 바깥 각도의 절반 안
+    /// - 벽: 그 라이트가 그림자를 쓰면(shadowsEnabled) 라이트 중심과 위치 사이를 고정 충돌체가 막을 때 보이지 않는 것으로 본다(StaticBlockerLine,
+    ///   몬스터 시야와 같은 규칙). 원형 시야는 기본 설정(ambientVisionIgnoresShadows)에서 그림자를 끄므로, 화면처럼 벽 너머도 반경 안이면 보인다.
+    /// 가장자리의 부드러운 감쇠(안쪽 반경·안쪽 각도 밖의 흐려지는 띠)는 "보임"으로 친다. 맵 바깥 마스크로 가려지는 맵 밖은 따지지 않는다.
+    /// 부채꼴 방향은 LateUpdate에서 갱신되므로 Update에서 부르면 직전 프레임에 그려진 방향과 같다.</summary>
+    public bool IsPointVisible(Vector2 point) =>
+        InsideLight(ambientVisionLight, point) || InsideLight(focusedVisionLight, point);
+
+    private static bool InsideLight(Light2D light, Vector2 point)
+    {
+        if (light == null || !light.isActiveAndEnabled) return false;
+        Vector2 center = light.transform.position;
+        Vector2 toPoint = point - center;
+        float radius = light.pointLightOuterRadius;
+        if (toPoint.sqrMagnitude > radius * radius) return false;
+        if (light.pointLightOuterAngle < 360f && toPoint.sqrMagnitude > 0f &&
+            Vector2.Angle(light.transform.up, toPoint) > light.pointLightOuterAngle * 0.5f) return false;
+        if (light.shadowsEnabled && StaticBlockerLine.IsBlocked(center, point, ~0)) return false;
+        return true;
     }
 
     private void ApplyVisionRanges()
