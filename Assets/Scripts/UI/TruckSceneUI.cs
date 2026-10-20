@@ -23,7 +23,7 @@ public class TruckSceneUI : MonoBehaviour
     private void Refresh()
     {
         int cycleCount = GameManager.Instance != null ? GameManager.Instance.CycleCount : 1;
-        int target = GameManager.Instance != null ? GameManager.Instance.TargetCount : 3;
+        int target = GameManager.Instance != null ? GameManager.Instance.TargetCount : GameManager.ComputeTargetCount(cycleCount, null);
         int rescued = GameManager.Instance != null ? GameManager.Instance.RescuedCount : 0;
         int totalWeight = GameManager.Instance != null ? GameManager.Instance.TotalWeight : 0;
         int mileage = GameManager.Instance != null ? GameManager.Instance.Mileage : 0;

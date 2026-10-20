@@ -434,8 +434,11 @@ public class GameBalanceConfig : ScriptableObject
     public float staminaExhaustionCooldown = 1.5f;
 
     [Header("Day 목표")]
-    [Tooltip("보너스 마일리지를 받기 위해 하루 동안 구조해야 하는 목표 마릿수")]
+    [Tooltip("첫날(사이클 1)에 구조해야 하는 목표 마릿수. 그날의 목표 = 이 값 + (사이클 - 1) x targetRescueIncreasePerDay")]
     public int targetRescueCount = 3;
+
+    [Tooltip("사이클(날)이 하나 넘어갈 때마다 목표 마릿수가 늘어나는 양")]
+    public int targetRescueIncreasePerDay = 4;
 
     [Tooltip("이 사이클(순찰) 수를 목표 달성과 함께 완주하면 게임 클리어 화면이 뜬다. 예: 10이면 " +
         "10번째 사이클 정산에서 목표를 달성하는 순간 클리어된다.")]

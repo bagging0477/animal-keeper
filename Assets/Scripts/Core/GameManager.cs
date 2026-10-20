@@ -26,7 +26,16 @@ public class GameManager : MonoBehaviour
     /// <summary>밸런스 설정. 자기 config 필드가 없는 컴포넌트(AnimalRescue의 줍기 소리 이벤트 등)가 읽는다.</summary>
     public GameBalanceConfig Config => config;
 
-    public int TargetCount => config != null ? config.targetRescueCount : 3;
+    /// <summary>오늘(CycleCount)의 목표 마릿수. CycleCount는 ResetDay/ResetGame에서만 바뀌므로 같은 사이클 안에서는 변하지 않는다.</summary>
+    public int TargetCount => ComputeTargetCount(CycleCount, config);
+
+    /// <summary>목표 마릿수 = 시작 목표 + (사이클 - 1) x 날마다 늘어나는 양. 사이클 1이 첫날이다.</summary>
+    public static int ComputeTargetCount(int cycle, GameBalanceConfig balance)
+    {
+        int start = balance != null ? balance.targetRescueCount : 3;
+        int increase = balance != null ? balance.targetRescueIncreasePerDay : 4;
+        return start + (Mathf.Max(1, cycle) - 1) * increase;
+    }
     public int TotalCyclesToWin => config != null ? config.totalCyclesToWin : 10;
     public int RescuedCount { get; private set; }
     public int Health { get; private set; }
