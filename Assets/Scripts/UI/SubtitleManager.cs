@@ -24,8 +24,8 @@ public class SubtitleManager : MonoBehaviour
     // 1920x1080 기준 좌표. 인벤토리 슬롯 줄(2240x1260 기준 캔버스에서 하단 24 + 높이 165 = 189, 이 캔버스로
     // 환산하면 약 162)의 바로 위에 여백 20을 두고 자막의 아래 끝을 맞춘다. 두 캔버스 모두 Scale With Screen Size
     // (match 0.5)라 화면 비율이 달라도 이 둘의 비율은 일정해서 겹치지 않는다.
-    private static readonly Vector2 ReferenceResolution = new Vector2(1920f, 1080f);
-    private const float BottomOffset = 182f;
+    private static readonly Vector2 ReferenceResolution = new Vector2(2240f, 1260f); // 씬 UI Canvas와 같은 기준
+    private const float BottomOffset = 212f; // 기준 해상도를 2240x1260으로 바꾸며 화면상 높이가 예전(1920x1080 기준 182)과 같도록 맞춘 값 - 인벤토리 슬롯 위
     private const float MaxWidth = 1400f;
     private const float FontSize = 34f;
     private const float FadeInDuration = 0.15f;

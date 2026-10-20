@@ -24,7 +24,7 @@ using UnityEngine.UI;
 public class ShopMenuUI : MonoBehaviour
 {
     private const int CanvasSortingOrder = 400; // HUD(0) 위, 자막(500)/일시정지 메뉴(1000) 아래 - 구매 실패 자막이 메뉴 위에 보인다.
-    private static readonly Vector2 ReferenceResolution = new Vector2(1920f, 1080f);
+    private static readonly Vector2 ReferenceResolution = new Vector2(2240f, 1260f); // 씬 UI Canvas와 같은 기준
     private const float PanelWidth = 780f;
     private const float RowHeight = 104f;
     private const float IconSize = 76f;
