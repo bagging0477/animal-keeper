@@ -161,3 +161,7 @@ MonoBehaviour:
   - passive: {fileID: 11400000, guid: 7c17746ce62db274fb128c459a370d81, type: 2}
     price: 100
     maxPurchases: 1
+  classRequiredNoticeCooldown: 2
+  classDoorHighlightDuration: 1.5
+  classDoorHighlightColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  classDoorHighlightPulsesPerSecond: 2

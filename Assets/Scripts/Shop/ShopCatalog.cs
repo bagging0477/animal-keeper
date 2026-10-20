@@ -32,4 +32,8 @@ public class ShopCatalogEntry
 
     [Tooltip("메뉴에 보이는 아이콘. 지뢰/폭탄은 인벤토리 슬롯에도 이 아이콘이 그대로 들어간다.")]
     public Sprite icon;
+    [Tooltip("켜면 requiredClass를 장착한 상태에서만 살 수 있다(예: 마취총 탄약은 거너만).")]
+    public bool requiresClass;
+    [Tooltip("requiresClass가 켜져 있을 때 장착해야 하는 클래스")]
+    public PlayerClass requiredClass = PlayerClass.Gunner;
 }

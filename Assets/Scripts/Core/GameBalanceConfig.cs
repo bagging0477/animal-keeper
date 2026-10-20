@@ -567,6 +567,19 @@ public class GameBalanceConfig : ScriptableObject
         [Min(0)] public int maxPurchases = 1;
     }
 
+    [Header("상점 - 클래스 제한 안내 (예: 마취총 탄약은 거너만)")]
+    [Tooltip("클래스가 맞지 않아 구매가 막혔을 때의 안내 자막을 다시 띄우기까지의 최소 간격(초, 일시정지와 무관한 실제 시간).")]
+    [Min(0f)] public float classRequiredNoticeCooldown = 2f;
+
+    [Tooltip("구매가 막혔을 때 보호소의 클래스 선택 문을 강조하는 시간(초, 일시정지와 무관한 실제 시간).")]
+    [Min(0f)] public float classDoorHighlightDuration = 1.5f;
+
+    [Tooltip("클래스 선택 문을 강조할 때 섞는 색. 원래 색과 이 색 사이를 부드럽게 오간다.")]
+    public Color classDoorHighlightColor = new Color(1f, 0.85f, 0.2f, 1f);
+
+    [Tooltip("강조 중 1초에 깜빡이는 횟수(원래 색 → 강조 색 → 원래 색이 한 번).")]
+    [Min(0.1f)] public float classDoorHighlightPulsesPerSecond = 2f;
+
     /// <summary>passive의 가격/최대 구매 횟수 항목. 없으면 에러를 남기고 false.</summary>
     public bool TryGetPassivePrice(PassiveDefinition passive, out PassivePrice entry)
     {

@@ -5,6 +5,28 @@ using UnityEngine;
 /// GameBalanceConfig.shopItemPrices에 가격을 넣은 뒤 상인의 ShopCatalog에 항목을 추가한다.</summary>
 public static class ShopPurchase
 {
+    /// <summary>클래스가 맞지 않아 구매가 막힐 때마다 알린다(인자: 필요한 클래스). 보호소의 클래스 선택 문(ClassDoorHighlight)이 듣고 강조한다.</summary>
+    public static event System.Action<PlayerClass> ClassRequirementBlocked;
+
+    // 같은 안내 자막이 연타로 다시 뜨지 않게 하는 다음 허용 시각(실제 시간).
+    private static float nextClassNoticeTime;
+
+    // 도메인 리로드를 끈 에디터에서 이전 Play의 구독과 쿨다운이 남지 않게 한다.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        ClassRequirementBlocked = null;
+        nextClassNoticeTime = 0f;
+    }
+
+    // "거너 클래스가 필요합니다". 쿨다운 중이면 null을 돌려준다 - SubtitleManager.Show는 빈 문구를 무시하므로 자막이 쌓이지 않는다.
+    private static string ClassRequiredNotice(GameBalanceConfig config, PlayerClass required)
+    {
+        if (Time.unscaledTime < nextClassNoticeTime) return null;
+        nextClassNoticeTime = Time.unscaledTime + (config != null ? config.classRequiredNoticeCooldown : 2f);
+        return $"{ClassInteractPoint.GetClassDisplayName(required)} 클래스가 필요합니다";
+    }
+
     public static int GetPrice(GameBalanceConfig config, ShopItemKind kind) =>
         config != null ? config.GetShopItemPrice(kind) : 0;
 
@@ -32,6 +54,14 @@ public static class ShopPurchase
         if (gm == null || entry == null)
         {
             failMessage = "지금은 구매할 수 없습니다";
+            return false;
+        }
+
+        // 클래스 제한(품목 데이터의 requiresClass)을 가득 참·마일리지 검사보다 먼저 본다 - 막히면 아무것도 바뀌지 않는다.
+        if (entry.requiresClass && gm.CurrentClass != entry.requiredClass)
+        {
+            failMessage = ClassRequiredNotice(config, entry.requiredClass);
+            ClassRequirementBlocked?.Invoke(entry.requiredClass);
             return false;
         }
 

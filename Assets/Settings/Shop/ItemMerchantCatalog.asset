@@ -24,3 +24,5 @@ MonoBehaviour:
   - kind: 0
     displayName: "\uB9C8\uCDE8\uCD1D \uC7AC\uC7A5\uC804"
     icon: {fileID: -1276648029552128895, guid: 003e49d42897744428b8156edb1a4193, type: 3}
+    requiresClass: 1
+    requiredClass: 2

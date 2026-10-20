@@ -107,7 +107,7 @@ public class ClassInteractPoint : MonoBehaviour
         return $"체력: {healthPercent}%\n{speedLine}\n{weaponLine}";
     }
 
-    private static string GetClassDisplayName(PlayerClass pc) => pc switch
+    internal static string GetClassDisplayName(PlayerClass pc) => pc switch
     {
         PlayerClass.Scout => "스카우트",
         PlayerClass.Trapper => "트래퍼",
