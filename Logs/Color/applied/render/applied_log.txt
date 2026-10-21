@@ -1,0 +1,18 @@
+natural Room_Field: 카메라 (96.50, 104.50), 화면 안 캐릭터 3
+natural Room_Forest: 카메라 (87.50, 77.50), 화면 안 캐릭터 4
+natural Room_Graveyard: 카메라 (92.50, 15.50), 화면 안 캐릭터 4
+states: 1줄 코알라·고양이·레서판다 잠듦, 거위 쓰러짐→잠듦, 거북이 숨음 / 2줄 늑대·소리반응형 시체, 우는천사, 폭탄 / 3줄 코알라·고양이·레서판다·거북이·늑대 좌우 반전 / 오른쪽 플레이어
+  SC_AnimalWander: 몸 koala_sheet_12 아래 -0.75, 그림자 활성 True 아래 -0.42 위 -0.24 폭 0.66
+  SC_AnimalFlee: 몸 cat_sheet_0 아래 -0.44, 그림자 활성 True 아래 -0.60 위 -0.35 폭 0.88
+  SC_AnimalSoundFlee: 몸  아래 -1.01, 그림자 활성 True 아래 -1.20 위 -0.95 폭 1.01
+  SC_AnimalGoose: 몸 Seagull Sprite Sheet_48 아래 -1.01, 그림자 활성 True 아래 -0.63 위 -0.38 폭 0.88
+  SC_AnimalTurtle: 몸 turtle_41 아래 -0.44, 그림자 활성 True 아래 -0.25 위 -0.06 폭 0.63
+  SC_PatrolMonster: 몸 Wolf Cub Sprite Sheet_29 아래 -0.31, 그림자 활성 True 아래 -0.56 위 -0.31 폭 0.88
+  SC_SoundReactiveMonster: 몸 Blood Monster_A_Death_3 아래 -0.41, 그림자 없음
+  SC_WeepingAngel: 몸 WeepingAngel_Placeholder 아래 -0.75, 그림자 활성 True 아래 -0.86 위 -0.64 폭 0.84
+  SC_DroppedBombPickup: 몸 button-bomb-32 아래 -0.38, 그림자 활성 True 아래 -0.42 위 -0.30 폭 0.40
+  SC_AnimalWander: 몸 koala_sheet_16 아래 -0.75, 그림자 활성 True 아래 -0.42 위 -0.24 폭 0.66
+  SC_AnimalFlee: 몸 cat_sheet_0 아래 -0.44, 그림자 활성 True 아래 -0.60 위 -0.35 폭 0.88
+  SC_AnimalSoundFlee: 몸  아래 -1.01, 그림자 활성 True 아래 -1.20 위 -0.95 폭 1.01
+  SC_AnimalTurtle: 몸 turtle_23 아래 -0.44, 그림자 활성 True 아래 -0.63 위 -0.38 폭 1.01
+  SC_PatrolMonster: 몸 Wolf Cub Sprite Sheet_22 아래 -0.44, 그림자 활성 True 아래 -0.56 위 -0.31 폭 0.88
