@@ -465,6 +465,33 @@ public class GameBalanceConfig : ScriptableObject
         return string.IsNullOrEmpty(villagePhaseNotices[index]) ? null : villagePhaseNotices[index];
     }
 
+    [Header("몬스터 - 우는천사 (WeepingAngelAI, 시간 소환 전용)")]
+    [Tooltip("놀람 전 돌진과 놀람 후 추격 속도. 플레이어 스프린트 최고 속도(러닝화 없이, 스카우트 5.12325)의 약 1.64배.")]
+    public float weepingAngelSpeed = 8.4f;
+
+    [Tooltip("놀람 후 배회 속도(추격보다 훨씬 느리게)")]
+    public float weepingAngelWanderSpeed = 1.5f;
+
+    [Tooltip("놀람 후 플레이어가 이 거리(칸) 안이면 추격하고, 밖이면 배회한다")]
+    public float weepingAngelChaseRange = 15f;
+
+    [Tooltip("접촉 데미지 = 맞는 순간 플레이어 최대 체력(GameManager.MaxHealth) x 이 비율(반올림). 0.8이면 스카우트 100→80, 트래퍼 130→104, 거너 50→40")]
+    [Range(0f, 1f)]
+    public float weepingAngelCatchDamageRatio = 0.8f;
+
+    [Tooltip("이 거리 안으로 들어오면 접촉으로 판정한다(늑대·소리반응형과 같은 값)")]
+    public float weepingAngelCatchRange = 0.7f;
+
+    [Tooltip("놀람 후 배회 반경(칸) - 스폰된 자리 주변. 소리반응형 프리팹의 wanderRadius와 같은 시작값")]
+    public float weepingAngelWanderRadius = 5f;
+
+    [Tooltip("배회 목적지에 도착한 뒤 기다리는 시간 범위(초). 소리반응형 프리팹의 wanderWaitMin/Max와 같은 시작값")]
+    public float weepingAngelWanderWaitMin = 1f;
+    public float weepingAngelWanderWaitMax = 3f;
+
+    [Tooltip("추격하며 움직이는 동안 경고음을 반복하는 간격(초)")]
+    public float weepingAngelWarningInterval = 1.5f;
+
     [Header("마을 시간 - 구간별 추가 몬스터 소환 (VillageMonsterSpawner)")]
     [Tooltip("1~5구간마다 그 구간에 들어갈 때부터 추가로 소환할 몬스터 목록. 5개, 1구간부터 순서대로. 모두 비어 있으면 아무것도 소환하지 않는다. " +
         "새 몬스터를 시간으로 소환하려면 코드 수정 없이 여기에 항목만 추가한다.")]

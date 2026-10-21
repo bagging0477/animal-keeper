@@ -193,12 +193,23 @@ public static class VillageSpawnTest
         // --- 0. 기본값
         sb.AppendLine("\n== 0. 기본 설정");
         Check(original.villagePhaseSpawns != null && original.villagePhaseSpawns.Length == 5, "구간 목록이 5개");
-        Check(Enumerable.Range(1, 5).All(p => original.GetVillagePhaseSpawns(p).Length == 0) && !original.HasAnyVillagePhaseSpawns(), "모든 구간 목록이 비어 있다");
+        // 기본 설정: 2구간에 우는천사 1마리(진입 때 1, 간격 없음)만 있고 나머지 구간은 비어 있다.
+        GameBalanceConfig.VillageSpawnEntry[] phase2 = original.GetVillagePhaseSpawns(2);
+        Check(phase2.Length == 1 && phase2[0].monsterPrefab != null && phase2[0].monsterPrefab.GetComponent<WeepingAngelAI>() != null &&
+              phase2[0].count == 1 && phase2[0].initialCount == 1 && phase2[0].intervalCount == 0 && phase2[0].intervalSeconds == 0f,
+            "2구간 목록: 우는천사 1마리(진입 때 1, 간격 0)");
+        Check(new[] { 1, 3, 4, 5 }.All(p => original.GetVillagePhaseSpawns(p).Length == 0), "1·3·4·5구간 목록은 비어 있다");
         Check(original.villageMonsterCap == 60 && Mathf.Approximately(original.villageSpawnMinPlayerDistance, 15f), "상한 60, 최소 거리 15");
 
         Object.FindAnyObjectByType<TitleMenu>().OnPlay();
         yield return WaitForScene("ClassSelectScene");
         RestartClass();
+
+        // 이 테스트는 복제 설정으로 돈다. 먼저 모든 구간 목록을 비워 "목록이 비면 아무것도 하지 않는다"를 본다.
+        clone = Object.Instantiate(original);
+        clone.name = "VillageSpawnTestConfig";
+        for (int p = 1; p <= 5; p++) SetPhase(p);
+        ConfigField.SetValue(gm, clone);
 
         // --- 1. 목록이 비면 아무것도 하지 않는다
         sb.AppendLine("\n== 1. 목록이 비어 있으면 소환하지 않는다");
@@ -215,13 +226,10 @@ public static class VillageSpawnTest
         Check(VillageMonsterSpawner.CountLivingMonsters() == mapMonsters && spawner.SkippedSpawns == 0 && gm.VillageSpawns.EnteredPhase == 0,
             $"몬스터 수 그대로 {mapMonsters} → {VillageMonsterSpawner.CountLivingMonsters()}, 건너뜀 {spawner.SkippedSpawns}, 기록된 구간 {gm.VillageSpawns.EnteredPhase}");
 
-        // 복제 설정으로 바꿔 끼우고 새 게임으로 시작한다.
+        // 복제 설정에 임시 목록을 채우고 새 게임으로 시작한다.
         yield return Load("TruckScene");
         gm.ResetGame();
         RestartClass();
-        clone = Object.Instantiate(original);
-        clone.name = "VillageSpawnTestConfig";
-        ConfigField.SetValue(gm, clone);
         SetPhase(2, E(wolf, 3, 2, 1, 2f));
         SetPhase(3, E(sound, 1, 1, 0, 0f));
         SetPhase(4, E(wolf, 3, 0, 1, 1f));

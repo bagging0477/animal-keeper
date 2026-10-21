@@ -37,10 +37,14 @@ MonoBehaviour:
   chaseGiveUpSightLostDuration: 2
   chaseDirectionUpdateInterval: 0.25
   soundReactiveMonsterChaseGiveUpDuration: 3.5
+  soundReactiveMonsterMaxChaseDuration: 10
   animalSoundIntensity: 1
   sprintSoundIntensity: 0.3
   sprintSoundInterval: 0.5
   soundInvestigateApproachFraction: 0.35
+  animalPickupSoundIntensity: 0.6
+  animalFleeSoundIntensity: 0.6
+  animalFleeSoundInterval: 0.5
   floorPatchNoiseScale: 0.15
   floorPatchThreshold: 0.62
   wolfCorpseWeight: 15
@@ -120,7 +124,45 @@ MonoBehaviour:
   staminaRegenPerSecond: 15
   staminaExhaustionCooldown: 1.5
   targetRescueCount: 3
+  targetRescueIncreasePerDay: 4
   totalCyclesToWin: 10
+  villagePhaseStartSeconds:
+  - 0
+  - 180
+  - 360
+  - 540
+  - 600
+  villagePhaseNotices:
+  - "\uD574\uAC00 \uAE30\uC6B8\uACE0 \uC788\uB2E4. \uB9C8\uC744 \uACF5\uAE30\uAC00
+    \uB2EC\uB77C\uC84C\uB2E4."
+  - "\uC5B4\uB460\uC774 \uC9D9\uC5B4\uC9C4\uB2E4. \uC11C\uB450\uB974\uB294 \uAC8C
+    \uC88B\uACA0\uB2E4."
+  - "\uBC24\uC774 \uAE4A\uC5C8\uB2E4. \uBB34\uC5B8\uAC00 \uAE68\uC5B4\uB098\uACE0
+    \uC788\uB2E4."
+  - "\uB354\uB294 \uC774\uACF3\uC5D0 \uBA38\uBB3C \uC218 \uC5C6\uB2E4. \uC9C0\uAE08
+    \uB2F9\uC7A5 \uB5A0\uB098\uC57C \uD55C\uB2E4!"
+  weepingAngelSpeed: 8.4
+  weepingAngelWanderSpeed: 1.5
+  weepingAngelChaseRange: 15
+  weepingAngelDamage: 80
+  weepingAngelCatchRange: 0.7
+  weepingAngelWanderRadius: 5
+  weepingAngelWanderWaitMin: 1
+  weepingAngelWanderWaitMax: 3
+  weepingAngelWarningInterval: 1.5
+  villagePhaseSpawns:
+  - entries: []
+  - entries:
+    - monsterPrefab: {fileID: 6555077884092434632, guid: 1d6367ff8fdf9d04d8ad7d0591760909, type: 3}
+      count: 1
+      initialCount: 1
+      intervalCount: 0
+      intervalSeconds: 0
+  - entries: []
+  - entries: []
+  - entries: []
+  villageMonsterCap: 60
+  villageSpawnMinPlayerDistance: 15
   mileagePerWeight: 10
   targetBonusMileage: 50
   netDamage: 1.2
