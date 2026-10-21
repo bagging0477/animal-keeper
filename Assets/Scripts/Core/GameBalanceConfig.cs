@@ -465,22 +465,6 @@ public class GameBalanceConfig : ScriptableObject
         return string.IsNullOrEmpty(villagePhaseNotices[index]) ? null : villagePhaseNotices[index];
     }
 
-    [Header("마을 시간 - 진입 시계 (VillageClockFlash)")]
-    [Tooltip("마을 경과 시간(실제 초) 1초가 시계로 몇 초인지. 30이면 실제 10분(600초) = 시계 5시간")]
-    public float villageClockScale = 30f;
-
-    [Tooltip("시계가 한 번에 점프하는 실제 시간 간격(초). 시계 값 = 실제 경과 시간을 이 간격으로 내림 x villageClockScale")]
-    public float villageClockTickSeconds = 1f;
-
-    [Tooltip("마을에 들어올 때 화면 가운데에 잠깐 보여 주는 시계 글자 색 (테두리는 공용 폰트 머티리얼의 검은 외곽선)")]
-    public Color villageClockFlashColor = new Color(1f, 140f / 255f, 26f / 255f, 1f); // #FF8C1A
-
-    [Tooltip("시계 글자 크기(1920x1080 기준 캔버스 단위)")]
-    public float villageClockFlashFontSize = 120f;
-
-    [Tooltip("시계를 보여 주는 전체 시간(초, 실제 시간 - 일시정지와 무관). 마지막 0.15초 동안 투명해지며 사라진다")]
-    public float villageClockFlashDuration = 0.5f;
-
     [Header("몬스터 - 우는천사 (WeepingAngelAI, 시간 소환 전용)")]
     [Tooltip("놀람 전 돌진과 놀람 후 추격 속도. 플레이어 스프린트 최고 속도(러닝화 없이, 스카우트 5.12325)의 약 1.64배.")]
     public float weepingAngelSpeed = 8.4f;

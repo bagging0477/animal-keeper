@@ -673,7 +673,5 @@ public class GameManager : MonoBehaviour
         gameObject.AddComponent<VillagePhaseNotice>();
         // 구간별 추가 몬스터 소환. 마을에서만 동작하고 목록이 비어 있으면 아무것도 하지 않는다.
         gameObject.AddComponent<VillageMonsterSpawner>();
-        // 마을에 들어올 때 경과 시간을 시계로 잠깐 보여 준다.
-        gameObject.AddComponent<VillageClockFlash>();
     }
 }
