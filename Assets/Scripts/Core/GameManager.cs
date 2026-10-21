@@ -102,6 +102,9 @@ public class GameManager : MonoBehaviour
         VillagePhase = 1;
     }
 
+    /// <summary>오늘의 구간별 추가 몬스터 소환 기록(VillageMonsterSpawner). 같은 Day 재진입에서는 유지되고 ResetDay/ResetGame에서 비워진다.</summary>
+    public VillageSpawnRecord VillageSpawns { get; } = new VillageSpawnRecord();
+
     private int ComputeMaxHealth()
     {
         int baseHealth = config != null ? config.playerMaxHealth : FallbackMaxHealth;
@@ -201,6 +204,7 @@ public class GameManager : MonoBehaviour
         Health = MaxHealth;
         gameSessionSeedInitialized = false;
         ResetVillageTime();
+        VillageSpawns.Clear();
 
         // HasSettledCargo는 "이번 사이클에 이미 정산했는지"를 막는 가드다(ShelterScene ↔
         // ClassSelectScene을 오가도 SettleCargo가 중복 호출되지 않게). 예전엔 게임당 보호소를
@@ -227,6 +231,7 @@ public class GameManager : MonoBehaviour
         IsGameWon = false;
         gameSessionSeedInitialized = false;
         ResetVillageTime();
+        VillageSpawns.Clear();
         // 패시브를 먼저 비워야 ResetInventory가 추가 칸 없이 기본 칸 수로 다시 만든다.
         Passives.Clear();
         ResetInventory();
@@ -666,5 +671,7 @@ public class GameManager : MonoBehaviour
         ResetInventory();
         // 구간 알림 자막. 씬 파일을 바꾸지 않으려고 살아남는 GameManager 오브젝트에 붙인다.
         gameObject.AddComponent<VillagePhaseNotice>();
+        // 구간별 추가 몬스터 소환. 마을에서만 동작하고 목록이 비어 있으면 아무것도 하지 않는다.
+        gameObject.AddComponent<VillageMonsterSpawner>();
     }
 }

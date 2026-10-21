@@ -213,7 +213,7 @@ public static class VillageTimeTest
         Check(gm.VillageTime == 0f && gm.VillagePhase == 1, $"시작 상태: 시간 {gm.VillageTime}, 구간 {gm.VillagePhase}");
         VillagePhaseNotice notice = gm.GetComponent<VillagePhaseNotice>();
         Check(notice != null && notice.isActiveAndEnabled, "GameManager에 알림 컴포넌트(VillagePhaseNotice)가 켜져 있다");
-        Check(ListenerCount() == 2, $"구간 이벤트 구독 {ListenerCount()}개 (알림 + 이 테스트)");
+        Check(ListenerCount() == 3, $"구간 이벤트 구독 {ListenerCount()}개 (알림 + 몬스터 소환기 + 이 테스트)");
 
         // --- 1. 마을 밖에서는 흐르지 않는다
         sb.AppendLine("\n== 1. 마을 밖에서는 시간이 흐르지 않는다");

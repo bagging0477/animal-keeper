@@ -465,6 +465,67 @@ public class GameBalanceConfig : ScriptableObject
         return string.IsNullOrEmpty(villagePhaseNotices[index]) ? null : villagePhaseNotices[index];
     }
 
+    [Header("마을 시간 - 구간별 추가 몬스터 소환 (VillageMonsterSpawner)")]
+    [Tooltip("1~5구간마다 그 구간에 들어갈 때부터 추가로 소환할 몬스터 목록. 5개, 1구간부터 순서대로. 모두 비어 있으면 아무것도 소환하지 않는다. " +
+        "새 몬스터를 시간으로 소환하려면 코드 수정 없이 여기에 항목만 추가한다.")]
+    public VillagePhaseSpawnList[] villagePhaseSpawns =
+    {
+        new VillagePhaseSpawnList(), new VillagePhaseSpawnList(), new VillagePhaseSpawnList(), new VillagePhaseSpawnList(), new VillagePhaseSpawnList(),
+    };
+
+    [Tooltip("마을 전체에 살아 있는 몬스터 수 상한(맵 생성 때 스폰된 몬스터 포함). 닿으면 소환을 멈추고, 처치해서 줄어들면 다시 소환한다.")]
+    public int villageMonsterCap = 60;
+
+    [Tooltip("추가 소환 위치가 플레이어에게서 떨어져야 하는 최소 거리(칸).")]
+    public float villageSpawnMinPlayerDistance = 15f;
+
+    /// <summary>구간 하나의 추가 소환 목록.</summary>
+    [Serializable]
+    public class VillagePhaseSpawnList
+    {
+        public VillageSpawnEntry[] entries = new VillageSpawnEntry[0];
+    }
+
+    /// <summary>추가 소환 항목 하나. 구간에 들어갈 때 initialCount마리를 한 번에, 그 뒤 intervalSeconds초마다 intervalCount마리씩 소환해
+    /// 모두 count마리가 될 때까지 소환한다. 간격 소환이 필요 없으면 intervalCount와 intervalSeconds를 0으로 둔다(한 번만 소환).</summary>
+    [Serializable]
+    public class VillageSpawnEntry
+    {
+        [Tooltip("소환할 몬스터 프리팹. 기존 늑대(PatrolMonster), 소리반응형(SoundReactiveMonster), MonsterSpawnPool의 새 종류 프리팹 모두 된다.")]
+        public GameObject monsterPrefab;
+        [Tooltip("이 항목으로 소환하는 총 마릿수")]
+        public int count;
+        [Tooltip("구간에 들어갈 때 한 번에 소환하는 수")]
+        public int initialCount;
+        [Tooltip("이후 간격마다 소환하는 수. 0이면 간격 소환 없음")]
+        public int intervalCount;
+        [Tooltip("간격(초). 0이면 간격 소환 없음. 마을에서 흐르는 시간 기준이라 일시정지 중에는 멈춘다")]
+        public float intervalSeconds;
+    }
+
+    /// <summary>그 구간(1~5)의 추가 소환 항목. 없으면 빈 배열.</summary>
+    public VillageSpawnEntry[] GetVillagePhaseSpawns(int phase)
+    {
+        int index = phase - 1;
+        if (villagePhaseSpawns == null || index < 0 || index >= villagePhaseSpawns.Length || villagePhaseSpawns[index] == null) return new VillageSpawnEntry[0];
+        return villagePhaseSpawns[index].entries ?? new VillageSpawnEntry[0];
+    }
+
+    /// <summary>어느 구간에든 소환할 항목(프리팹과 마릿수가 있는)이 하나라도 있는지.</summary>
+    public bool HasAnyVillagePhaseSpawns()
+    {
+        if (villagePhaseSpawns == null) return false;
+        foreach (VillagePhaseSpawnList list in villagePhaseSpawns)
+        {
+            if (list?.entries == null) continue;
+            foreach (VillageSpawnEntry entry in list.entries)
+            {
+                if (entry != null && entry.monsterPrefab != null && entry.count > 0) return true;
+            }
+        }
+        return false;
+    }
+
     [Header("정산 (마일리지)")]
     [Tooltip("구조한 동물 무게 1kg당 지급되는 마일리지")]
     public int mileagePerWeight = 10;
