@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameBalanceConfig config;
     [SerializeField] private string truckSceneName = "TruckScene";
+    [SerializeField] private string villageSceneName = "VillageScene";
 
     /// <summary>게임을 시작한 뒤로 "다음 날로"를 몇 번 완료했는지(=몇 번째 순찰인지)를 센다. 예전
     /// 3일 주기의 Day처럼 특정 값에서 흐름이 바뀌는 게이트로 쓰이지 않는다 - 순수하게 누적되는
@@ -45,6 +46,61 @@ public class GameManager : MonoBehaviour
     /// ResetDay()를 더 이상 호출하지 않으므로(FinishCycle 참고) CycleCount가 그 값에서 멈춰 있고,
     /// ResetGame()으로 완전히 다시 시작하기 전까지는 다음 사이클로 넘어가지 않는다.</summary>
     public bool IsGameWon { get; private set; }
+
+    // ===================== 마을 시간 =====================
+
+    /// <summary>마을 시간 구간 수(1~5구간).</summary>
+    public const int VillagePhaseCount = 5;
+
+    /// <summary>config가 없거나 값 개수가 5개가 아닐 때 쓰는 구간 시작 시각(초).</summary>
+    private static readonly float[] FallbackVillagePhaseStartSeconds = { 0f, 180f, 360f, 540f, 600f };
+
+    /// <summary>오늘 마을에 머문 누적 시간(초). VillageScene에 있는 동안만 흐르고(일시정지 timeScale 0이면 멈춤), 같은 Day 안에서는
+    /// 트럭에 갔다 다시 들어와도 이어진다. ResetDay/ResetGame에서만 0이 된다. 시간 때문에 생기는 패배 규칙은 없다.</summary>
+    public float VillageTime { get; private set; }
+
+    /// <summary>지금 몇 번째 구간인지(1~5). VillageTime으로만 정해지고, 5구간(마지막 시작 시각 이후)은 계속 유지된다.</summary>
+    public int VillagePhase { get; private set; } = 1;
+
+    /// <summary>마을에서 시간이 흘러 구간이 바뀐 순간에 새 구간 번호(2~5)로 한 번 난다. 한 프레임에 여러 구간을 건너뛰면 마지막 구간으로
+    /// 한 번만 난다. 재진입·ResetDay·ResetGame에서는 나지 않는다. 구독하는 곳은 OnDisable에서 해제해야 한다.</summary>
+    public static event System.Action<int> OnVillagePhaseChanged;
+
+    // 도메인 리로드를 끈 에디터(Enter Play Mode Options)에서 이전 Play의 구독이 남지 않게 한다.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetVillagePhaseListeners() => OnVillagePhaseChanged = null;
+
+    /// <summary>누적 시각(초)이 몇 번째 구간인지. 사이클과 무관하다.</summary>
+    public static int ComputeVillagePhase(float seconds, GameBalanceConfig balance)
+    {
+        float[] starts = balance != null && balance.villagePhaseStartSeconds != null && balance.villagePhaseStartSeconds.Length == VillagePhaseCount
+            ? balance.villagePhaseStartSeconds
+            : FallbackVillagePhaseStartSeconds;
+        int phase = 1;
+        for (int i = 1; i < starts.Length; i++)
+        {
+            if (seconds >= starts[i]) phase = i + 1;
+        }
+        return phase;
+    }
+
+    private void Update()
+    {
+        if (SceneManager.GetActiveScene().name != villageSceneName) return;
+
+        VillageTime += Time.deltaTime;
+        int phase = ComputeVillagePhase(VillageTime, config);
+        if (phase == VillagePhase) return;
+
+        VillagePhase = phase;
+        OnVillagePhaseChanged?.Invoke(phase);
+    }
+
+    private void ResetVillageTime()
+    {
+        VillageTime = 0f;
+        VillagePhase = 1;
+    }
 
     private int ComputeMaxHealth()
     {
@@ -144,6 +200,7 @@ public class GameManager : MonoBehaviour
         monsterCorpsePositions.Clear();
         Health = MaxHealth;
         gameSessionSeedInitialized = false;
+        ResetVillageTime();
 
         // HasSettledCargo는 "이번 사이클에 이미 정산했는지"를 막는 가드다(ShelterScene ↔
         // ClassSelectScene을 오가도 SettleCargo가 중복 호출되지 않게). 예전엔 게임당 보호소를
@@ -169,6 +226,7 @@ public class GameManager : MonoBehaviour
         IsGameOver = false;
         IsGameWon = false;
         gameSessionSeedInitialized = false;
+        ResetVillageTime();
         // 패시브를 먼저 비워야 ResetInventory가 추가 칸 없이 기본 칸 수로 다시 만든다.
         Passives.Clear();
         ResetInventory();
@@ -606,5 +664,7 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         Health = MaxHealth;
         ResetInventory();
+        // 구간 알림 자막. 씬 파일을 바꾸지 않으려고 살아남는 GameManager 오브젝트에 붙인다.
+        gameObject.AddComponent<VillagePhaseNotice>();
     }
 }

@@ -444,6 +444,27 @@ public class GameBalanceConfig : ScriptableObject
         "10번째 사이클 정산에서 목표를 달성하는 순간 클리어된다.")]
     public int totalCyclesToWin = 10;
 
+    [Header("마을 시간 (VillageScene에 있는 동안만 흐른다)")]
+    [Tooltip("1~5구간이 시작하는 누적 시각(초). 5개, 오름차순. 마지막(5구간)은 끝없이 이어진다. 사이클과 무관하게 항상 같다.")]
+    public float[] villagePhaseStartSeconds = { 0f, 180f, 360f, 540f, 600f };
+
+    [Tooltip("2~5구간이 시작하는 순간 자막으로 한 번 띄우는 문구. 4개, 2구간부터 순서대로. 1구간 시작은 알리지 않는다.")]
+    public string[] villagePhaseNotices =
+    {
+        "해가 기울고 있다. 마을 공기가 달라졌다.",
+        "어둠이 짙어진다. 서두르는 게 좋겠다.",
+        "밤이 깊었다. 무언가 깨어나고 있다.",
+        "더는 이곳에 머물 수 없다. 지금 당장 떠나야 한다!",
+    };
+
+    /// <summary>그 구간이 시작할 때 띄울 문구. 2~5구간만 있고, 1구간이나 문구가 비어 있으면 null.</summary>
+    public string GetVillagePhaseNotice(int phase)
+    {
+        int index = phase - 2;
+        if (villagePhaseNotices == null || index < 0 || index >= villagePhaseNotices.Length) return null;
+        return string.IsNullOrEmpty(villagePhaseNotices[index]) ? null : villagePhaseNotices[index];
+    }
+
     [Header("정산 (마일리지)")]
     [Tooltip("구조한 동물 무게 1kg당 지급되는 마일리지")]
     public int mileagePerWeight = 10;
