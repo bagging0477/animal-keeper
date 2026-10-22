@@ -1,0 +1,25 @@
+플레이어 도트 보정안 (player_base = 스카우트, 흰 원과 손) - 프로젝트에는 적용하지 않음
+- 보정안 PNG: Logs/Player/player_base_pixel.png (40x40, 피벗 가운데 그대로)
+- 원본: 106x105, PPU 56, Bilinear, 압축 켬, 배율 0.64 → 화면에서 원본 1px = 동물 도트의 0.37배(외곽선이 동물보다 약 1.3배 굵고 흐림)
+- 축소 비율 32*0.64/56 = 0.3657 → 몸통 64x62px → 23x22도트(원본 환산 23.4x22.7), 화면 크기 그대로
+- 흰 영역 3개(몸·손·손)를 동물 도트 격자로 다시 찍고 1도트 외곽선(4방향)으로 감쌈, 몸과 손 사이에도 외곽선 1도트. 1도트 돌기 정리
+- 색: 흰색 #FFFFFF, 외곽선 #000000(원본 색 유지, 동물 외곽선은 #2F2F2E), 반투명 없음, 2색
+- 적용 시 player_base.png.meta: spritePixelsToUnits 56 → 20.48, filterMode 1(Bilinear) → 0(Point), textureCompression 1 → 0
+  (scoutScale 0.64는 그대로 둬도 화면 1도트 = 1/32칸)
+- 플레이어는 마우스 쪽으로 회전하므로 기울어지면 도트 격자도 같이 기울어진다
+
+v2 (player_base_pixel_v2.png): 몸통만 대칭 도트 원으로 다시 찍음 - 지름 21도트(채움 19), 반지름 10.2, 계단 5-2-2-1-1(8방향 대칭), 외곽선 1도트 #000000.
+  몸통 외곽 상자는 v1과 같은 자리, 손 2개(채움·외곽선)는 v1과 픽셀 단위로 같음. 전체 23x22도트. import 설정은 v1과 같음.
+
+v3 (player_base_pixel_v3.png): v2 바깥 모양 그대로, 흰 부분을 안쪽으로 1도트 깎아 외곽선 2도트(#000000).
+  몸통 바깥 21x21 / 흰 부분 19x19 → 17x17, 손 바깥 7x6 / 흰 부분 5x4 → 3x2(6칸). 전체 23x22도트. 몸통 원 대칭·손 위치 v2와 같음. import 설정 v1과 같음.
+
+v4 (player_base_pixel_v4.png): v3 모양·투명도 그대로, 색만 변경. 외곽선 #000000 → #2F2F2E(동물 외곽선과 같음), 흰색 #FFFFFF → #B8B8B8.
+  #B8B8B8 = 레서판다 얼굴 흰 무늬의 그늘진 아래쪽(볼·주둥이) 색. 기준 동물 3종의 가장 밝은 흰색은 #FFFFFF(레서판다·고양이 얼굴)라 사용자 요청으로 옅은 회색 중 가장 밝은 색을 씀(코알라 #B5B5B5보다 밝음).
+  게임 화면 비교는 Unity 라이선스 검증 실패로 새로 렌더링하지 못해, v3 렌더의 플레이어 픽셀(#000000/#FFFFFF, Point 필터·시야 끔)만 v4 색으로 바꿔 만듦.
+
+v5 (player_base_pixel_v5.png): v4에서 흰색만 #B8B8B8 → #FFFFFF로 되돌림. 외곽선 #2F2F2E 2도트, 모양·투명도 v4(=v3)와 같음.
+  게임 화면은 Unity 라이선스 검증 실패가 계속돼 v3 렌더의 플레이어 외곽선 픽셀(#000000)만 #2F2F2E로 바꿔 만듦.
+
+v5 적용 (2026-10-22): Assets/Sprites/Player/player_base.png를 v5로 교체, meta PPU 56→20.48, filterMode 1→0, textureCompression 1→0 (커밋 안 함).
+  실제 렌더 비교: applied_player_zoom.png, applied_player_field.png, applied_player_rotation.png
