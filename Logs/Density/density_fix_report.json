@@ -1,0 +1,282 @@
+[
+ {
+  "offset": [
+   0,
+   1
+  ],
+  "dots": [
+   57,
+   70
+  ],
+  "colors_after": 24,
+  "colors_before": 2184,
+  "edge_dark": 74,
+  "area_before": 8418,
+  "area_after": 8538,
+  "file": "Assets/Sprites/Tiles/Outdoor/Props/OutdoorTree1Sprite.png",
+  "sprite": "OutdoorTree1Sprite_0",
+  "label": "나무1",
+  "size": [
+   113,
+   139
+  ],
+  "rect": [
+   0,
+   0,
+   113,
+   139
+  ]
+ },
+ {
+  "offset": [
+   1,
+   0
+  ],
+  "dots": [
+   48,
+   68
+  ],
+  "colors_after": 24,
+  "colors_before": 1514,
+  "edge_dark": 71,
+  "area_before": 7096,
+  "area_after": 7220,
+  "file": "Assets/Sprites/Tiles/Outdoor/Props/OutdoorTree2Sprite.png",
+  "sprite": "OutdoorTree2Sprite_0",
+  "label": "나무2",
+  "size": [
+   95,
+   136
+  ],
+  "rect": [
+   0,
+   0,
+   95,
+   136
+  ]
+ },
+ {
+  "offset": [
+   0,
+   0
+  ],
+  "dots": [
+   30,
+   21
+  ],
+  "colors_after": 14,
+  "colors_before": 414,
+  "edge_dark": 38,
+  "area_before": 1616,
+  "area_after": 1660,
+  "file": "Assets/Sprites/Tiles/Outdoor/Props/OutdoorRockSprite.png",
+  "sprite": "OutdoorRockSprite_0",
+  "label": "바위",
+  "size": [
+   60,
+   42
+  ],
+  "rect": [
+   0,
+   0,
+   60,
+   42
+  ]
+ },
+ {
+  "offset": [
+   0,
+   0
+  ],
+  "dots": [
+   16,
+   19
+  ],
+  "colors_after": 12,
+  "colors_before": 224,
+  "edge_dark": 46,
+  "area_before": 927,
+  "area_after": 928,
+  "file": "Assets/Sprites/Tiles/Outdoor/Props/OutdoorGravestoneSprite.png",
+  "sprite": "OutdoorGravestoneSprite_0",
+  "label": "묘비",
+  "size": [
+   31,
+   38
+  ],
+  "rect": [
+   0,
+   0,
+   31,
+   38
+  ]
+ },
+ {
+  "offset": [
+   0,
+   0
+  ],
+  "dots": [
+   17,
+   20
+  ],
+  "colors_after": 12,
+  "colors_before": 292,
+  "edge_dark": 41,
+  "area_before": 626,
+  "area_after": 672,
+  "file": "Assets/Sprites/Tiles/Outdoor/Props/OutdoorCrossSprite.png",
+  "sprite": "OutdoorCrossSprite_0",
+  "label": "십자가 묘비",
+  "size": [
+   34,
+   40
+  ],
+  "rect": [
+   0,
+   0,
+   34,
+   40
+  ]
+ },
+ {
+  "offset": [
+   0,
+   0
+  ],
+  "dots": [
+   30,
+   23
+  ],
+  "colors_after": 14,
+  "colors_before": 414,
+  "edge_dark": 38,
+  "area_before": 1617,
+  "area_after": 1648,
+  "file": "Assets/Sprites/Tiles/Outdoor/TX Props.png",
+  "sprite": "TX Props_43",
+  "label": "큰 바위",
+  "size": [
+   59,
+   46
+  ],
+  "rect": [
+   2,
+   429,
+   59,
+   46
+  ]
+ },
+ {
+  "offset": [
+   0,
+   0
+  ],
+  "dots": [
+   16,
+   22
+  ],
+  "colors_after": 12,
+  "colors_before": 419,
+  "edge_dark": 46,
+  "area_before": 986,
+  "area_after": 1040,
+  "file": "Assets/Sprites/Tiles/Outdoor/TX Props.png",
+  "sprite": "TX Props_31",
+  "label": "묘비석 A",
+  "size": [
+   32,
+   43
+  ],
+  "rect": [
+   224,
+   238,
+   32,
+   43
+  ]
+ },
+ {
+  "offset": [
+   0,
+   0
+  ],
+  "dots": [
+   16,
+   16
+  ],
+  "colors_after": 12,
+  "colors_before": 398,
+  "edge_dark": 35,
+  "area_before": 770,
+  "area_after": 816,
+  "file": "Assets/Sprites/Tiles/Outdoor/TX Props.png",
+  "sprite": "TX Props_32",
+  "label": "묘비석 B",
+  "size": [
+   32,
+   31
+  ],
+  "rect": [
+   288,
+   250,
+   32,
+   31
+  ]
+ },
+ {
+  "offset": [
+   0,
+   0
+  ],
+  "dots": [
+   14,
+   27
+  ],
+  "colors_after": 12,
+  "colors_before": 325,
+  "edge_dark": 63,
+  "area_before": 1340,
+  "area_after": 1468,
+  "file": "Assets/Sprites/Tiles/Outdoor/TX Props.png",
+  "sprite": "TX Props_3",
+  "label": "석판 A",
+  "size": [
+   28,
+   54
+  ],
+  "rect": [
+   226,
+   8,
+   28,
+   54
+  ]
+ },
+ {
+  "offset": [
+   0,
+   0
+  ],
+  "dots": [
+   14,
+   34
+  ],
+  "colors_after": 12,
+  "colors_before": 317,
+  "edge_dark": 80,
+  "area_before": 1697,
+  "area_after": 1844,
+  "file": "Assets/Sprites/Tiles/Outdoor/TX Props.png",
+  "sprite": "TX Props_12",
+  "label": "석판 B",
+  "size": [
+   28,
+   68
+  ],
+  "rect": [
+   226,
+   90,
+   28,
+   68
+  ]
+ }
+]

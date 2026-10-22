@@ -1,0 +1,71 @@
+4단계 지형·장애물 도트 밀도 진단 + 보정안 (2026-10-22, 프로젝트에는 적용하지 않음)
+화면 기준: 높이 1080px, 카메라 크기 5.6 → 1칸 = 96.4px. "도트 px" = 텍셀 px x 실제 도트 블록(텍셀).
+
+[기준: 동물·몬스터]
+  AnimalWander           koala_sheet_12               도트 4.6px (PPU 32, 배율 1.51), 색 5
+  AnimalFlee             cat_sheet_0                  도트 6.1px (PPU 32, 배율 2.02), 색 7
+  AnimalGoose            Seagull Sprite Sheet_0       도트 6.1px (PPU 32, 배율 2.02), 색 7
+  AnimalTurtle           turtle_0                     도트 6.1px (PPU 32, 배율 2.02), 색 8
+  PatrolMonster          Wolf Cub Sprite Sheet_8      도트 6.0px (PPU 16, 배율 1), 색 6
+  SoundReactiveMonster   Blood Monster_A_Idle_0       도트 6.0px (PPU 16, 배율 1), 색 9
+  WeepingAngel           WeepingAngel_Placeholder     도트 3.0px (PPU 32, 배율 1), 색 3
+
+[지형·장애물] (등장 = 방 프리팹 7종에서 놓인 횟수/칸 수)
+  OutdoorFloorGrassSprite_0          32x32텍셀 도트 12.1px (블록 4) 색    4 등장 2888  Assets/Tiles/OutdoorFloorGrassSprite.png
+  OutdoorFloorStoneVariantSprite_0   32x32텍셀 도트 12.1px (블록 4) 색    1 등장  303  Assets/Tiles/OutdoorFloorStoneVariantSprite.png
+  OutdoorBushSprite_0                50x44텍셀 도트 3.0px (블록 1) 색  260 등장   54  Assets/Sprites/Tiles/Outdoor/Props/OutdoorBushSprite.png
+  OutdoorTree1Sprite_0               113x139텍셀 도트 3.0px (블록 1) 색 2184 등장   21  Assets/Sprites/Tiles/Outdoor/Props/OutdoorTree1Sprite.png
+  OutdoorTree2Sprite_0               95x136텍셀 도트 3.0px (블록 1) 색 1514 등장   21  Assets/Sprites/Tiles/Outdoor/Props/OutdoorTree2Sprite.png
+  OutdoorGravestoneSprite_0          31x38텍셀 도트 3.0px (블록 1) 색  224 등장   17  Assets/Sprites/Tiles/Outdoor/Props/OutdoorGravestoneSprite.png
+  OutdoorCrossSprite_0               34x40텍셀 도트 3.0px (블록 1) 색  292 등장   14  Assets/Sprites/Tiles/Outdoor/Props/OutdoorCrossSprite.png
+  StoneWall_EndLeft                  32x32텍셀 도트 3.0px (블록 1) 색   58 등장    6  Assets/Tiles/StoneWall/StoneWall_EndLeft.png
+  StoneWall_EndRight                 32x32텍셀 도트 3.0px (블록 1) 색   49 등장    6  Assets/Tiles/StoneWall/StoneWall_EndRight.png
+  StoneWall_Horizontal               32x32텍셀 도트 9.0px (블록 3) 색   20 등장    6  Assets/Tiles/StoneWall/StoneWall_Horizontal.png
+  TX Plant_12                        17x13텍셀 도트 3.0px (블록 1) 색    5 등장    5  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Plant_13                        14x12텍셀 도트 3.0px (블록 1) 색   18 등장    5  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Plant_21                        12x12텍셀 도트 3.0px (블록 1) 색   16 등장    5  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Props_31                        32x43텍셀 도트 3.0px (블록 1) 색  419 등장    4  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  TX Props_32                        32x31텍셀 도트 3.0px (블록 1) 색  398 등장    4  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  TX Props_47                        26x21텍셀 도트 3.0px (블록 1) 색  155 등장    4  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  TX Props_50                        20x18텍셀 도트 3.0px (블록 1) 색  118 등장    4  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  OutdoorCrateSprite_0               39x46텍셀 도트 3.0px (블록 1) 색  584 등장    3  Assets/Sprites/Tiles/Outdoor/Props/OutdoorCrateSprite.png
+  OutdoorRockSprite_0                60x42텍셀 도트 3.0px (블록 1) 색  414 등장    3  Assets/Sprites/Tiles/Outdoor/Props/OutdoorRockSprite.png
+  TX Plant_10                        18x12텍셀 도트 3.0px (블록 1) 색    4 등장    3  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Plant_19                        16x12텍셀 도트 3.0px (블록 1) 색    5 등장    3  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Plant_20                        14x11텍셀 도트 3.0px (블록 1) 색    7 등장    3  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Plant_3                         24x21텍셀 도트 3.0px (블록 1) 색   64 등장    3  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Plant_9                         19x11텍셀 도트 3.0px (블록 1) 색   15 등장    3  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  OutdoorChestSprite_0               37x31텍셀 도트 3.0px (블록 1) 색  466 등장    2  Assets/Sprites/Tiles/Outdoor/Props/OutdoorChestSprite.png
+  OutdoorUrnSprite_0                 23x34텍셀 도트 3.0px (블록 1) 색  324 등장    2  Assets/Sprites/Tiles/Outdoor/Props/OutdoorUrnSprite.png
+  TX Plant_16                        16x9텍셀 도트 3.0px (블록 1) 색   21 등장    2  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Plant_4                         29x27텍셀 도트 3.0px (블록 1) 색  211 등장    2  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Plant_8                         42x37텍셀 도트 3.0px (블록 1) 색  451 등장    2  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Props_12                        28x68텍셀 도트 3.0px (블록 1) 색  317 등장    2  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  TX Props_3                         28x54텍셀 도트 3.0px (블록 1) 색  325 등장    2  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  TX Props_43                        59x46텍셀 도트 3.0px (블록 1) 색  414 등장    2  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  TX Props_46                        26x21텍셀 도트 3.0px (블록 1) 색  143 등장    2  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  TX Plant_11                        17x12텍셀 도트 3.0px (블록 1) 색   13 등장    1  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Plant_15                        15x11텍셀 도트 3.0px (블록 1) 색    6 등장    1  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Plant_17                        14x10텍셀 도트 3.0px (블록 1) 색   17 등장    1  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Plant_18                        14x12텍셀 도트 3.0px (블록 1) 색   17 등장    1  Assets/Sprites/Tiles/Outdoor/TX Plant.png
+  TX Props_17                        24x40텍셀 도트 3.0px (블록 1) 색  302 등장    1  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  TX Props_25                        30x38텍셀 도트 3.0px (블록 1) 색  576 등장    1  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  TX Props_33                        34x59텍셀 도트 3.0px (블록 1) 색  473 등장    1  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  TX Props_45                        18x16텍셀 도트 3.0px (블록 1) 색   91 등장    1  Assets/Sprites/Tiles/Outdoor/TX Props.png
+
+[보정안] 2x2 텍셀 = 도트 1개(3px → 6px). 원본을 MAXCOVERAGE 팔레트(나무 24, 바위 14, 묘비·석판 12색)로 줄인 뒤 블록 안 가장 많은 색,
+  바깥과 닿는 도트는 블록 안 가장 어두운 색(외곽선 유지). 텍스처 크기·스프라이트 영역 그대로 → meta 변경 없이 교체 가능. 지정 영역 밖은 바뀌지 않음(확인).
+  한계: 2배 축소라 RIP 글씨·석판 문양·나무 가지 같은 1텍셀 세부는 뭉개짐.
+  나무1      OutdoorTree1Sprite_0       113x139텍셀 → 57x70도트, 색 2184 → 24  Assets/Sprites/Tiles/Outdoor/Props/OutdoorTree1Sprite.png
+  나무2      OutdoorTree2Sprite_0       95x136텍셀 → 48x68도트, 색 1514 → 24  Assets/Sprites/Tiles/Outdoor/Props/OutdoorTree2Sprite.png
+  바위       OutdoorRockSprite_0        60x42텍셀 → 30x21도트, 색 414 → 14  Assets/Sprites/Tiles/Outdoor/Props/OutdoorRockSprite.png
+  묘비       OutdoorGravestoneSprite_0  31x38텍셀 → 16x19도트, 색 224 → 12  Assets/Sprites/Tiles/Outdoor/Props/OutdoorGravestoneSprite.png
+  십자가 묘비   OutdoorCrossSprite_0       34x40텍셀 → 17x20도트, 색 292 → 12  Assets/Sprites/Tiles/Outdoor/Props/OutdoorCrossSprite.png
+  큰 바위     TX Props_43                59x46텍셀 → 30x23도트, 색 414 → 14  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  묘비석 A    TX Props_31                32x43텍셀 → 16x22도트, 색 419 → 12  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  묘비석 B    TX Props_32                32x31텍셀 → 16x16도트, 색 398 → 12  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  석판 A     TX Props_3                 28x54텍셀 → 14x27도트, 색 325 → 12  Assets/Sprites/Tiles/Outdoor/TX Props.png
+  석판 B     TX Props_12                28x68텍셀 → 14x34도트, 색 317 → 12  Assets/Sprites/Tiles/Outdoor/TX Props.png
+
+파일: Logs/Density/Assets/... (원본과 같은 경로, TX Props.png는 위 5개 영역만 바뀜)
+비교: compare_density_sprites.png (그림별 확대), compare_density_scenes.png (Field·묘지·숲 실제 렌더, 시야 끔)

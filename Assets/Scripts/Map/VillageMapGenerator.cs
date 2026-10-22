@@ -437,7 +437,8 @@ public class VillageMapGenerator : MonoBehaviour
         MarkGenerationStep("경계 충돌체");
         BuildWallShadows(mapRoot.transform, WithObstacleOverhang(mapFloor, placedRooms));
         MarkGenerationStep("벽 그림자");
-        BuildOutsideMask(mapRoot.transform, mapFloor, placedRooms, CorridorOutsideCells(corridorCells, mapFloor));
+        HashSet<Vector2Int> corridorOutside = CorridorOutsideCells(corridorCells, mapFloor, out HashSet<Vector2Int> corridorCorners);
+        BuildOutsideMask(mapRoot.transform, mapFloor, placedRooms, corridorOutside, corridorCorners, new HashSet<Vector2Int>(corridorCells));
         MarkGenerationStep("바깥 마스크");
 
         // 플레이어/트럭 배치와 스폰은 한 줄 경로(Awake)와 같은 규칙이다. 다만 시작 방이 트럭 칸 방이고, 장애물을 치워 다시 구울 때
@@ -752,11 +753,14 @@ public class VillageMapGenerator : MonoBehaviour
     // 거리로 길 가장자리 그라데이션(CorridorFadeDepth)을, 나머지 바깥 칸까지의 거리로 방 가장자리 그라데이션(outsideMaskInnerFadeWidth)을
     // 따로 재서 더 어두운 쪽을 쓴다. 길과 방 사이 한 칸 틈처럼 양쪽에서 같은 거리인 칸을 길 쪽으로 치므로, 길 가운데는 방 쪽의 더 깊은
     // 그라데이션에 먹히지 않는다.
-    private HashSet<Vector2Int> CorridorOutsideCells(List<Vector2Int> corridorCells, HashSet<Vector2Int> mapFloor)
+    // corners: 방 쪽으로 남지만 길 바닥에 대각선으로 닿는 칸(길 모서리 너머, 옆 방 바닥과는 한 칸). 방 바닥에는 방 깊이 그대로 쓰고,
+    // 길 바닥 위에서는 방 바닥에서 멀어질수록 방 깊이 몫을 줄인다(BuildOutsideMask). 안 그러면 방의 깊은 그라데이션이 길 가운데 칸 모서리까지 번진다.
+    private HashSet<Vector2Int> CorridorOutsideCells(List<Vector2Int> corridorCells, HashSet<Vector2Int> mapFloor, out HashSet<Vector2Int> corners)
     {
         HashSet<Vector2Int> corridorSet = new HashSet<Vector2Int>(corridorCells);
         int reach = Mathf.CeilToInt(Mathf.Max(outsideMaskInnerFadeWidth, CorridorFadeDepth)) + 1;
         HashSet<Vector2Int> result = new HashSet<Vector2Int>();
+        corners = new HashSet<Vector2Int>();
         HashSet<Vector2Int> decided = new HashSet<Vector2Int>();
         foreach (Vector2Int c in corridorCells)
         {
@@ -779,6 +783,7 @@ public class VillageMapGenerator : MonoBehaviour
                         }
                     }
                     if (toCorridor <= toRoom) result.Add(n);
+                    else if (toCorridor <= 2) corners.Add(n);
                 }
             }
         }
@@ -1824,7 +1829,9 @@ public class VillageMapGenerator : MonoBehaviour
     // corridorOutsideCells(격자 맵의 길 쪽 바깥 칸, CorridorOutsideCells): 안쪽 그라데이션을 방 쪽 바깥 칸까지의 거리(깊이 outsideMaskInnerFadeWidth)와
     // 길 쪽 바깥 칸까지의 거리(깊이 CorridorFadeDepth)로 따로 재서 더 어두운 쪽을 쓴다. 두 값 모두 위치에 따라 끊김 없이 변하므로 포트에서
     // 방 가장자리 그라데이션이 길 가장자리 그라데이션으로 이어진다. 칸 자체는 여전히 맵 바깥이라 완전히 덮인다. null(한 줄 배치)이면 예전과 같다.
-    private void BuildOutsideMask(Transform mapRoot, HashSet<Vector2Int> mapFloor, List<RoomInstance> rooms, HashSet<Vector2Int> corridorOutsideCells = null)
+    // corridorCornerCells/corridorFloor(격자): 길 모서리 너머 방 쪽 칸은 길 바닥 위의 점에서만 길 쪽 칸으로 잰다(CorridorOutsideCells 참고).
+    private void BuildOutsideMask(Transform mapRoot, HashSet<Vector2Int> mapFloor, List<RoomInstance> rooms, HashSet<Vector2Int> corridorOutsideCells = null,
+                                  HashSet<Vector2Int> corridorCornerCells = null, HashSet<Vector2Int> corridorFloor = null)
     {
         if (mapFloor.Count == 0) return;
 
@@ -1858,10 +1865,45 @@ public class VillageMapGenerator : MonoBehaviour
 
         // 바닥 안쪽의 점 p에서 가장 가까운 바닥 아닌 칸(정사각형)까지의 거리 - 방 쪽 바깥 칸(toRoom)과 길 쪽 바깥 칸(toCorridor)을 따로 잰다.
         // innerReach 밖은 그라데이션 깊이보다 멀다고 보고 찾지 않는다.
-        void DistancesToOutside(Vector2 p, out float toRoom, out float toCorridor)
+        // 길 모서리 칸(corridorCornerCells)은 방 바닥에 닿은 점에서는 방 쪽 칸 그대로 재고, 길 바닥 위의 점에서는 toCorner로 따로 잰다.
+        // cornerRoomWeight: toCorner에 방 깊이를 얼마나 쓸지 - 방 바닥에서 멀어지는 1칸 동안 1 → 0(경계에서 방 쪽 값과 이어진다).
+        void DistancesToOutside(Vector2 p, out float toRoom, out float toCorridor, out float toCorner, out float cornerRoomWeight)
         {
             int px = Mathf.FloorToInt(p.x), py = Mathf.FloorToInt(p.y);
-            float bestRoom = float.MaxValue, bestCorridor = float.MaxValue;
+            // 길 바닥 위의 점: 점이 닿은 칸(경계 위면 최대 4칸) 중 길 바닥이 있고 방 바닥은 없을 때.
+            bool onCorridor = false;
+            cornerRoomWeight = 0f;
+            if (corridorCornerCells != null && corridorFloor != null)
+            {
+                bool touchesRoom = false;
+                for (int ix = Mathf.FloorToInt(p.x - 0.001f); ix <= Mathf.FloorToInt(p.x + 0.001f); ix++)
+                {
+                    for (int iy = Mathf.FloorToInt(p.y - 0.001f); iy <= Mathf.FloorToInt(p.y + 0.001f); iy++)
+                    {
+                        Vector2Int t = new Vector2Int(ix, iy);
+                        if (corridorFloor.Contains(t)) onCorridor = true;
+                        else if (mapFloor.Contains(t)) touchesRoom = true;
+                    }
+                }
+                onCorridor &= !touchesRoom;
+                if (onCorridor)
+                {
+                    float toRoomFloor = float.MaxValue;
+                    for (int y = py - 2; y <= py + 2; y++)
+                    {
+                        for (int x = px - 2; x <= px + 2; x++)
+                        {
+                            Vector2Int t = new Vector2Int(x, y);
+                            if (!mapFloor.Contains(t) || corridorFloor.Contains(t)) continue;
+                            float dx = Mathf.Max(x - p.x, 0f, p.x - (x + 1));
+                            float dy = Mathf.Max(y - p.y, 0f, p.y - (y + 1));
+                            toRoomFloor = Mathf.Min(toRoomFloor, dx * dx + dy * dy);
+                        }
+                    }
+                    cornerRoomWeight = Mathf.Clamp01(1f - Mathf.Sqrt(toRoomFloor));
+                }
+            }
+            float bestRoom = float.MaxValue, bestCorridor = float.MaxValue, bestCorner = float.MaxValue;
             for (int y = py - innerReach; y <= py + innerReach; y++)
             {
                 for (int x = px - innerReach; x <= px + innerReach; x++)
@@ -1872,11 +1914,13 @@ public class VillageMapGenerator : MonoBehaviour
                     float dy = Mathf.Max(y - p.y, 0f, p.y - (y + 1));
                     float d = dx * dx + dy * dy;
                     if (corridorOutsideCells != null && corridorOutsideCells.Contains(cell)) { if (d < bestCorridor) bestCorridor = d; }
+                    else if (onCorridor && corridorCornerCells.Contains(cell)) { if (d < bestCorner) bestCorner = d; }
                     else if (d < bestRoom) bestRoom = d;
                 }
             }
             toRoom = Mathf.Sqrt(bestRoom);
             toCorridor = Mathf.Sqrt(bestCorridor);
+            toCorner = Mathf.Sqrt(bestCorner);
         }
 
         // 바닥 경계 기준 부호 있는 거리(바깥 +, 안쪽 -)로 투명도를 정한다: 안쪽 depth = 투명, 바깥 fade = 완전히 어둡게.
@@ -1897,9 +1941,10 @@ public class VillageMapGenerator : MonoBehaviour
                 bool corridorSide = corridorOutsideCells != null && corridorOutsideCells.Contains(new Vector2Int(Mathf.FloorToInt(p.x), Mathf.FloorToInt(p.y)));
                 return Ramp(outside, corridorSide ? corridorFade : innerFade);
             }
-            DistancesToOutside(p, out float toRoom, out float toCorridor);
+            DistancesToOutside(p, out float toRoom, out float toCorridor, out float toCorner, out float cornerRoomWeight);
             float alpha = Ramp(-toRoom, innerFade);
             if (corridorOutsideCells != null) alpha = Mathf.Max(alpha, Ramp(-toCorridor, corridorFade));
+            if (toCorner < float.MaxValue) alpha = Mathf.Max(alpha, Mathf.Max(Ramp(-toCorner, corridorFade), Ramp(-toCorner, innerFade) * cornerRoomWeight));
             return alpha;
         }
 
@@ -1928,8 +1973,8 @@ public class VillageMapGenerator : MonoBehaviour
         {
             foreach (Vector2Int c in mapFloor)
             {
-                DistancesToOutside(new Vector2(c.x + 0.5f, c.y + 0.5f), out float toRoom, out float toCorridor);
-                if ((innerFade > 0f && toRoom - 0.71f < innerFade) || (corridorFade > 0f && toCorridor - 0.71f < corridorFade)) innerBand.Add(c);
+                DistancesToOutside(new Vector2(c.x + 0.5f, c.y + 0.5f), out float toRoom, out float toCorridor, out float toCorner, out _);
+                if ((innerFade > 0f && Mathf.Min(toRoom, toCorner) - 0.71f < innerFade) || (corridorFade > 0f && Mathf.Min(toCorridor, toCorner) - 0.71f < corridorFade)) innerBand.Add(c);
             }
         }
 
