@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 9196361851153778204}
   - component: {fileID: 7156169397604685953}
   - component: {fileID: 1095351029876509033}
+  - component: {fileID: 1920252758928870760}
   m_Layer: 0
   m_Name: DroppedBombPickup
   m_TagString: Untagged
@@ -202,3 +203,23 @@ MonoBehaviour:
   interactionRange: 1.8
   promptText: {fileID: 0}
   icon: {fileID: 0}
+--- !u!114 &1920252758928870760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6162252866712530299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e76bb0e007478f8d38a9cd89c9551a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FootSortOrder
+  body: {fileID: 7156169397604685953}
+  footTexels: -14
+  texelsPerUnit: 32
+  useBoundsBottom: 0
+  useWorldOffset: 0
+  footWorldOffset: 0
+  isStatic: 0
+  shadow: {fileID: 0}

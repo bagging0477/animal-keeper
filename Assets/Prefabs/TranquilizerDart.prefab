@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5618803372891872414}
   - component: {fileID: 4851024911650422671}
   - component: {fileID: 1007327826499193375}
+  - component: {fileID: 1262492146465225216}
   m_Layer: 0
   m_Name: TranquilizerDart
   m_TagString: Untagged
@@ -106,3 +107,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TranquilizerDart
   hitRadius: 0.3
+--- !u!114 &1262492146465225216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3509870833679106635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e76bb0e007478f8d38a9cd89c9551a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FootSortOrder
+  body: {fileID: 4851024911650422671}
+  footTexels: 0
+  texelsPerUnit: 32
+  useBoundsBottom: 1
+  useWorldOffset: 0
+  footWorldOffset: 0
+  isStatic: 0
+  shadow: {fileID: 0}

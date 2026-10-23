@@ -6,7 +6,8 @@ using UnityEngine;
 /// 효과음을 절차적으로 만들어 쓰는 것과 같은 방식).</summary>
 public class BombExplosionEffect : MonoBehaviour
 {
-    private const int SortingOrder = 5;
+    // 발 기준 정렬(FootSortOrder) 이후 세계 그림의 Order는 발 Y에 따라 크게 달라진다. 폭발은 예전(Order 5 > 캐릭터·소품 2)처럼 모두 위에 그린다.
+    private const int SortingOrder = FootSortOrder.EffectOrder;
 
     private static Sprite circleSprite;
 

@@ -17,10 +17,17 @@ public class MineTrap : MonoBehaviour
     [SerializeField, Min(0.05f)] private float flashDuration = 0.25f;
     [Tooltip("지뢰 오브젝트 크기에 대한 섬광 최종 배율. 시작 크기는 이 값의 65%.")]
     [SerializeField, Min(0.1f)] private float flashSize = 1.8f;
-    [Tooltip("섬광이 지뢰보다 얼마나 위에 그려질지 (같은 Sorting Layer 기준 Order 차이).")]
+    [Tooltip("(발 기준 정렬 이후 쓰지 않음) 섬광은 FootSortOrder.EffectOrder로 모든 세계 그림 위에 그린다.")]
     [SerializeField] private int flashSortingOrderOffset = 10;
 
     private bool triggered;
+
+    // 설치한 지뢰는 움직이지 않으므로 그림 아래 끝(발) 기준으로 한 번만 정렬한다(FootSortOrder).
+    private void Awake()
+    {
+        SpriteRenderer mineRenderer = GetComponent<SpriteRenderer>();
+        if (mineRenderer != null) FootSortOrder.AttachBoundsBottom(gameObject, mineRenderer, true);
+    }
 
     private void Update()
     {
@@ -75,7 +82,8 @@ public class MineTrap : MonoBehaviour
         {
             flashRenderer.sharedMaterial = mineRenderer.sharedMaterial;
             flashRenderer.sortingLayerID = mineRenderer.sortingLayerID;
-            flashRenderer.sortingOrder = mineRenderer.sortingOrder + flashSortingOrderOffset;
+            // 발 기준 정렬에서는 지뢰 Order가 발 Y에 따라 크게 달라지므로, 섬광은 예전처럼 모든 세계 그림 위에 둔다.
+            flashRenderer.sortingOrder = FootSortOrder.EffectOrder;
             mineRenderer.enabled = false;
         }
 

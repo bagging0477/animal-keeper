@@ -277,7 +277,25 @@ public class VillageMapGenerator : MonoBehaviour
             SpawnAnimal(room, room.Root.transform, usedCells);
             SpawnMonster(room, room.Root.transform, playerSpawnWorldXY, usedCells);
         }
+        ApplyFootSorting(mapRoot);
         MarkGenerationStep("동물·몬스터 스폰");
+    }
+
+    // 플레이어 발 높이: CharacterShadowBuilder의 "보이는 몸 아래 −0.41칸"(모든 클래스 같은 크기, 회전과 무관)
+    private const float PlayerFootWorldOffset = -0.41f;
+    private const string PlayerShadowObjectName = "PlayerShadow";
+
+    /// <summary>발 기준 정렬(FootSortOrder). 움직이지 않는 방 소품과 트럭은 여기서 한 번 정하고, 플레이어에는 매 프레임 정렬하는 컴포넌트를 붙인다
+    /// (씬 파일은 바꾸지 않는다). 동물·몬스터는 프리팹의 FootSortOrder가 맡는다. Random을 쓰지 않아 맵 결과에는 영향이 없다.</summary>
+    private void ApplyFootSorting(GameObject mapRoot)
+    {
+        FootSortOrder.ApplyStatic(mapRoot);
+        FootSortOrder.ApplyStatic(GameObject.Find(truckPointObjectName));
+        GameObject player = GameObject.Find(playerObjectName);
+        SpriteRenderer body = player != null ? player.GetComponent<SpriteRenderer>() : null;
+        if (body == null) return;
+        GameObject playerShadow = GameObject.Find(PlayerShadowObjectName);
+        FootSortOrder.AttachWorldOffset(player, body, PlayerFootWorldOffset, playerShadow != null ? playerShadow.GetComponent<SpriteRenderer>() : null);
     }
 
     /// <summary>
@@ -506,6 +524,7 @@ public class VillageMapGenerator : MonoBehaviour
         LastGridSpawnCounts = (animalCounts.Sum() - animalShortfall, monsterCounts.Sum() - monsterShortfall);
         LastGridSpawnShortfall = (animalShortfall, monsterShortfall);
         LastGridMonsterWeights = placedRooms.Select(MonsterSpawnWeight).ToArray();
+        ApplyFootSorting(mapRoot);
         MarkGenerationStep("동물·몬스터 스폰");
 
         gridRooms = placedRooms;

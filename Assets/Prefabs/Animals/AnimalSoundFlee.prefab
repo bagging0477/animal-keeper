@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 6992825298821530910}
   - component: {fileID: 6992825298821530920}
   - component: {fileID: 1850377506599384755}
+  - component: {fileID: 1257516013410787685}
   m_Layer: 0
   m_Name: AnimalSoundFlee
   m_TagString: Untagged
@@ -486,3 +487,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &1257516013410787685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6992825298821530945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e76bb0e007478f8d38a9cd89c9551a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FootSortOrder
+  body: {fileID: 5458609339520979249}
+  footTexels: -16
+  texelsPerUnit: 32
+  useBoundsBottom: 0
+  useWorldOffset: 0
+  footWorldOffset: 0
+  isStatic: 0
+  shadow: {fileID: 0}

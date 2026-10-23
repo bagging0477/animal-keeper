@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3733329674057690218}
   - component: {fileID: 5000000000000000002}
   - component: {fileID: 5000000000000000004}
+  - component: {fileID: 2396759515018382205}
   m_Layer: 0
   m_Name: Visual
   m_TagString: Untagged
@@ -262,3 +263,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterHealth
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
   deadColor: {r: 0.35, g: 0.35, b: 0.35, a: 1}
+--- !u!114 &2396759515018382205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4012556490459243761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e76bb0e007478f8d38a9cd89c9551a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FootSortOrder
+  body: {fileID: 3733329674057690218}
+  footTexels: -9
+  texelsPerUnit: 16
+  useBoundsBottom: 0
+  useWorldOffset: 0
+  footWorldOffset: 0
+  isStatic: 0
+  shadow: {fileID: 0}

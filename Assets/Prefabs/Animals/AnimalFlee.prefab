@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 5701105146326097002}
   - component: {fileID: 5701105146326097020}
   - component: {fileID: -3206118690895255046}
+  - component: {fileID: 8077108931089143135}
   m_Layer: 0
   m_Name: AnimalFlee
   m_TagString: Untagged
@@ -369,3 +370,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &8077108931089143135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 570110514632718333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e76bb0e007478f8d38a9cd89c9551a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FootSortOrder
+  body: {fileID: 1755292395063921611}
+  footTexels: -6.5
+  texelsPerUnit: 32
+  useBoundsBottom: 0
+  useWorldOffset: 0
+  footWorldOffset: 0
+  isStatic: 0
+  shadow: {fileID: 0}

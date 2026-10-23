@@ -109,6 +109,7 @@ GameObject:
   - component: {fileID: 8620217539038921402}
   - component: {fileID: 7718787691181264448}
   - component: {fileID: 8620217539038921420}
+  - component: {fileID: 5217826664721286261}
   m_Layer: 0
   m_Name: AnimalWander
   m_TagString: Untagged
@@ -356,3 +357,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalFacingFlipper
   horizontalDeadzone: 0.01
+--- !u!114 &5217826664721286261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8620217539038921367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e76bb0e007478f8d38a9cd89c9551a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FootSortOrder
+  body: {fileID: 2068930949397097927}
+  footTexels: -6
+  texelsPerUnit: 32
+  useBoundsBottom: 0
+  useWorldOffset: 0
+  footWorldOffset: 0
+  isStatic: 0
+  shadow: {fileID: 0}
