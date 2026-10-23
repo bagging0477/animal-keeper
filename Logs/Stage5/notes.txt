@@ -1,0 +1,46 @@
+5단계 진단 + 보정안 (2026-10-23, 프로젝트에는 적용하지 않음)
+화면 기준: 1920x1080, 월드 카메라 크기 5.6(1칸 = 96.4px), UI 기준 해상도 2240x1260 맞춤 0.5(배율 0.857).
+"화면 도트 px" = 도트 블록(텍셀 몇 개가 도트 하나인지) x 텍셀 하나의 화면 px. 채도 = 칠한 색(외곽선·아주 어두운 색 V<0.25 제외)의 픽셀 평균 HSV 채도.
+  이 계산으로 동물 5종(고양이 0.34, 코알라 0.10, 레서판다 0.51, 갈매기 0.08, 거북이 0.28) 평균 0.26.
+
+[진단]  이름 | 쓰는 곳 | 텍셀 화면 px | 블록 | 화면 도트 px | 색 수 | 반투명 픽셀 | 채도 | 외곽선(가장자리에서 가장 많은 색, 비율) | 필터
+  RV (마을 트럭, RV.png 조각 RV_2 38x97) | VillageScene TruckPoint, PPU 100 x 배율 5 | 4.82 | 1 | 4.8 | 637 | 0 | 0.33 | #010101 (22%, 외곽선 색이 하나로 정해지지 않음) | Point
+  RV 내부 (RVShell.png 216x167) | TruckScene, PPU 16 x 1 | 6.03 | 1 | 6.0 | 6 | 0 | 0.25 | #3B2618 (55%) | Point
+  Cozy 둥근 버튼 RoundButton2_wood (362x160) | Truck/Shelter 마일리지 배지 UI 253x112 | 0.60 | 2 | 1.2 | 87 | 806 | 0.47 | #97513E (98%) | Point
+  Cozy 아이콘 IconsDefault19_64px (65x69) | 아이템 상점 줄 아이콘 76 | 1.02 | 1 | 1.0 | 53 | 165 | 0.62 | #18AB2E (36%) | Bilinear
+  Cozy 인벤토리 칸 ItemSlot1 (137x148) | Village/Truck 인벤토리 칸 UI 165 | 0.96 | 1 | 1.0 | 104 | 468 | 0.57 | #97513E (100%) | Point
+  Cozy 인벤토리 칸(선택) ItemSlotSelected1 (138x148) | 선택된 칸 165 | 0.96 | 1 | 1.0 | 103 | 435 | 0.18 | #97513E (97%) | Point
+  패시브 러닝화 RunningShoes_placeholder (64x64 = 32칸 x2) | 보호소 패시브 상점 줄 아이콘 76 | 1.02 | 2 | 2.0 | 7 | 0 | 0.52 | #281C18 (100%) | Point
+  패시브 인벤토리 칸+1 InventorySlot_placeholder | 같음 | 1.02 | 2 | 2.0 | 7 | 0 | 0.62 | #281C18 (100%) | Point
+  패시브 플래시라이트 Flashlight_placeholder | 같음 | 1.02 | 2 | 2.0 | 6 | 0 | 0.31 | #281C18 (100%) | Point
+  우는천사 WeepingAngel_Placeholder (40x48) | 프리팹 Visual, PPU 32 x 1 | 3.01 | 1 | 3.0 | 3 | 0 | 0.03 | #000000 (100%) | Point
+  트래퍼 player_trapper (95x93) | 플레이어, PPU 56 x 0.72 | 1.24 | 2 | 2.5 | 21 | 0 | 0.74 | #000000 (100%) | Bilinear
+  거너 player_gunner (91x90) | 플레이어, PPU 56 x 0.64 | 1.10 | 2 | 2.2 | 17 | 0 | 0.40 | #000000 (100%) | Bilinear
+  거너(무장) player_gunner_armed (83x73) | 플레이어, PPU 56 x 0.826 | 1.42 | 2 | 2.8 | 15 | 0 | 0.45 | #000000 (100%) | Bilinear
+  [기준] 플레이어 v7 | PPU 10.24 x 0.64 | 6.03 | 1 | 6.0 | 2 | 0 | 0 | #2F2F2E | Point
+  [기준] 고양이 / 레서판다 / 코알라 | PPU 32 x 2.02 / 2.02 / 1.51 | 6.09 / 6.09 / 4.55 | 1 | 6.1 / 6.1 / 4.6 | 8 / 7 / 7 | 0 | 0.34 / 0.51 / 0.10 | #2F2F2E | Point
+  참고: 쓰이는 Cozy 그림은 위 4개뿐(나머지 72개는 씬·프리팹·설정에서 참조 없음). Truck.png는 참조 없음.
+  RV·Cozy는 라이선스 확인 전이라 보정안을 만들지 않음.
+
+[보정안] (Logs/Stage5/*.png)
+  player_trapper_stage5.png (20x20): v7 방식. 몸통 13도트(원본 화면 12.4도트, 트래퍼만 12.5% 크게 잡힌 것 유지), 손 흰 부분 2x2(밝은 갈색),
+    몸통 #6B4E3B·손 #B79170(원본 #6A391A·#B77941에서 채도만 낮춤), 외곽선 #2F2F2E. 3색, 채도 0.74 → 0.44.
+  player_gunner_stage5.png (20x20): v7 몸통 11도트·손 자리 그대로, 손 흰색 #FFFFFF, 몸통 위장 무늬 3색 #7B885F·#5E6B48·#A39B77. 5색, 채도 0.40 → 0.27.
+  player_gunner_armed_stage5.png (20x20): 거너와 같은 몸통·무늬, 몸통 중심 높이에 총신 1도트(#4A4E44, x13~18), 흰 손 2개가 총 위아래를 쥠(위아래 대칭). 6색, 채도 0.45 → 0.25.
+  WeepingAngel_stage5.png (20x24): 2x2 텍셀 묶음(검은 외곽선이 있으면 외곽선 도트, 아니면 많은 색). 원본이 좌우 비대칭(138픽셀)이라 왼쪽 절반을 거울 복사해 대칭.
+    흰색 #FFFFFF, 날개 #DBE0EB, 외곽선 #000000 → #2F2F2E. 도트 3px → 6px, 화면 크기 같음.
+  RunningShoes_stage5.png / InventorySlot_stage5.png / Flashlight_stage5.png (11x11): 상점 아이콘 76 UI = 1080p 65px라 도트 6px면 11칸.
+    새로 찍음(외곽선 1도트 #2F2F2E, 채도 0.18 / 0.30 / 0.23). 65/11 = 5.92px라 도트가 5~6px로 섞여 보임(정확히 6px이 되려면 IconSize 76 → 77(=66px/0.857), 이번에는 손대지 않음).
+    한계: 11칸이라 원본(32칸)의 끈·버클·빛줄기 같은 세부는 줄었고, 외곽선 #2F2F2E가 상점 줄의 어두운 갈색 배경과 대비가 낮음.
+
+[적용할 때 바꿀 설정] (적용하지 않음)
+  player_trapper.png: PPU 56 → 11.52(= 16 x trapperScale 0.72), filterMode 1 → 0, textureCompression → 0, alignment 9 / spritePivot {0.5125, 0.5125}(v7과 같은 회전 중심)
+  player_gunner.png: PPU 56 → 10.24(= 16 x 0.64), 나머지 위와 같음
+  player_gunner_armed.png: PPU 56 → 13.216(= 16 x 0.826), 나머지 위와 같음
+    (PlayerClassAppearance의 배율 값은 그대로 두는 기준. 세 그림 모두 도트 1개 = 1/16칸 = 화면 6px)
+  WeepingAngel_Placeholder.png: PPU 32 → 16, 나머지 그대로(Point, 피벗 가운데). WeepingAngelAssetBuilder가 다시 만들면 덮어쓰므로 적용 시 빌더도 확인.
+  패시브 아이콘 3종: 그대로 교체(Point, 압축 없음, PPU 무관). PassiveIconGenerator는 파일이 있으면 덮어쓰지 않음.
+
+[실제 렌더] 프로젝트 복사본에서 Play 모드, 1920x1080.
+  compare_stage5_sprites.png: 그림별 원본/보정안 확대 x3(Field lineup·상점 화면에서 잘라냄) + 기준(고양이, 플레이어 v7)
+  compare_stage5_game.png: Field lineup 시야 끔 적용 전/후, 보호소 패시브 상점 적용 전/후
