@@ -23,3 +23,30 @@ v5 (player_base_pixel_v5.png): v4에서 흰색만 #B8B8B8 → #FFFFFF로 되돌�
 
 v5 적용 (2026-10-22): Assets/Sprites/Player/player_base.png를 v5로 교체, meta PPU 56→20.48, filterMode 1→0, textureCompression 1→0 (커밋 안 함).
   실제 렌더 비교: applied_player_zoom.png, applied_player_field.png, applied_player_rotation.png
+
+v6 (player_base_pixel_v6.png, 2026-10-23, 프로젝트에는 적용하지 않음): 도트 3px → 6px(동물과 같음, 화면 1도트 = 1/16칸).
+  20x20도트 캔버스. 몸통 11x11도트 대칭 원(가로 줄 폭 3-7-9-9-11-11-11-9-9-7-3, 반지름² 27), 흰 부분 9x9.
+  손 2개: 흰 부분 2x1도트, 외곽 4x3도트(모서리 뺀 4방향 외곽선), 몸통 중심 기준 오른쪽 4.5도트·위아래 4도트(v5 평균 위치와 같음, v5는 위 3.75/아래 4.25로 약간 비대칭이었음).
+  외곽선 1도트 #2F2F2E(4방향), 흰색 #FFFFFF, 반투명 없음, 2색. 몸통과 손 흰 부분 사이에도 외곽선 1도트.
+  화면 크기: v5 69x66px → v6 73x67px(손 포함, 1080p), 불투명 면적 3474 → 3769px(+8.5%). 외곽선 화면 굵기 6px로 v5(2텍셀x3px)와 같음.
+  중심점: 몸통 중심이 회전 중심(피벗)에서 왼쪽 0.75도트·아래 0.75도트 떨어진 v5 배치를 그대로 맞추려고 사용자 지정 피벗을 씀.
+  적용 시 player_base.png를 v6로 교체하고 player_base.png.meta에서:
+    spritePixelsToUnits 20.48 → 10.24 (scoutScale 0.64 그대로 → 1도트 = 0.64/10.24 = 1/16칸)
+    alignment 0(Center) → 9(Custom), spritePivot {x: 0.5, y: 0.5} → {x: 0.5125, y: 0.5125}
+    filterMode 0(Point), textureCompression 0(None)은 v5 그대로. 트래퍼·거너 이미지와 meta는 바꾸지 않음.
+  실제 렌더(프로젝트 복사본에서 배치 모드, Global 라이트 1·시야 라이트 끔, 화면 1080p 기준):
+    compare_player_v6.png (v5/v6 0°·45°, 화면 픽셀 그대로 x4), compare_player_v6_field.png (Field lineup 시야 끔 + 플레이어 주변 x3)
+  한계: 6px 도트라 45° 회전 시 외곽선 계단이 v5보다 크게 보이고, 손이 v5보다 작은 사각형에 가깝게 보임.
+
+v6 적용 (2026-10-23): Assets/Sprites/Player/player_base.png를 v6로 교체, meta PPU 20.48→10.24, alignment 0→9, spritePivot {0.5125, 0.5125} (커밋 안 함).
+  실제 렌더 비교: applied_v6_rotation.png, applied_v6_field.png
+
+v7 (player_base_pixel_v7.png, 2026-10-23, 프로젝트에는 적용하지 않음): v6에서 손 2개만 키움.
+  손 흰 부분 2x1 → 2x2도트, 외곽선 1도트 #2F2F2E(4방향, 모서리 비움) → 손 외곽 4x4도트(v6은 4x3).
+  손 흰 칸이 몸통 흰 칸과 대각선으로 닿지 않도록 손을 바깥쪽으로 1도트 옮김: 손 흰 부분 x 14~15(v6은 13~14), 위 손 y 5~6 / 아래 손 y 14~15.
+  → 손과 몸통 사이 외곽선이 2도트(몸통 1 + 손 1)가 되어 손이 몸통 옆에 동그랗게 붙어 보임.
+  손 중심(몸통 중심 기준): v6 오른쪽 4.5·위아래 4도트 → v7 오른쪽 5.5·위아래 4.5도트. 위아래 대칭은 유지.
+    (2x2 손은 세로 중심이 반 도트 단위라 v6의 위아래 4도트에 정확히 둘 수 없고, 안쪽 3.5로 두면 몸통과 겹쳐 보임)
+  몸통은 v6과 픽셀 단위로 같음(바뀐 픽셀 18개는 모두 손 부분, x 13~16).
+  캔버스 20x20, PPU 10.24, 피벗 {0.5125, 0.5125}(alignment 9)는 v6 그대로라 적용 시 png만 바꾸면 되고 meta는 바꿀 것 없음.
+  실제 렌더(프로젝트 복사본, Play 모드, 1080p): compare_player_v7.png (v6/v7 0°·45°·90° x4), compare_player_v7_field.png (Field lineup 시야 끔 + 플레이어 주변 x4)
