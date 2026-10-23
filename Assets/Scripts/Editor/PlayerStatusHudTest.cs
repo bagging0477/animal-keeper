@@ -40,7 +40,6 @@ public static class PlayerStatusHudTest
 
     private static readonly FieldInfo HpFill = typeof(AnimalKeeperHUD).GetField("hpFill", BindingFlags.NonPublic | BindingFlags.Instance);
     private static readonly FieldInfo StaminaFill = typeof(AnimalKeeperHUD).GetField("staminaFill", BindingFlags.NonPublic | BindingFlags.Instance);
-    private static readonly FieldInfo HpDigits = typeof(AnimalKeeperHUD).GetField("hpDigits", BindingFlags.NonPublic | BindingFlags.Instance);
 
     static PlayerStatusHudTest()
     {
@@ -322,27 +321,22 @@ public static class PlayerStatusHudTest
     // ===================== 검사 도우미 =====================
 
     private static float Fill(AnimalKeeperHUD hud, FieldInfo field) => field.GetValue(hud) is Image img && img != null ? img.fillAmount : -1f;
-    // 숫자는 그림 글자(digits)로 그린다 - HUD가 지금 그린 글자를 읽는다.
-    private static string HealthLabel(AnimalKeeperHUD hud) => string.IsNullOrEmpty(hud.HealthLabel) ? "(없음)" : hud.HealthLabel;
-    private static string StaminaLabel(AnimalKeeperHUD hud) => string.IsNullOrEmpty(hud.StaminaLabel) ? "(없음)" : hud.StaminaLabel;
 
     private static void CheckHealth(AnimalKeeperHUD hud, GameManager gm, string what, float expectedPercent)
     {
         float expected = gm.Health * 100f / GameManager.MaxHealth;
         float fill = Fill(hud, HpFill);
-        string label = HealthLabel(hud);
         Check(Mathf.Abs(expected - expectedPercent) < 0.01f && Mathf.Abs(hud.healthPercent - expected) < PercentTolerance &&
-              Mathf.Abs(fill - expected / 100f) < 0.001f && label == Mathf.RoundToInt(expected) + "%",
-            $"{what}: 체력 {gm.Health}/{GameManager.MaxHealth} → 바 {fill * 100f:F1}% 글자 \"{label}\" (기대 {expectedPercent:F1}%)");
+              Mathf.Abs(fill - expected / 100f) < 0.001f,
+            $"{what}: 체력 {gm.Health}/{GameManager.MaxHealth} → 바 {fill * 100f:F1}% (기대 {expectedPercent:F1}%)");
     }
 
     private static void CheckStamina(AnimalKeeperHUD hud, PlayerMovement player, string what, float expectedPercent)
     {
         float expected = player.Stamina / player.MaxStamina * 100f;
         float fill = Fill(hud, StaminaFill);
-        string label = StaminaLabel(hud);
-        Check(Mathf.Abs(expected - expectedPercent) < 0.05f && Mathf.Abs(fill - expected / 100f) < 0.001f && label == Mathf.RoundToInt(expected) + "%",
-            $"{what}: 스태미나 {player.Stamina:F1}/{player.MaxStamina} → 바 {fill * 100f:F1}% 글자 \"{label}\" (기대 {expectedPercent:F1}%)");
+        Check(Mathf.Abs(expected - expectedPercent) < 0.05f && Mathf.Abs(fill - expected / 100f) < 0.001f,
+            $"{what}: 스태미나 {player.Stamina:F1}/{player.MaxStamina} → 바 {fill * 100f:F1}% (기대 {expectedPercent:F1}%)");
     }
 
     // 연결 코드(실행 순서 -10)는 PlayerMovement.Update보다 먼저 돌아 그 프레임이 시작될 때의 스태미나를 넘긴다 - 직전 프레임 값이나 현재 값과 같으면 된다.
@@ -420,7 +414,8 @@ public static class PlayerStatusHudTest
         RectTransform canvasRect = hudCanvas != null ? (RectTransform)hudCanvas.transform : null;
         RectTransform rootRect = (RectTransform)hudCanvas.rootCanvas.transform;
         Check(canvasRect != null && Vector2.Distance(canvasRect.rect.size, rootRect.rect.size) < 1f, $"{scene}: HUD Canvas 크기 {canvasRect?.rect.size} = 씬 Canvas {rootRect.rect.size}");
-        Check(HpDigits.GetValue(hud) is Image[] digits && digits.Length > 0 && digits[0] != null && digits[0].sprite != null, $"{scene}: 숫자 그림 글자 {(HpDigits.GetValue(hud) as Image[])?[0]?.sprite?.texture?.name}");
+        int digitCount = hud.GetComponentsInChildren<Image>(true).Count(i => i.name.Contains("Digit") || i.name.Contains("Percent") || (i.sprite != null && i.sprite.texture != null && i.sprite.texture.name.Contains("digits")));
+        Check(digitCount == 0, $"{scene}: 퍼센트 숫자 없음 (숫자 그림 {digitCount}개)");
         if (mustBeBelow != null)
         {
             Transform panel = rootRect.Find(mustBeBelow);
