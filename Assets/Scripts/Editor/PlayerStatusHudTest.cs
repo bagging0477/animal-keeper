@@ -40,8 +40,7 @@ public static class PlayerStatusHudTest
 
     private static readonly FieldInfo HpFill = typeof(AnimalKeeperHUD).GetField("hpFill", BindingFlags.NonPublic | BindingFlags.Instance);
     private static readonly FieldInfo StaminaFill = typeof(AnimalKeeperHUD).GetField("staminaFill", BindingFlags.NonPublic | BindingFlags.Instance);
-    private static readonly FieldInfo HpText = typeof(AnimalKeeperHUD).GetField("hpText", BindingFlags.NonPublic | BindingFlags.Instance);
-    private static readonly FieldInfo StaminaText = typeof(AnimalKeeperHUD).GetField("staminaText", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static readonly FieldInfo HpDigits = typeof(AnimalKeeperHUD).GetField("hpDigits", BindingFlags.NonPublic | BindingFlags.Instance);
 
     static PlayerStatusHudTest()
     {
@@ -323,13 +322,15 @@ public static class PlayerStatusHudTest
     // ===================== 검사 도우미 =====================
 
     private static float Fill(AnimalKeeperHUD hud, FieldInfo field) => field.GetValue(hud) is Image img && img != null ? img.fillAmount : -1f;
-    private static string Label(AnimalKeeperHUD hud, FieldInfo field) => field.GetValue(hud) is Text t && t != null ? t.text : "(없음)";
+    // 숫자는 그림 글자(digits)로 그린다 - HUD가 지금 그린 글자를 읽는다.
+    private static string HealthLabel(AnimalKeeperHUD hud) => string.IsNullOrEmpty(hud.HealthLabel) ? "(없음)" : hud.HealthLabel;
+    private static string StaminaLabel(AnimalKeeperHUD hud) => string.IsNullOrEmpty(hud.StaminaLabel) ? "(없음)" : hud.StaminaLabel;
 
     private static void CheckHealth(AnimalKeeperHUD hud, GameManager gm, string what, float expectedPercent)
     {
         float expected = gm.Health * 100f / GameManager.MaxHealth;
         float fill = Fill(hud, HpFill);
-        string label = Label(hud, HpText);
+        string label = HealthLabel(hud);
         Check(Mathf.Abs(expected - expectedPercent) < 0.01f && Mathf.Abs(hud.healthPercent - expected) < PercentTolerance &&
               Mathf.Abs(fill - expected / 100f) < 0.001f && label == Mathf.RoundToInt(expected) + "%",
             $"{what}: 체력 {gm.Health}/{GameManager.MaxHealth} → 바 {fill * 100f:F1}% 글자 \"{label}\" (기대 {expectedPercent:F1}%)");
@@ -339,7 +340,7 @@ public static class PlayerStatusHudTest
     {
         float expected = player.Stamina / player.MaxStamina * 100f;
         float fill = Fill(hud, StaminaFill);
-        string label = Label(hud, StaminaText);
+        string label = StaminaLabel(hud);
         Check(Mathf.Abs(expected - expectedPercent) < 0.05f && Mathf.Abs(fill - expected / 100f) < 0.001f && label == Mathf.RoundToInt(expected) + "%",
             $"{what}: 스태미나 {player.Stamina:F1}/{player.MaxStamina} → 바 {fill * 100f:F1}% 글자 \"{label}\" (기대 {expectedPercent:F1}%)");
     }
@@ -419,14 +420,14 @@ public static class PlayerStatusHudTest
         RectTransform canvasRect = hudCanvas != null ? (RectTransform)hudCanvas.transform : null;
         RectTransform rootRect = (RectTransform)hudCanvas.rootCanvas.transform;
         Check(canvasRect != null && Vector2.Distance(canvasRect.rect.size, rootRect.rect.size) < 1f, $"{scene}: HUD Canvas 크기 {canvasRect?.rect.size} = 씬 Canvas {rootRect.rect.size}");
-        Check(HpText.GetValue(hud) is Text t && t.font != null, $"{scene}: 숫자 글자 폰트 {(HpText.GetValue(hud) as Text)?.font?.name}");
+        Check(HpDigits.GetValue(hud) is Image[] digits && digits.Length > 0 && digits[0] != null && digits[0].sprite != null, $"{scene}: 숫자 그림 글자 {(HpDigits.GetValue(hud) as Image[])?[0]?.sprite?.texture?.name}");
         if (mustBeBelow != null)
         {
             Transform panel = rootRect.Find(mustBeBelow);
             Check(panel != null && hud.transform.GetSiblingIndex() < panel.GetSiblingIndex(),
                 $"{scene}: HUD는 {mustBeBelow}보다 먼저 그려진다(형제 순서 {hud.transform.GetSiblingIndex()} < {panel?.GetSiblingIndex()}) - 메뉴가 열리면 메뉴 아래에 있다");
         }
-        Check(Mathf.Approximately(hud.hudScale, 0.875f) && hud.topLeftOffset == new Vector2(20f, 20f), $"{scene}: Hud Scale {hud.hudScale}, Top Left Offset {hud.topLeftOffset}");
+        Check(Mathf.Approximately(hud.hudScale, 0.875f) && hud.topLeftOffset == new Vector2(21f, 21f), $"{scene}: Hud Scale {hud.hudScale}, Top Left Offset {hud.topLeftOffset}");
     }
 
     private static IEnumerator CaptureScene(string scene, AnimalKeeperHUD hud)
@@ -492,8 +493,8 @@ public static class PlayerStatusHudTest
         Check(hits.Count == 0, $"{scene} {res.x}x{res.y}: HUD 영역 {Fmt(hudRect)}(왼쪽 위 기준 x {hudRect.xMin:F0}, y {res.y - hudRect.yMax:F0}, {hudRect.width:F0}x{hudRect.height:F0}px)가 다른 UI {others.Count}개와 겹치지 않는다" +
                                (hits.Count > 0 ? $" - 겹침: {string.Join(", ", hits.Take(6))}" : ""));
         float scale = ScaleFactorFor(hud.GetComponentInParent<Canvas>().rootCanvas.GetComponent<CanvasScaler>(), res);
-        Check(Mathf.Abs(hudRect.xMin - 20f * scale) < 2f && Mathf.Abs(res.y - hudRect.yMax - 20f * scale) < 2f,
-            $"{scene} {res.x}x{res.y}: 왼쪽 위 여백 (20, 20) x 배율 {scale:F3} = {20f * scale:F1}px");
+        Check(Mathf.Abs(hudRect.xMin - 21f * scale) < 2f && Mathf.Abs(res.y - hudRect.yMax - 21f * scale) < 2f,
+            $"{scene} {res.x}x{res.y}: 왼쪽 위 여백 (21, 21) x 배율 {scale:F3} = {21f * scale:F1}px");
 
         cam.Render();
         RenderTexture.active = rt;

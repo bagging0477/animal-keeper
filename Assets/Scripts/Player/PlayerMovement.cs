@@ -24,6 +24,8 @@ public class PlayerMovement : MonoBehaviour
     public float MaxStamina => config != null ? config.maxStamina : 70f;
     public float Stamina { get; private set; }
     public bool IsSprinting { get; private set; }
+    /// <summary>탈진 중(스태미나가 0이 된 뒤 달리기가 막힌 동안)인지. 읽기 전용 - 체력·스태미나 HUD가 탈진 그림을 고를 때 쓴다.</summary>
+    public bool IsExhausted => exhaustionTimer > 0f;
 
     // new PhysicsMaterial2D(...)로 매번 새로 만들면 씬을 오갈 때마다(트럭↔마을↔보호소 왕복) Player가
     // 새로 생성될 때마다 새 네이티브 에셋이 생겨 GC가 따라잡을 때까지 누적된다. 값이 항상 동일하므로

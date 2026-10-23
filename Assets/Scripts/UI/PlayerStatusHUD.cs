@@ -78,6 +78,7 @@ public class PlayerStatusHUD : MonoBehaviour
             lastMaxStamina = maxStamina;
             hud.SetStamina(stamina, maxStamina);
         }
+        hud.SetTired(player != null && player.IsExhausted);
     }
 
     private static PlayerMovement FindPlayer()

@@ -1623,7 +1623,7 @@ MonoBehaviour:
   staminaPercent: 100
   smoothChanges: 1
   changeSpeed: 180
-  topLeftOffset: {x: 20, y: 20}
+  topLeftOffset: {x: 21, y: 21}
   hudScale: 0.875
 --- !u!1 &1538783844
 GameObject:
