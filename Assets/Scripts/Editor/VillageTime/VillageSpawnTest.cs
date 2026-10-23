@@ -193,11 +193,11 @@ public static class VillageSpawnTest
         // --- 0. 기본값
         sb.AppendLine("\n== 0. 기본 설정");
         Check(original.villagePhaseSpawns != null && original.villagePhaseSpawns.Length == 5, "구간 목록이 5개");
-        // 기본 설정: 2구간에 우는천사 1마리(진입 때 1, 간격 없음)만 있고 나머지 구간은 비어 있다.
+        // 기본 설정: 2구간에 박쥐(예전 우는천사 자리) 1마리(진입 때 1, 간격 없음)만 있고 나머지 구간은 비어 있다.
         GameBalanceConfig.VillageSpawnEntry[] phase2 = original.GetVillagePhaseSpawns(2);
-        Check(phase2.Length == 1 && phase2[0].monsterPrefab != null && phase2[0].monsterPrefab.GetComponent<WeepingAngelAI>() != null &&
+        Check(phase2.Length == 1 && phase2[0].monsterPrefab != null && phase2[0].monsterPrefab.GetComponent<BatMonsterAI>() != null &&
               phase2[0].count == 1 && phase2[0].initialCount == 1 && phase2[0].intervalCount == 0 && phase2[0].intervalSeconds == 0f,
-            "2구간 목록: 우는천사 1마리(진입 때 1, 간격 0)");
+            "2구간 목록: 박쥐 1마리(진입 때 1, 간격 0)");
         Check(new[] { 1, 3, 4, 5 }.All(p => original.GetVillagePhaseSpawns(p).Length == 0), "1·3·4·5구간 목록은 비어 있다");
         Check(original.villageMonsterCap == 60 && Mathf.Approximately(original.villageSpawnMinPlayerDistance, 15f), "상한 60, 최소 거리 15");
 

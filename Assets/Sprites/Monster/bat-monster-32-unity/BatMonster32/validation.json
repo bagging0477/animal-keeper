@@ -1,0 +1,226 @@
+[
+  {
+    "name": "fly-01",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 7,
+    "bounds": [
+      11,
+      6,
+      28,
+      25
+    ]
+  },
+  {
+    "name": "fly-02",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 7,
+    "bounds": [
+      8,
+      11,
+      28,
+      26
+    ]
+  },
+  {
+    "name": "fly-03",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 7,
+    "bounds": [
+      6,
+      14,
+      27,
+      26
+    ]
+  },
+  {
+    "name": "fly-04",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 7,
+    "bounds": [
+      9,
+      15,
+      28,
+      27
+    ]
+  },
+  {
+    "name": "fly-05",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 7,
+    "bounds": [
+      7,
+      15,
+      27,
+      28
+    ]
+  },
+  {
+    "name": "fly-06",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 8,
+    "bounds": [
+      8,
+      11,
+      27,
+      26
+    ]
+  },
+  {
+    "name": "freeze-01",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 7,
+    "bounds": [
+      8,
+      9,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "bite-01",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 8,
+    "bounds": [
+      11,
+      15,
+      28,
+      29
+    ]
+  },
+  {
+    "name": "bite-02",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 8,
+    "bounds": [
+      7,
+      16,
+      27,
+      29
+    ]
+  },
+  {
+    "name": "bite-03",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 7,
+    "bounds": [
+      11,
+      14,
+      28,
+      27
+    ]
+  },
+  {
+    "name": "bite-04",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 6,
+    "bounds": [
+      9,
+      15,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "wrap-01",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 7,
+    "bounds": [
+      12,
+      17,
+      29,
+      29
+    ]
+  },
+  {
+    "name": "wrap-02",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 6,
+    "bounds": [
+      15,
+      16,
+      29,
+      29
+    ]
+  },
+  {
+    "name": "wrap-03",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 7,
+    "bounds": [
+      11,
+      16,
+      25,
+      27
+    ]
+  },
+  {
+    "name": "hurt-01",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 6,
+    "bounds": [
+      10,
+      15,
+      26,
+      27
+    ]
+  },
+  {
+    "name": "fallen-01",
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_colors": 8,
+    "bounds": [
+      9,
+      18,
+      27,
+      27
+    ]
+  }
+]

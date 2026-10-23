@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// 게임 전체의 밸런스 수치를 한곳에 모아둔 ScriptableObject. 코드를 건드리지 않고
@@ -465,32 +466,40 @@ public class GameBalanceConfig : ScriptableObject
         return string.IsNullOrEmpty(villagePhaseNotices[index]) ? null : villagePhaseNotices[index];
     }
 
-    [Header("몬스터 - 우는천사 (WeepingAngelAI, 시간 소환 전용)")]
+    // 예전 이름(weepingAngel*)으로 저장된 값을 그대로 읽는다(FormerlySerializedAs) - 우는천사 자리를 박쥐가 이어받았다.
+    [Header("몬스터 - 박쥐 (BatMonsterAI, 시간 소환 전용, 예전 우는천사 자리)")]
     [Tooltip("놀람 전 돌진과 놀람 후 추격 속도. 플레이어 스프린트 최고 속도(러닝화 없이, 스카우트 5.12325)의 약 1.64배.")]
-    public float weepingAngelSpeed = 8.4f;
+    [FormerlySerializedAs("weepingAngelSpeed")] public float batSpeed = 8.4f;
 
     [Tooltip("놀람 후 배회 속도(추격보다 훨씬 느리게)")]
-    public float weepingAngelWanderSpeed = 1.5f;
+    [FormerlySerializedAs("weepingAngelWanderSpeed")] public float batWanderSpeed = 1.5f;
 
     [Tooltip("놀람 후 플레이어가 이 거리(칸) 안이면 추격하고, 밖이면 배회한다")]
-    public float weepingAngelChaseRange = 15f;
+    [FormerlySerializedAs("weepingAngelChaseRange")] public float batChaseRange = 15f;
 
     [Tooltip("접촉 데미지 = 맞는 순간 플레이어 최대 체력(GameManager.MaxHealth) x 이 비율(반올림). 0.8이면 스카우트 100→80, 트래퍼 130→104, 거너 50→40")]
     [Range(0f, 1f)]
-    public float weepingAngelCatchDamageRatio = 0.8f;
+    [FormerlySerializedAs("weepingAngelCatchDamageRatio")] public float batCatchDamageRatio = 0.8f;
 
     [Tooltip("이 거리 안으로 들어오면 접촉으로 판정한다(늑대·소리반응형과 같은 값)")]
-    public float weepingAngelCatchRange = 0.7f;
+    [FormerlySerializedAs("weepingAngelCatchRange")] public float batCatchRange = 0.7f;
 
     [Tooltip("놀람 후 배회 반경(칸) - 스폰된 자리 주변. 소리반응형 프리팹의 wanderRadius와 같은 시작값")]
-    public float weepingAngelWanderRadius = 5f;
+    [FormerlySerializedAs("weepingAngelWanderRadius")] public float batWanderRadius = 5f;
 
     [Tooltip("배회 목적지에 도착한 뒤 기다리는 시간 범위(초). 소리반응형 프리팹의 wanderWaitMin/Max와 같은 시작값")]
-    public float weepingAngelWanderWaitMin = 1f;
-    public float weepingAngelWanderWaitMax = 3f;
+    [FormerlySerializedAs("weepingAngelWanderWaitMin")] public float batWanderWaitMin = 1f;
+    [FormerlySerializedAs("weepingAngelWanderWaitMax")] public float batWanderWaitMax = 3f;
 
     [Tooltip("추격하며 움직이는 동안 경고음을 반복하는 간격(초)")]
-    public float weepingAngelWarningInterval = 1.5f;
+    [FormerlySerializedAs("weepingAngelWarningInterval")] public float batWarningInterval = 1.5f;
+
+    [Tooltip("맞으면 도망가는 거리 = 거위 도망 거리(gooseFleeDistance) x 이 비율. 도망 속도는 거위 도망 속도(gooseFleeSpeed) 그대로. 체력은 늑대보다 1 낮다(BatMonster 프리팹의 MonsterHealth.maxHealthOffset).")]
+    [Range(0f, 2f)]
+    public float batFleeDistanceRatio = 0.5f;
+
+    /// <summary>박쥐가 맞을 때마다 도망가는 거리(칸) = 거위 도망 거리 x batFleeDistanceRatio.</summary>
+    public float BatFleeDistance => gooseFleeDistance * batFleeDistanceRatio;
 
     [Header("마을 시간 - 구간별 추가 몬스터 소환 (VillageMonsterSpawner)")]
     [Tooltip("1~5구간마다 그 구간에 들어갈 때부터 추가로 소환할 몬스터 목록. 5개, 1구간부터 순서대로. 모두 비어 있으면 아무것도 소환하지 않는다. " +

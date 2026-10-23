@@ -19,6 +19,7 @@ using UnityEngine;
 /// 그 다음 각 프리팹의 몸 스프라이트 옆에 "Shadow" 자식(SpriteRenderer, 몸과 같은 머티리얼·Sorting Layer, Order = 몸 − 1)을 둔다.
 /// 위치는 몸이 실제로 보이는 맨 아랫줄(애니메이션에서 가장 흔한 높이)이고, 투명도는 렌더러 색의 알파로만 조절한다(프리팹에서 바꾸면 된다).
 /// 플레이어 그림자(PlayerShadow)는 3단계에서 없앴으므로 대상에서 뺐다(이 빌더가 다시 만들지 않는다).
+/// 박쥐(예전 우는천사 자리)도 대상이 아니다 - 그림자를 몸 자식이 아니라 바닥에 따로 두므로 BatMonsterAssetBuilder가 맡는다.
 /// 소리반응형은 그림자가 스프라이트에 그려져 있어 새로 만들지 않고, 발 위치만 같은 방식으로 재서 FootSortOrder에 넣는다(FootOnlyTargets).
 /// 이미 있는 Shadow의 알파 값은 다시 실행해도 유지한다.
 /// </summary>
@@ -46,7 +47,6 @@ public static class CharacterShadowBuilder
         new Target { Prefab = "Assets/Prefabs/Animals/AnimalGoose.prefab", BodyPath = "", W = 10, H = 3, X = 0f, BottomY = -7f - 2f, BodyPpu = 32f, Scale = 1f, Note = "거위: 땅 위 몸 14px(대기·둘러보기), 발 −7" },
         new Target { Prefab = "Assets/Prefabs/Animals/AnimalTurtle.prefab", BodyPath = "", W = 16, H = 4, X = 0f, BottomY = -7f - 3f, BodyPpu = 32f, Scale = 1f, Note = "거북이: 몸 21px, 발 −7 (발 피벗). 숨은 프레임은 ShadowFrameMatcher 표" },
         new Target { Prefab = "Assets/Prefabs/Monsters/PatrolMonster.prefab", BodyPath = "Visual", W = 14, H = 4, X = 0f, BottomY = -6f - 3f, BodyPpu = 16f, Scale = 2f, Note = "늑대: 몸 18px(PPU 16), 발 −6 (최빈)" },
-        new Target { Prefab = "Assets/Prefabs/Monsters/WeepingAngel.prefab", BodyPath = "Visual", W = 27, H = 7, X = 0f, BottomY = -21.5f - 6f, BodyPpu = 32f, Scale = 1f, Note = "우는천사: 몸 37px, 발 −21.5" },
         new Target { Prefab = "Assets/Prefabs/DroppedBombPickup.prefab", BodyPath = "", W = 17, H = 5, X = -0.5f, BottomY = -14f - 4f, BodyPpu = 32f, Scale = 1f, Note = "바닥의 폭탄: 몸 23px(중심 −0.5), 바닥 −14" },
     };
 

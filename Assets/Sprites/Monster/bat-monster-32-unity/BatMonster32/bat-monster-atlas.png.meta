@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 6f864849ca81ac2438aabd5dc983cd8c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5985514970194714472
+    second: bat-monster-atlas_0
+  - first:
+      213: 2636605811684296955
+    second: bat-monster-atlas_1
+  - first:
+      213: -4670502564011583833
+    second: bat-monster-atlas_2
+  - first:
+      213: 4024215084484141060
+    second: bat-monster-atlas_3
+  - first:
+      213: -8719660681564206410
+    second: bat-monster-atlas_4
+  - first:
+      213: 8115918820563085935
+    second: bat-monster-atlas_5
+  - first:
+      213: 4561670866454291401
+    second: bat-monster-atlas_6
+  - first:
+      213: -4750242978846954356
+    second: bat-monster-atlas_7
+  - first:
+      213: -4212721707786329559
+    second: bat-monster-atlas_8
+  - first:
+      213: 2499301671680575550
+    second: bat-monster-atlas_9
+  - first:
+      213: 6511741339724224227
+    second: bat-monster-atlas_10
+  - first:
+      213: 2827373741993738628
+    second: bat-monster-atlas_11
+  - first:
+      213: -1155059319562308888
+    second: bat-monster-atlas_12
+  - first:
+      213: 1439249343209753240
+    second: bat-monster-atlas_13
+  - first:
+      213: -1173872762535060436
+    second: bat-monster-atlas_14
+  - first:
+      213: -7080606893424672753
+    second: bat-monster-atlas_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: bat-monster-atlas_0
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 102
+        width: 19
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86f1d3c1722d01350800000000000000
+      internalID: 5985514970194714472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_1
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 101
+        width: 22
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf84c22340b179420800000000000000
+      internalID: 2636605811684296955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_2
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 101
+        width: 23
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a6d985d9aa0f2fb0800000000000000
+      internalID: -4670502564011583833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_3
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 100
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40022725c42e8d730800000000000000
+      internalID: 4024215084484141060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_4
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 67
+        width: 22
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bacc611fca8df680800000000000000
+      internalID: -8719660681564206410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_5
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 69
+        width: 21
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6ae195da2981a070800000000000000
+      internalID: 8115918820563085935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_6
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 68
+        width: 21
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c3a149fb7f4e4f30800000000000000
+      internalID: 4561670866454291401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_7
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 66
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8ca809bd2fb31eb0800000000000000
+      internalID: -4750242978846954356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_8
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 34
+        width: 22
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 922a1dd3de76985c0800000000000000
+      internalID: -4212721707786329559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_9
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 36
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e388f07e0ad4fa220800000000000000
+      internalID: 2499301671680575550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_10
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 36
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e61d7f6f3a5e5a50800000000000000
+      internalID: 6511741339724224227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_11
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 34
+        width: 19
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 481cdc23079dc3720800000000000000
+      internalID: 2827373741993738628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_12
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 2
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e2fbfa2ba768ffe0800000000000000
+      internalID: -1155059319562308888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_13
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 4
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89a4b35f6ad39f310800000000000000
+      internalID: 1439249343209753240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_14
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 4
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2c579121f095bfe0800000000000000
+      internalID: -1173872762535060436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bat-monster-atlas_15
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 4
+        width: 20
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f008d3b8b81acbd90800000000000000
+      internalID: -7080606893424672753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      bat-monster-atlas_0: 5985514970194714472
+      bat-monster-atlas_1: 2636605811684296955
+      bat-monster-atlas_10: 6511741339724224227
+      bat-monster-atlas_11: 2827373741993738628
+      bat-monster-atlas_12: -1155059319562308888
+      bat-monster-atlas_13: 1439249343209753240
+      bat-monster-atlas_14: -1173872762535060436
+      bat-monster-atlas_15: -7080606893424672753
+      bat-monster-atlas_2: -4670502564011583833
+      bat-monster-atlas_3: 4024215084484141060
+      bat-monster-atlas_4: -8719660681564206410
+      bat-monster-atlas_5: 8115918820563085935
+      bat-monster-atlas_6: 4561670866454291401
+      bat-monster-atlas_7: -4750242978846954356
+      bat-monster-atlas_8: -4212721707786329559
+      bat-monster-atlas_9: 2499301671680575550
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -15,7 +15,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Tools > UI > Run Player Status HUD Test. 체력·스태미나 바(AnimalKeeperHUD + PlayerStatusHUD)를 실제 씬 흐름으로 확인한다.
 /// 검사: TruckScene·VillageScene에만 있고 예전 HealthUI/StaminaUI가 없음, 씬 Canvas(2240x1260, Match 0.5) 안의 중첩 Canvas,
-/// 씬이 시작되는 첫 프레임부터 맞는 값(새 게임·체력 0 강제 복귀·씬 전환), 데미지 47·우는천사(최대 체력 80%)·0·최대, 클래스별 최대 체력,
+/// 씬이 시작되는 첫 프레임부터 맞는 값(새 게임·체력 0 강제 복귀·씬 전환), 데미지 47·박쥐(최대 체력 80%)·0·최대, 클래스별 최대 체력,
 /// 스태미나 달리기(감소)·탈진(0)·쉬기(회복), 다른 HUD와 겹치지 않음(1920x1080, 1280x720), 화면 캡처.
 /// 프레임 시간은 1/30초로 고정한다(Time.captureDeltaTime). 마을 몬스터는 끈다(씬 파일은 바꾸지 않는다). 결과: Logs/PlayerStatusHudTest.txt
 /// batchmode: -executeMethod PlayerStatusHudTest.RunBatch  (끝나면 에디터가 종료된다, 통과면 0 아니면 1)
@@ -202,10 +202,10 @@ public static class PlayerStatusHudTest
         gm.SelectClass(PlayerClass.Scout); // 체력이 다시 최대로
         yield return Settle(hud);
         CheckHealth(hud, gm, "다시 최대", 100f);
-        int angel = Mathf.RoundToInt(GameManager.MaxHealth * config.weepingAngelCatchDamageRatio);
+        int angel = Mathf.RoundToInt(GameManager.MaxHealth * config.batCatchDamageRatio);
         gm.TakeDamage(angel, "테스트");
         yield return Settle(hud);
-        CheckHealth(hud, gm, $"우는천사 {angel}(최대 체력 {GameManager.MaxHealth}의 {config.weepingAngelCatchDamageRatio:P0})", 20f);
+        CheckHealth(hud, gm, $"박쥐 {angel}(최대 체력 {GameManager.MaxHealth}의 {config.batCatchDamageRatio:P0})", 20f);
 
         foreach (PlayerClass cls in new[] { PlayerClass.Trapper, PlayerClass.Gunner })
         {

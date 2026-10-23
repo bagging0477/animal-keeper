@@ -16,6 +16,14 @@ public class MonsterHealth : MonoBehaviour, ISleepable
 
     [SerializeField] private GameBalanceConfig config;
     [SerializeField] private Color deadColor = new Color(0.35f, 0.35f, 0.35f, 1f);
+    [Tooltip("최대 체력 보정: 공통 최대 체력(monsterMaxHealth, 올림) + 이 값. 늑대 0, 박쥐 -1(늑대보다 1 낮음). 최소 1.")]
+    [SerializeField] private int maxHealthOffset = 0;
+    [Tooltip("켜면 기절(포획망·폭탄·지뢰)과 마취(다트)에 걸리지 않고 데미지만 받는다. 이 몬스터는 멈춤을 스스로 정한다 - " +
+        "이 컴포넌트가 NavMeshAgent.isStopped를 건드리지 않는다(박쥐: 맞으면 도망).")]
+    [SerializeField] private bool ignoreStunAndSleep;
+
+    /// <summary>데미지를 받았지만 아직 살아 있을 때(받은 양). 박쥐가 맞을 때마다 도망가는 데 쓴다.</summary>
+    public event System.Action<float> Damaged;
 
     private NavMeshAgent agent;
     private SpriteRenderer spriteRenderer;
@@ -37,7 +45,9 @@ public class MonsterHealth : MonoBehaviour, ISleepable
     // 반올림(RoundToInt)은 .5 값을 짝수로 내림(banker's rounding)하기 때문에, 예를 들어 3 * 1.5 = 4.5가
     // 의도한 "1.5배"보다 적은 4로 내려가 버릴 수 있다. 올림을 써서 배율 상향 의도가 항상 최소한
     // 그대로 반영되게 한다.
-    private int MaxHealth => Mathf.CeilToInt(config != null ? config.monsterMaxHealth : 4.5f);
+    public int MaxHealth => Mathf.Max(1, Mathf.CeilToInt(config != null ? config.monsterMaxHealth : 4.5f) + maxHealthOffset);
+    public bool IgnoresStunAndSleep => ignoreStunAndSleep;
+    private const float HealthEpsilon = 0.0001f;
 
     /// <summary>플레이어와 동일한 2D 좌표계로 변환한 몬스터 위치. 몬스터는 NavMesh(x,z 평면)로 움직이고 x,z를 2D x,y로 매핑해서 렌더링한다.</summary>
     public Vector2 GamePosition => new Vector2(transform.position.x, transform.position.z);
@@ -67,7 +77,7 @@ public class MonsterHealth : MonoBehaviour, ISleepable
         if (stunTimer > 0f) stunTimer -= Time.deltaTime;
         if (asleepTimer > 0f) asleepTimer -= Time.deltaTime;
 
-        if (agent != null && agent.isOnNavMesh) agent.isStopped = IsIncapacitated;
+        if (agent != null && agent.isOnNavMesh && !ignoreStunAndSleep) agent.isStopped = IsIncapacitated;
     }
 
     public void TakeDamage(float amount)
@@ -75,6 +85,8 @@ public class MonsterHealth : MonoBehaviour, ISleepable
         if (IsDead || Health <= 0) return;
 
         Health -= amount;
+        // 0.8처럼 float로 딱 떨어지지 않는 데미지를 여러 번 더해도 정확히 0이 되게 한다(예: 4 - 0.8 x 5 = 0.0000001이 남아 한 번 더 맞아야 하던 문제).
+        if (Health < HealthEpsilon) Health = Mathf.Min(Health, 0f);
         Debug.Log($"{gameObject.name} 몬스터가 피격당함! 데미지: {amount:0.#}, 남은 체력: {Mathf.Max(Health, 0):0.#}/{MaxHealth}");
 
         if (Health <= 0)
@@ -84,18 +96,19 @@ public class MonsterHealth : MonoBehaviour, ISleepable
         else
         {
             frameAnimator?.PlayHurt();
+            Damaged?.Invoke(amount);
         }
     }
 
     public void Stun(float duration)
     {
-        if (IsDead || IsAsleep) return;
+        if (IsDead || IsAsleep || ignoreStunAndSleep) return;
         stunTimer = Mathf.Max(stunTimer, duration);
     }
 
     public void PutToSleep(float delay, float duration)
     {
-        if (IsDead) return;
+        if (IsDead || ignoreStunAndSleep) return;
         sleepPending = true;
         pendingSleepTimer = delay;
         pendingSleepDuration = duration;
