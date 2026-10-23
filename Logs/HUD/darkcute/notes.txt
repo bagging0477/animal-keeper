@@ -1,0 +1,54 @@
+다크큐트 체력·스태미나 HUD 시안 (2026-10-23, 프로젝트에는 적용하지 않음)
+
+[공통으로 정한 것]
+- 도트 크기: 그림 1텍셀 = UI 4단위. 씬 Canvas 배율(1080p 0.857) x hudScale 0.875 = 0.75라 1080p에서 정확히 3px, 720p 2px, 1440p 4px(정수배라 도트가 고름).
+  게임 그림(6px)의 절반 - UI는 글씨·아이콘이 작아 3px가 알아보기 쉬움.
+- 색: 외곽선 #2F2F2E(게임 캐릭터와 같음), 채움 색은 채도를 낮춤(장미 #C8656E S0.50, 겨자 #D6B25E S0.56, 라벤더 #B8A6D0 S0.20, 민트 #7FAE9E S0.27).
+  지금 바(S0.86~0.97)보다 차분하지만 어두운 판 위에서 바로 읽힘. 그림마다 2~5색, 반투명 0.
+- 숫자: 번지는 기본 폰트 대신 3x5 픽셀 숫자(외곽선 포함 5x7, digits.png - 0~9와 %). B는 숫자 없음.
+- 연출: 체력 30% 이하 = 아이콘과 채움이 2장(어두운 칸/밝은 칸)을 번갈아 깜빡임(예: 0.4초 간격), 숫자도 밝은 칸에서 장미색.
+  탈진(스태미나 0 → 달리기 막힘 1.5초) = 스태미나 채움·아이콘이 회색으로 바뀌고 탈진 표시(z/연기/땀방울).
+- 어두운 판(A·C): 마을 낮(밝은 풀)에서도 읽히게 #2A2530 판 + 1도트 외곽선. 판도 반투명 없음.
+
+[A 봉제 하트] HUD 110x30텍셀(화면 330x90px)
+- 알약 모양 바(72x11) 위쪽 테두리에 크림색 바느질 땀, 봉제 인형 하트(11x10, 바늘땀 무늬)와 번개(9x11).
+- 이유: 동물 돌보기 + 다크큐트 = 손바느질 인형 느낌. 지금 HUD와 구조(아이콘-바-숫자)가 같아 바꾸는 코드가 가장 적음.
+- 체력 낮음: 하트에 크림색 반창고, 채움이 밝은 장미색으로 깜빡. 탈진: 회색 번개 + z.
+
+[B 박쥐 하트와 촛불] HUD 96x30텍셀(판 없음)
+- 10칸짜리 둥근 칸 바(79x7), 뿔 달린 하트(11x11), 촛불(9x11). 체력 장미, 스태미나 라벤더. 숫자 없음(칸 1개 = 10%).
+- 이유: 가장 귀엽고 가벼운 모양. 판이 없어 화면을 덜 가림. 칸으로 남은 양을 셈하기 쉬움.
+- 체력 낮음: 하트에 금이 가고 칸이 밝게 깜빡. 탈진: 촛불이 꺼지고 연기, 칸이 회색.
+- 약점: 판이 없어 밝은 바닥에서는 외곽선에 기대어 읽힘. 정확한 값(%)은 안 보임.
+
+[C 목줄 이름표] HUD 102x32텍셀
+- 가죽 목줄 바(66x9, 징 박힘, 채움 홈 3텍셀)와 둥근 펫 이름표 아이콘(13x13, 하트/발바닥). 스태미나는 민트.
+- 이유: "동물 지킴이" 주제가 가장 분명함(목줄·이름표). 갈색 가죽이 트럭·보호소 실내 나무색과 어울림.
+- 체력 낮음: 이름표 하트에 금, 채움 깜빡. 탈진: 발바닥 회색 + 땀방울.
+- 약점: 채움 홈이 3텍셀(9px)로 가장 가늘다.
+
+[그림 파일] (A_/B_/C_ 접두어, 크기 텍셀, 색 수)
+  A: frame 72x11 4색, fill_hp / fill_hp_low / fill_stamina / fill_stamina_tired 68x7 각 3색, icon_hp·icon_hp_low 11x10 4색, icon_stamina 9x11 2색, icon_stamina_tired 13x11 3색, digits 45x7 2색
+  B: frame 79x7 3색, fill 4종 79x7 각 3색, icon_hp·icon_hp_low 11x11 3색, icon_stamina 9x11 5색, icon_stamina_tired 9x11 3색
+  C: frame 66x9 5색, fill 4종 60x3 각 3색, icon_hp·icon_hp_low·icon_stamina_tired 13x13 5색, icon_stamina 13x13 4색, digits 45x7 2색
+
+[적용할 때 바꿀 코드·설정] (바꾸지 않음)
+1. Assets/Sprites/Player/AnimalKeeperHUD/Resources/AnimalKeeperHUD/ 에 고른 시안 PNG를 넣음(코드가 Resources에서 불러 Point로 바꿔 쓰므로 meta는 Point·압축 끔·밉맵 끔으로 맞추면 됨).
+2. AnimalKeeperHUD.cs
+   - LoadSprite 이름(bar-empty/hp-fill/...)을 새 파일 이름으로.
+   - BuildRow 크기·위치를 "텍셀 x 4 UI단위"로: 예) A 아이콘 44x40, 프레임 288x44, 채움 (8,8)에 272x28, 줄 간격 52, 판 440x120을 맨 뒤에 MakeImage로 추가.
+     지금은 프레임 128x32를 256x64(2단위/텍셀)로 그려 1.5px 도트가 됨.
+   - 숫자: Text + Outline을 없애고 digits.png를 잘라 Image 4개(최대 "100%")로 그리는 방식, 또는 픽셀 비트맵 폰트(TMP Sprite Asset). B는 숫자 줄 삭제.
+   - 연출: Refresh에서 체력 30% 이하면 Time.unscaledTime으로 0.4초마다 fill_hp ↔ fill_hp_low, icon_hp ↔ icon_hp_low 교체.
+     탈진이면 fill_stamina_tired·icon_stamina_tired로 교체. 새 공개 메서드 예) SetTired(bool), lowHealthRatio 필드.
+   - changeSpeed(부드럽게 줄어듦)는 그대로 써도 됨.
+3. PlayerMovement.cs: 탈진 여부를 밖에서 읽을 수 있게 예) public bool IsExhausted => exhaustionTimer > 0f; (지금은 private 필드만 있음)
+4. PlayerStatusHUD.cs: Push에서 hud.SetTired(player.IsExhausted) 전달.
+5. 씬 설정(Village·Truck): hudScale 0.875는 그대로(그래야 1080p 3px). topLeftOffset 20 → 21 권장(21 x 0.857 = 18.0px, 3px 격자에 맞음).
+6. 해상도가 1280x720/1920x1080/2560x1440이 아니면 배율이 정수가 아니라 도트가 조금 고르지 않을 수 있음(Pixel Perfect 처리 없음).
+
+[이미지] compare_darkcute_hud.png
+- 위: 지금 HUD와 A/B/C를 마을 밤 화면 왼쪽 위 그대로(1:1)에 놓고 가득 100% / 절반 50% / 거의 없음 5%(체력 낮음 깜빡임 밝은 칸) / 체력 20%(어두운 칸)+탈진 0%.
+- 가운데: x4 확대(가득).
+- 아래: 실제 게임 화면 왼쪽 위 470x300px, 밤(실제 화면)과 낮(전체 조명 1 - 마을에 실제 낮 연출은 없음). 시안 값은 체력 72%·스태미나 45%.
+- 지금 HUD는 Unity Play 렌더, 시안은 같은 화면(HUD를 끈 렌더) 위에 1080p 도트 크기(3px) 그대로 얹은 합성.
