@@ -336,7 +336,9 @@ public static class WolfCorpseTest
         int filled = 0;
         while (gm.HasInventorySpace && gm.TryAddMine()) filled++;
         Teleport(Player(), NavToXY(dropped.transform.position) + Vector2.left * NearCorpse);
-        yield return WaitFrames(5);
+        // 빈칸이 있을 때 떠 있던 획득 안내는 호출이 끊겨도 WhileInRange(0.15초) + 페이드 아웃(0.12초) 동안 글자가 남는다(자막 시계 = unscaled time).
+        // 프레임 수로 기다리면 에디터 속도에 따라 그 안내를 읽어 버리므로, 같은 시계로 넉넉히 0.5초 기다린 뒤 읽는다.
+        yield return WaitUnscaledSeconds(0.5f);
         string subtitle = Subtitle();
         sb.AppendLine($"  인벤토리 {gm.InventorySlotCount}칸을 지뢰 {filled}개로 채움, 시체 앞 자막: \"{subtitle}\"");
         Check(!subtitle.Contains("사체를 획득"), "가득 찬 동안에는 \"E를 눌러 사체를 획득하세요\" 안내가 뜨지 않는다");
@@ -561,6 +563,14 @@ public static class WolfCorpseTest
         GameObject go = GameObject.Find("SubtitleManager");
         TextMeshProUGUI label = go != null ? go.GetComponentInChildren<TextMeshProUGUI>(true) : null;
         return label != null ? label.text : "(자막 없음)";
+    }
+
+    private static IEnumerator WaitUnscaledSeconds(float seconds)
+    {
+        float target = Time.unscaledTime + seconds;
+        float until = Time.realtimeSinceStartup + 10f;
+        yield return null;
+        while (Time.unscaledTime < target && Time.realtimeSinceStartup < until) yield return null;
     }
 
     private static IEnumerator WaitFrames(int frames)
