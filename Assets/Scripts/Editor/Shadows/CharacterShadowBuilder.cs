@@ -5,8 +5,6 @@ using System.Text;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 캐릭터 발밑 그림자를 만든다. Tools > Shadows > Build Character Shadows (batchmode: -executeMethod CharacterShadowBuilder.RunBatch)
@@ -20,7 +18,8 @@ using UnityEngine.SceneManagement;
 /// PNG는 피벗이 아래 가운데이고 PPU는 32다(캐릭터 텍셀과 같은 크기).
 /// 그 다음 각 프리팹의 몸 스프라이트 옆에 "Shadow" 자식(SpriteRenderer, 몸과 같은 머티리얼·Sorting Layer, Order = 몸 − 1)을 둔다.
 /// 위치는 몸이 실제로 보이는 맨 아랫줄(애니메이션에서 가장 흔한 높이)이고, 투명도는 렌더러 색의 알파로만 조절한다(프리팹에서 바꾸면 된다).
-/// 플레이어는 몸 전체가 마우스 쪽으로 회전하므로 자식이 아니라 씬에 따로 둔 "PlayerShadow"를 PositionConstraint로 따라가게 한다(회전하지 않는다).
+/// 플레이어 그림자(PlayerShadow)는 3단계에서 없앴으므로 대상에서 뺐다(이 빌더가 다시 만들지 않는다).
+/// 소리반응형은 그림자가 스프라이트에 그려져 있어 새로 만들지 않고, 발 위치만 같은 방식으로 재서 FootSortOrder에 넣는다(FootOnlyTargets).
 /// 이미 있는 Shadow의 알파 값은 다시 실행해도 유지한다.
 /// </summary>
 public static class CharacterShadowBuilder
@@ -51,10 +50,18 @@ public static class CharacterShadowBuilder
         new Target { Prefab = "Assets/Prefabs/DroppedBombPickup.prefab", BodyPath = "", W = 17, H = 5, X = -0.5f, BottomY = -14f - 4f, BodyPpu = 32f, Scale = 1f, Note = "바닥의 폭탄: 몸 23px(중심 −0.5), 바닥 −14" },
     };
 
-    // 플레이어(모든 클래스가 화면에서 약 0.73칸 폭이 되게 배율이 맞춰져 있다): 월드 텍셀 1/32칸 기준 몸 23px → 18x5, 보이는 몸 아래 −0.41칸
-    private const int PlayerW = 18, PlayerH = 5;
-    private const float PlayerOffsetY = -0.53f;
-    private static readonly string[] PlayerScenes = { "Assets/Scenes/VillageScene.unity", "Assets/Scenes/TruckScene.unity", "Assets/Scenes/ShelterScene.unity", "Assets/Scenes/ClassSelectScene.unity" };
+    /// <summary>그림자는 만들지 않고 발 위치만 재는 대상: 프리팹, 몸 렌더러가 붙은 오브젝트, 설명.
+    /// 발 = SimpleFrameAnimator의 대기(idleSprite)·걷기(walkFrames) 프레임마다 보이는 몸 맨 아랫줄의 아래 변(피벗 기준 텍셀)의 최빈값.
+    /// 잰 값은 그 몸의 FootSortOrder(footTexels, texelsPerUnit = 스프라이트 PPU)에 넣는다.</summary>
+    private struct FootTarget
+    {
+        public string Prefab, BodyPath, Note;
+    }
+
+    private static readonly FootTarget[] FootOnlyTargets =
+    {
+        new FootTarget { Prefab = "Assets/Prefabs/SoundReactiveMonster.prefab", BodyPath = "Visual", Note = "소리반응형: 그림자가 스프라이트에 그려져 있어 그림자는 만들지 않음" },
+    };
 
     [MenuItem("Tools/Shadows/Build Character Shadows")]
     public static void BuildFromMenu()
@@ -74,10 +81,10 @@ public static class CharacterShadowBuilder
     private static string Build()
     {
         StringBuilder sb = new StringBuilder();
-        foreach (var size in Targets.Select(t => (t.W, t.H)).Append((PlayerW, PlayerH)).Distinct())
+        foreach (var size in Targets.Select(t => (t.W, t.H)).Distinct())
             sb.AppendLine($"이미지 {EnsureShadowSprite(size.Item1, size.Item2)}");
         foreach (Target t in Targets) sb.AppendLine(SetupPrefab(t));
-        foreach (string scene in PlayerScenes) sb.AppendLine(SetupPlayerShadow(scene));
+        foreach (FootTarget t in FootOnlyTargets) sb.AppendLine(SetupFootOnly(t));
         sb.Append(BuildFrameTables());
         AssetDatabase.SaveAssets();
         return sb.ToString();
@@ -329,44 +336,62 @@ public static class CharacterShadowBuilder
         }
     }
 
-    private static string SetupPlayerShadow(string scenePath)
+    /// <summary>발 위치만 잰다(그림자는 만들지 않는다). 대기·걷기 프레임마다 보이는 몸 맨 아랫줄의 아래 변(피벗 기준 텍셀)을 재서
+    /// 가장 흔한 값을 몸의 FootSortOrder에 넣는다(같은 횟수면 대기 프레임 값에 가까운 쪽). 값이 같으면 프리팹을 저장하지 않는다.</summary>
+    private static string SetupFootOnly(FootTarget t)
     {
-        Scene scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
-        GameObject player = scene.GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<Transform>(true)).FirstOrDefault(t => t.CompareTag("Player"))?.gameObject;
-        SpriteRenderer body = player != null ? player.GetComponent<SpriteRenderer>() : null;
-        if (body == null) return $"{scenePath}: Player SpriteRenderer를 찾지 못해 건너뜀";
-        GameObject go = scene.GetRootGameObjects().FirstOrDefault(g => g.name == "PlayerShadow");
-        float alpha = 1f;
-        if (go == null)
+        GameObject root = PrefabUtility.LoadPrefabContents(t.Prefab);
+        try
         {
-            go = new GameObject("PlayerShadow");
-            SceneManager.MoveGameObjectToScene(go, scene);
-        }
-        else if (go.TryGetComponent(out SpriteRenderer old)) alpha = old.color.a;
-        go.layer = player.layer;
-        Vector3 rest = new Vector3(player.transform.position.x, player.transform.position.y + PlayerOffsetY, 0f);
-        go.transform.SetPositionAndRotation(rest, Quaternion.identity);
-        go.transform.localScale = Vector3.one;
-        SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
-        if (sr == null) sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(SpritePath(PlayerW, PlayerH));
-        sr.sharedMaterial = body.sharedMaterial;
-        sr.sortingLayerID = body.sortingLayerID;
-        sr.sortingOrder = body.sortingOrder - 1;
-        sr.color = new Color(1f, 1f, 1f, alpha);
+            Transform bodyTransform = string.IsNullOrEmpty(t.BodyPath) ? root.transform : root.transform.Find(t.BodyPath);
+            SimpleFrameAnimator animator = bodyTransform != null ? bodyTransform.GetComponent<SimpleFrameAnimator>() : null;
+            FootSortOrder foot = bodyTransform != null ? bodyTransform.GetComponent<FootSortOrder>() : null;
+            if (animator == null || foot == null) return $"{t.Prefab}: 몸({t.BodyPath})의 SimpleFrameAnimator/FootSortOrder를 찾지 못해 건너뜀";
 
-        PositionConstraint pc = go.GetComponent<PositionConstraint>();
-        if (pc == null) pc = go.AddComponent<PositionConstraint>();
-        for (int i = pc.sourceCount - 1; i >= 0; i--) pc.RemoveSource(i);
-        pc.AddSource(new ConstraintSource { sourceTransform = player.transform, weight = 1f });
-        pc.translationAxis = Axis.X | Axis.Y;
-        pc.translationAtRest = rest;
-        pc.translationOffset = new Vector3(0f, PlayerOffsetY, 0f);
-        pc.weight = 1f;
-        pc.locked = true;
-        pc.constraintActive = true;
-        EditorSceneManager.MarkSceneDirty(scene);
-        EditorSceneManager.SaveScene(scene);
-        return $"{scenePath}: PlayerShadow {PlayerW}x{PlayerH}, Player를 따라감(오프셋 y {PlayerOffsetY}, 회전 안 함), Order {sr.sortingOrder} (몸 {body.sortingOrder}), 머티리얼 {sr.sharedMaterial?.name}";
+            SerializedObject anim = new SerializedObject(animator);
+            Sprite idle = (Sprite)anim.FindProperty("idleSprite").objectReferenceValue;
+            List<Sprite> frames = new List<Sprite>();
+            if (idle != null) frames.Add(idle);
+            SerializedProperty walk = anim.FindProperty("walkFrames");
+            for (int i = 0; i < walk.arraySize; i++)
+                if (walk.GetArrayElementAtIndex(i).objectReferenceValue is Sprite s && !frames.Contains(s)) frames.Add(s);
+
+            Dictionary<float, int> counts = new Dictionary<float, int>();
+            float? idleFeet = null;
+            foreach (Sprite s in frames)
+            {
+                Frame f = FrameOf(s);
+                Color32[] px = Pixels(f.Texture, out int texW);
+                int minY = int.MaxValue;
+                for (int y = f.Rect.y; y < f.Rect.y + f.Rect.height && minY == int.MaxValue; y++)
+                    for (int x = f.Rect.x; x < f.Rect.x + f.Rect.width; x++)
+                        if (px[y * texW + x].a > 0) { minY = y; break; }
+                if (minY == int.MaxValue) continue;
+                float feet = minY - f.Rect.y - f.PivotPx.y; // 보이는 몸 맨 아랫줄의 아래 변(피벗 기준, 위가 +)
+                if (s == idle) idleFeet = feet;
+                counts[feet] = counts.TryGetValue(feet, out int n) ? n + 1 : 1;
+            }
+            if (counts.Count == 0) return $"{t.Prefab}: 보이는 픽셀이 있는 프레임이 없어 건너뜀";
+            float mode = counts.OrderByDescending(kv => kv.Value).ThenBy(kv => Mathf.Abs(kv.Key - (idleFeet ?? kv.Key))).First().Key;
+            float ppu = frames[0].pixelsPerUnit;
+
+            SerializedObject so = new SerializedObject(foot);
+            float oldFeet = so.FindProperty("footTexels").floatValue, oldPpu = so.FindProperty("texelsPerUnit").floatValue;
+            bool changed = !Mathf.Approximately(oldFeet, mode) || !Mathf.Approximately(oldPpu, ppu);
+            if (changed)
+            {
+                so.FindProperty("footTexels").floatValue = mode;
+                so.FindProperty("texelsPerUnit").floatValue = ppu;
+                so.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(root, t.Prefab);
+            }
+            string dist = string.Join(", ", counts.OrderBy(kv => kv.Key).Select(kv => $"{kv.Key:+0.#;-0.#}:{kv.Value}"));
+            return $"{t.Prefab}: 발 {mode:+0.#;-0.#} (PPU {ppu}, 대기·걷기 {frames.Count}프레임: {dist}, 대기 {idleFeet:+0.#;-0.#}) → FootSortOrder " +
+                   (changed ? $"{oldFeet:+0.#;-0.#}/{oldPpu} → {mode:+0.#;-0.#}/{ppu} 저장" : "그대로(같은 값)") + $" - {t.Note}";
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
     }
 }
