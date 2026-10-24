@@ -151,7 +151,12 @@ MonoBehaviour:
   weepingAngelWanderWaitMax: 3
   weepingAngelWarningInterval: 1.5
   villagePhaseSpawns:
-  - entries: []
+  - entries:
+    - monsterPrefab: {fileID: 6555077884092434632, guid: 1d6367ff8fdf9d04d8ad7d0591760909, type: 3}
+      count: 4
+      initialCount: 1
+      intervalCount: 1
+      intervalSeconds: 45
   - entries:
     - monsterPrefab: {fileID: 6555077884092434632, guid: 1d6367ff8fdf9d04d8ad7d0591760909, type: 3}
       count: 1

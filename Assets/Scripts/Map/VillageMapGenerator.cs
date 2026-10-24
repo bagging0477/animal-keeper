@@ -296,6 +296,7 @@ public class VillageMapGenerator : MonoBehaviour
         if (body == null) return;
         GameObject playerShadow = GameObject.Find(PlayerShadowObjectName);
         FootSortOrder.AttachWorldOffset(player, body, PlayerFootWorldOffset, playerShadow != null ? playerShadow.GetComponent<SpriteRenderer>() : null);
+        ObstacleOccluderFade.Attach(mapRoot, body, config);
     }
 
     /// <summary>
@@ -412,9 +413,9 @@ public class VillageMapGenerator : MonoBehaviour
                     Root = instance,
                     PrefabName = prefab.name,
                     FloorCells = GetFloorCells(instance),
-                    Obstacles = obstacles,
-                    ObstacleCells = new HashSet<Vector2Int>(obstacles.SelectMany(o => o.Cells))
+                    Obstacles = obstacles
                 };
+                room.ObstacleCells = BlockedCells(room.FloorCells, room.Obstacles);
                 Vector2Int origin = plan.RoomOrigin[gx, gy];
                 instance.transform.position = new Vector3(origin.x, origin.y, 0f);
                 placedRooms.Add(room);
@@ -1086,9 +1087,9 @@ public class VillageMapGenerator : MonoBehaviour
                 Root = instance,
                 PrefabName = prefabName,
                 FloorCells = GetFloorCells(instance),
-                Obstacles = obstacles,
-                ObstacleCells = new HashSet<Vector2Int>(obstacles.SelectMany(o => o.Cells))
+                Obstacles = obstacles
             };
+            room.ObstacleCells = BlockedCells(room.FloorCells, room.Obstacles);
 
             if (placed.Count > 0)
             {
@@ -1423,6 +1424,40 @@ public class VillageMapGenerator : MonoBehaviour
     // 방 프리팹 안의 장애물 = 트리거가 아닌 2D 충돌체(바닥 Tilemap의 충돌체는 제외). 방을 원점에 막 Instantiate한
     // 직후(PlaceAdjacent로 옮기기 전)에 불러야 충돌체 범위가 곧 방 로컬 좌표가 된다. 충돌체 범위가 걸치는 칸을 모두
     // 장애물 칸으로 보므로 1칸보다 큰 장애물도 그대로 처리된다(경계에 딱 닿기만 한 칸은 넣지 않는다).
+    /// <summary>방에서 걸을 수 없는 칸: 장애물 칸 + 방의 가장 큰 걸을 수 있는 덩어리와 이어지지 않는 바닥 칸(장애물·방 가장자리에 갇힌 빈칸).
+    /// 지나갈 수 있는 소품(숲 나무 등)이 덤불에 둘러싸이면 그 자리가 닫힌 빈칸이 되는데, 그런 칸에 동물·몬스터가 소환되지 않게 막는다.</summary>
+    private static HashSet<Vector2Int> BlockedCells(List<Vector2Int> floorCells, List<RoomObstacle> obstacles)
+    {
+        HashSet<Vector2Int> blocked = new HashSet<Vector2Int>(obstacles.SelectMany(o => o.Cells));
+        HashSet<Vector2Int> open = new HashSet<Vector2Int>(floorCells.Where(c => !blocked.Contains(c)));
+        List<HashSet<Vector2Int>> parts = new List<HashSet<Vector2Int>>();
+        HashSet<Vector2Int> seen = new HashSet<Vector2Int>();
+        Vector2Int[] dirs = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+        foreach (Vector2Int start in open)
+        {
+            if (!seen.Add(start)) continue;
+            HashSet<Vector2Int> part = new HashSet<Vector2Int> { start };
+            Queue<Vector2Int> queue = new Queue<Vector2Int>();
+            queue.Enqueue(start);
+            while (queue.Count > 0)
+            {
+                Vector2Int c = queue.Dequeue();
+                foreach (Vector2Int d in dirs)
+                {
+                    Vector2Int n = c + d;
+                    if (open.Contains(n) && seen.Add(n)) { part.Add(n); queue.Enqueue(n); }
+                }
+            }
+            parts.Add(part);
+        }
+        if (parts.Count <= 1) return blocked;
+        // 길 포트는 방의 가장 큰 덩어리에만 붙는다(GridLayoutPlanner.OpenLaneStarts) - 나머지 덩어리는 어디서도 들어갈 수 없으므로 막는다.
+        HashSet<Vector2Int> main = parts.OrderByDescending(p => p.Count).First();
+        foreach (HashSet<Vector2Int> part in parts)
+            if (part != main) blocked.UnionWith(part);
+        return blocked;
+    }
+
     private static List<RoomObstacle> GetRoomObstacles(GameObject roomInstance)
     {
         Physics2D.SyncTransforms();
@@ -1614,7 +1649,7 @@ public class VillageMapGenerator : MonoBehaviour
 
         foreach (RoomInstance room in changedRooms)
         {
-            room.ObstacleCells = new HashSet<Vector2Int>(room.Obstacles.SelectMany(o => o.Cells));
+            room.ObstacleCells = BlockedCells(room.FloorCells, room.Obstacles);
         }
         if (changedRooms.Count > 0)
         {

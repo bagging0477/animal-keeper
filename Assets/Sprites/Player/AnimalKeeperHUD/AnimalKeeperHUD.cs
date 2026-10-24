@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // 체력·스태미나 바 - 다크큐트 시안 C(목줄 이름표). 그림은 Resources/AnimalKeeperHUD/C_*.png.
-// 그림 1텍셀 = UI 4단위(Texel). 씬 Canvas 배율(1080p 0.857) x hudScale 0.875 = 0.75라 1080p에서 도트 3px.
+// 그림 1텍셀 = UI 4단위(Texel). 1080p 도트 크기 = 4 x 씬 Canvas 배율(0.857) x hudScale. 씬 값 1.1667이면 4px(예전 0.875는 3px).
+// 어두운 판은 기본으로 그리지 않는다(showPanel).
 // 배치(텍셀): 판 (82 + 늘림)x32, 줄마다 아이콘 (2,2) 13x13, 틀 (14,4) (66 + 늘림)x9, 채움 (16,7) (60 + 늘림)x3. 줄 간격 14.
 // 늘림(barExtraTexels, 기본 20 → 판 102·틀 86·채움 80): 틀·채움 그림의 가운데 10텍셀(징 1칸 간격)을 그만큼 되풀이해 늘린다 - 모양·색·도트는 그대로.
 // 퍼센트 숫자는 그리지 않는다 - 남은 양은 바 길이로만 보인다(C_digits.png는 남겨 두지만 쓰지 않음).
@@ -30,7 +31,9 @@ public class AnimalKeeperHUD : MonoBehaviour
     [Tooltip("어두운 칸/밝은 칸이 바뀌는 간격(초, 실제 시간).")]
     [Min(0.05f)] public float blinkInterval = 0.4f;
 
-    [Header("판 색 (반투명 없음)")]
+    [Header("판 (반투명 없음)")]
+    [Tooltip("켜면 아이콘·바 뒤에 어두운 판(외곽선 포함)을 깐다. 끄면 아이콘·틀·채움만 보인다.")]
+    public bool showPanel = false;
     public Color32 panelColor = new Color32(42, 37, 48, 255);
     public Color32 panelOutlineColor = new Color32(47, 47, 46, 255);
 
@@ -76,10 +79,13 @@ public class AnimalKeeperHUD : MonoBehaviour
         staminaIconSprite = LoadSprite("C_icon_stamina");
         staminaIconTiredSprite = LoadSprite("C_icon_stamina_tired");
 
-        // 판: 모서리 1텍셀을 뺀 외곽선 + 안쪽 판
-        MakeBlock("Panel Outline V", panelOutlineColor, 1, 0, panelW - 2, PanelH);
-        MakeBlock("Panel Outline H", panelOutlineColor, 0, 1, panelW, PanelH - 2);
-        MakeBlock("Panel", panelColor, 1, 1, panelW - 2, PanelH - 2);
+        // 판: 모서리 1텍셀을 뺀 외곽선 + 안쪽 판 (showPanel일 때만)
+        if (showPanel)
+        {
+            MakeBlock("Panel Outline V", panelOutlineColor, 1, 0, panelW - 2, PanelH);
+            MakeBlock("Panel Outline H", panelOutlineColor, 0, 1, panelW, PanelH - 2);
+            MakeBlock("Panel", panelColor, 1, 1, panelW - 2, PanelH - 2);
+        }
 
         Sprite frame = LoadSprite("C_frame", extra);
         BuildRow("HP", hpIconSprite, hpFillSprite, frame, 0, extra, out hpIcon, out hpFill);
@@ -181,7 +187,9 @@ public class AnimalKeeperHUD : MonoBehaviour
     }
     private void Refresh()
     {
-        root.anchoredPosition = new Vector2(topLeftOffset.x, -topLeftOffset.y);
+        // 판이 없으면 보이는 왼쪽 위 끝은 아이콘(판 안쪽 2텍셀)이다 - 그만큼 당겨 화면 가장자리 여백(topLeftOffset)을 판이 있을 때와 같게 둔다.
+        float inset = showPanel ? 0f : 2f * Texel * hudScale;
+        root.anchoredPosition = new Vector2(topLeftOffset.x - inset, -(topLeftOffset.y - inset));
         root.localScale = Vector3.one * hudScale;
         hpFill.fillAmount = displayedHp / 100f;
         staminaFill.fillAmount = displayedStamina / 100f;

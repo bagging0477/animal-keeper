@@ -198,7 +198,11 @@ public static class VillageSpawnTest
         Check(phase2.Length == 1 && phase2[0].monsterPrefab != null && phase2[0].monsterPrefab.GetComponent<BatMonsterAI>() != null &&
               phase2[0].count == 1 && phase2[0].initialCount == 1 && phase2[0].intervalCount == 0 && phase2[0].intervalSeconds == 0f,
             "2구간 목록: 박쥐 1마리(진입 때 1, 간격 0)");
-        Check(new[] { 1, 3, 4, 5 }.All(p => original.GetVillagePhaseSpawns(p).Length == 0), "1·3·4·5구간 목록은 비어 있다");
+        // 임시(박쥐 테스트용, 2026-10-24): 1구간에 박쥐 4마리(진입 때 1, 45초마다 1). 되돌리면 1구간도 비어 있어야 한다.
+        GameBalanceConfig.VillageSpawnEntry[] phase1 = original.GetVillagePhaseSpawns(1);
+        Check(phase1.Length == 0 || phase1.All(e => e.monsterPrefab != null && e.monsterPrefab.GetComponent<BatMonsterAI>() != null),
+            $"1구간 목록: 비었거나 임시 박쥐만 ({phase1.Length}개 항목)");
+        Check(new[] { 3, 4, 5 }.All(p => original.GetVillagePhaseSpawns(p).Length == 0), "3·4·5구간 목록은 비어 있다");
         Check(original.villageMonsterCap == 60 && Mathf.Approximately(original.villageSpawnMinPlayerDistance, 15f), "상한 60, 최소 거리 15");
 
         Object.FindAnyObjectByType<TitleMenu>().OnPlay();

@@ -501,6 +501,16 @@ public class GameBalanceConfig : ScriptableObject
     /// <summary>박쥐가 맞을 때마다 도망가는 거리(칸) = 거위 도망 거리 x batFleeDistanceRatio.</summary>
     public float BatFleeDistance => gooseFleeDistance * batFleeDistanceRatio;
 
+    [Header("장애물 가림 반투명 (ObstacleOccluderFade)")]
+    [Tooltip("장애물(나무·덤불 등)이 플레이어·동물·몬스터를 가릴 때 흐려지는 불투명도. 1이면 흐려지지 않는다.")]
+    [Range(0f, 1f)] public float occluderFadeAlpha = 0.45f;
+    [Tooltip("흐려지고 돌아오는 속도(초당 불투명도 변화).")]
+    [Min(0.01f)] public float occluderFadeSpeed = 6f;
+    [Tooltip("캐릭터 그림 넓이 중 이 비율 이상을 장애물 그림이 덮어야 가린다고 본다.")]
+    [Range(0f, 1f)] public float occluderMinCover = 0.2f;
+    [Tooltip("동물·몬스터는 플레이어에게서 이 거리(칸) 안에 있을 때만 가림 판정을 한다. 플레이어는 항상 한다.")]
+    [Min(0f)] public float occluderTargetRadius = 10f;
+
     [Header("마을 시간 - 구간별 추가 몬스터 소환 (VillageMonsterSpawner)")]
     [Tooltip("1~5구간마다 그 구간에 들어갈 때부터 추가로 소환할 몬스터 목록. 5개, 1구간부터 순서대로. 모두 비어 있으면 아무것도 소환하지 않는다. " +
         "새 몬스터를 시간으로 소환하려면 코드 수정 없이 여기에 항목만 추가한다.")]

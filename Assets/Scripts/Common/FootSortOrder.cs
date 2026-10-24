@@ -33,6 +33,9 @@ public class FootSortOrder : MonoBehaviour
     /// <summary>발 Y(월드)에 해당하는 Order.</summary>
     public static int OrderForFootY(float footY) => Mathf.Clamp(-2 * Mathf.RoundToInt(footY * StepsPerUnit), -MaxOrder, MaxOrder);
 
+    /// <summary>정렬하는 몸 렌더러(장애물 가림 판정 ObstacleOccluderFade가 읽는다).</summary>
+    public SpriteRenderer Body => body;
+
     /// <summary>지금 몸의 발 Y(월드).</summary>
     public float FootY
     {

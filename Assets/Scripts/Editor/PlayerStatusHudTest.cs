@@ -422,7 +422,7 @@ public static class PlayerStatusHudTest
             Check(panel != null && hud.transform.GetSiblingIndex() < panel.GetSiblingIndex(),
                 $"{scene}: HUD는 {mustBeBelow}보다 먼저 그려진다(형제 순서 {hud.transform.GetSiblingIndex()} < {panel?.GetSiblingIndex()}) - 메뉴가 열리면 메뉴 아래에 있다");
         }
-        Check(Mathf.Approximately(hud.hudScale, 0.875f) && hud.topLeftOffset == new Vector2(21f, 21f), $"{scene}: Hud Scale {hud.hudScale}, Top Left Offset {hud.topLeftOffset}");
+        Check(Mathf.Abs(hud.hudScale - 7f / 6f) < 0.0001f && hud.topLeftOffset == new Vector2(21f, 21f), $"{scene}: Hud Scale {hud.hudScale}, Top Left Offset {hud.topLeftOffset}");
     }
 
     private static IEnumerator CaptureScene(string scene, AnimalKeeperHUD hud)

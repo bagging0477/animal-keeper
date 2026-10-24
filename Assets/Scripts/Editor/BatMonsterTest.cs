@@ -118,9 +118,14 @@ public static class BatMonsterTest
         vkb.MakeCurrent();
     }
 
+    private static readonly FieldInfo GmConfigField = typeof(GameManager).GetField("config", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static GameBalanceConfig originalConfig;
+
     private static void TearDown()
     {
         Application.logMessageReceived -= OnLog;
+        if (gm != null && originalConfig != null) GmConfigField.SetValue(gm, originalConfig);
+        originalConfig = null;
         Time.captureDeltaTime = 0f;
         Time.timeScale = 1f;
         VillageMapGenerator.EditorLayoutOverride = null;
@@ -219,6 +224,16 @@ public static class BatMonsterTest
         yield return WaitFrames(5);
         gm = GameManager.Instance;
         config = gm != null ? gm.Config : null;
+        // 임시 박쥐 증가(1구간 항목, 2026-10-24)는 이 테스트가 보는 기본 일정(2구간 180초에 1마리)과 다르다 - 1구간을 비운 복제 설정으로 돈다.
+        if (config != null && config.GetVillagePhaseSpawns(1).Length > 0)
+        {
+            originalConfig = config;
+            config = Object.Instantiate(config);
+            config.name = "BatMonsterTestConfig";
+            config.villagePhaseSpawns[0] = new GameBalanceConfig.VillagePhaseSpawnList();
+            GmConfigField.SetValue(gm, config);
+            sb.AppendLine("(참고) 1구간 임시 박쥐 항목을 뺀 복제 설정으로 검사한다");
+        }
         batPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(BatMonsterAssetBuilder.PrefabPath);
         GameObject wolfPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Monsters/PatrolMonster.prefab");
         if (gm == null || config == null || batPrefab == null || wolfPrefab == null)
