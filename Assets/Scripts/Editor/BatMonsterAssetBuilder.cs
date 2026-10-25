@@ -27,6 +27,8 @@ public static class BatMonsterAssetBuilder
     public const float ShadowTopTexels = -14f; // 몸 피벗(가운데) 기준, 그림자 맨 윗줄의 위 변
     public const float FrameRate = 10f, FleeFrameRate = 14f;
     public const float WrapFrameRate = 7f; // 사용방법.txt: wrap 6~8 fps의 가운데
+    public static readonly Vector2 DartHitOffset = new Vector2(0f, -0.1f); // 마취 다트 맞힘 원 가운데(땅 위치 기준, 칸)
+    public const float DartHitRadius = 0.65f;                              // 마취 다트 맞힘 반경(칸)
 
     [MenuItem("Tools/Monsters/Build Bat Monster (sprites + prefab)")]
     public static void Build() => TryBuild();
@@ -165,6 +167,9 @@ public static class BatMonsterAssetBuilder
             SerializedObject h = new SerializedObject(health);
             h.FindProperty("maxHealthOffset").intValue = -1;
             h.FindProperty("ignoreStunAndSleep").boolValue = true;
+            // 다트 맞힘 원: 몸 그림(약 1.1~1.3칸 폭, 웅크림은 땅 위치보다 아래)을 덮게 땅 위치 0.1칸 아래, 반경 0.65.
+            h.FindProperty("dartHitOffset").vector2Value = DartHitOffset;
+            h.FindProperty("dartHitRadius").floatValue = DartHitRadius;
             h.ApplyModifiedPropertiesWithoutUndo();
             MonsterCorpsePickup corpse = root.GetComponent<MonsterCorpsePickup>();
             if (corpse == null) corpse = root.AddComponent<MonsterCorpsePickup>();

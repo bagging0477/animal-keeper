@@ -55,7 +55,8 @@ public class TranquilizerDart : MonoBehaviour
         {
             MonsterHealth monster = MonsterHealth.Active[i];
             if (monster.IsDead) continue;
-            if (TryHit(monster, position))
+            // 몬스터마다 맞힘 원을 정할 수 있다(몸 그림이 땅 위치에서 떨어진 박쥐). 기본값이면 땅 위치 + hitRadius 그대로(늑대).
+            if (TryHit(monster, position, monster.DartHitCenter, monster.DartHitRadius(hitRadius)))
             {
                 monster.TakeDamage(monsterDamage);
                 return;
@@ -64,15 +65,16 @@ public class TranquilizerDart : MonoBehaviour
 
         for (int i = AnimalSleep.Active.Count - 1; i >= 0; i--)
         {
-            if (TryHit(AnimalSleep.Active[i], position)) return;
+            AnimalSleep animal = AnimalSleep.Active[i];
+            if (TryHit(animal, position, animal.GamePosition, hitRadius)) return;
         }
     }
 
-    private bool TryHit(ISleepable target, Vector2 dartPosition)
+    private bool TryHit(ISleepable target, Vector2 dartPosition, Vector2 hitCenter, float radius)
     {
-        if (Vector2.Distance(dartPosition, target.GamePosition) > hitRadius) return false;
-        // 맞힘 반경(hitRadius) 안이어도 다트와 대상 사이에 벽이 있으면(얇은 벽 바로 뒤) 맞지 않는다.
-        if (StaticBlockerLine.IsBlocked(dartPosition, target.GamePosition, wallMask)) return false;
+        if (Vector2.Distance(dartPosition, hitCenter) > radius) return false;
+        // 맞힘 반경 안이어도 다트와 대상 사이에 벽이 있으면(얇은 벽 바로 뒤) 맞지 않는다.
+        if (StaticBlockerLine.IsBlocked(dartPosition, hitCenter, wallMask)) return false;
 
         target.PutToSleep(sleepDelay, sleepDuration);
         Destroy(gameObject);

@@ -526,6 +526,10 @@ public static class BatMonsterTest
         sb.AppendLine("\n== 8. 무기 데미지는 늑대와 같고(같은 MonsterHealth 경로), 박쥐는 기절·마취에 걸리지 않고 도망간다");
         yield return WeaponChecks(laneCenter, dir);
 
+        // --- 8b. 실제 마취총: 플레이어가 박쥐 몸 그림 가운데를 겨눠 쏜다
+        sb.AppendLine("\n== 8b. 실제 마취총(PlayerWeaponController)으로 박쥐 몸 그림 가운데를 겨눠 쏜다: 비행 중·굳음·도망 중 모두 맞고 0.8, 잠들지 않고 도망");
+        yield return RealDartChecks(laneCenter, dir);
+
         // --- 9. 도망: 거리·속도, 쳐다봐도 안 멈춤, 다시 다가옴
         sb.AppendLine("\n== 9. 맞으면 도망: 거리 = 거위 도망 거리 x 0.5, 속도 = 거위 도망 속도, 도망 중 쳐다봐도 안 멈춤, 끝나면 다시 다가옴");
         yield return FleeChecks(ambientR);
@@ -610,6 +614,9 @@ public static class BatMonsterTest
             "BatMonsterAI, NavMeshAgent, MonsterHealth, MonsterCorpsePickup이 있다");
         Check(h != null && wolfHealth != null && h.MaxHealth == wolfHealth.MaxHealth - 1 && h.IgnoresStunAndSleep && !wolfHealth.IgnoresStunAndSleep,
             $"최대 체력 {h?.MaxHealth} = 늑대 {wolfHealth?.MaxHealth} - 1, 박쥐만 기절·마취 무시");
+        Check(h != null && wolfHealth != null && h.DartHitRadius(0.3f) > 0.3f && (h.DartHitCenter - h.GamePosition).y < 0f &&
+              Mathf.Approximately(wolfHealth.DartHitRadius(0.3f), 0.3f) && wolfHealth.DartHitCenter == wolfHealth.GamePosition,
+            $"다트 맞힘 원: 박쥐 가운데 땅 위치 {(h.DartHitCenter - h.GamePosition)}, 반경 {h?.DartHitRadius(0.3f)} / 늑대는 기본값(땅 위치, 다트 반경 0.3)");
         Check(batPrefab.GetComponentsInChildren<Collider2D>(true).Length == 0, "2D 충돌체가 없다(다트·시야 벽 판정에 걸리지 않음)");
         Transform visual = batPrefab.transform.Find("Visual");
         Transform body = visual != null ? visual.Find("Body") : null;
@@ -709,6 +716,97 @@ public static class BatMonsterTest
         if (mine != null) Object.Destroy(mine.gameObject);
         Object.Destroy(a.gameObject);
         yield return WaitFrames(2);
+    }
+
+    // 실제 플레이처럼 쏜다: 플레이어 시선(LookDirection)을 박쥐 몸 그림의 보이는 가운데(투명 아닌 픽셀 범위의 가운데)로 돌리고
+    // PlayerWeaponController의 마취총 발사를 그대로 부른다(총구 위치·속도·사거리·데미지 모두 게임 값).
+    private static IEnumerator RealDartChecks(Vector2 laneCenter, Vector2 dir)
+    {
+        MovePlayer(laneCenter);
+        lookDirection = dir;
+        yield return WaitFrames(3);
+
+        // 굳음: 정면 3칸에서 웅크려 굳은 박쥐
+        BatMonsterAI a = SpawnBat(laneCenter + dir * 3f);
+        yield return WaitFrames(15);
+        yield return ShootBody(a, "굳음", () => a.IsFrozen);
+        Object.Destroy(a.gameObject);
+        yield return WaitFrames(2);
+
+        // 비행 중: 시야를 끄면 정면에 있어도 굳지 않고 날아온다
+        lookDirection = dir;
+        vision.enabled = false;
+        a = SpawnBat(laneCenter + dir * 9f);
+        yield return WaitFrames(6);
+        yield return ShootBody(a, "비행 중", () => !a.IsFrozen && !a.IsFleeing && a.CurrentPose == BatMonsterAI.Pose.Flying);
+        vision.enabled = true;
+        Object.Destroy(a.gameObject);
+        yield return WaitFrames(2);
+
+        // 도망 중: 한 번 맞아 플레이어 반대쪽으로 날아가는 박쥐
+        lookDirection = dir;
+        a = SpawnBat(laneCenter + dir * 2f);
+        yield return WaitFrames(5);
+        a.Health.TakeDamage(0.1f);
+        yield return WaitFrames(4);
+        yield return ShootBody(a, "도망 중", () => a.IsFleeing);
+        Object.Destroy(a.gameObject);
+        yield return WaitFrames(2);
+        lookDirection = dir;
+    }
+
+    private static IEnumerator ShootBody(BatMonsterAI a, string what, System.Func<bool> stateOk)
+    {
+        PlayerWeaponController weapon = player.GetComponent<PlayerWeaponController>();
+        MethodInfo fire = typeof(PlayerWeaponController).GetMethod("FireTranquilizerGun", BindingFlags.Instance | BindingFlags.NonPublic);
+        MethodInfo ammoSetter = typeof(GameManager).GetProperty(nameof(GameManager.TranquilizerAmmo)).GetSetMethod(true);
+        ammoSetter.Invoke(gm, new object[] { Mathf.Max(gm.TranquilizerAmmo, 3) });
+
+        // 시선을 몸 그림 가운데로 돌리고(총구가 따라 돈다) 그 프레임의 가운데를 다시 겨눈다.
+        lookDirection = (VisibleBodyCenter(a) - (Vector2)player.position).normalized;
+        yield return WaitFrames(2);
+        Vector2 aim = VisibleBodyCenter(a);
+        lookDirection = (aim - (Vector2)player.position).normalized;
+        LookSetter.Invoke(player.GetComponent<PlayerMovement>(), new object[] { lookDirection });
+        bool stateBefore = stateOk();
+        float aimOffset = (aim - Pos(a)).magnitude;
+        float hp = a.Health.Health;
+        int flees = a.FleeCount;
+        int dartsBefore = Object.FindObjectsByType<TranquilizerDart>(FindObjectsSortMode.None).Length;
+        fire.Invoke(weapon, null);
+        bool fired = Object.FindObjectsByType<TranquilizerDart>(FindObjectsSortMode.None).Length > dartsBefore;
+        int frames = 0;
+        while (frames < 90 && a.Health.Health > hp - 0.0005f) { yield return WaitFrames(1); frames++; }
+        float dealt = hp - a.Health.Health;
+        Check(fired && stateBefore && Mathf.Abs(dealt - config.tranquilizerDamage) < 0.001f,
+            $"{what}: 실제 다트가 몸 그림 가운데(땅 위치에서 {aimOffset:F2}칸)를 맞힘 - 피해 {dealt:0.##} (기대 {config.tranquilizerDamage}), 발사 {fired}, 쏠 때 상태 {stateBefore}, {frames}프레임");
+        Check(a.IsFleeing && a.FleeCount == flees + 1, $"{what}: 맞으면 도망 (단계 {a.CurrentPhase}, 도망 {flees} → {a.FleeCount})");
+        yield return WaitFrames(Mathf.CeilToInt((config.sleepDelay + 0.3f) / FrameTime));
+        Check(!a.Health.IsAsleep && !a.Health.IsStunned, $"{what}: 마취 지연({config.sleepDelay}초) 뒤에도 잠들지 않음");
+    }
+
+    // 몸 그림에서 투명이 아닌 픽셀 범위의 가운데(월드). 좌우 반전(flipX)과 배율을 반영한다. 원본 PNG를 읽어 스프라이트마다 한 번만 계산한다.
+    private static readonly Dictionary<Sprite, Vector2> visibleCenterPixels = new Dictionary<Sprite, Vector2>();
+
+    private static Vector2 VisibleBodyCenter(BatMonsterAI a)
+    {
+        SpriteRenderer r = a.transform.Find("Visual/Body").GetComponent<SpriteRenderer>();
+        Sprite s = r.sprite;
+        if (!visibleCenterPixels.TryGetValue(s, out Vector2 px))
+        {
+            Texture2D t = new Texture2D(2, 2);
+            t.LoadImage(File.ReadAllBytes(AssetDatabase.GetAssetPath(s)));
+            int minX = int.MaxValue, minY = int.MaxValue, maxX = -1, maxY = -1;
+            for (int y = 0; y < t.height; y++)
+                for (int x = 0; x < t.width; x++)
+                    if (t.GetPixel(x, y).a > 0.01f) { minX = Mathf.Min(minX, x); maxX = Mathf.Max(maxX, x); minY = Mathf.Min(minY, y); maxY = Mathf.Max(maxY, y); }
+            Object.DestroyImmediate(t);
+            px = maxX < 0 ? s.pivot : new Vector2((minX + maxX + 1) * 0.5f, (minY + maxY + 1) * 0.5f);
+            visibleCenterPixels[s] = px;
+        }
+        Vector2 local = (px - s.pivot) / s.pixelsPerUnit;
+        if (r.flipX) local.x = -local.x;
+        return r.transform.TransformPoint(local);
     }
 
     private static IEnumerator FleeChecks(float ambientR)

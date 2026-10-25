@@ -22,6 +22,12 @@ public class MonsterHealth : MonoBehaviour, ISleepable
         "이 컴포넌트가 NavMeshAgent.isStopped를 건드리지 않는다(박쥐: 맞으면 도망).")]
     [SerializeField] private bool ignoreStunAndSleep;
 
+    [Header("마취총 다트 맞힘 범위 (기본값이면 다트 기본 판정 그대로)")]
+    [Tooltip("다트 맞힘 원의 가운데 = 땅 위치(GamePosition) + 이 값(칸). 몸 그림이 땅 위치에서 떨어져 그려지는 몬스터(박쥐)용. 늑대는 0.")]
+    [SerializeField] private Vector2 dartHitOffset = Vector2.zero;
+    [Tooltip("다트 맞힘 반경(칸). 0이면 다트 자신의 hitRadius를 쓴다(늑대). 몸 그림이 큰 몬스터(박쥐)는 몸 크기에 맞춘다.")]
+    [SerializeField, Min(0f)] private float dartHitRadius = 0f;
+
     /// <summary>데미지를 받았지만 아직 살아 있을 때(받은 양). 박쥐가 맞을 때마다 도망가는 데 쓴다.</summary>
     public event System.Action<float> Damaged;
 
@@ -51,6 +57,12 @@ public class MonsterHealth : MonoBehaviour, ISleepable
 
     /// <summary>플레이어와 동일한 2D 좌표계로 변환한 몬스터 위치. 몬스터는 NavMesh(x,z 평면)로 움직이고 x,z를 2D x,y로 매핑해서 렌더링한다.</summary>
     public Vector2 GamePosition => new Vector2(transform.position.x, transform.position.z);
+
+    /// <summary>마취총 다트가 맞았는지 볼 원의 가운데(땅 위치 + dartHitOffset).</summary>
+    public Vector2 DartHitCenter => GamePosition + dartHitOffset;
+
+    /// <summary>마취총 다트 맞힘 반경. dartHitRadius가 0이면 다트 기본값(defaultRadius)을 그대로 쓴다.</summary>
+    public float DartHitRadius(float defaultRadius) => dartHitRadius > 0f ? dartHitRadius : defaultRadius;
 
     private void Awake()
     {

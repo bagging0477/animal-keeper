@@ -400,6 +400,8 @@ MonoBehaviour:
   deadColor: {r: 0.35, g: 0.35, b: 0.35, a: 1}
   maxHealthOffset: -1
   ignoreStunAndSleep: 1
+  dartHitOffset: {x: 0, y: -0.1}
+  dartHitRadius: 0.65
 --- !u!114 &1546874129419209499
 MonoBehaviour:
   m_ObjectHideFlags: 0
