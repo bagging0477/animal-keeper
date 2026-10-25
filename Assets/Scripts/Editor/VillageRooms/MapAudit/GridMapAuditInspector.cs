@@ -625,13 +625,15 @@ public static class GridMapAuditInspector
         }
 
         // 4d 충돌체만 지워지고 그림은 남은 장애물: 프리팹에서 충돌체가 있던 오브젝트가 인스턴스에 남아 있는데 충돌체가 없거나 꺼져 있고 스프라이트는 보인다.
-        int stripped = 0;
+        // 프리팹에서부터 충돌체를 꺼 둔 장애물(숲 나무 - 일부러 지나갈 수 있게 한 것)은 위반이 아니라 따로 센다.
+        int stripped = 0, passableByDesign = 0;
         foreach (RoomData room in rooms)
         {
             if (room.Prefab == null) continue;
             foreach (Collider2D pc in room.Prefab.GetComponentsInChildren<Collider2D>(true))
             {
                 if (pc.isTrigger || pc is TilemapCollider2D || pc is CompositeCollider2D) continue;
+                if (!pc.enabled) { passableByDesign++; continue; }
                 string rel = RelativePath(pc.transform, room.Prefab.transform);
                 Transform inst = FindMatching(room.T, room.Prefab.transform, pc.transform);
                 if (inst == null) continue; // 통째로 지워짐(트럭 여유 영역) - 그림도 같이 사라졌다
@@ -646,6 +648,7 @@ public static class GridMapAuditInspector
             }
         }
         r.Stat("충돌체만 지워진 장애물", stripped);
+        r.Stat("일부러 통과되는 장애물(프리팹에서 충돌체 꺼짐)", passableByDesign);
     }
 
     // 프리팹 안의 target에 해당하는 인스턴스 오브젝트. 같은 이름 형제가 많으므로(Obstacles/Obstacle 여러 개) 이름과 localPosition이 같은 것을 고른다.

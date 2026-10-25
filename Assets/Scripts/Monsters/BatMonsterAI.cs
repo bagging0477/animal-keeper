@@ -4,9 +4,13 @@ using UnityEngine.AI;
 /// <summary>
 /// 박쥐 몬스터(예전 우는천사 자리). 시간 시스템(VillageMonsterSpawner, GameBalanceConfig.villagePhaseSpawns)으로만 나온다 - 맵 생성 스폰 풀(MonsterSpawnPool)에는 없다.
 ///
-/// - 놀람 전(Ambush): 스폰되면 거리 제한 없이 플레이어에게 날아간다. 자기 위치가 플레이어 시야 안에 처음 들어온 순간(PlayerVision.IsVisibleToPlayer)
+/// - 시야 판정은 정면 부채꼴(손전등) 시야만 본다(PlayerVision.IsInFocusedVision). 원형 주변 시야 안에서는 멈추지 않고 계속 다가온다.
+/// - 놀람 전(Ambush): 스폰되면 거리 제한 없이 플레이어에게 날아간다. 자기 위치가 정면 시야 안에 처음 들어온 순간
 ///   "놀람 완료"로 그 자리에 바로 멈추고 놀람 후로 넘어간다.
-/// - 놀람 후: 플레이어가 batChaseRange 안이면 추격(Chase), 밖이면 스폰 자리 주변 배회(Wander). 자기 위치가 플레이어 시야 안이면 멈추고(굳음), 시야 밖일 때만 움직인다.
+/// - 놀람 후: 플레이어가 batChaseRange 안이면 추격(Chase), 밖이면 스폰 자리 주변 배회(Wander). 자기 위치가 정면 시야 안이면 멈추고(굳음), 시야 밖일 때만 움직인다.
+/// - 웅크림: 정면 시야에 들어온 순간 이동은 바로 멈추고, 그림만 wrap-01~03을 wrapFrameRate로 재생한 뒤 마지막 프레임으로 굳어 있다.
+///   시야에서 벗어나면 그 순간 바로 다시 움직이고, 그림은 웅크림을 거꾸로(03→02→01) 재생한 뒤 비행 그림으로 돌아간다.
+///   풀리는 중에 다시 시야에 들어오면 그 그림에서부터 다시 웅크린다.
 /// - 맞으면(MonsterHealth.Damaged) 도망(Flee): 그 자리에서 플레이어 반대쪽으로 batFleeDistance(거위 도망 거리 x 0.5)만큼 거위 도망 속도로 난다.
 ///   도망 중에는 시야 안이어도 멈추지 않고, 접촉도 하지 않는다. 도망 중에 또 맞으면 맞은 자리에서 다시 같은 거리만큼 도망간다. 무적 시간은 없다.
 ///   도망이 끝나면 다시 플레이어를 찾아 다가오고(Return: 거리 제한 없이 플레이어 쪽으로, 시야 안이면 멈춤) 추격 거리 안에 들어오면 평소대로 돌아간다.
@@ -15,21 +19,25 @@ using UnityEngine.AI;
 /// - 접촉: MonsterBrain.UpdateCatch를 그대로 쓴다. 굳은 동안·도망 중에는 접촉하지 않는다. 데미지 = 그 순간 플레이어 최대 체력 x batCatchDamageRatio.
 /// - 경고음: 놀람 후 추격하며 움직이는 동안 batWarningInterval마다(클립이 비어 있으면 조용히 건너뜀).
 /// - 그림: Visual(땅 위치, 배율 2) 아래 Body(날아다니는 몸, SimpleFrameAnimator·AnimalFacingFlipper)와 Shadow(바닥 그림자)가 따로 있다.
-///   비행 = walk/flee 프레임, 굳음 = freezeFrames 정지, 물기 = attack 프레임, 피격·쓰러짐 = hurt/death 프레임.
+///   비행 = walk/flee 프레임, 굳음 = wrapFrames 재생 후 마지막 프레임 정지, 물기 = attack 프레임, 피격·쓰러짐 = hurt/death 프레임.
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(MonsterHealth))]
 public class BatMonsterAI : MonsterBrain
 {
     public enum Phase { Ambush, Chase, Wander, Flee, Return }
+    /// <summary>몸 그림 자세: 비행 / 웅크리는 중 / 웅크려 굳음 / 풀리는 중.</summary>
+    public enum Pose { Flying, Wrapping, Wrapped, Unwrapping }
 
     [Header("Visual (2D sprite object this brain drives)")]
     [Tooltip("땅 위치를 따라가는 그림 뿌리(배율 2). 자식으로 Body(몸)와 Shadow(바닥 그림자)를 둔다.")]
     [SerializeField] private Transform visual;
     [Tooltip("날아다니는 몸(SpriteRenderer + SimpleFrameAnimator + AnimalFacingFlipper).")]
     [SerializeField] private Transform body;
-    [Tooltip("굳음(쳐다볼 때) 동안 멈춰 보여 줄 프레임.")]
-    [SerializeField] private Sprite[] freezeFrames;
+    [Tooltip("정면 시야에 들어오면 재생할 웅크림 프레임(wrap-01~03). 마지막 프레임으로 굳고, 벗어나면 거꾸로 재생한다.")]
+    [SerializeField] private Sprite[] wrapFrames;
+    [Tooltip("웅크림/풀림 재생 속도(초당 프레임). 사용방법.txt: wrap 6~8 fps.")]
+    [SerializeField] private float wrapFrameRate = 7f;
     [Tooltip("쓰러지면 몸을 이만큼(몸 텍셀, 아래로) 내려 그림자 위에 눕힌다.")]
     [SerializeField] private float fallenDropTexels = 3f;
     [SerializeField] private float bodyTexelsPerUnit = 32f;
@@ -51,7 +59,10 @@ public class BatMonsterAI : MonsterBrain
     private Vector3 origin;
     private Phase phase = Phase.Ambush;
     private bool frozen;
-    private bool holdingFreezePose;
+    private Pose pose = Pose.Flying;
+    private int poseFrame;
+    private float poseTimer;
+    private readonly Sprite[] holdFrame = new Sprite[1];
     private bool bodyLowered;
     private Vector3 bodyRestLocalPosition;
     private float wanderWaitTimer;
@@ -65,8 +76,12 @@ public class BatMonsterAI : MonsterBrain
     public Phase CurrentPhase => phase;
     /// <summary>놀람을 마쳤는지(자기 위치가 처음으로 플레이어 시야에 들어왔는지).</summary>
     public bool IsSurprised => phase != Phase.Ambush;
-    /// <summary>이번 프레임에 플레이어 시야 안이라 멈춰 있는지(굳음).</summary>
+    /// <summary>이번 프레임에 정면 시야 안이라 멈춰 있는지(굳음).</summary>
     public bool IsFrozen => frozen;
+    /// <summary>지금 몸 그림 자세(비행/웅크리는 중/굳음/풀리는 중).</summary>
+    public Pose CurrentPose => pose;
+    /// <summary>움직이지 않고 접촉도 하지 않는 중인지 - 굳어 있을 때만(웅크림이 풀리는 그림이 재생되는 동안은 이미 움직인다).</summary>
+    public bool IsHolding => frozen;
     /// <summary>맞아서 도망가는 중인지.</summary>
     public bool IsFleeing => phase == Phase.Flee;
     /// <summary>도망을 시작한 횟수(맞을 때마다 1). 테스트가 읽는다.</summary>
@@ -136,7 +151,7 @@ public class BatMonsterAI : MonsterBrain
         if (health.IsDead)
         {
             if (agent.isOnNavMesh) agent.isStopped = true;
-            ReleaseFreezePose();
+            SetPoseFlying();
             LowerBodyOnce();
             UpdateVisualPosition();
             return;
@@ -144,7 +159,8 @@ public class BatMonsterAI : MonsterBrain
 
         if (player != null)
         {
-            bool visible = PlayerVision.IsVisibleToPlayer(GamePosition);
+            // 정면 부채꼴만 본다 - 원형 주변 시야 안에서는 멈추지 않는다.
+            bool seen = PlayerVision.IsInFocusedVision(GamePosition);
             float distanceToPlayer = Vector2.Distance(GamePosition, PlayerGamePosition);
 
             if (phase == Phase.Flee)
@@ -156,7 +172,7 @@ public class BatMonsterAI : MonsterBrain
             if (phase == Phase.Ambush)
             {
                 // 놀람 완료: 처음으로 시야에 들어온 순간. 바로 아래 SetFrozen이 그 자리에 세운다.
-                if (visible)
+                if (seen)
                 {
                     if (distanceToPlayer <= ChaseRange) EnterChase();
                     else EnterWander();
@@ -173,12 +189,13 @@ public class BatMonsterAI : MonsterBrain
             }
 
             // 도망 중에는 시야 안이어도 굳지 않는다.
-            SetFrozen(phase != Phase.Ambush && phase != Phase.Flee && visible);
+            SetFrozen(phase != Phase.Ambush && phase != Phase.Flee && seen);
+            UpdatePose();
 
-            // 굳은 동안·도망 중에는 접촉하지 않는다.
-            if (!frozen && phase != Phase.Flee && UpdateCatch(distanceToPlayer)) return;
+            // 굳은 동안·도망 중에는 접촉하지 않는다(풀리는 그림이 재생되는 동안은 움직이고 접촉한다).
+            if (!IsHolding && phase != Phase.Flee && UpdateCatch(distanceToPlayer)) return;
 
-            if (!frozen && agent.isOnNavMesh) Move();
+            if (!IsHolding && agent.isOnNavMesh) Move();
 
             UpdateWarning();
         }
@@ -302,6 +319,7 @@ public class BatMonsterAI : MonsterBrain
         fleeStart = GamePosition;
         fleeTimer = 0f;
         frozen = false;
+        SetPoseFlying(); // 도망은 웅크림 없이 바로 비행
         agent.autoBraking = true;
         agent.speed = FleeSpeed;
         if (!agent.isOnNavMesh) return;
@@ -354,18 +372,60 @@ public class BatMonsterAI : MonsterBrain
         if (frameAnimator == null) return;
         frameAnimator.IsMoving = true; // 박쥐는 멈춰도 날갯짓을 한다(대기 = 비행 프레임)
         frameAnimator.IsFleeing = phase == Phase.Flee;
-        if (frozen && !holdingFreezePose && freezeFrames != null && freezeFrames.Length > 0)
-        {
-            frameAnimator.PlayAndHold(freezeFrames);
-            holdingFreezePose = true;
-        }
-        else if (!frozen) ReleaseFreezePose();
     }
 
-    private void ReleaseFreezePose()
+    // 웅크림 자세: 굳으면 wrap 프레임을 앞으로 재생해 마지막에 멈추고, 풀리면 거꾸로 재생한 뒤 비행으로 돌아간다.
+    // 이동 멈춤은 SetFrozen이 바로 하고, 여기서는 그림만 넘긴다. 도망 중에는 웅크리지 않는다.
+    private void UpdatePose()
     {
-        if (!holdingFreezePose) return;
-        holdingFreezePose = false;
+        if (wrapFrames == null || wrapFrames.Length == 0 || phase == Phase.Flee) { SetPoseFlying(); return; }
+        float frameDuration = 1f / Mathf.Max(0.01f, wrapFrameRate);
+        int last = wrapFrames.Length - 1;
+
+        if (frozen)
+        {
+            if (pose == Pose.Flying) { pose = Pose.Wrapping; poseFrame = 0; poseTimer = 0f; ShowWrapFrame(); }
+            else if (pose == Pose.Unwrapping) { pose = Pose.Wrapping; poseTimer = 0f; ShowWrapFrame(); } // 풀리던 그림에서 다시 웅크린다
+            else if (pose == Pose.Wrapping)
+            {
+                poseTimer += Time.deltaTime;
+                while (poseTimer >= frameDuration && poseFrame < last)
+                {
+                    poseTimer -= frameDuration;
+                    poseFrame++;
+                    ShowWrapFrame();
+                }
+            }
+            if (pose == Pose.Wrapping && poseFrame >= last) pose = Pose.Wrapped;
+            return;
+        }
+
+        if (pose == Pose.Wrapping || pose == Pose.Wrapped) { pose = Pose.Unwrapping; poseTimer = 0f; }
+        if (pose != Pose.Unwrapping) return;
+        poseTimer += Time.deltaTime;
+        while (poseTimer >= frameDuration)
+        {
+            poseTimer -= frameDuration;
+            if (poseFrame <= 0) { SetPoseFlying(); return; }
+            poseFrame--;
+            ShowWrapFrame();
+        }
+    }
+
+    // 프레임 하나를 붙잡아 보여 준다(SimpleFrameAnimator의 Hold). 같은 칸 배열을 다시 써서 할당이 없다.
+    private void ShowWrapFrame()
+    {
+        holdFrame[0] = wrapFrames[Mathf.Clamp(poseFrame, 0, wrapFrames.Length - 1)];
+        frameAnimator?.PlayAndHold(holdFrame);
+        if (visualRenderer != null) visualRenderer.sprite = holdFrame[0];
+    }
+
+    private void SetPoseFlying()
+    {
+        if (pose == Pose.Flying) return;
+        pose = Pose.Flying;
+        poseFrame = 0;
+        poseTimer = 0f;
         frameAnimator?.ReleaseHold();
     }
 
@@ -378,7 +438,7 @@ public class BatMonsterAI : MonsterBrain
 
     private void UpdateWarning()
     {
-        if (phase != Phase.Chase || frozen) return;
+        if (phase != Phase.Chase || IsHolding) return;
         warningTimer += Time.deltaTime;
         if (warningTimer < WarningInterval) return;
         warningTimer -= WarningInterval;

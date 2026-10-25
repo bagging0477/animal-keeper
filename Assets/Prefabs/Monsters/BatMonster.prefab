@@ -370,8 +370,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeepingAngelAI
   visual: {fileID: 9074969753643571875}
   body: {fileID: 1169207039531091028}
-  freezeFrames:
-  - {fileID: 21300000, guid: 15c28931be8121e4ba6c8495b4d590ae, type: 3}
+  wrapFrames:
+  - {fileID: 21300000, guid: c6e8f7ed55354b2418d349a655b279e7, type: 3}
+  - {fileID: 21300000, guid: 6c1155fcebaf9194399f2c5ff7fa6427, type: 3}
+  - {fileID: 21300000, guid: 43640fc4aeb9bb84aa81600975b22e01, type: 3}
+  wrapFrameRate: 7
   fallenDropTexels: 3
   bodyTexelsPerUnit: 32
   monsterTypeName: "\uBC15\uC950"

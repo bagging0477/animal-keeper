@@ -18,10 +18,12 @@ using UnityEngine.Tilemaps;
 /// Tools > Monsters > Run Bat Monster Test. 박쥐(BatMonsterAI, 예전 우는천사 자리)를 실제 마을(격자 3x4, 시드 1)과 실제 플레이어 시야(PlayerVision.IsPointVisible)로 확인한다.
 /// 플레이어를 곧게 트인 길 위에 세우고 부채꼴 방향을 정한 뒤, 박쥐를 원하는 거리에 직접 놓아 동작을 잰다.
 /// 부채꼴 방향: 실제 마우스는 테스트 동안 끄고 가상 마우스를 그 방향 화면 위치에 둔다 - 마우스 커서가 어디 있든 결과가 같다.
-/// 검사: 프리팹·그림·설정, 놀람 전 돌진 후 원형/부채꼴 시야에서 멈춤(굳음), 벽 뒤는 시야 밖, 15칸 안 추격·밖 배회, 배회 중에도 시야 안이면 멈춤,
+/// 검사: 프리팹·그림·설정, 원형 주변 시야에서는 멈추지 않고 다가옴, 정면 부채꼴 시야에 들어오면 멈춤(굳음)·웅크림 3프레임 재생 후 마지막 프레임 유지,
+/// 시야에서 벗어나면 웅크림을 거꾸로 재생한 뒤 다시 비행, 벽 뒤는 시야 밖, 15칸 안 추격·밖 배회, 배회 중에도 정면 시야 안이면 멈춤,
 /// 접촉 데미지(최대 체력 x 0.8, 굳은 동안 없음), 무기 데미지 = 늑대와 같은 값(기절·마취 없음), 맞으면 도망(거리 = 거위 x 0.5, 속도 = 거위),
 /// 도망 중 쳐다봐도 안 멈춤, 도망 중 또 맞으면 그 자리에서 다시 도망, 무적 없음, 도망 뒤 다시 다가옴, 체력 0이면 쓰러지고 E로 회수,
 /// 시간 소환(180초에 1마리), 재진입, ResetDay/ResetGame. 프레임 시간 1/30초 고정. 다른 몬스터는 기절시켜 둔다(박쥐는 기절하지 않는다).
+/// 실제 게임 카메라 렌더: Logs/Bat/render/crouch_*.png, view_*.png + manifest.txt(비행 → 웅크림 → 굳음 → 풀림, 주변/정면 시야 장면).
 /// 결과: Logs/BatMonsterTest.txt / batchmode: -executeMethod BatMonsterTest.RunBatch (통과면 0 아니면 1)
 /// </summary>
 [InitializeOnLoad]
@@ -281,70 +283,148 @@ public static class BatMonsterTest
             $"부채꼴이 앞 방향을 본다 (부채꼴 {focused.transform.up}, LookDirection {movement.LookDirection}) - 실제 마우스 위치와 무관(가상 마우스)");
         int startHealth = gm.Health;
 
-        // --- 1. 놀람 전: 뒤에서 날아와 원형 시야에 들어온 순간 멈춘다(굳음)
-        sb.AppendLine("\n== 1. 놀람 전 돌진 → 원형 시야에 들어온 자리에서 굳음");
+        // --- 1. 원형 주변 시야는 통과: 뒤에서 날아와 원형 시야 안으로 들어와도 멈추지 않고 계속 다가온다
+        sb.AppendLine("\n== 1. 뒤쪽(원형 주변 시야만)에서는 멈추지 않고 플레이어 가까이까지 다가옴");
+        captureManifest.Clear();
         BatMonsterAI a = SpawnBat(laneCenter - dir * behind);
         float startDistance = Dist(a);
-        bool seenBefore = false, kept = true;
+        float nearStop = Mathf.Max(config.batCatchRange + 0.5f, ambientR * 0.6f); // 접촉(데미지) 전에 멈춰 세운다
+        bool enteredAmbient = false, slowedInAmbient = false, froze = false, wrapped = false, ambientShot = false;
         float lastDistance = startDistance;
         int frames = 0;
+        while (Dist(a) > nearStop && frames < 300)
+        {
+            yield return WaitFrames(1);
+            frames++;
+            bool inAmbientOnly = vision.IsPointVisible(Pos(a)) && !vision.IsPointInFocusedVision(Pos(a));
+            if (inAmbientOnly)
+            {
+                if (enteredAmbient && Dist(a) > lastDistance - 0.05f) slowedInAmbient = true;
+                enteredAmbient = true;
+                if (!ambientShot && Dist(a) <= ambientR * 0.75f)
+                {
+                    ambientShot = true;
+                    CaptureWide("ambient", $"주변 시야(원형 {ambientR:F1}칸) 안 {Dist(a):F1}칸 - 멈추지 않고 다가옴", Pos(a));
+                }
+            }
+            if (a.IsFrozen || a.IsHolding) froze = true;
+            if (a.CurrentPose != BatMonsterAI.Pose.Flying) wrapped = true;
+            lastDistance = Dist(a);
+        }
+        Check(enteredAmbient && !slowedInAmbient && !froze && !wrapped && Dist(a) <= nearStop + 0.05f,
+            $"원형 주변 시야 안에서도 멈추지 않고 다가왔다 ({startDistance:F2} → {Dist(a):F2}칸, 원형 반경 {ambientR:F2}, 굳음 {froze}, 웅크림 {wrapped}, {frames}프레임)");
+        Check(!a.IsSurprised && a.CurrentPhase == BatMonsterAI.Phase.Ambush, $"주변 시야만으로는 놀람도 일어나지 않는다 (단계 {a.CurrentPhase})");
+        Check(gm.Health == startHealth, $"접촉 전에 세웠다(체력 {gm.Health})");
+        Object.Destroy(a.gameObject);
+        yield return WaitFrames(2);
+
+        // --- 2. 정면 부채꼴 시야: 들어온 순간 멈추고, 웅크림 3프레임 재생 뒤 마지막 프레임으로 굳는다
+        sb.AppendLine("\n== 2. 놀람 전 돌진 → 정면 시야에 들어온 자리에서 바로 멈춤, 웅크림 wrap-01~03 재생 후 wrap-03 유지");
+        a = SpawnBat(laneCenter + dir * front);
+        bool flyShot = false;
+        frames = 0;
         while (!a.IsSurprised && frames < 300)
         {
             yield return WaitFrames(1);
             frames++;
-            if (!a.IsSurprised && vision.IsPointVisible(Pos(a))) seenBefore = true;
-            if (frames > 5 && !a.IsSurprised && Dist(a) > lastDistance - 0.01f) kept = false;
-            lastDistance = Dist(a);
+            if (!flyShot && !a.IsSurprised && Dist(a) <= focusedR + 1.2f && SpriteName(a).StartsWith("fly-"))
+            {
+                flyShot = true;
+                CaptureBat(a, "비행 (정면 시야 밖)");
+            }
         }
-        float stop1 = Dist(a);
-        Check(a.IsSurprised && a.IsFrozen, $"놀람 완료 후 굳음 ({frames}프레임, {startDistance:F2} → {stop1:F2}칸)");
-        Check(kept && !seenBefore, "놀람 전에는 시야 밖에서 쉬지 않고 다가왔다(배회 없음)");
-        Check(stop1 <= ambientR + 0.05f && stop1 >= ambientR - StepPerFrame - 0.1f, $"원형 시야 경계에서 멈춤 (멈춘 거리 {stop1:F2}, 원형 반경 {ambientR:F2})");
+        float stop2 = Dist(a);
+        Check(a.IsSurprised && a.IsFrozen && stop2 <= focusedR + 0.05f && stop2 >= focusedR - StepPerFrame - 0.1f && stop2 > ambientR + 0.5f,
+            $"부채꼴 반경에서 멈춤 (멈춘 거리 {stop2:F2}, 부채꼴 반경 {focusedR:F2}, 원형 반경 {ambientR:F2}, {frames}프레임)");
+        float wrapRate = WrapFrameRate(a);
+        List<string> wrapSeq = new List<string> { SpriteName(a) };
+        CaptureBat(a, $"{SpriteName(a)} (정면 시야에 들어온 순간)");
+        int lastWrapFrame = -1;
         Vector2 held = Pos(a);
-        yield return WaitFrames(45);
-        Check((Pos(a) - held).magnitude < 0.02f && a.CurrentPhase == BatMonsterAI.Phase.Chase && a.IsFrozen,
-            $"쳐다보는 동안 멈춰 있다(1.5초 동안 {(Pos(a) - held).magnitude:F3}칸, 단계 {a.CurrentPhase})");
-        Check(BodySprite(a) == BatMonsterAssetBuilder.Frame("freeze-01"), $"굳은 동안 굳음 그림(freeze-01) - 지금 {BodySprite(a)?.name}");
+        float maxDrift = 0f;
+        for (int i = 1; i <= 45; i++)
+        {
+            yield return WaitFrames(1);
+            maxDrift = Mathf.Max(maxDrift, (Pos(a) - held).magnitude);
+            string n = SpriteName(a);
+            if (n != wrapSeq[wrapSeq.Count - 1])
+            {
+                wrapSeq.Add(n);
+                CaptureBat(a, n);
+            }
+            if (lastWrapFrame < 0 && n == "wrap-03") lastWrapFrame = i;
+        }
+        CaptureBat(a, "굳음 (1.5초 뒤에도 wrap-03)");
+        CaptureWide("focused", $"정면 시야(부채꼴 {focusedR:F1}칸) 경계 {Dist(a):F1}칸 - 멈춰 웅크림", Pos(a));
+        float wrapSeconds = lastWrapFrame * FrameTime, expectWrap = 2f / wrapRate;
+        Check(string.Join(",", wrapSeq) == "wrap-01,wrap-02,wrap-03", $"웅크림 그림 순서 {string.Join(" → ", wrapSeq)} (기대 wrap-01 → wrap-02 → wrap-03)");
+        Check(lastWrapFrame > 0 && Mathf.Abs(wrapSeconds - expectWrap) <= FrameTime * 1.5f,
+            $"웅크림 재생 속도 {wrapRate} fps: wrap-01 → wrap-03까지 {wrapSeconds:F3}초 (기대 2프레임 / {wrapRate} fps = {expectWrap:F3}초)");
+        Check(maxDrift < 0.02f && a.CurrentPhase == BatMonsterAI.Phase.Chase && a.IsFrozen && a.CurrentPose == BatMonsterAI.Pose.Wrapped && SpriteName(a) == "wrap-03",
+            $"들어온 순간부터 멈춰 있고(1.5초 동안 {maxDrift:F3}칸) 마지막 프레임 wrap-03으로 굳어 있다 (단계 {a.CurrentPhase}, 자세 {a.CurrentPose}, 그림 {SpriteName(a)})");
         Check(gm.Health == startHealth && a.WarningCount == 0, $"멈춘 동안 데미지 없음(체력 {gm.Health}), 경고음 없음({a.WarningCount})");
 
-        // --- 2. 놀람 후: 15칸 안에서 시야 밖이면 쫓아오고, 시야 안이면 다시 멈춘다
-        sb.AppendLine("\n== 2. 놀람 후 15칸 안: 시야 밖일 때만 추격");
-        MovePlayer(Pos(a) + dir * (ambientR + 4f)); // 박쥐가 플레이어 뒤(부채꼴 밖), 원형 밖이 되게 앞으로 옮긴다
-        yield return WaitFrames(2);
-        float d2 = Dist(a);
-        Check(!vision.IsPointVisible(Pos(a)) && d2 <= config.batChaseRange, $"시야 밖, 15칸 안 ({d2:F2}칸)");
+        // --- 3. 시야에서 벗어나면 웅크림을 거꾸로 풀고 비행으로 돌아가 다시 다가온다(주변 시야에서는 멈추지 않음), 다시 쳐다보면 또 웅크린다
+        sb.AppendLine("\n== 3. 정면 시야 밖 → 바로 다시 추격, 그림은 웅크림 거꾸로(wrap-03 → 02 → 01) 재생 뒤 비행, 다시 쳐다보면 또 웅크림");
+        lookDirection = -dir; // 뒤돌아본다 - 박쥐가 플레이어 뒤(부채꼴 밖, 원형 밖)가 된다
+        // 부채꼴 방향은 LateUpdate에서 돌므로 바로 다음 프레임까지는 아직 보인다 - 시야 밖이 된 프레임부터 잰다(그 프레임에 풀림이 시작된다).
+        for (int i = 0; i < 5 && a.IsFrozen; i++) yield return WaitFrames(1);
+        held = Pos(a);
+        float unwrapStartDist = Dist(a);
+        List<string> unwrapSeq = new List<string> { SpriteName(a) };
+        bool freeWhileUnwrap = true;
+        float unwrapDrift = 0f;
+        int flyFrame = -1, movedFrame = -1;
+        for (int i = 1; i <= 40; i++)
+        {
+            yield return WaitFrames(1);
+            string n = SpriteName(a);
+            if (i == 1) CaptureBat(a, $"풀림 시작 {n} (정면 시야 밖)");
+            if (n.StartsWith("fly-")) { flyFrame = i; CaptureBat(a, $"다시 비행 {n}"); break; }
+            unwrapDrift = Mathf.Max(unwrapDrift, (Pos(a) - held).magnitude);
+            if (movedFrame < 0 && unwrapDrift > 0.05f) movedFrame = i;
+            if (a.IsFrozen || a.IsHolding || a.CurrentPose != BatMonsterAI.Pose.Unwrapping) freeWhileUnwrap = false;
+            if (n != unwrapSeq[unwrapSeq.Count - 1]) { unwrapSeq.Add(n); CaptureBat(a, $"풀림 {n}"); }
+        }
+        float unwrapSeconds = (flyFrame + 1) * FrameTime, expectUnwrap = 3f / wrapRate; // 시야 밖이 된 프레임(풀림 시작)을 포함
+        Check(string.Join(",", unwrapSeq) == "wrap-03,wrap-02,wrap-01", $"풀림 그림 순서 {string.Join(" → ", unwrapSeq)} → 비행 (기대 wrap-03 → wrap-02 → wrap-01)");
+        Check(flyFrame > 0 && Mathf.Abs(unwrapSeconds - expectUnwrap) <= FrameTime * 1.5f,
+            $"풀림 {unwrapSeconds:F3}초 뒤 비행 그림 (기대 3프레임 / {wrapRate} fps = {expectUnwrap:F3}초)");
+        Check(freeWhileUnwrap && movedFrame > 0 && movedFrame <= 3 && unwrapDrift > 0.5f && Dist(a) < unwrapStartDist - 0.5f,
+            $"풀리는 동안 바로 움직인다 ({movedFrame}프레임째 출발, 풀림 그림이 끝날 때까지 {unwrapDrift:F2}칸 이동, 거리 {unwrapStartDist:F2} → {Dist(a):F2}칸)");
+        float d3 = Dist(a);
         frames = 0;
-        bool moved = false;
-        bool flyFrames = false;
-        while (frames < 150 && !(moved && a.IsFrozen))
+        bool froze3 = false, enteredAmbient3 = false, flyFrames = true;
+        while (Dist(a) > nearStop && frames < 150)
         {
             yield return WaitFrames(1);
             frames++;
-            if (Dist(a) < d2 - 0.2f) moved = true;
-            if (!a.IsFrozen && BodySprite(a) != null && BodySprite(a).name.StartsWith("fly-")) flyFrames = true;
+            if (a.IsHolding) froze3 = true;
+            if (vision.IsPointVisible(Pos(a)) && !vision.IsPointInFocusedVision(Pos(a))) enteredAmbient3 = true;
+            if (!SpriteName(a).StartsWith("fly-")) flyFrames = false;
         }
-        float stop2 = Dist(a);
-        Check(moved && a.IsFrozen && stop2 <= ambientR + 0.05f, $"쫓아와서 시야에 들어오자 다시 멈춤 ({d2:F2} → {stop2:F2}칸, {frames}프레임)");
-        Check(flyFrames, "움직이는 동안 비행 그림(fly-01~06)");
+        Check(a.CurrentPhase == BatMonsterAI.Phase.Chase && !froze3 && enteredAmbient3 && Dist(a) <= nearStop + 0.05f,
+            $"놀람 뒤 추격도 주변 시야에서는 멈추지 않는다 ({d3:F2} → {Dist(a):F2}칸, 단계 {a.CurrentPhase}, {frames}프레임)");
+        Check(flyFrames, "다가오는 동안 비행 그림(fly-01~06)");
         Check(a.WarningCount >= 1, $"추격하며 움직이는 동안 경고음 {a.WarningCount}회(소리 파일 없음 - 에러 없이 건너뜀)");
+        lookDirection = dir; // 다시 돌아서서 쳐다본다
+        frames = 0;
+        while (!a.IsFrozen && frames < 10) { yield return WaitFrames(1); frames++; }
+        Check(a.IsFrozen && SpriteName(a) == "wrap-01", $"다시 정면 시야에 들어오자 바로 멈추고 웅크림 시작 ({frames}프레임, 그림 {SpriteName(a)})");
         int warnAfterChase = a.WarningCount;
+        held = Pos(a);
         yield return WaitFrames(60);
-        Check(a.WarningCount == warnAfterChase, "시야 안에서 멈춘 동안 경고음 없음");
-
-        // --- 3. 부채꼴 시야
-        sb.AppendLine("\n== 3. 놀람 전 돌진 → 부채꼴 시야에 들어온 자리에서 굳음");
-        Object.Destroy(a.gameObject);
-        MovePlayer(laneCenter);
-        yield return WaitFrames(3);
-        a = SpawnBat(laneCenter + dir * front);
-        yield return WaitUntilSurprised(a);
-        float stop3 = Dist(a);
-        Check(a.IsSurprised && a.IsFrozen && stop3 <= focusedR + 0.05f && stop3 >= focusedR - StepPerFrame - 0.1f && stop3 > ambientR + 0.5f,
-            $"부채꼴 반경에서 멈춤 (멈춘 거리 {stop3:F2}, 부채꼴 반경 {focusedR:F2}, 원형 반경 {ambientR:F2})");
+        Check(a.WarningCount == warnAfterChase && (Pos(a) - held).magnitude < 0.02f && SpriteName(a) == "wrap-03",
+            $"정면 시야 안에서 멈춘 동안 경고음 없음, 움직임 없음, wrap-03 유지 (그림 {SpriteName(a)})");
+        Check(gm.Health == startHealth, $"여기까지 데미지 없음(체력 {gm.Health})");
+        WriteCaptureManifest();
 
         // --- 4. 벽에 가려지면 시야 밖
         sb.AppendLine("\n== 4. 부채꼴 안이어도 벽 뒤는 시야 밖 → 계속 움직임");
         Object.Destroy(a.gameObject);
+        lookDirection = dir;
+        MovePlayer(laneCenter);
+        yield return WaitFrames(3);
         float wallAt = (ambientR + focusedR) * 0.5f;
         GameObject wall = Wall(laneCenter + dir * wallAt, dir, 3f);
         yield return WaitFrames(2);
@@ -398,13 +478,13 @@ public static class BatMonsterTest
         lookDirection = dir;
 
         // --- 6. 배회 중에도 시야 안이면 멈춘다 (추격 거리를 0.5로 줄인 복제 설정)
-        sb.AppendLine("\n== 6. 배회 중에도 시야 안이면 멈추고, 시야 밖이면 움직인다");
+        sb.AppendLine("\n== 6. 배회 중에도 정면 시야 안이면 멈추고, 시야 밖이면 (풀린 뒤) 움직인다");
         Object.Destroy(a.gameObject);
         MovePlayer(laneCenter);
         yield return WaitFrames(3);
         GameBalanceConfig shortRange = Object.Instantiate(config);
         shortRange.batChaseRange = 0.5f;
-        a = SpawnBat(laneCenter - dir * behind, shortRange);
+        a = SpawnBat(laneCenter + dir * front, shortRange);
         yield return WaitUntilSurprised(a);
         yield return WaitFrames(5);
         held = Pos(a);
@@ -413,8 +493,8 @@ public static class BatMonsterTest
             $"추격 거리 밖(배회)이어도 시야 안이면 멈춘다 (단계 {a.CurrentPhase}, 2초 {(Pos(a) - held).magnitude:F3}칸)");
         vision.enabled = false; // 시야를 끄면 어디도 보이지 않는다 → 시야 밖
         held = Pos(a);
-        yield return WaitFrames(60);
-        Check(!a.IsFrozen && (Pos(a) - held).magnitude > 0.1f, $"시야 밖이 되면 배회를 이어간다 (2초 {(Pos(a) - held).magnitude:F2}칸)");
+        yield return WaitFrames(75);
+        Check(!a.IsFrozen && (Pos(a) - held).magnitude > 0.1f, $"시야 밖이 되면 웅크림이 풀린 뒤 배회를 이어간다 (2.5초 {(Pos(a) - held).magnitude:F2}칸)");
         vision.enabled = true;
         Object.Destroy(a.gameObject);
         Object.Destroy(shortRange);
@@ -428,11 +508,11 @@ public static class BatMonsterTest
             gm.SelectClass(cls);
             yield return WaitFrames(3);
             int full = gm.Health;
-            a = SpawnBat(laneCenter - dir * 0.3f);
+            a = SpawnBat(laneCenter + dir * 0.4f); // 정면(부채꼴 안), 접촉 거리 안
             yield return WaitFrames(30);
             Check(a.IsFrozen && gm.Health == full, $"{cls}: 접촉 거리 안이어도 굳은 동안 데미지 없음 (체력 {gm.Health}/{full})");
             vision.enabled = false;
-            yield return WaitFrames(5);
+            yield return WaitFrames(5); // 시야를 끄면 바로 다가와 접촉한다(풀리는 그림과 상관없이)
             Check(full == GameManager.MaxHealth && full - gm.Health == expected,
                 $"{cls}: 최대 체력 {GameManager.MaxHealth}, 접촉 데미지 {full - gm.Health} (기대 {expected}) → 남은 체력 {gm.Health}");
             vision.enabled = true;
@@ -563,6 +643,13 @@ public static class BatMonsterTest
         Check(anim.FindProperty("walkFrames").arraySize == 6 && anim.FindProperty("attack1Frames").arraySize == 4 && anim.FindProperty("deathFrames").arraySize == 2 &&
               anim.FindProperty("deathFrames").GetArrayElementAtIndex(1).objectReferenceValue == BatMonsterAssetBuilder.Frame("fallen-01"),
             "상태 연결: 비행 fly-01~06, 물기 bite-01~04, 피격 hurt-01, 쓰러짐 hurt-01 → fallen-01");
+        SerializedObject aiSo = new SerializedObject(ai);
+        SerializedProperty wrap = aiSo.FindProperty("wrapFrames");
+        float wrapFps = aiSo.FindProperty("wrapFrameRate").floatValue;
+        Check(wrap.arraySize == 3 && wrap.GetArrayElementAtIndex(0).objectReferenceValue == BatMonsterAssetBuilder.Frame("wrap-01") &&
+              wrap.GetArrayElementAtIndex(1).objectReferenceValue == BatMonsterAssetBuilder.Frame("wrap-02") &&
+              wrap.GetArrayElementAtIndex(2).objectReferenceValue == BatMonsterAssetBuilder.Frame("wrap-03") && wrapFps >= 6f && wrapFps <= 8f,
+            $"웅크림 연결: wrap-01~03, {wrapFps} fps (사용방법.txt 6~8 fps)");
         Check(Mathf.Approximately(config.batSpeed, 8.4f) && Mathf.Approximately(config.batCatchDamageRatio, 0.8f) && Mathf.Approximately(config.batChaseRange, 15f) &&
               Mathf.Approximately(config.batWanderSpeed, 1.5f) && Mathf.Approximately(config.batWanderRadius, 5f) &&
               Mathf.Approximately(config.batWanderWaitMin, 1f) && Mathf.Approximately(config.batWanderWaitMax, 3f) && Mathf.Approximately(config.batWarningInterval, 1.5f),
@@ -639,12 +726,12 @@ public static class BatMonsterTest
         BatMonsterAI a = SpawnBat(lane);
         yield return WaitUntilSurprised(a);
         yield return WaitFrames(5);
-        Check(a.IsFrozen && vision.IsPointVisible(Pos(a)), $"쳐다보는 중이라 굳어 있다 (거리 {Dist(a):F2}칸)");
+        Check(a.IsFrozen && vision.IsPointInFocusedVision(Pos(a)), $"쳐다보는 중이라 굳어 있다 (거리 {Dist(a):F2}칸)");
         int fleeBefore = a.FleeCount;
         a.Health.TakeDamage(0.1f);
         Vector2 start = a.FleeStart;
         float maxSpeed = 0f, maxDisplacement = 0f;
-        bool frozenWhileFleeing = false, visibleSometime = false, fleeFrames = false;
+        bool frozenWhileFleeing = false, visibleSometime = false, fleeFrames = false, wrapWhileFleeing = false;
         Vector2 prev = Pos(a);
         int frames = 0;
         while (a.IsFleeing && frames < 200)
@@ -654,8 +741,9 @@ public static class BatMonsterTest
             maxSpeed = Mathf.Max(maxSpeed, (Pos(a) - prev).magnitude / FrameTime);
             prev = Pos(a);
             maxDisplacement = Mathf.Max(maxDisplacement, (Pos(a) - start).magnitude);
-            if (a.IsFleeing && vision.IsPointVisible(Pos(a))) visibleSometime = true;
-            if (a.IsFleeing && a.IsFrozen) frozenWhileFleeing = true;
+            if (a.IsFleeing && vision.IsPointInFocusedVision(Pos(a))) visibleSometime = true;
+            if (a.IsFleeing && (a.IsFrozen || a.IsHolding)) frozenWhileFleeing = true;
+            if (a.IsFleeing && (a.CurrentPose != BatMonsterAI.Pose.Flying || SpriteName(a).StartsWith("wrap-"))) wrapWhileFleeing = true;
             if (a.IsFleeing && BodySprite(a) != null && BodySprite(a).name.StartsWith("fly-")) fleeFrames = true;
         }
         float displacement = (Pos(a) - start).magnitude;
@@ -663,7 +751,8 @@ public static class BatMonsterTest
         Check(Mathf.Abs(displacement - fleeDistance) <= 0.35f, $"도망 거리 {displacement:F2}칸 (기대 {fleeDistance} = 거위 {config.gooseFleeDistance} x 0.5, {frames}프레임)");
         Check(maxSpeed <= config.gooseFleeSpeed + 0.15f && maxSpeed >= config.gooseFleeSpeed - 0.3f,
             $"도망 속도 최고 {maxSpeed:F2}/초 (거위 도망 속도 {config.gooseFleeSpeed})");
-        Check(visibleSometime && !frozenWhileFleeing, $"도망 중에는 시야 안이어도 멈추지 않는다 (시야 안 {visibleSometime}, 굳음 {frozenWhileFleeing})");
+        Check(visibleSometime && !frozenWhileFleeing && !wrapWhileFleeing,
+            $"도망 중에는 정면 시야 안이어도 멈추지 않고 웅크리지도 않는다 (정면 시야 안 {visibleSometime}, 굳음 {frozenWhileFleeing}, 웅크림 {wrapWhileFleeing})");
         Check(fleeFrames, "도망 중 비행 그림");
         // 도망이 끝나면 다시 다가온다(시야를 끄면 시야 밖).
         vision.enabled = false;
@@ -780,6 +869,73 @@ public static class BatMonsterTest
     private static float Dist(BatMonsterAI a) => Vector2.Distance(Pos(a), player.position);
 
     private static Sprite BodySprite(BatMonsterAI a) => a.transform.Find("Visual/Body")?.GetComponent<SpriteRenderer>()?.sprite;
+
+    private static string SpriteName(BatMonsterAI a) => BodySprite(a) != null ? BodySprite(a).name : "";
+
+    private static float WrapFrameRate(BatMonsterAI a) => (float)typeof(BatMonsterAI).GetField("wrapFrameRate", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(a);
+
+    // ===================== 실제 렌더 캡처 =====================
+    // 게임 카메라(Camera.main)를 RenderTexture에 한 번 더 그려 잘라 낸다 - 화면과 같은 조명·시야·정렬이다.
+
+    private const string CaptureFolder = "Logs/Bat/render";
+    private static readonly List<string> captureManifest = new List<string>();
+
+    // 몸 그림 둘레를 자른다. 시야 밖(어둠)에서도 프레임이 보이게 이 렌더 한 번만 전역 조명을 1로 올렸다가 바로 되돌린다(게임 동작과 무관).
+    private static void CaptureBat(BatMonsterAI a, string label)
+    {
+        SpriteRenderer body = a.transform.Find("Visual/Body")?.GetComponent<SpriteRenderer>();
+        Vector2 c = body != null ? (Vector2)body.bounds.center : Pos(a);
+        Light2D[] globals = Object.FindObjectsByType<Light2D>(FindObjectsSortMode.None).Where(l => l.lightType == Light2D.LightType.Global).ToArray();
+        float[] saved = globals.Select(l => l.intensity).ToArray();
+        foreach (Light2D l in globals) l.intensity = 1f;
+        Capture($"crouch_{captureManifest.Count:00}", label, c - Vector2.one * 1.6f, c + Vector2.one * 1.6f);
+        for (int i = 0; i < globals.Length; i++) globals[i].intensity = saved[i];
+    }
+
+    // 플레이어와 박쥐가 함께 들어오게 정사각형으로 자른다.
+    private static void CaptureWide(string tag, string label, Vector2 bat)
+    {
+        Vector2 p = player.position;
+        Vector2 min = Vector2.Min(p, bat) - Vector2.one * 1.6f, max = Vector2.Max(p, bat) + Vector2.one * 1.6f;
+        Vector2 center = (min + max) * 0.5f;
+        float half = Mathf.Max(max.x - min.x, max.y - min.y) * 0.5f;
+        Capture($"view_{tag}", label, center - Vector2.one * half, center + Vector2.one * half);
+    }
+
+    private static void Capture(string file, string label, Vector2 worldMin, Vector2 worldMax)
+    {
+        Camera cam = Camera.main;
+        if (cam == null) return;
+        const int W = 1920, H = 1080;
+        Directory.CreateDirectory(CaptureFolder);
+        RenderTexture rt = new RenderTexture(W, H, 24, RenderTextureFormat.ARGB32) { antiAliasing = 1 };
+        RenderTexture prevTarget = cam.targetTexture, prevActive = RenderTexture.active;
+        cam.targetTexture = rt;
+        cam.Render();
+        Vector3 lo = cam.WorldToViewportPoint(new Vector3(worldMin.x, worldMin.y, 0f));
+        Vector3 hi = cam.WorldToViewportPoint(new Vector3(worldMax.x, worldMax.y, 0f));
+        int x0 = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(lo.x, hi.x) * W), 0, W - 1);
+        int x1 = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(lo.x, hi.x) * W), x0 + 1, W);
+        int y0 = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(lo.y, hi.y) * H), 0, H - 1);
+        int y1 = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(lo.y, hi.y) * H), y0 + 1, H);
+        RenderTexture.active = rt;
+        Texture2D tex = new Texture2D(x1 - x0, y1 - y0, TextureFormat.RGB24, false);
+        tex.ReadPixels(new Rect(x0, y0, x1 - x0, y1 - y0), 0, 0);
+        tex.Apply();
+        File.WriteAllBytes($"{CaptureFolder}/{file}.png", tex.EncodeToPNG());
+        RenderTexture.active = prevActive;
+        cam.targetTexture = prevTarget;
+        Object.DestroyImmediate(rt);
+        Object.DestroyImmediate(tex);
+        captureManifest.Add($"{file}.png|{label}");
+    }
+
+    private static void WriteCaptureManifest()
+    {
+        Directory.CreateDirectory(CaptureFolder);
+        File.WriteAllLines($"{CaptureFolder}/manifest.txt", captureManifest, new UTF8Encoding(false));
+        sb.AppendLine($"(참고) 실제 렌더 캡처 {captureManifest.Count}장: {Path.GetFullPath(CaptureFolder)}");
+    }
 
     private static List<BatMonsterAI> Bats() => Object.FindObjectsByType<BatMonsterAI>(FindObjectsInactive.Exclude).Where(b => !b.Health.IsDead).ToList();
 

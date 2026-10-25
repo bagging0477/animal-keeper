@@ -68,6 +68,13 @@ public class PlayerVision : MonoBehaviour
     public bool IsPointVisible(Vector2 point) =>
         InsideLight(ambientVisionLight, point) || InsideLight(focusedVisionLight, point);
 
+    /// <summary>월드 위치(x, y)가 지금 정면 부채꼴(손전등) 시야 안인지 - 원형 주변 시야는 보지 않는다. 플레이어나 시야가 없으면 false.
+    /// 판정 기준(반경, 각도, 방향, 켜짐, 벽)은 IsPointVisible의 부채꼴 쪽과 같다. 박쥐 굳음이 쓴다.</summary>
+    public static bool IsInFocusedVision(Vector2 point) => Current != null && Current.IsPointInFocusedVision(point);
+
+    /// <summary>월드 위치(x, y)가 지금 이 시야의 정면 부채꼴 안인지(원형 시야 제외).</summary>
+    public bool IsPointInFocusedVision(Vector2 point) => InsideLight(focusedVisionLight, point);
+
     private static bool InsideLight(Light2D light, Vector2 point)
     {
         if (light == null || !light.isActiveAndEnabled) return false;

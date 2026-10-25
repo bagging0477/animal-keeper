@@ -514,6 +514,10 @@ public class VillageMapGenerator : MonoBehaviour
             SpawnBody.Box(truckXY, truckFootprint),
         };
         int animalShortfall = 0, monsterShortfall = 0;
+        // 스폰 자리는 플레이어 시작 자리와 NavMesh로 이어진 곳만 받는다(IsOnMainNavMesh) - 숲 나무가 통과되면서 덤불 사이 1칸 틈이 생겼는데,
+        // 칸 기준으로는 이어져 있어도 NavMesh는 에이전트 반경만큼 깎여 그 틈이 끊기므로 작은 NavMesh 섬이 남는다. 그 섬에는 소환하지 않는다.
+        gridSpawnNavReference = NavMesh.SamplePosition(new Vector3(playerSpawnWorldXY.x, 0f, playerSpawnWorldXY.y), out NavMeshHit referenceHit, 1.5f, NavMesh.AllAreas)
+            ? referenceHit.position : (Vector3?)null;
         for (int i = 0; i < placedRooms.Count; i++)
         {
             RoomInstance room = placedRooms[i];
@@ -522,6 +526,7 @@ public class VillageMapGenerator : MonoBehaviour
             animalShortfall += SpawnGridAnimals(room, animalCounts[i], usedCells, placedBodies);
             monsterShortfall += SpawnGridMonsters(room, monsterCounts[i], playerSpawnWorldXY, usedCells, placedBodies);
         }
+        gridSpawnNavReference = null;
         LastGridSpawnCounts = (animalCounts.Sum() - animalShortfall, monsterCounts.Sum() - monsterShortfall);
         LastGridSpawnShortfall = (animalShortfall, monsterShortfall);
         LastGridMonsterWeights = placedRooms.Select(MonsterSpawnWeight).ToArray();
@@ -662,6 +667,7 @@ public class VillageMapGenerator : MonoBehaviour
                 Vector3 desired = ToNavPosition(room, cell);
                 // SpawnMonsterAt과 같은 스냅(반경 1.5, 방 범위 안). 스냅된 자리도 몸 크기로 다시 검사한다.
                 if (!NavMesh.SamplePosition(desired, out NavMeshHit hit, 1.5f, NavMesh.AllAreas) || !IsWithinRoom(room, hit.position)) continue;
+                if (!IsOnMainNavMesh(hit.position, 0.1f)) continue; // 스냅된 자리가 끊긴 NavMesh 섬이면 버린다
                 Vector2 snapped = new Vector2(hit.position.x, hit.position.z);
                 if (!GridSpawnSpotFits(snapped, radius, placedBodies)) continue;
                 Instantiate(prefab, hit.position, Quaternion.identity, room.Root.transform).name = $"{prefab.name}_{i}";
@@ -734,8 +740,24 @@ public class VillageMapGenerator : MonoBehaviour
         return true;
     }
 
+    // 격자 스폰 중에만 쓰는 기준 자리(플레이어 시작 자리의 NavMesh 위치). 스폰이 끝나면 비운다 - 비어 있으면 아래 검사는 그냥 통과한다.
+    private static Vector3? gridSpawnNavReference;
+    private static NavMeshPath gridSpawnPath;
+    // 칸 가운데에서 NavMesh를 찾는 반경(벽·장애물 옆 칸은 가운데가 에이전트 반경만큼 깎인 가장자리에 살짝 걸릴 수 있다).
+    private const float GridSpawnNavTolerance = 0.5f;
+
+    // 이 자리가 맵의 큰 NavMesh(플레이어 시작 자리와 길로 이어진 곳) 위인지. 끊긴 작은 NavMesh 섬이나 NavMesh 밖이면 false.
+    private static bool IsOnMainNavMesh(Vector3 navPosition, float tolerance)
+    {
+        if (!gridSpawnNavReference.HasValue) return true;
+        if (!NavMesh.SamplePosition(navPosition, out NavMeshHit hit, tolerance, NavMesh.AllAreas)) return false;
+        if (gridSpawnPath == null) gridSpawnPath = new NavMeshPath();
+        return NavMesh.CalculatePath(hit.position, gridSpawnNavReference.Value, NavMesh.AllAreas, gridSpawnPath) &&
+               gridSpawnPath.status == NavMeshPathStatus.PathComplete;
+    }
+
     // 격자 경로의 스폰 칸 고르기. 후보는 PickInteriorCell과 같은 칸(장애물 아님, 상하좌우가 바닥, usedCells 아님)이고, 거기서 무작위로 뽑아
-    // GridSpawnSpotFits를 통과하는 칸을 고른다. 실패한 칸은 후보에서 빼므로 같은 칸을 다시 보지 않는다. GridSpawnRandomAttempts번 안에 못 찾으면
+    // GridSpawnSpotFits와 IsOnMainNavMesh(큰 NavMesh 위)를 통과하는 칸을 고른다. 실패한 칸은 후보에서 빼므로 같은 칸을 다시 보지 않는다. GridSpawnRandomAttempts번 안에 못 찾으면
     // 남은 후보를 순서대로 한 번 훑는다(Random을 더 쓰지 않는다). 그래도 없으면 null - 무한히 돌지 않는다.
     private static Vector2Int? PickGridSpawnCell(RoomInstance room, HashSet<Vector2Int> usedCells, float radius, List<SpawnBody> placedBodies)
     {
@@ -753,12 +775,12 @@ public class VillageMapGenerator : MonoBehaviour
         {
             int index = Random.Range(0, candidates.Count);
             Vector2Int c = candidates[index];
-            if (GridSpawnSpotFits(ToWorldXY(room, c), radius, placedBodies)) return c;
+            if (GridSpawnSpotFits(ToWorldXY(room, c), radius, placedBodies) && IsOnMainNavMesh(ToNavPosition(room, c), GridSpawnNavTolerance)) return c;
             candidates[index] = candidates[candidates.Count - 1];
             candidates.RemoveAt(candidates.Count - 1);
         }
         foreach (Vector2Int c in candidates)
-            if (GridSpawnSpotFits(ToWorldXY(room, c), radius, placedBodies)) return c;
+            if (GridSpawnSpotFits(ToWorldXY(room, c), radius, placedBodies) && IsOnMainNavMesh(ToNavPosition(room, c), GridSpawnNavTolerance)) return c;
         return null;
     }
 

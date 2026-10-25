@@ -26,6 +26,7 @@ public static class BatMonsterAssetBuilder
     public const int ShadowW = 10, ShadowH = 3;
     public const float ShadowTopTexels = -14f; // 몸 피벗(가운데) 기준, 그림자 맨 윗줄의 위 변
     public const float FrameRate = 10f, FleeFrameRate = 14f;
+    public const float WrapFrameRate = 7f; // 사용방법.txt: wrap 6~8 fps의 가운데
 
     [MenuItem("Tools/Monsters/Build Bat Monster (sprites + prefab)")]
     public static void Build() => TryBuild();
@@ -177,7 +178,8 @@ public static class BatMonsterAssetBuilder
             SerializedObject so = new SerializedObject(ai);
             so.FindProperty("visual").objectReferenceValue = visual;
             so.FindProperty("body").objectReferenceValue = body;
-            SetArray(so, "freezeFrames", Frames("freeze-01"));
+            SetArray(so, "wrapFrames", Frames("wrap-01", "wrap-02", "wrap-03"));
+            so.FindProperty("wrapFrameRate").floatValue = WrapFrameRate;
             so.FindProperty("fallenDropTexels").floatValue = 3f;
             so.FindProperty("bodyTexelsPerUnit").floatValue = PixelsPerUnit;
             so.FindProperty("monsterTypeName").stringValue = "박쥐";
