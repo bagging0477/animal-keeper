@@ -1,0 +1,9 @@
+scout now: sprite player_base (20.00, 20.00) PPU 10.24 pivot (10.25, 10.25) scale 0.64 collider (0.91, 0.91, 0.00)
+scout mock: sprite player_base (20.00, 20.00) PPU 10.24 pivot (10.25, 10.25) scale 0.64 collider (0.91, 0.91, 0.00)
+trapper now: sprite player_trapper (20.00, 20.00) PPU 11.52 pivot (10.25, 10.25) scale 0.72 collider (0.91, 0.91, 0.00)
+trapper mock: sprite player_trapper_heavy (20.00, 20.00) PPU 11.52 pivot (10.25, 10.25) scale 0.72 collider (0.91, 0.91, 0.00)
+gunner now: sprite player_gunner (20.00, 20.00) PPU 10.24 pivot (10.25, 10.25) scale 0.64 collider (0.91, 0.91, 0.00)
+gunner mock: sprite player_gunner_heavy (20.00, 20.00) PPU 10.24 pivot (10.25, 10.25) scale 0.64 collider (0.91, 0.91, 0.00)
+gunner_armed now: sprite player_gunner_armed (20.00, 20.00) PPU 13.216 pivot (10.25, 10.25) scale 0.826 collider (0.91, 0.91, 0.00)
+gunner_armed mock: sprite player_gunner_armed_heavy (20.00, 20.00) PPU 13.216 pivot (10.25, 10.25) scale 0.826 collider (0.91, 0.91, 0.00)
+player screen px (1920x1080 RT) center ~ (960.00, 540.00, 10.00), ortho 5.6
