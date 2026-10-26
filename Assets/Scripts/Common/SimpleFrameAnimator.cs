@@ -37,6 +37,9 @@ public class SimpleFrameAnimator : MonoBehaviour
         "프레임 전환 없이(이동 애니메이션을 끊지 않고) 이 색으로 잠깐 틴트했다가 원래 색으로 되돌아간다.")]
     [SerializeField] private Color hurtFlashColor = new Color(1f, 0.25f, 0.25f, 1f);
     [SerializeField] private float hurtFlashDuration = 0.15f;
+    [Tooltip("켜면 hurtFrames가 있어도 hurtFlashColor 깜빡임(늑대와 같은 피격 반응)을 같이 걸고, 피격 그림을 깜빡임이 끝날 때까지 보여 준다. " +
+        "꺼져 있으면 예전 그대로(hurtFrames가 있으면 그림만, 없으면 깜빡임만). 박쥐만 켠다.")]
+    [SerializeField] private bool flashWithHurtFrames;
 
     [Header("기절 - 마취/스턴 중에 고정해서 보여줄 스프라이트. 비워 두면 idleSprite를 쓴다")]
     [SerializeField] private Sprite knockedOutSprite;
@@ -106,7 +109,9 @@ public class SimpleFrameAnimator : MonoBehaviour
 
     /// <summary>hurtFrames를 한 번만(반복 없이) 재생한 뒤 그 시점의 최신 이동 상태로 돌아간다.
     /// hurtFrames가 비어 있으면 대신 hurtFlashColor로 잠깐 틴트하는 것으로 대체한다 - 이 경우 mode는
-    /// 바뀌지 않으므로 Walk/Flee 등 진행 중이던 이동 애니메이션이 끊기지 않는다.</summary>
+    /// 바뀌지 않으므로 Walk/Flee 등 진행 중이던 이동 애니메이션이 끊기지 않는다.
+    /// flashWithHurtFrames가 켜져 있으면 그림과 틴트를 함께 하고, 그림은 max(재생 시간, hurtFlashDuration) 동안 보인다.
+    /// 재생 중에 또 불리면 처음부터 다시 시작한다(연속 피격).</summary>
     public void PlayHurt()
     {
         if (mode == Mode.Dead) return;
@@ -116,6 +121,9 @@ public class SimpleFrameAnimator : MonoBehaviour
             return;
         }
         StartOneShot(hurtFrames, Mode.Hurt);
+        if (!flashWithHurtFrames) return;
+        hurtFlashTimeRemaining = hurtFlashDuration;
+        oneShotTimeRemaining = Mathf.Max(oneShotTimeRemaining, hurtFlashDuration);
     }
 
     /// <summary>deathFrames를 한 번만 재생한 뒤 마지막 프레임에서 영구히 멈춘다 - Attack/Hurt와 달리
@@ -124,6 +132,8 @@ public class SimpleFrameAnimator : MonoBehaviour
     public void PlayDeath()
     {
         if (mode == Mode.Dead) return;
+        // 깜빡이는 중에 쓰러지면 깜빡임이 끝날 때 흰색으로 돌아가 시체 색(MonsterHealth.deadColor)을 덮어쓰므로 바로 끈다.
+        if (flashWithHurtFrames) hurtFlashTimeRemaining = 0f;
         StartOneShot(deathFrames, Mode.Dead);
     }
 
@@ -132,6 +142,7 @@ public class SimpleFrameAnimator : MonoBehaviour
     public void ShowDeadPose()
     {
         if (mode == Mode.Dead || deathFrames == null || deathFrames.Length == 0) return;
+        if (flashWithHurtFrames) hurtFlashTimeRemaining = 0f;
         StartOneShot(deathFrames, Mode.Dead);
         frameIndex = deathFrames.Length - 1;
         if (spriteRenderer != null) spriteRenderer.sprite = deathFrames[frameIndex];

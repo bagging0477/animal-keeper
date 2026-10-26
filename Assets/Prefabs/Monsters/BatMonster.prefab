@@ -136,6 +136,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 68f11570c37797c4eb899f82ca9489ed, type: 3}
   hurtFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
   hurtFlashDuration: 0.15
+  flashWithHurtFrames: 1
   knockedOutSprite: {fileID: 0}
   knockedOutFrames: []
   knockedOutFrameRate: 0

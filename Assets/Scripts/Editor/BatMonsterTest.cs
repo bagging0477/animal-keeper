@@ -21,6 +21,7 @@ using UnityEngine.Tilemaps;
 /// 검사: 프리팹·그림·설정, 원형 주변 시야에서는 멈추지 않고 다가옴, 정면 부채꼴 시야에 들어오면 멈춤(굳음)·웅크림 3프레임 재생 후 마지막 프레임 유지,
 /// 시야에서 벗어나면 웅크림을 거꾸로 재생한 뒤 다시 비행, 벽 뒤는 시야 밖, 15칸 안 추격·밖 배회, 배회 중에도 정면 시야 안이면 멈춤,
 /// 접촉 데미지(최대 체력 x 0.8, 굳은 동안 없음), 무기 데미지 = 늑대와 같은 값(기절·마취 없음), 맞으면 도망(거리 = 거위 x 0.5, 속도 = 거위),
+/// 피격 모션(hurt-01 + 늑대와 같은 빨간 깜빡임, 비행·굳음·도망 중 모두, 피격 중에도 바로 도망, 연속 피격 → Logs/Bat/hurt_compare.png),
 /// 도망 중 쳐다봐도 안 멈춤, 도망 중 또 맞으면 그 자리에서 다시 도망, 무적 없음, 도망 뒤 다시 다가옴, 체력 0이면 쓰러지고 E로 회수,
 /// 시간 소환(180초에 1마리), 재진입, ResetDay/ResetGame. 프레임 시간 1/30초 고정. 다른 몬스터는 기절시켜 둔다(박쥐는 기절하지 않는다).
 /// 실제 게임 카메라 렌더: Logs/Bat/render/crouch_*.png, view_*.png + manifest.txt(비행 → 웅크림 → 굳음 → 풀림, 주변/정면 시야 장면).
@@ -55,6 +56,8 @@ public static class BatMonsterTest
     private static Transform player;
     private static PlayerVision vision;
     private static Light2D ambient, focused;
+    // 다른 몬스터는 매 프레임 기절시켜 두지만, 피격 모습 비교용 늑대는 평소 모습(기절 그림 아님)으로 맞아야 하므로 뺀다.
+    private static readonly HashSet<MonsterHealth> stunExempt = new HashSet<MonsterHealth>();
 
     static BatMonsterTest()
     {
@@ -170,7 +173,7 @@ public static class BatMonsterTest
             TearDown();
             return;
         }
-        foreach (MonsterHealth m in MonsterHealth.Active.ToArray()) if (m != null && !m.IsDead) m.Stun(1000f); // 박쥐는 기절하지 않는다
+        foreach (MonsterHealth m in MonsterHealth.Active.ToArray()) if (m != null && !m.IsDead && !stunExempt.Contains(m)) m.Stun(1000f); // 박쥐는 기절하지 않는다
         if (holdTime && gm != null) SetTime(0f);
         if (forceLook && player != null)
         {
@@ -530,6 +533,10 @@ public static class BatMonsterTest
         sb.AppendLine("\n== 8b. 실제 마취총(PlayerWeaponController)으로 박쥐 몸 그림 가운데를 겨눠 쏜다: 비행 중·굳음·도망 중 모두 맞고 0.8, 잠들지 않고 도망");
         yield return RealDartChecks(laneCenter, dir);
 
+        // --- 8c. 피격 모션
+        sb.AppendLine("\n== 8c. 피격 모션: 늑대와 같은 빨간 깜빡임 + hurt-01, 비행·굳음·도망 중 모두, 피격 그림이 보이는 동안에도 바로 도망, 연속 피격");
+        yield return HurtMotionChecks(laneCenter, dir);
+
         // --- 9. 도망: 거리·속도, 쳐다봐도 안 멈춤, 다시 다가옴
         sb.AppendLine("\n== 9. 맞으면 도망: 거리 = 거위 도망 거리 x 0.5, 속도 = 거위 도망 속도, 도망 중 쳐다봐도 안 멈춤, 끝나면 다시 다가옴");
         yield return FleeChecks(ambientR);
@@ -650,6 +657,17 @@ public static class BatMonsterTest
         Check(anim.FindProperty("walkFrames").arraySize == 6 && anim.FindProperty("attack1Frames").arraySize == 4 && anim.FindProperty("deathFrames").arraySize == 2 &&
               anim.FindProperty("deathFrames").GetArrayElementAtIndex(1).objectReferenceValue == BatMonsterAssetBuilder.Frame("fallen-01"),
             "상태 연결: 비행 fly-01~06, 물기 bite-01~04, 피격 hurt-01, 쓰러짐 hurt-01 → fallen-01");
+        SerializedObject wolfAnim = new SerializedObject(wolfPrefab.GetComponentInChildren<SimpleFrameAnimator>(true));
+        GameObject soundPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/SoundReactiveMonster.prefab");
+        SerializedObject soundAnim = soundPrefab != null ? new SerializedObject(soundPrefab.GetComponentInChildren<SimpleFrameAnimator>(true)) : null;
+        Check(anim.FindProperty("hurtFrames").arraySize == 1 && anim.FindProperty("hurtFrames").GetArrayElementAtIndex(0).objectReferenceValue == BatMonsterAssetBuilder.Frame("hurt-01") &&
+              anim.FindProperty("flashWithHurtFrames").boolValue &&
+              anim.FindProperty("hurtFlashColor").colorValue == wolfAnim.FindProperty("hurtFlashColor").colorValue &&
+              Mathf.Approximately(anim.FindProperty("hurtFlashDuration").floatValue, wolfAnim.FindProperty("hurtFlashDuration").floatValue),
+            $"피격: hurt-01 + 늑대와 같은 깜빡임 색 {anim.FindProperty("hurtFlashColor").colorValue}·{anim.FindProperty("hurtFlashDuration").floatValue}초 (flashWithHurtFrames 켬)");
+        Check(!wolfAnim.FindProperty("flashWithHurtFrames").boolValue && wolfAnim.FindProperty("hurtFrames").arraySize == 0 &&
+              soundAnim != null && !soundAnim.FindProperty("flashWithHurtFrames").boolValue,
+            $"늑대·소리반응형은 그대로 (늑대 피격 그림 {wolfAnim.FindProperty("hurtFrames").arraySize}장 = 깜빡임만, 둘 다 flashWithHurtFrames 끔)");
         SerializedObject aiSo = new SerializedObject(ai);
         SerializedProperty wrap = aiSo.FindProperty("wrapFrames");
         float wrapFps = aiSo.FindProperty("wrapFrameRate").floatValue;
@@ -807,6 +825,218 @@ public static class BatMonsterTest
         Vector2 local = (px - s.pivot) / s.pixelsPerUnit;
         if (r.flipX) local.x = -local.x;
         return r.transform.TransformPoint(local);
+    }
+
+    // ===================== 피격 모션 =====================
+    // 늑대(기준)와 박쥐(비행 중·굳음·도망 중)를 맞힌 다음 프레임을 실제 게임 카메라로 찍어 한 장에 나란히 놓는다.
+    private const string HurtComparePath = "Logs/Bat/hurt_compare.png";
+    private static readonly List<(string label, Texture2D tex)> hurtPanels = new List<(string, Texture2D)>();
+
+    private static IEnumerator HurtMotionChecks(Vector2 laneCenter, Vector2 dir)
+    {
+        foreach (var p in hurtPanels) if (p.tex != null) Object.DestroyImmediate(p.tex);
+        hurtPanels.Clear();
+        // 앞 무기 검사(폭탄·지뢰)의 화염 효과가 아직 남아 있으면 비교 그림을 가리므로 치운다(게임 동작과 무관한 그림 효과).
+        foreach (FireBurstEffect2D e in Object.FindObjectsByType<FireBurstEffect2D>(FindObjectsInactive.Include)) Object.Destroy(e.gameObject);
+        foreach (BombExplosionEffect e in Object.FindObjectsByType<BombExplosionEffect>(FindObjectsInactive.Include)) Object.Destroy(e.gameObject);
+        foreach (MineTrap e in Object.FindObjectsByType<MineTrap>(FindObjectsInactive.Include)) Object.Destroy(e.gameObject);
+        MovePlayer(laneCenter);
+        lookDirection = dir;
+        yield return WaitFrames(3);
+
+        // 늑대(기준): 그림은 그대로 두고 빨간 깜빡임만 hurtFlashDuration초. 기절시키지 않은 평소 모습으로 맞힌다.
+        GameObject wolfPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Monsters/PatrolMonster.prefab");
+        Vector2 wolfAt = laneCenter + dir * 3f;
+        NavMesh.SamplePosition(new Vector3(wolfAt.x, 0f, wolfAt.y), out NavMeshHit wolfHit, 1f, NavMesh.AllAreas);
+        MonsterHealth wolf = Object.Instantiate(wolfPrefab, wolfHit.position, Quaternion.identity).GetComponent<MonsterHealth>();
+        wolf.name = "TestWolfHurt";
+        stunExempt.Add(wolf);
+        yield return WaitFrames(3);
+        SimpleFrameAnimator wolfAnim = wolf.GetComponentInChildren<SimpleFrameAnimator>();
+        SpriteRenderer wolfRenderer = wolfAnim.GetComponent<SpriteRenderer>();
+        Color flash = (Color)AnimField("hurtFlashColor").GetValue(wolfAnim);
+        float flashSeconds = (float)AnimField("hurtFlashDuration").GetValue(wolfAnim);
+        int expectFrames = Mathf.CeilToInt(flashSeconds / FrameTime - 0.001f);
+        string wolfBefore = wolfRenderer.sprite != null ? wolfRenderer.sprite.name : "";
+        wolf.TakeDamage(0.1f);
+        yield return WaitFrames(1);
+        string wolfSprite = wolfRenderer.sprite != null ? wolfRenderer.sprite.name : "";
+        hurtPanels.Add(("WOLF HIT", RenderCrop(wolfRenderer.bounds.center, 1.6f)));
+        int wolfRed = 0;
+        for (int i = 0; i < 20 && SameColor(wolfRenderer.color, flash); i++) { wolfRed++; yield return WaitFrames(1); }
+        Check(wolfRed > 0 && Mathf.Abs(wolfRed - expectFrames) <= 1 && wolfRenderer.color == Color.white && !wolfSprite.StartsWith("hurt"),
+            $"늑대(기준): 그림은 이동 그림 그대로({wolfBefore} → {wolfSprite}), 빨간 깜빡임 {wolfRed}프레임 = {wolfRed * FrameTime:F3}초 (설정 {flash}, {flashSeconds}초)");
+        stunExempt.Remove(wolf);
+        Object.Destroy(wolf.gameObject);
+        yield return WaitFrames(2);
+
+        // 비행 중: 시야를 끄면 정면에 있어도 굳지 않고 날아온다
+        vision.enabled = false;
+        BatMonsterAI a = SpawnBat(laneCenter + dir * 9f);
+        yield return WaitFrames(6);
+        BatMonsterAI flying = a;
+        yield return HitAndWatch(a, "비행 중", "BAT HIT FLYING", flash, expectFrames,
+            () => !flying.IsFrozen && !flying.IsFleeing && flying.CurrentPose == BatMonsterAI.Pose.Flying && SpriteName(flying).StartsWith("fly-"));
+        vision.enabled = true;
+        Object.Destroy(a.gameObject);
+        yield return WaitFrames(2);
+
+        // 굳음: 정면 3칸에서 웅크려 굳은 박쥐(wrap-03)
+        lookDirection = dir;
+        a = SpawnBat(laneCenter + dir * 3f);
+        yield return WaitFrames(20);
+        BatMonsterAI wrapped = a;
+        yield return HitAndWatch(a, "굳음", "BAT HIT WRAPPED", flash, expectFrames,
+            () => wrapped.IsFrozen && wrapped.CurrentPose == BatMonsterAI.Pose.Wrapped && SpriteName(wrapped) == "wrap-03");
+        Object.Destroy(a.gameObject);
+        yield return WaitFrames(2);
+
+        // 도망 중: 한 번 맞아 피격 모션이 끝나고 비행 그림으로 도망가는 중에 또 맞힌다
+        a = SpawnBat(laneCenter + dir * 2f);
+        yield return WaitFrames(5);
+        a.Health.TakeDamage(0.1f);
+        yield return WaitFrames(expectFrames + 4);
+        BatMonsterAI fleeing = a;
+        yield return HitAndWatch(a, "도망 중", "BAT HIT FLEEING", flash, expectFrames,
+            () => fleeing.IsFleeing && SpriteName(fleeing).StartsWith("fly-") && BodyRenderer(fleeing).color == Color.white);
+        Object.Destroy(a.gameObject);
+        yield return WaitFrames(2);
+
+        // 연속 피격: 피격 그림이 보이는 중에 또 맞아도 깎이고, 그 자리에서 다시 도망하고, 피격 모션이 처음부터 다시 나온다
+        a = SpawnBat(laneCenter + dir * 2f);
+        yield return WaitFrames(5);
+        float hp0 = a.Health.Health;
+        int f0 = a.FleeCount;
+        a.Health.TakeDamage(0.1f);
+        yield return WaitFrames(2);
+        bool hurtShown = SpriteName(a) == "hurt-01";
+        Vector2 at = Pos(a);
+        a.Health.TakeDamage(0.1f);
+        Vector2 secondStart = a.FleeStart;
+        float hpAfter = a.Health.Health;
+        int hurtAfterSecond = 0;
+        for (int i = 0; i < 20; i++)
+        {
+            yield return WaitFrames(1);
+            if (SpriteName(a) != "hurt-01") break;
+            hurtAfterSecond++;
+        }
+        Check(hurtShown && Mathf.Abs(hp0 - hpAfter - 0.2f) < 0.001f && a.FleeCount == f0 + 2 && (secondStart - at).magnitude < 0.01f,
+            $"피격 그림이 보이는 중(2프레임째)에 또 맞아도 깎이고({hp0:0.##} → {hpAfter:0.##}) 맞은 자리에서 새로 도망 (도망 {f0} → {a.FleeCount}) - 무적 없음");
+        Check(Mathf.Abs(hurtAfterSecond - expectFrames) <= 1, $"두 번째 피격에서 피격 모션을 처음부터 다시 재생 ({hurtAfterSecond}프레임, 기대 약 {expectFrames})");
+        float hp1 = a.Health.Health;
+        int f1 = a.FleeCount;
+        a.Health.TakeDamage(0.1f);
+        a.Health.TakeDamage(0.1f);
+        a.Health.TakeDamage(0.1f);
+        yield return WaitFrames(1);
+        Check(Mathf.Abs(hp1 - a.Health.Health - 0.3f) < 0.001f && a.FleeCount == f1 + 3 && SpriteName(a) == "hurt-01" && SameColor(BodyRenderer(a).color, flash) && a.IsFleeing,
+            $"같은 프레임에 세 번 맞아도 세 번 다 깎이고({hp1:0.##} → {a.Health.Health:0.##}) 도망 {f1} → {a.FleeCount}, 피격 모션 재생 중 ({SpriteName(a)})");
+        Object.Destroy(a.gameObject);
+        yield return WaitFrames(2);
+        WriteHurtCompare();
+    }
+
+    // 맞힌 뒤 피격 그림(hurt-01)과 빨간 깜빡임이 늑대와 같은 시간만큼 보이는지, 그동안에도 이미 도망 중인지, 끝나면 도망 비행 그림으로 이어지는지 본다.
+    private static IEnumerator HitAndWatch(BatMonsterAI a, string what, string panel, Color flash, int expectFrames, System.Func<bool> stateOk)
+    {
+        bool stateBefore = stateOk();
+        string before = SpriteName(a);
+        SpriteRenderer r = BodyRenderer(a);
+        NavMeshAgent agent = a.GetComponent<NavMeshAgent>();
+        int flees = a.FleeCount;
+        float hp = a.Health.Health;
+        Vector2 p0 = Pos(a);
+        a.Health.TakeDamage(0.1f);
+        bool fleeNow = a.IsFleeing && a.FleeCount == flees + 1 && Mathf.Abs(hp - a.Health.Health - 0.1f) < 0.001f && !agent.isStopped && Mathf.Approximately(agent.speed, a.FleeSpeed);
+        yield return WaitFrames(1);
+        string first = SpriteName(a);
+        bool redFirst = SameColor(r.color, flash);
+        hurtPanels.Add((panel, RenderCrop(r.bounds.center, 1.6f)));
+        int hurtFrames = 0, redFrames = 0;
+        float movedWhileHurt = 0f;
+        bool fleeingWhileHurt = true;
+        for (int i = 0; i < 30 && SpriteName(a) == "hurt-01"; i++)
+        {
+            hurtFrames++;
+            if (SameColor(r.color, flash)) redFrames++;
+            movedWhileHurt = Mathf.Max(movedWhileHurt, (Pos(a) - p0).magnitude);
+            if (!a.IsFleeing || a.IsFrozen) fleeingWhileHurt = false;
+            yield return WaitFrames(1);
+        }
+        string after = SpriteName(a);
+        Check(stateBefore && first == "hurt-01" && redFirst, $"{what}: 맞은 다음 프레임 {before} → {first}, 빨간 깜빡임 {redFirst} (맞기 전 상태 맞음 {stateBefore})");
+        Check(Mathf.Abs(hurtFrames - expectFrames) <= 1 && Mathf.Abs(redFrames - expectFrames) <= 1,
+            $"{what}: 피격 그림 {hurtFrames}프레임, 빨간 깜빡임 {redFrames}프레임 (늑대 깜빡임 0.15초를 1/30초 프레임으로 세면 4~5프레임)");
+        Check(fleeNow && fleeingWhileHurt && movedWhileHurt > 0.1f,
+            $"{what}: 맞는 즉시 도망 시작(도망 {flees} → {a.FleeCount}, 도망 속도 {agent.speed:F2}), 피격 그림이 보이는 동안 이미 {movedWhileHurt:F2}칸 이동");
+        Check(after.StartsWith("fly-") && r.color == Color.white && a.IsFleeing && a.CurrentPose == BatMonsterAI.Pose.Flying,
+            $"{what}: 끝나면 원래 정해진 도망 비행 그림으로 이어짐 ({after}, 색 {r.color}, 단계 {a.CurrentPhase})");
+    }
+
+    private static FieldInfo AnimField(string name) => typeof(SimpleFrameAnimator).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic);
+
+    private static SpriteRenderer BodyRenderer(BatMonsterAI a) => a.transform.Find("Visual/Body").GetComponent<SpriteRenderer>();
+
+    private static bool SameColor(Color x, Color y) => Mathf.Abs(x.r - y.r) < 0.01f && Mathf.Abs(x.g - y.g) < 0.01f && Mathf.Abs(x.b - y.b) < 0.01f && Mathf.Abs(x.a - y.a) < 0.01f;
+
+    // 게임 카메라를 한 번 더 그려 center 둘레 half칸을 잘라 낸다. 시야 밖 어둠에서도 보이게 이 렌더 한 번만 전역 조명을 1로 올린다(CaptureBat과 같음).
+    private static Texture2D RenderCrop(Vector2 center, float half)
+    {
+        Camera cam = Camera.main;
+        if (cam == null) return null;
+        Light2D[] globals = Object.FindObjectsByType<Light2D>(FindObjectsSortMode.None).Where(l => l.lightType == Light2D.LightType.Global).ToArray();
+        float[] saved = globals.Select(l => l.intensity).ToArray();
+        foreach (Light2D l in globals) l.intensity = 1f;
+        const int W = 1920, H = 1080;
+        RenderTexture rt = new RenderTexture(W, H, 24, RenderTextureFormat.ARGB32) { antiAliasing = 1 };
+        RenderTexture prevTarget = cam.targetTexture, prevActive = RenderTexture.active;
+        cam.targetTexture = rt;
+        cam.Render();
+        Vector3 lo = cam.WorldToViewportPoint(new Vector3(center.x - half, center.y - half, 0f));
+        Vector3 hi = cam.WorldToViewportPoint(new Vector3(center.x + half, center.y + half, 0f));
+        int x0 = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(lo.x, hi.x) * W), 0, W - 1);
+        int x1 = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(lo.x, hi.x) * W), x0 + 1, W);
+        int y0 = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(lo.y, hi.y) * H), 0, H - 1);
+        int y1 = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(lo.y, hi.y) * H), y0 + 1, H);
+        RenderTexture.active = rt;
+        Texture2D tex = new Texture2D(x1 - x0, y1 - y0, TextureFormat.RGB24, false);
+        tex.ReadPixels(new Rect(x0, y0, x1 - x0, y1 - y0), 0, 0);
+        tex.Apply();
+        RenderTexture.active = prevActive;
+        cam.targetTexture = prevTarget;
+        Object.DestroyImmediate(rt);
+        for (int i = 0; i < globals.Length; i++) globals[i].intensity = saved[i];
+        return tex;
+    }
+
+    private static void WriteHurtCompare()
+    {
+        const int scale = 2, gap = 8, labelH = 40;
+        List<(string label, Texture2D tex)> panels = hurtPanels.Where(p => p.tex != null).ToList();
+        int w = gap, h = 0;
+        foreach (var p in panels) { w += p.tex.width * scale + gap; h = Mathf.Max(h, p.tex.height * scale); }
+        int totalH = h + labelH + gap * 2;
+        Texture2D outTex = new Texture2D(w, totalH, TextureFormat.RGB24, false);
+        Color bg = new Color(0.12f, 0.12f, 0.14f);
+        GridMapAuditImages.FillRect(outTex, 0, 0, w, totalH, bg);
+        int x = gap;
+        foreach ((string label, Texture2D t) in panels)
+        {
+            Color[] src = t.GetPixels();
+            int pw = t.width * scale, ph = t.height * scale;
+            for (int yy = 0; yy < ph; yy++)
+                for (int xx = 0; xx < pw; xx++) outTex.SetPixel(x + xx, gap + yy, src[yy / scale * t.width + xx / scale]);
+            GridMapAuditImages.DrawText(outTex, x, totalH - 6, label, 4, Color.white, bg);
+            x += pw + gap;
+        }
+        outTex.Apply();
+        Directory.CreateDirectory(Path.GetDirectoryName(HurtComparePath));
+        File.WriteAllBytes(HurtComparePath, outTex.EncodeToPNG());
+        Object.DestroyImmediate(outTex);
+        sb.AppendLine($"(참고) 피격 비교 이미지 {panels.Count}칸: {Path.GetFullPath(HurtComparePath)} - 왼쪽부터 늑대, 박쥐 비행 중·굳음·도망 중 (맞은 다음 프레임, 실제 게임 카메라 렌더)");
+        foreach (var p in hurtPanels) if (p.tex != null) Object.DestroyImmediate(p.tex);
+        hurtPanels.Clear();
     }
 
     private static IEnumerator FleeChecks(float ambientR)

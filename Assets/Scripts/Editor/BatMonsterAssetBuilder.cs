@@ -134,6 +134,7 @@ public static class BatMonsterAssetBuilder
             SetArray(a, "attack1Frames", Frames("bite-01", "bite-02", "bite-03", "bite-04"));
             SetArray(a, "attack2Frames", new Sprite[0]);
             SetArray(a, "hurtFrames", Frames("hurt-01"));
+            a.FindProperty("flashWithHurtFrames").boolValue = true; // 피격: hurt-01 + 늑대와 같은 빨간 깜빡임(0.15초)
             SetArray(a, "deathFrames", Frames("hurt-01", "fallen-01"));
             a.ApplyModifiedPropertiesWithoutUndo();
 
