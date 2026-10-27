@@ -133,7 +133,8 @@ public class SimpleFrameAnimator : MonoBehaviour
     {
         if (mode == Mode.Dead) return;
         // 깜빡이는 중에 쓰러지면 깜빡임이 끝날 때 흰색으로 돌아가 시체 색(MonsterHealth.deadColor)을 덮어쓰므로 바로 끈다.
-        if (flashWithHurtFrames) hurtFlashTimeRemaining = 0f;
+        // 박쥐(flashWithHurtFrames)뿐 아니라 hurtFrames 없이 깜빡임만 쓰는 늑대도 같다.
+        hurtFlashTimeRemaining = 0f;
         StartOneShot(deathFrames, Mode.Dead);
     }
 

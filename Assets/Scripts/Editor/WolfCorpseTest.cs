@@ -378,12 +378,43 @@ public static class WolfCorpseTest
         int hidden = SpawnedWolves().Count(w => !w.gameObject.activeSelf);
         Check(dead == 0 && hidden == 0, $"새 Day 마을: 시체나 감춰진 늑대 없이 모두 살아서 나온다 (늑대 {SpawnedWolves().Count}마리, 시체 {dead}, 감춤 {hidden})");
 
+        // SpawnedWolves()에는 시체를 줍는 박쥐도 섞여 있다 - 박쥐는 이미 고쳐져 있으므로 늑대(MonsterAI)만 고른다.
+        yield return Flow6(SpawnedWolves().LastOrDefault(w => w.GetComponent<MonsterAI>() != null && w.GetComponent<BatMonsterAI>() == null));
+
         Kill(SpawnedWolves().First());
         yield return WaitFrames(2);
         yield return Load("TruckScene");
         bool recordedBeforeReset = SpawnedIdsRecorded(gm);
         gm.ResetGame();
         Check(recordedBeforeReset && !SpawnedIdsRecorded(gm), "새 게임(ResetGame)이면 시체 자리 기록이 비워진다");
+    }
+
+    // ================= 6. 피격 깜빡임 중에 죽어도 시체는 회색 =================
+
+    private static readonly FieldInfo DeadColorField = typeof(MonsterHealth).GetField("deadColor", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static readonly FieldInfo FlashTimerField = typeof(SimpleFrameAnimator).GetField("hurtFlashTimeRemaining", BindingFlags.NonPublic | BindingFlags.Instance);
+
+    private static IEnumerator Flow6(MonsterCorpsePickup wolf)
+    {
+        sb.AppendLine("\n== 6. 피격 깜빡임(0.15초) 중에 죽어도 시체는 회색");
+        MonsterHealth h = wolf != null ? Health(wolf) : null;
+        SpriteRenderer r = wolf != null ? wolf.GetComponentInChildren<SimpleFrameAnimator>(true)?.GetComponent<SpriteRenderer>() : null;
+        if (h == null || r == null || h.IsDead) { Check(false, "살아 있는 대상 늑대(또는 그림)가 없어 확인하지 못했다"); yield break; }
+        Color deadColor = (Color)DeadColorField.GetValue(h);
+
+        SimpleFrameAnimator anim = r.GetComponent<SimpleFrameAnimator>();
+
+        // 같은 프레임에 살아남는 피격(깜빡임 시작) → 치명타. 깜빡임 타이머가 0.15초 남은 채로 쓰러진다.
+        h.TakeDamage(0.1f);
+        float armed = (float)FlashTimerField.GetValue(anim);
+        Check(!h.IsDead && armed > 0f, $"살아남는 피격으로 깜빡임이 걸린다 (남은 시간 {armed:0.000}초)");
+        h.TakeDamage(h.Health + 1f);
+        float afterDeath = (float)FlashTimerField.GetValue(anim);
+        Check(h.IsDead && afterDeath == 0f, $"쓰러지는 순간 깜빡임이 꺼진다 (남은 시간 {afterDeath:0.000}초)");
+        yield return WaitFrames(2);
+        Check(h.IsDead && r.color == deadColor, $"쓰러진 직후(깜빡임 시간 안): 시체 색이 회색이다 ({r.color})");
+        yield return WaitUnscaledSeconds(0.5f); // 깜빡임이 끝나는 시점(0.15초)을 지난 뒤
+        Check(r.color == deadColor, $"깜빡임이 끝난 뒤에도 시체 색이 회색으로 남는다 ({r.color}, 기대 {deadColor})");
     }
 
     // 흐름 1에서 납품한 늑대 Id - 흐름 5가 Day 변경 뒤 구조 기록이 비워졌는지 볼 때 쓴다.
