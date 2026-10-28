@@ -12,6 +12,10 @@ public class PlayerWeaponController : MonoBehaviour
     [SerializeField] private float dartSpeed = 12f;
     [SerializeField] private Transform muzzlePoint;
 
+    [Header("포획망 (근접)")]
+    [Tooltip("휘두를 때 그물을 펼쳐 던졌다 거두는 그림. 판정과 같은 방향으로 재생한다. 비워 두면 그림 없이 판정만 한다.")]
+    [SerializeField] private NetSwingEffect netSwingEffect;
+
     private PlayerMovement playerMovement;
     private float netCooldownTimer;
 
@@ -62,6 +66,7 @@ public class PlayerWeaponController : MonoBehaviour
 
         Vector2 origin = transform.position;
         Vector2 aimDirection = playerMovement.LookDirection;
+        if (netSwingEffect != null) netSwingEffect.Play(aimDirection);
 
         for (int i = MonsterHealth.Active.Count - 1; i >= 0; i--)
         {
