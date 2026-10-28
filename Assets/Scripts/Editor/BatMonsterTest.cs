@@ -19,6 +19,7 @@ using UnityEngine.Tilemaps;
 /// 플레이어를 곧게 트인 길 위에 세우고 부채꼴 방향을 정한 뒤, 박쥐를 원하는 거리에 직접 놓아 동작을 잰다.
 /// 부채꼴 방향: 실제 마우스는 테스트 동안 끄고 가상 마우스를 그 방향 화면 위치에 둔다 - 마우스 커서가 어디 있든 결과가 같다.
 /// 검사: 프리팹·그림·설정, 원형 주변 시야에서는 멈추지 않고 다가옴, 정면 부채꼴 시야에 들어오면 멈춤(굳음)·웅크림 3프레임 재생 후 마지막 프레임 유지,
+/// 웅크리는 동안 몸이 바닥(그림자 윗줄)까지 내려앉고 풀리는 동안 날던 높이로 떠오름(다트 맞힘 원도 따라감, Logs/Bat/bat_crouch_landing.png),
 /// 시야에서 벗어나면 웅크림을 거꾸로 재생한 뒤 다시 비행, 벽 뒤는 시야 밖, 15칸 안 추격·밖 배회, 배회 중에도 정면 시야 안이면 멈춤,
 /// 접촉 데미지(최대 체력 x 0.8, 굳은 동안 없음), 무기 데미지 = 늑대와 같은 값(기절·마취 없음), 맞으면 도망(거리 = 거위 x 0.5, 속도 = 거위),
 /// 피격 모션(hurt-01 + 늑대와 같은 빨간 깜빡임, 비행·굳음·도망 중 모두, 피격 중에도 바로 도망, 연속 피격 → Logs/Bat/hurt_compare.png),
@@ -325,6 +326,8 @@ public static class BatMonsterTest
         sb.AppendLine("\n== 2. 놀람 전 돌진 → 정면 시야에 들어온 자리에서 바로 멈춤, 웅크림 wrap-01~03 재생 후 wrap-03 유지");
         a = SpawnBat(laneCenter + dir * front);
         bool flyShot = false;
+        int flyGap = int.MinValue;
+        ClearLandPanels();
         frames = 0;
         while (!a.IsSurprised && frames < 300)
         {
@@ -333,7 +336,9 @@ public static class BatMonsterTest
             if (!flyShot && !a.IsSurprised && Dist(a) <= focusedR + 1.2f && SpriteName(a).StartsWith("fly-"))
             {
                 flyShot = true;
+                flyGap = GapTexels(a);
                 CaptureBat(a, "비행 (정면 시야 밖)");
+                AddLandPanel(a, "1 FLY");
             }
         }
         float stop2 = Dist(a);
@@ -342,22 +347,39 @@ public static class BatMonsterTest
         float wrapRate = WrapFrameRate(a);
         List<string> wrapSeq = new List<string> { SpriteName(a) };
         CaptureBat(a, $"{SpriteName(a)} (정면 시야에 들어온 순간)");
-        int lastWrapFrame = -1;
+        AddLandPanel(a, $"2 {SpriteName(a)}");
+        Vector3 shadowLocal = ShadowT(a).localPosition;
+        List<int> wrapDrops = new List<int> { DropTexels(a) };
+        int lastWrapFrame = -1, dropAtWrap3 = -1, gapAtWrap3 = int.MinValue;
         Vector2 held = Pos(a);
         float maxDrift = 0f;
         for (int i = 1; i <= 45; i++)
         {
             yield return WaitFrames(1);
             maxDrift = Mathf.Max(maxDrift, (Pos(a) - held).magnitude);
+            wrapDrops.Add(DropTexels(a));
             string n = SpriteName(a);
             if (n != wrapSeq[wrapSeq.Count - 1])
             {
                 wrapSeq.Add(n);
                 CaptureBat(a, n);
+                AddLandPanel(a, $"{wrapSeq.Count + 1} {n}");
             }
-            if (lastWrapFrame < 0 && n == "wrap-03") lastWrapFrame = i;
+            if (lastWrapFrame < 0 && n == "wrap-03") { lastWrapFrame = i; dropAtWrap3 = DropTexels(a); gapAtWrap3 = GapTexels(a); }
         }
         CaptureBat(a, "굳음 (1.5초 뒤에도 wrap-03)");
+        AddLandPanel(a, "5 HELD 1-5S");
+        int heldGap = GapTexels(a), heldDrop = DropTexels(a);
+        float heldDartY = (a.Health.DartHitCenter - a.Health.GamePosition).y;
+        bool wrapDescends = true;
+        for (int i = 1; i < wrapDrops.Count; i++) if (wrapDrops[i] < wrapDrops[i - 1]) wrapDescends = false;
+        Check(wrapDrops[0] == 0 && wrapDescends && dropAtWrap3 == WrapGroundDrop(a) && wrapDrops.Skip(lastWrapFrame).All(d => d == WrapGroundDrop(a)),
+            $"웅크리는 동안 몸이 날던 높이에서 바닥까지 내려앉는다 (몸 내려간 텍셀 {string.Join(",", wrapDrops.Take(lastWrapFrame + 1))}, wrap-03에서 {dropAtWrap3}, 굳은 동안 {heldDrop})");
+        Check(flyGap > 0 && gapAtWrap3 == 0 && heldGap == 0 && ShadowT(a).localPosition == shadowLocal,
+            $"바닥에 앉으면 몸 아랫줄이 그림자 윗줄에 붙는다 (몸-그림자 틈: 비행 {flyGap}텍셀 → wrap-03 {gapAtWrap3} → 굳음 {heldGap}), 그림자는 바닥 그대로");
+        float expectDartY = BatMonsterAssetBuilder.DartHitOffset.y - WrapGroundDrop(a) * 2f / 32f;
+        Check(Mathf.Abs(heldDartY - expectDartY) < 0.001f,
+            $"다트 맞힘 원도 몸과 같이 내려간다 (땅 위치에서 {heldDartY:F4}칸, 기대 {BatMonsterAssetBuilder.DartHitOffset.y} - {WrapGroundDrop(a)}텍셀 = {expectDartY:F4})");
         CaptureWide("focused", $"정면 시야(부채꼴 {focusedR:F1}칸) 경계 {Dist(a):F1}칸 - 멈춰 웅크림", Pos(a));
         float wrapSeconds = lastWrapFrame * FrameTime, expectWrap = 2f / wrapRate;
         Check(string.Join(",", wrapSeq) == "wrap-01,wrap-02,wrap-03", $"웅크림 그림 순서 {string.Join(" → ", wrapSeq)} (기대 wrap-01 → wrap-02 → wrap-03)");
@@ -375,20 +397,36 @@ public static class BatMonsterTest
         held = Pos(a);
         float unwrapStartDist = Dist(a);
         List<string> unwrapSeq = new List<string> { SpriteName(a) };
+        List<int> unwrapDrops = new List<int> { DropTexels(a) };
         bool freeWhileUnwrap = true;
         float unwrapDrift = 0f;
-        int flyFrame = -1, movedFrame = -1;
+        int flyFrame = -1, movedFrame = -1, flyAgainDrop = -1, flyAgainGap = int.MinValue;
         for (int i = 1; i <= 40; i++)
         {
             yield return WaitFrames(1);
             string n = SpriteName(a);
-            if (i == 1) CaptureBat(a, $"풀림 시작 {n} (정면 시야 밖)");
-            if (n.StartsWith("fly-")) { flyFrame = i; CaptureBat(a, $"다시 비행 {n}"); break; }
+            unwrapDrops.Add(DropTexels(a));
+            if (i == 1) { CaptureBat(a, $"풀림 시작 {n} (정면 시야 밖)"); AddLandPanel(a, $"6 UNWRAP {n}"); }
+            if (n.StartsWith("fly-"))
+            {
+                flyFrame = i;
+                flyAgainDrop = DropTexels(a);
+                flyAgainGap = GapTexels(a);
+                CaptureBat(a, $"다시 비행 {n}");
+                AddLandPanel(a, $"9 FLY AGAIN");
+                break;
+            }
             unwrapDrift = Mathf.Max(unwrapDrift, (Pos(a) - held).magnitude);
             if (movedFrame < 0 && unwrapDrift > 0.05f) movedFrame = i;
             if (a.IsFrozen || a.IsHolding || a.CurrentPose != BatMonsterAI.Pose.Unwrapping) freeWhileUnwrap = false;
-            if (n != unwrapSeq[unwrapSeq.Count - 1]) { unwrapSeq.Add(n); CaptureBat(a, $"풀림 {n}"); }
+            if (n != unwrapSeq[unwrapSeq.Count - 1]) { unwrapSeq.Add(n); CaptureBat(a, $"풀림 {n}"); AddLandPanel(a, $"{unwrapSeq.Count + 5} UNWRAP {n}"); }
         }
+        bool unwrapRises = true;
+        for (int i = 1; i < unwrapDrops.Count; i++) if (unwrapDrops[i] > unwrapDrops[i - 1]) unwrapRises = false;
+        Check(unwrapDrops[0] == WrapGroundDrop(a) && unwrapRises && unwrapDrops.Count > 3 && unwrapDrops[unwrapDrops.Count - 2] < WrapGroundDrop(a) && flyAgainDrop == 0 &&
+              Mathf.Abs((a.Health.DartHitCenter - a.Health.GamePosition).y - BatMonsterAssetBuilder.DartHitOffset.y) < 0.001f,
+            $"풀리는 동안 날던 높이로 떠오른다 (몸 내려간 텍셀 {string.Join(",", unwrapDrops)}), 비행 그림에서 날던 높이(틈 {flyAgainGap}텍셀 = 비행 {flyGap}), 다트 맞힘 원도 제자리");
+        WriteLandSheet();
         float unwrapSeconds = (flyFrame + 1) * FrameTime, expectUnwrap = 3f / wrapRate; // 시야 밖이 된 프레임(풀림 시작)을 포함
         Check(string.Join(",", unwrapSeq) == "wrap-03,wrap-02,wrap-01", $"풀림 그림 순서 {string.Join(" → ", unwrapSeq)} → 비행 (기대 wrap-03 → wrap-02 → wrap-01)");
         Check(flyFrame > 0 && Mathf.Abs(unwrapSeconds - expectUnwrap) <= FrameTime * 1.5f,
@@ -744,10 +782,17 @@ public static class BatMonsterTest
         lookDirection = dir;
         yield return WaitFrames(3);
 
-        // 굳음: 정면 3칸에서 웅크려 굳은 박쥐
+        // 굳음: 정면 3칸에서 웅크려 바닥에 내려앉은 박쥐
         BatMonsterAI a = SpawnBat(laneCenter + dir * 3f);
         yield return WaitFrames(15);
-        yield return ShootBody(a, "굳음", () => a.IsFrozen);
+        yield return ShootBody(a, "굳음(바닥에 웅크림)", () => a.IsFrozen && a.CurrentPose == BatMonsterAI.Pose.Wrapped && DropTexels(a) == WrapGroundDrop(a));
+        Object.Destroy(a.gameObject);
+        yield return WaitFrames(2);
+
+        // 굳음: 바닥에 내려앉은 몸의 아랫부분(보이는 높이의 아래 20%)을 겨눈다 - 날던 높이 기준 맞힘 원이면 벗어나는 자리
+        a = SpawnBat(laneCenter + dir * 3f);
+        yield return WaitFrames(15);
+        yield return ShootBody(a, "굳음(바닥에 웅크림) 몸 아랫부분", () => a.IsFrozen && a.CurrentPose == BatMonsterAI.Pose.Wrapped && DropTexels(a) == WrapGroundDrop(a), 0.2f);
         Object.Destroy(a.gameObject);
         yield return WaitFrames(2);
 
@@ -773,17 +818,18 @@ public static class BatMonsterTest
         lookDirection = dir;
     }
 
-    private static IEnumerator ShootBody(BatMonsterAI a, string what, System.Func<bool> stateOk)
+    // aimHeight: 몸 그림의 보이는 높이 중 겨눌 자리(0 = 아랫줄, 0.5 = 가운데, 1 = 윗줄).
+    private static IEnumerator ShootBody(BatMonsterAI a, string what, System.Func<bool> stateOk, float aimHeight = 0.5f)
     {
         PlayerWeaponController weapon = player.GetComponent<PlayerWeaponController>();
         MethodInfo fire = typeof(PlayerWeaponController).GetMethod("FireTranquilizerGun", BindingFlags.Instance | BindingFlags.NonPublic);
         MethodInfo ammoSetter = typeof(GameManager).GetProperty(nameof(GameManager.TranquilizerAmmo)).GetSetMethod(true);
         ammoSetter.Invoke(gm, new object[] { Mathf.Max(gm.TranquilizerAmmo, 3) });
 
-        // 시선을 몸 그림 가운데로 돌리고(총구가 따라 돈다) 그 프레임의 가운데를 다시 겨눈다.
-        lookDirection = (VisibleBodyCenter(a) - (Vector2)player.position).normalized;
+        // 시선을 몸 그림의 겨눌 자리로 돌리고(총구가 따라 돈다) 그 프레임의 자리를 다시 겨눈다.
+        lookDirection = (VisibleBodyPoint(a, 0.5f, aimHeight) - (Vector2)player.position).normalized;
         yield return WaitFrames(2);
-        Vector2 aim = VisibleBodyCenter(a);
+        Vector2 aim = VisibleBodyPoint(a, 0.5f, aimHeight);
         lookDirection = (aim - (Vector2)player.position).normalized;
         LookSetter.Invoke(player.GetComponent<PlayerMovement>(), new object[] { lookDirection });
         bool stateBefore = stateOk();
@@ -797,20 +843,23 @@ public static class BatMonsterTest
         while (frames < 90 && a.Health.Health > hp - 0.0005f) { yield return WaitFrames(1); frames++; }
         float dealt = hp - a.Health.Health;
         Check(fired && stateBefore && Mathf.Abs(dealt - config.tranquilizerDamage) < 0.001f,
-            $"{what}: 실제 다트가 몸 그림 가운데(땅 위치에서 {aimOffset:F2}칸)를 맞힘 - 피해 {dealt:0.##} (기대 {config.tranquilizerDamage}), 발사 {fired}, 쏠 때 상태 {stateBefore}, {frames}프레임");
+            $"{what}: 실제 다트가 몸 그림 {(Mathf.Approximately(aimHeight, 0.5f) ? "가운데" : $"아래에서 {aimHeight:P0} 높이")}(땅 위치에서 {aimOffset:F2}칸)를 맞힘 - 피해 {dealt:0.##} (기대 {config.tranquilizerDamage}), 발사 {fired}, 쏠 때 상태 {stateBefore}, {frames}프레임");
         Check(a.IsFleeing && a.FleeCount == flees + 1, $"{what}: 맞으면 도망 (단계 {a.CurrentPhase}, 도망 {flees} → {a.FleeCount})");
         yield return WaitFrames(Mathf.CeilToInt((config.sleepDelay + 0.3f) / FrameTime));
         Check(!a.Health.IsAsleep && !a.Health.IsStunned, $"{what}: 마취 지연({config.sleepDelay}초) 뒤에도 잠들지 않음");
     }
 
-    // 몸 그림에서 투명이 아닌 픽셀 범위의 가운데(월드). 좌우 반전(flipX)과 배율을 반영한다. 원본 PNG를 읽어 스프라이트마다 한 번만 계산한다.
-    private static readonly Dictionary<Sprite, Vector2> visibleCenterPixels = new Dictionary<Sprite, Vector2>();
+    // 몸 그림에서 투명이 아닌 픽셀 범위 안의 한 점(월드). fx·fy는 그 범위 안의 비율(0.5, 0.5 = 가운데, fy 0 = 아랫줄의 아래 변).
+    // 좌우 반전(flipX)과 배율을 반영한다. 원본 PNG를 읽어 스프라이트마다 한 번만 계산한다.
+    private static readonly Dictionary<Sprite, Rect> visiblePixels = new Dictionary<Sprite, Rect>();
 
-    private static Vector2 VisibleBodyCenter(BatMonsterAI a)
+    private static Vector2 VisibleBodyCenter(BatMonsterAI a) => VisibleBodyPoint(a, 0.5f, 0.5f);
+
+    private static Vector2 VisibleBodyPoint(BatMonsterAI a, float fx, float fy)
     {
         SpriteRenderer r = a.transform.Find("Visual/Body").GetComponent<SpriteRenderer>();
         Sprite s = r.sprite;
-        if (!visibleCenterPixels.TryGetValue(s, out Vector2 px))
+        if (!visiblePixels.TryGetValue(s, out Rect rect))
         {
             Texture2D t = new Texture2D(2, 2);
             t.LoadImage(File.ReadAllBytes(AssetDatabase.GetAssetPath(s)));
@@ -819,12 +868,58 @@ public static class BatMonsterTest
                 for (int x = 0; x < t.width; x++)
                     if (t.GetPixel(x, y).a > 0.01f) { minX = Mathf.Min(minX, x); maxX = Mathf.Max(maxX, x); minY = Mathf.Min(minY, y); maxY = Mathf.Max(maxY, y); }
             Object.DestroyImmediate(t);
-            px = maxX < 0 ? s.pivot : new Vector2((minX + maxX + 1) * 0.5f, (minY + maxY + 1) * 0.5f);
-            visibleCenterPixels[s] = px;
+            rect = maxX < 0 ? new Rect(s.pivot, Vector2.zero) : new Rect(minX, minY, maxX + 1 - minX, maxY + 1 - minY);
+            visiblePixels[s] = rect;
         }
+        Vector2 px = new Vector2(rect.x + rect.width * fx, rect.y + rect.height * fy);
         Vector2 local = (px - s.pivot) / s.pixelsPerUnit;
         if (r.flipX) local.x = -local.x;
         return r.transform.TransformPoint(local);
+    }
+
+    // ===================== 몸 높이(웅크리면 바닥으로 내려앉음) =====================
+
+    private static Transform ShadowT(BatMonsterAI a) => a.transform.Find("Visual/Shadow");
+
+    private static int WrapGroundDrop(BatMonsterAI a) =>
+        Mathf.RoundToInt((float)typeof(BatMonsterAI).GetField("wrapGroundDropTexels", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(a));
+
+    // 몸이 날던 높이(프리팹의 Body 위치)에서 몇 텍셀 내려가 있는지.
+    private static int DropTexels(BatMonsterAI a)
+    {
+        float rest = batPrefab.transform.Find("Visual/Body").localPosition.y;
+        return Mathf.RoundToInt((rest - a.transform.Find("Visual/Body").localPosition.y) * 32f);
+    }
+
+    // 몸 그림의 보이는 아랫줄과 그림자 윗줄 사이 틈(몸 텍셀, 1텍셀 = 2/32칸). 0이면 몸이 그림자 위에 붙어 있다.
+    private static int GapTexels(BatMonsterAI a)
+    {
+        float bottom = VisibleBodyPoint(a, 0.5f, 0f).y;
+        float shadowTop = ShadowT(a).GetComponent<SpriteRenderer>().bounds.max.y;
+        return Mathf.RoundToInt((bottom - shadowTop) / (2f / 32f));
+    }
+
+    // 비행 → 내려앉으며 웅크림 → 바닥에서 굳음 → 떠오르며 풀림을 같은 크기로 잘라 한 장에 늘어놓는다(실제 게임 카메라 렌더).
+    // 땅 위치 기준으로 자르므로 칸마다 그림자 자리가 같고, 몸이 오르내리는 것이 보인다.
+    private const string LandSheetPath = "Logs/Bat/bat_crouch_landing.png";
+    private static readonly List<(string label, Texture2D tex)> landPanels = new List<(string, Texture2D)>();
+
+    private static void ClearLandPanels()
+    {
+        foreach (var p in landPanels) if (p.tex != null) Object.DestroyImmediate(p.tex);
+        landPanels.Clear();
+    }
+
+    private static void AddLandPanel(BatMonsterAI a, string label) =>
+        landPanels.Add(($"{label}|DROP {DropTexels(a)} GAP {GapTexels(a)}", RenderCrop(Pos(a) + new Vector2(0f, -0.35f), 1.0f)));
+
+    private static void WriteLandSheet()
+    {
+        int count = landPanels.Count(p => p.tex != null);
+        WritePanelSheet(LandSheetPath, landPanels);
+        sb.AppendLine($"(참고) 내려앉음 이미지 {count}칸: {Path.GetFullPath(LandSheetPath)} - 비행 → 웅크리며 내려앉음 → 바닥에서 굳음 → 풀리며 떠오름 → 비행 " +
+                      "(DROP = 날던 높이에서 내려간 텍셀, GAP = 몸 아랫줄과 그림자 윗줄 사이 텍셀)");
+        ClearLandPanels();
     }
 
     // ===================== 피격 모션 =====================
@@ -1010,10 +1105,13 @@ public static class BatMonsterTest
         return tex;
     }
 
-    private static void WriteHurtCompare()
+    // 패널들을 가로로 2배 확대해 늘어놓고 위에 이름을 쓴다. 이름의 '|'는 줄바꿈.
+    private static void WritePanelSheet(string path, List<(string label, Texture2D tex)> source)
     {
-        const int scale = 2, gap = 8, labelH = 40;
-        List<(string label, Texture2D tex)> panels = hurtPanels.Where(p => p.tex != null).ToList();
+        const int scale = 2, gap = 8, lineH = 36;
+        List<(string label, Texture2D tex)> panels = source.Where(p => p.tex != null).ToList();
+        int lines = panels.Count == 0 ? 1 : panels.Max(p => p.label.Split('|').Length);
+        int labelH = lines * lineH + 4;
         int w = gap, h = 0;
         foreach (var p in panels) { w += p.tex.width * scale + gap; h = Mathf.Max(h, p.tex.height * scale); }
         int totalH = h + labelH + gap * 2;
@@ -1027,13 +1125,20 @@ public static class BatMonsterTest
             int pw = t.width * scale, ph = t.height * scale;
             for (int yy = 0; yy < ph; yy++)
                 for (int xx = 0; xx < pw; xx++) outTex.SetPixel(x + xx, gap + yy, src[yy / scale * t.width + xx / scale]);
-            GridMapAuditImages.DrawText(outTex, x, totalH - 6, label, 4, Color.white, bg);
+            string[] parts = label.Split('|');
+            for (int i = 0; i < parts.Length; i++) GridMapAuditImages.DrawText(outTex, x, totalH - 6 - i * lineH, parts[i], 4, Color.white, bg);
             x += pw + gap;
         }
         outTex.Apply();
-        Directory.CreateDirectory(Path.GetDirectoryName(HurtComparePath));
-        File.WriteAllBytes(HurtComparePath, outTex.EncodeToPNG());
+        Directory.CreateDirectory(Path.GetDirectoryName(path));
+        File.WriteAllBytes(path, outTex.EncodeToPNG());
         Object.DestroyImmediate(outTex);
+    }
+
+    private static void WriteHurtCompare()
+    {
+        List<(string label, Texture2D tex)> panels = hurtPanels.Where(p => p.tex != null).ToList();
+        WritePanelSheet(HurtComparePath, panels);
         sb.AppendLine($"(참고) 피격 비교 이미지 {panels.Count}칸: {Path.GetFullPath(HurtComparePath)} - 왼쪽부터 늑대, 박쥐 비행 중·굳음·도망 중 (맞은 다음 프레임, 실제 게임 카메라 렌더)");
         foreach (var p in hurtPanels) if (p.tex != null) Object.DestroyImmediate(p.tex);
         hurtPanels.Clear();

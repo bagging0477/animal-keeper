@@ -11,6 +11,8 @@ using UnityEngine.AI;
 /// - 웅크림: 정면 시야에 들어온 순간 이동은 바로 멈추고, 그림만 wrap-01~03을 wrapFrameRate로 재생한 뒤 마지막 프레임으로 굳어 있다.
 ///   시야에서 벗어나면 그 순간 바로 다시 움직이고, 그림은 웅크림을 거꾸로(03→02→01) 재생한 뒤 비행 그림으로 돌아간다.
 ///   풀리는 중에 다시 시야에 들어오면 그 그림에서부터 다시 웅크린다.
+///   몸 높이: 웅크리는 동안 날던 높이에서 바닥(wrap-03 아랫줄 = 그림자 윗줄)까지 내려앉고, 굳은 동안 바닥에 있고, 풀리는 동안 날던 높이로 떠오른다.
+///   그림자는 바닥에 그대로 있다. 다트 맞힘 원(MonsterHealth.DartHitShift)도 몸과 같이 오르내린다.
 /// - 맞으면(MonsterHealth.Damaged) 도망(Flee): 그 자리에서 플레이어 반대쪽으로 batFleeDistance(거위 도망 거리 x 0.5)만큼 거위 도망 속도로 난다.
 ///   도망 중에는 시야 안이어도 멈추지 않고, 접촉도 하지 않는다. 도망 중에 또 맞으면 맞은 자리에서 다시 같은 거리만큼 도망간다. 무적 시간은 없다.
 ///   도망이 끝나면 다시 플레이어를 찾아 다가오고(Return: 거리 제한 없이 플레이어 쪽으로, 시야 안이면 멈춤) 추격 거리 안에 들어오면 평소대로 돌아간다.
@@ -38,6 +40,9 @@ public class BatMonsterAI : MonsterBrain
     [SerializeField] private Sprite[] wrapFrames;
     [Tooltip("웅크림/풀림 재생 속도(초당 프레임). 사용방법.txt: wrap 6~8 fps.")]
     [SerializeField] private float wrapFrameRate = 7f;
+    [Tooltip("웅크려 굳으면 몸을 날던 높이에서 이만큼(몸 텍셀, 아래로) 내려 바닥에 앉힌다. wrap-03 아랫줄(몸 가운데 아래 11텍셀)을 " +
+        "그림자 윗줄(14텍셀)에 붙이는 값. 웅크리는 동안 내려가고 풀리는 동안 다시 올라간다.")]
+    [SerializeField] private float wrapGroundDropTexels = 3f;
     [Tooltip("쓰러지면 몸을 이만큼(몸 텍셀, 아래로) 내려 그림자 위에 눕힌다.")]
     [SerializeField] private float fallenDropTexels = 3f;
     [SerializeField] private float bodyTexelsPerUnit = 32f;
@@ -191,6 +196,7 @@ public class BatMonsterAI : MonsterBrain
             // 도망 중에는 시야 안이어도 굳지 않는다.
             SetFrozen(phase != Phase.Ambush && phase != Phase.Flee && seen);
             UpdatePose();
+            UpdateBodyHeight();
 
             // 굳은 동안·도망 중에는 접촉하지 않는다(풀리는 그림이 재생되는 동안은 움직이고 접촉한다).
             if (!IsHolding && phase != Phase.Flee && UpdateCatch(distanceToPlayer)) return;
@@ -427,6 +433,36 @@ public class BatMonsterAI : MonsterBrain
         poseFrame = 0;
         poseTimer = 0f;
         frameAnimator?.ReleaseHold();
+    }
+
+    /// <summary>바닥에 얼마나 내려앉았는지(0 = 날던 높이, 1 = 바닥). 웅크림 그림 진행에 맞춘다:
+    /// 웅크리는 동안 wrap-01 → wrap-03에 걸쳐 0 → 1, 굳은 동안 1, 풀리는 동안 wrap-03 → 비행 그림에 걸쳐 1 → 0.</summary>
+    public float GroundBlend
+    {
+        get
+        {
+            if (wrapFrames == null || wrapFrames.Length == 0) return 0f;
+            float frameDuration = 1f / Mathf.Max(0.01f, wrapFrameRate);
+            int last = wrapFrames.Length - 1;
+            switch (pose)
+            {
+                case Pose.Wrapping: return last <= 0 ? 1f : Mathf.Clamp01((poseFrame + poseTimer / frameDuration) / last);
+                case Pose.Wrapped: return 1f;
+                case Pose.Unwrapping: return Mathf.Clamp01((poseFrame + 1 - poseTimer / frameDuration) / wrapFrames.Length);
+                default: return 0f;
+            }
+        }
+    }
+
+    // 몸을 GroundBlend만큼 바닥 쪽으로 내린다(텍셀 단위로 끊어 픽셀이 어긋나지 않게). 다트 맞힘 원도 같이 옮긴다.
+    private void UpdateBodyHeight()
+    {
+        if (body == null) return;
+        float texelsPerUnit = Mathf.Max(1f, bodyTexelsPerUnit);
+        float drop = Mathf.Round(GroundBlend * wrapGroundDropTexels) / texelsPerUnit;
+        body.localPosition = bodyRestLocalPosition + new Vector3(0f, -drop, 0f);
+        float worldDrop = drop * (body.parent != null ? body.parent.lossyScale.y : 1f);
+        health.DartHitShift = new Vector2(0f, -worldDrop);
     }
 
     private void LowerBodyOnce()

@@ -186,6 +186,7 @@ public static class BatMonsterAssetBuilder
             so.FindProperty("body").objectReferenceValue = body;
             SetArray(so, "wrapFrames", Frames("wrap-01", "wrap-02", "wrap-03"));
             so.FindProperty("wrapFrameRate").floatValue = WrapFrameRate;
+            so.FindProperty("wrapGroundDropTexels").floatValue = 3f;
             so.FindProperty("fallenDropTexels").floatValue = 3f;
             so.FindProperty("bodyTexelsPerUnit").floatValue = PixelsPerUnit;
             so.FindProperty("monsterTypeName").stringValue = "박쥐";

@@ -58,8 +58,12 @@ public class MonsterHealth : MonoBehaviour, ISleepable
     /// <summary>플레이어와 동일한 2D 좌표계로 변환한 몬스터 위치. 몬스터는 NavMesh(x,z 평면)로 움직이고 x,z를 2D x,y로 매핑해서 렌더링한다.</summary>
     public Vector2 GamePosition => new Vector2(transform.position.x, transform.position.z);
 
-    /// <summary>마취총 다트가 맞았는지 볼 원의 가운데(땅 위치 + dartHitOffset).</summary>
-    public Vector2 DartHitCenter => GamePosition + dartHitOffset;
+    /// <summary>실행 중에 더하는 다트 맞힘 원 이동(칸). 몸 그림이 땅 위치에서 오르내리는 몬스터(박쥐: 웅크리면 바닥으로 내려앉음)가
+    /// 몸 높이에 맞춰 매 프레임 정한다. 기본 0(늑대).</summary>
+    public Vector2 DartHitShift { get; set; }
+
+    /// <summary>마취총 다트가 맞았는지 볼 원의 가운데(땅 위치 + dartHitOffset + DartHitShift).</summary>
+    public Vector2 DartHitCenter => GamePosition + dartHitOffset + DartHitShift;
 
     /// <summary>마취총 다트 맞힘 반경. dartHitRadius가 0이면 다트 기본값(defaultRadius)을 그대로 쓴다.</summary>
     public float DartHitRadius(float defaultRadius) => dartHitRadius > 0f ? dartHitRadius : defaultRadius;
