@@ -1,0 +1,218 @@
+[
+  {
+    "name": "idle-01",
+    "row": 1,
+    "column": 1,
+    "colors": 7,
+    "bounds": [
+      7,
+      15,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "idle-02",
+    "row": 1,
+    "column": 2,
+    "colors": 8,
+    "bounds": [
+      7,
+      14,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "idle-03",
+    "row": 1,
+    "column": 3,
+    "colors": 7,
+    "bounds": [
+      7,
+      14,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "idle-04",
+    "row": 1,
+    "column": 4,
+    "colors": 8,
+    "bounds": [
+      8,
+      13,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "walk-01",
+    "row": 2,
+    "column": 1,
+    "colors": 8,
+    "bounds": [
+      7,
+      13,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "walk-02",
+    "row": 2,
+    "column": 2,
+    "colors": 8,
+    "bounds": [
+      7,
+      13,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "walk-03",
+    "row": 2,
+    "column": 3,
+    "colors": 7,
+    "bounds": [
+      7,
+      13,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "walk-04",
+    "row": 2,
+    "column": 4,
+    "colors": 7,
+    "bounds": [
+      8,
+      12,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "raise-01",
+    "row": 3,
+    "column": 1,
+    "colors": 8,
+    "bounds": [
+      6,
+      14,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "raise-02",
+    "row": 3,
+    "column": 2,
+    "colors": 8,
+    "bounds": [
+      6,
+      12,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "raise-03",
+    "row": 3,
+    "column": 3,
+    "colors": 8,
+    "bounds": [
+      5,
+      8,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "shoot-01",
+    "row": 4,
+    "column": 1,
+    "colors": 7,
+    "bounds": [
+      6,
+      10,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "shoot-02",
+    "row": 4,
+    "column": 2,
+    "colors": 8,
+    "bounds": [
+      4,
+      11,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "shoot-03",
+    "row": 4,
+    "column": 3,
+    "colors": 8,
+    "bounds": [
+      5,
+      10,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "hurt-01",
+    "row": 5,
+    "column": 1,
+    "colors": 8,
+    "bounds": [
+      6,
+      13,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "fallen-01",
+    "row": 6,
+    "column": 1,
+    "colors": 7,
+    "bounds": [
+      4,
+      16,
+      27,
+      27
+    ]
+  },
+  {
+    "name": "quill-01",
+    "row": 7,
+    "column": 1,
+    "colors": 4,
+    "bounds": [
+      13,
+      15,
+      19,
+      17
+    ]
+  },
+  {
+    "name": "quill-02",
+    "row": 7,
+    "column": 2,
+    "colors": 5,
+    "bounds": [
+      12,
+      15,
+      20,
+      17
+    ]
+  }
+]

@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: b6133e30ddb43cf41b8ba321a4d57f5a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8773842630019388627
+    second: porcupine-atlas-128x224_0
+  - first:
+      213: 640787669565538100
+    second: porcupine-atlas-128x224_1
+  - first:
+      213: 423476087612744905
+    second: porcupine-atlas-128x224_2
+  - first:
+      213: -880085364979089914
+    second: porcupine-atlas-128x224_3
+  - first:
+      213: 7761310414935367264
+    second: porcupine-atlas-128x224_4
+  - first:
+      213: -6061037479389471272
+    second: porcupine-atlas-128x224_5
+  - first:
+      213: -892277538533941889
+    second: porcupine-atlas-128x224_6
+  - first:
+      213: 1537264325956141943
+    second: porcupine-atlas-128x224_7
+  - first:
+      213: 3918002851942829198
+    second: porcupine-atlas-128x224_8
+  - first:
+      213: -5807252228791630840
+    second: porcupine-atlas-128x224_9
+  - first:
+      213: -6990755771917390834
+    second: porcupine-atlas-128x224_10
+  - first:
+      213: 1707310881575090728
+    second: porcupine-atlas-128x224_11
+  - first:
+      213: -4109587720375480203
+    second: porcupine-atlas-128x224_12
+  - first:
+      213: -3115879884384853313
+    second: porcupine-atlas-128x224_13
+  - first:
+      213: -842539262250904988
+    second: porcupine-atlas-128x224_14
+  - first:
+      213: 109167043942335798
+    second: porcupine-atlas-128x224_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_0
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 196
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2be3822d9c0d3680800000000000000
+      internalID: -8773842630019388627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_1
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 196
+        width: 22
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43f77ec8df884e800800000000000000
+      internalID: 640787669565538100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_2
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 196
+        width: 22
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c4a70d024d70e500800000000000000
+      internalID: 423476087612744905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_3
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 196
+        width: 21
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60eb660060f49c3f0800000000000000
+      internalID: -880085364979089914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_4
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 164
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06e13c183b6b5bb60800000000000000
+      internalID: 7761310414935367264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_5
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 164
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8dd59a6768ed2eba0800000000000000
+      internalID: -6061037479389471272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_6
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 164
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7ddf926e4efd93f0800000000000000
+      internalID: -892277538533941889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_7
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 164
+        width: 21
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7730f7a72c5755510800000000000000
+      internalID: 1537264325956141943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_8
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 132
+        width: 23
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8c050bd5da8f5630800000000000000
+      internalID: 3918002851942829198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_9
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 132
+        width: 23
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80487c5bdde786fa0800000000000000
+      internalID: -5807252228791630840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_10
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 132
+        width: 24
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0c2a5ff9a8dbfe90800000000000000
+      internalID: -6990755771917390834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_11
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 100
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82a3179733691b710800000000000000
+      internalID: 1707310881575090728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_12
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 100
+        width: 25
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57056b9edbfc7f6c0800000000000000
+      internalID: -4109587720375480203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_13
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 100
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb2a478f0cb22c4d0800000000000000
+      internalID: -3115879884384853313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_14
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 68
+        width: 23
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46217344103be44f0800000000000000
+      internalID: -842539262250904988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: porcupine-atlas-128x224_15
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 14
+        width: 50
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 635cc5b19d6d38100800000000000000
+      internalID: 109167043942335798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      porcupine-atlas-128x224_0: -8773842630019388627
+      porcupine-atlas-128x224_1: 640787669565538100
+      porcupine-atlas-128x224_10: -6990755771917390834
+      porcupine-atlas-128x224_11: 1707310881575090728
+      porcupine-atlas-128x224_12: -4109587720375480203
+      porcupine-atlas-128x224_13: -3115879884384853313
+      porcupine-atlas-128x224_14: -842539262250904988
+      porcupine-atlas-128x224_15: 109167043942335798
+      porcupine-atlas-128x224_2: 423476087612744905
+      porcupine-atlas-128x224_3: -880085364979089914
+      porcupine-atlas-128x224_4: 7761310414935367264
+      porcupine-atlas-128x224_5: -6061037479389471272
+      porcupine-atlas-128x224_6: -892277538533941889
+      porcupine-atlas-128x224_7: 1537264325956141943
+      porcupine-atlas-128x224_8: 3918002851942829198
+      porcupine-atlas-128x224_9: -5807252228791630840
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

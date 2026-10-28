@@ -207,6 +207,11 @@ public static class TurtleTest
     {
         sb.AppendLine("\n== 1. 격자 스폰 (맵 점검 도구 GridMapAuditInspector)");
         string[] spawnCategories = { GridMapAuditInspector.CSpawnPlace, GridMapAuditInspector.CSpawnOverlap, GridMapAuditInspector.CIds, GridMapAuditInspector.CTotals };
+        // 몬스터 기대값 = 맵 생성 때 스폰되는 수(gridMonsterTotal) + 마을 들어가자마자 시간 소환으로 붙는 수(1구간 항목마다 min(initialCount, count)).
+        // 시간 소환 몬스터도 GeneratedMap 아래에 생기므로 같이 센다. 박쥐 출현 설정을 바꿔도 기대값이 설정을 따라간다.
+        int entryTimedMonsters = config.GetVillagePhaseSpawns(1).Where(e => e != null && e.monsterPrefab != null).Sum(e => Mathf.Clamp(e.initialCount, 0, e.count));
+        int expectedMonsters = config.gridMonsterTotal + entryTimedMonsters;
+        sb.AppendLine($"  몬스터 기대값 {expectedMonsters} = 맵 생성 {config.gridMonsterTotal} + 진입 때 시간 소환 {entryTimedMonsters}(1구간)");
         foreach ((int cols, int rows, int count) in new[] { (3, 4, 30), (4, 5, 10) })
         {
             int animals = 0, turtles = 0, runs = 0, totalOk = 0;
@@ -237,7 +242,7 @@ public static class TurtleTest
                 int monsters = root.GetComponentsInChildren<MonsterHealth>(true).Length;
                 animals += all.Length;
                 turtles += seedTurtles;
-                if (all.Length == config.gridAnimalTotal && monsters == config.gridMonsterTotal) totalOk++;
+                if (all.Length == config.gridAnimalTotal && monsters == expectedMonsters) totalOk++;
                 if (seedTurtles > 0 && cols == 3) onTurtleSeed(seed);
                 AuditEntity turtleEntity = snap.Entities.FirstOrDefault(e => e.Prefab == "AnimalTurtle");
                 if (turtleEntity != null) turtleRadius = turtleEntity.Radius;
@@ -249,11 +254,11 @@ public static class TurtleTest
                 }
             }
             sb.AppendLine($"  격자 {cols}x{rows} x{runs}: 동물 합계 {animals} (회당 {(float)animals / runs:0.#}), 거북이 {turtles} ({100f * turtles / Mathf.Max(1, animals):0.0}%), " +
-                          $"동물 {config.gridAnimalTotal}·몬스터 {config.gridMonsterTotal} 맞은 회차 {totalOk}/{runs}, 거북이 스폰 반경 {turtleRadius:0.###}");
+                          $"동물 {config.gridAnimalTotal}·몬스터 {expectedMonsters} 맞은 회차 {totalOk}/{runs}, 거북이 스폰 반경 {turtleRadius:0.###}");
             sb.AppendLine($"    위반: " + string.Join(", ", violations.Select(kv => $"{kv.Key} {kv.Value}")) + $" | 그 밖의 분류 {otherViolations}");
             foreach (string s in samples) sb.AppendLine("    " + s);
             Check(totalOk == runs && violations.Values.All(v => v == 0) && turtles > 0,
-                $"격자 {cols}x{rows}: 총량 {config.gridAnimalTotal}/{config.gridMonsterTotal} 전부 맞음, 스폰 위치·겹침·Id·총량/상한 위반 0, 거북이 등장");
+                $"격자 {cols}x{rows}: 총량 {config.gridAnimalTotal}/{expectedMonsters} 전부 맞음, 스폰 위치·겹침·Id·총량/상한 위반 0, 거북이 등장");
         }
         VillageMapGenerator.EditorLayoutOverride = null;
     }

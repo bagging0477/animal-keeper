@@ -1,0 +1,39 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Animal Keeper — Night</title><style>body{margin:0;background:#14213d;display:grid;min-height:100vh;place-items:center}#animal-keeper-night{max-width:1440px}</style><div id="animal-keeper-night"><canvas width="480" height="300" role="img" aria-label="달과 별이 빛나는 밤 픽셀아트 Animal Keeper 타이틀 화면. 동물을 태운 트럭이 도로를 지나갑니다."></canvas></div>
+<style>
+#animal-keeper-night{width:100%;overflow:hidden;background:#1b2c4a}#animal-keeper-night canvas{display:block;width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges}
+</style>
+<script>
+(()=>{
+const root=document.getElementById('animal-keeper-night'),c=root.querySelector('canvas'),g=c.getContext('2d');g.imageSmoothingEnabled=false;
+const R=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(Math.round(x),Math.round(y),w,h)};
+const letters={A:['01110','11011','11011','11111','11011','11011','11011'],N:['11001','11101','11101','11011','11011','11001','11001'],I:['111','010','010','010','010','010','111'],M:['1100011','1110111','1111111','1101011','1100011','1100011','1100011'],L:['11000','11000','11000','11000','11000','11000','11111'],K:['11011','11011','11110','11100','11110','11011','11011'],E:['11111','11000','11000','11110','11000','11000','11111'],P:['11110','11011','11011','11110','11000','11000','11000'],R:['11110','11011','11011','11110','11100','11010','11011']};
+function title(word,y,s){let width=[...word].reduce((v,a)=>v+(letters[a][0].length+1)*s,0)-s,x=(480-width)/2;const cells=[];for(const a of word){letters[a].forEach((row,j)=>[...row].forEach((v,i)=>{if(v==='1')cells.push([x+i*s,y+j*s])}));x+=(letters[a][0].length+1)*s}for(const [x,y]of cells)R(x-4,y-3,s+8,s+9,'#293440');for(const [x,y]of cells)R(x-2,y-2,s+4,s+4,'#ffcc43');for(const [x,y]of cells)R(x,y,s,s,'#fffef1');}
+function cloud(x,y,s){R(x+8*s,y,22*s,5*s,'#384a67');R(x,y+5*s,44*s,8*s,'#384a67');R(x+4*s,y+13*s,35*s,3*s,'#2e3e5b')}
+function tree(x,y,s){R(x+8*s,y+12*s,4*s,18*s,'#554655');R(x+4*s,y+4*s,13*s,16*s,'#365d59');R(x,y+9*s,22*s,8*s,'#365d59');R(x+6*s,y+2*s,10*s,5*s,'#527971');R(x+3*s,y+15*s,17*s,4*s,'#284845')}
+function flower(x,y,col){R(x,y,1,5,'#3b675d');R(x-2,y-2,5,3,col);R(x-1,y-3,3,5,col);R(x,y-1,1,1,'#c8b275')}
+function animal(x,y,type){const col=type===0?'#fff8df':type===1?'#c99564':'#f3cf86';R(x+2,y-6,3,8,col);R(x+12,y-6,3,8,col);R(x,y,17,13,col);R(x+3,y+4,2,2,'#303748');R(x+12,y+4,2,2,'#303748');R(x+7,y+8,3,2,'#7d5c57');R(x+1,y+8,3,2,'#efa79d');R(x+13,y+8,3,2,'#efa79d')}
+function truck(x,y,t){g.save();g.translate(Math.round(x),Math.round(y));R(3,31,83,4,'#55677c');R(0,2,58,29,'#334454');R(2,4,54,24,'#bebca3');animal(6,10,0);animal(23,10,1);animal(40,10,2);R(2,21,54,3,'#d9bb7b');for(let i=0;i<4;i++)R(5+i*14,5,2,23,'#c5a879');R(0,28,60,8,'#bc944b');R(60,11,18,24,'#334454');R(58,8,15,3,'#334454');R(60,11,14,11,'#698eae');R(62,11,4,10,'#b1c8d5');R(59,24,22,12,'#d7ad59');R(78,21,6,15,'#334454');R(80,25,4,9,'#b6873e');R(78,27,6,4,'#fff6d2');R(58,27,4,2,'#b17830');R(0,35,85,4,'#334454');for(const wx of [14,66]){R(wx-7,33,14,14,'#293440');R(wx-5,31,10,18,'#293440');R(wx-4,36,8,8,'#ced7df');R(wx-2,38,4,4,'#708799');if(Math.floor(t*8)%2)R(wx-1,36,2,8,'#edf5f2');else R(wx-4,39,8,2,'#edf5f2')}g.restore()}
+let start=null;const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wrap=(x,w=480)=>((x%w)+w)%w;
+function draw(ms){if(start===null)start=ms;const t=reduce?5:(ms-start)/1000;
+// Begin following after 2.3 seconds; smoothly accelerate camera for 1.5 seconds.
+const d=Math.max(0,t-2.3),a=Math.min(d/1.5,1),camera=d<1.5?52*1.5*(a*a*a-.5*a*a*a*a):52*(d-.75),tx=72+52*t-camera;
+R(0,0,480,300,'#1b2c4a');R(0,0,480,100,'#14213d');R(0,100,480,61,'#263c59');
+for(let k=-1;k<2;k++){let cx=k*480-wrap(camera*.12+t*2);cloud(cx+22,26,1);cloud(cx+372,43,1.2);cloud(cx+65,115,.6);cloud(cx+345,127,.7)}
+R(410,22,18,18,'#f8eec1');R(414,18,10,26,'#f8eec1');R(409,24,5,14,'#f8eec1');R(418,18,10,17,'#14213d');for(const [sx,sy] of [[30,17],[78,45],[111,20],[154,30],[268,20],[312,58],[351,20],[461,73],[45,88],[101,96],[389,104],[443,122]]){R(sx,sy,2,2,'#d8dfdc')}R(306,29,2,6,'#fff1c9');R(304,31,6,2,'#fff1c9');
+R(0,176,480,42,'#304a55');
+for(let k=-1;k<2;k++){let x=k*480-wrap(camera*.25);R(x,168,69,20,'#304a55');R(x+16,160,34,10,'#304a55');R(x+109,178,116,14,'#283e49');R(x+134,169,63,16,'#283e49');R(x+303,174,144,20,'#283e49');R(x+338,164,72,18,'#283e49')}
+R(0,198,480,10,'#294a4b');
+for(let k=-1;k<2;k++){let x=k*480-wrap(camera*.65);for(const v of [18,86,368,444])tree(x+v,169,.7)}
+for(let k=-1;k<2;k++){let x=k*480-wrap(camera);tree(x+158,168,1.15);tree(x+410,174,.95)}
+R(0,208,480,4,'#707582');R(0,212,480,47,'#303c51');R(0,215,480,3,'#495569');for(let x=-43;x<523;x+=43)R(x+8-wrap(camera,43),235,24,3,'#9c9b84');R(0,256,480,3,'#202e40');R(0,259,480,5,'#707582');R(0,264,480,36,'#2c4f49');R(0,264,480,3,'#25443f');
+for(let i=0;i<40;i++){let x=wrap(i*67+15-camera*1.2,540)-30,y=271+(i*17)%28;R(x,y,2,3,'#3a6559');if(i%3===0)flower(x,y,'#b9c9a5');if(i%7===0)flower(x+9,y,'#b794a6')}
+g.globalAlpha=.16;R(tx+82,217,20,9,'#ffe5a0');R(tx+102,213,22,17,'#ffe5a0');R(tx+124,209,24,25,'#ffe5a0');R(tx+148,205,24,33,'#ffe5a0');g.globalAlpha=1;
+for(let i=0;i<5;i++){const age=wrap(t*3+i*.21,1),x=tx-8-age*35,y=229-age*10;g.globalAlpha=(1-age)*.6;R(x,y,3+Math.floor(age*4),2+Math.floor(age*3),'#8a8591')}g.globalAlpha=1;
+truck(tx,191+Math.round(Math.sin(t*15)*.8),t);
+title('ANIMAL',59,5);title('KEEPER',108,5);
+R(203,42,5,4,'#fffef1');R(214,37,5,5,'#fffef1');R(225,42,5,4,'#fffef1');R(211,46,13,7,'#fffef1');R(212,53,11,2,'#ffcc43');
+if(!reduce)requestAnimationFrame(draw)}requestAnimationFrame(draw);
+})();
+</script>
+</html>

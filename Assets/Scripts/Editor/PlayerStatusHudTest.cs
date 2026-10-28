@@ -38,6 +38,10 @@ public static class PlayerStatusHudTest
     private static InputSettings.EditorInputBehaviorInPlayMode savedEditorBehavior;
     private static InputSettings.BackgroundBehavior savedBackgroundBehavior;
 
+    // 시간 소환 박쥐가 플레이어를 물면 체력 0 → 트럭 복귀로 HUD가 파괴되어 테스트가 중단된다. 그래서 테스트 동안만 구간 소환 목록을 비운 복제 설정을 쓴다(설정 에셋은 그대로).
+    private static readonly FieldInfo ConfigField = typeof(GameManager).GetField("config", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static GameManager configOwner;
+    private static GameBalanceConfig originalConfig, testConfig;
     private static readonly FieldInfo HpFill = typeof(AnimalKeeperHUD).GetField("hpFill", BindingFlags.NonPublic | BindingFlags.Instance);
     private static readonly FieldInfo StaminaFill = typeof(AnimalKeeperHUD).GetField("staminaFill", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -100,6 +104,9 @@ public static class PlayerStatusHudTest
         InputSystem.settings.backgroundBehavior = savedBackgroundBehavior;
         Time.captureDeltaTime = 0f;
         Time.timeScale = 1f;
+        if (configOwner != null && originalConfig != null) ConfigField.SetValue(configOwner, originalConfig);
+        if (testConfig != null) Object.DestroyImmediate(testConfig);
+        configOwner = null; originalConfig = null; testConfig = null;
     }
 
     // 에러·예외는 모두, 경고는 HUD 관련(에셋·연결 코드)만 남긴다.
@@ -170,6 +177,15 @@ public static class PlayerStatusHudTest
             Finish();
             yield break;
         }
+
+        // 복제 설정으로 돌린다: 모든 구간의 시간 소환 목록을 비워 박쥐가 나오지 않게 한다(TearDown에서 원본으로 되돌린다).
+        configOwner = gm;
+        originalConfig = config;
+        testConfig = Object.Instantiate(config);
+        testConfig.name = "PlayerStatusHudTestConfig";
+        for (int p = 0; p < testConfig.villagePhaseSpawns.Length; p++) testConfig.villagePhaseSpawns[p] = new GameBalanceConfig.VillagePhaseSpawnList();
+        ConfigField.SetValue(gm, testConfig);
+        config = testConfig;
 
         // --- 0. 씬 구성
         sb.AppendLine("\n== 0. 체력·스태미나 바가 있는 씬 (예전 HealthUI/StaminaUI 자리)");
