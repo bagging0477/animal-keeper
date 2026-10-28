@@ -170,10 +170,10 @@ MonoBehaviour:
   villageSpawnMinPlayerDistance: 15
   mileagePerWeight: 10
   targetBonusMileage: 50
-  netDamage: 1.2
+  netDamage: 0.6
   netRange: 2
   netAngle: 90
-  netCooldown: 0.75
+  netCooldown: 1.5
   tranquilizerStartingAmmo: 3
   tranquilizerMaxAmmo: 10
   tranquilizerAmmoRefillAmount: 5
