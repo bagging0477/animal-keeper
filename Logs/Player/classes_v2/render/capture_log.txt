@@ -1,0 +1,9 @@
+Field 가운데 (62.50, 81.50), 카메라 ortho 5.6, 1도트 = 6.03px
+scout now: sprite player_base 크기 (20.00, 20.00) PPU 10.24 피벗(px) (10.25, 10.25) 배율 0.64 충돌체 0.640x0.640칸 = 61.7px 1도트 0.0625칸
+trapper now: sprite player_trapper 크기 (20.00, 20.00) PPU 11.52 피벗(px) (10.25, 10.25) 배율 0.72 충돌체 0.720x0.720칸 = 69.4px 1도트 0.0625칸
+gunner now: sprite player_gunner 크기 (20.00, 20.00) PPU 10.24 피벗(px) (10.25, 10.25) 배율 0.64 충돌체 0.640x0.640칸 = 61.7px 1도트 0.0625칸
+gunner_armed now: sprite player_gunner_armed 크기 (20.00, 20.00) PPU 13.216 피벗(px) (10.25, 10.25) 배율 0.826 충돌체 0.826x0.826칸 = 79.6px 1도트 0.0625칸
+scout v2: sprite player_base_v2 크기 (20.00, 20.00) PPU 10.24 피벗(px) (10.25, 10.25) 배율 0.64 충돌체 0.640x0.640칸 = 61.7px 1도트 0.0625칸
+trapper v2: sprite player_trapper_v2 크기 (20.00, 20.00) PPU 11.52 피벗(px) (10.25, 10.25) 배율 0.72 충돌체 0.720x0.720칸 = 69.4px 1도트 0.0625칸
+gunner v2: sprite player_gunner_v2 크기 (20.00, 20.00) PPU 10.24 피벗(px) (10.25, 10.25) 배율 0.64 충돌체 0.640x0.640칸 = 61.7px 1도트 0.0625칸
+gunner_armed v2: sprite player_gunner_armed_v2 크기 (20.00, 20.00) PPU 13.216 피벗(px) (10.25, 10.25) 배율 0.826 충돌체 0.826x0.826칸 = 79.6px 1도트 0.0625칸
