@@ -521,6 +521,33 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("호저 시체 무게(늑대 wolfCorpseWeight와 따로 정한다).")]
     public int porcupineCorpseWeight = 12;
 
+    [Header("몬스터 - 코뿔소 (RhinoMonsterAI, 돌진형. 아직 스폰 목록에 없음 - 테스트에서만 배치)")]
+    [Tooltip("평소 배회 걷기 속도(칸/초).")]
+    public float rhinoWalkSpeed = 1f;
+    [Tooltip("배회할 때 처음 자리에서 이 반경(칸) 안의 지점으로 걷는다.")]
+    public float rhinoWanderRadius = 4f;
+    [Tooltip("배회 지점에 도착한 뒤 서 있는 시간(초) 범위.")]
+    public float rhinoWanderWaitMin = 1.5f;
+    public float rhinoWanderWaitMax = 3f;
+    [Tooltip("이 거리(칸) 안에 있고 사이를 벽·장애물이 막지 않으면 플레이어를 발견하고 차징한다.")]
+    public float rhinoDetectRange = 6f;
+    [Tooltip("차징 시간(초). 제자리에서 플레이어를 보고, 끝나는 순간의 플레이어 방향으로 돌진 방향을 고정한다.")]
+    public float rhinoChargeDuration = 1f;
+    [Tooltip("돌진 속도(칸/초).")]
+    public float rhinoDashSpeed = 9f;
+    [Tooltip("돌진 거리(칸). 일직선, 도중에 방향을 바꾸지 않는다.")]
+    public float rhinoDashDistance = 8f;
+    [Tooltip("돌진 중 플레이어에게 닿으면 주는 피해(%). 돌진 한 번에 한 번만.")]
+    public int rhinoDashDamage = 60;
+    [Tooltip("돌진 중 몸 가운데에서 이 거리(칸) 안에 플레이어가 들어오면 닿은 것으로 본다.")]
+    public float rhinoDashHitRadius = 1.5f;
+    [Tooltip("돌진이 끝난 뒤 멈칫(recover)하는 시간(초). 그 뒤 다시 걷는다.")]
+    public float rhinoRecoverDuration = 1.5f;
+    [Tooltip("돌진 중 벽·장애물에 부딪히면 그 자리에서 멈추고 이 시간(초) 동안 기절한다.")]
+    public float rhinoWallStunDuration = 2f;
+    [Tooltip("코뿔소 시체 무게.")]
+    public int rhinoCorpseWeight = 25;
+
     [Header("장애물 가림 반투명 (ObstacleOccluderFade)")]
     [Tooltip("장애물(나무·덤불 등)이 플레이어·동물·몬스터를 가릴 때 흐려지는 불투명도. 1이면 흐려지지 않는다.")]
     [Range(0f, 1f)] public float occluderFadeAlpha = 0.45f;

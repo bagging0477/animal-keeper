@@ -1,0 +1,56 @@
+TempRhinoSizeTest 2026-10-29 10:39:36
+
+== 화면 크기 (1920x1080, 카메라 orthographicSize 5.6 → 1칸 = 96.4px)
+  늑대: 1도트 = 1/16칸 = 6.0px (기준)
+  배율 2: 1도트 = 0.0625칸 = 6.0px, 몸(보이는 부분 29x18도트) = 1.81x1.13칸 = 175x108px, 프레임 48x32 = 289x193px / 길찾기 반경 0.55, 다트 반경 0.734, 돌진 맞힘 1
+  배율 3: 1도트 = 0.0938칸 = 9.0px, 몸(보이는 부분 29x18도트) = 2.72x1.69칸 = 262x163px, 프레임 48x32 = 434x289px / 길찾기 반경 0.825, 다트 반경 1.102, 돌진 맞힘 1.5
+  배율 4: 1도트 = 0.125칸 = 12.1px, 몸(보이는 부분 29x18도트) = 3.63x2.25칸 = 350x217px, 프레임 48x32 = 579x386px / 길찾기 반경 1.1, 다트 반경 1.469, 돌진 맞힘 2
+  방마다 플레이어 자리에서 지나갈 수 있는 가장 넓은 길의 가장 좁은 폭(벽에서 벽): Room_0_0 1.75칸(Room_1_0(RoomD_Connected) 안), Room_1_0 1.75칸(Room_1_0(RoomD_Connected) 안), Room_2_0 1.75칸(Room_1_0(RoomD_Connected) 안), Room_0_1 2.45칸(Room_1_2(Room_Field) 안), Room_1_1 2.45칸(Room_1_2(Room_Field) 안), Room_2_1 1.75칸(Room_2_1(RoomB_Square) 안), Room_0_2 2.45칸(Room_1_2(Room_Field) 안), Room_1_2 2.45칸(Room_1_2(Room_Field) 안), Room_2_2 2.45칸(Room_1_2(Room_Field) 안), Room_0_3 2.45칸(Room_1_2(Room_Field) 안), Room_1_3 2.45칸(Room_1_2(Room_Field) 안), Room_2_3 2.45칸(Room_1_2(Room_Field) 안)
+
+== 시드 1 (격자 3x4): 맵 108x119칸, 걸을 수 있는 칸 5260칸², 방 Room_0_0=B_Square, Room_1_0=D_Connected, Room_2_0=Graveyard, Room_0_1=C_LShape, Room_1_1=Graveyard, Room_2_1=B_Square, Room_0_2=D_Connected, Room_1_2=Field, Room_2_2=Forest, Room_0_3=C_LShape, Room_1_3=A_Corridor, Room_2_3=Field
+  배율 2 (반경 0.55, 지나가려면 폭 1.1칸): 몸이 들어가는 곳 93.0%, 플레이어 쪽에서 닿는 곳 93.0% / 길(방 밖) 92.8% / 끊긴 방 0 / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 47.5%, 몸 폭까지 보면 벽에 닿음 52.3% (평균 6.5칸 달린 뒤)
+  배율 3 (반경 0.825, 지나가려면 폭 1.65칸): 몸이 들어가는 곳 82.2%, 플레이어 쪽에서 닿는 곳 82.1% / 길(방 밖) 82.7% / 끊긴 방 0 / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 45.3%, 몸 폭까지 보면 벽에 닿음 58.5% (평균 6.0칸 달린 뒤)
+  배율 4 (반경 1.1, 지나가려면 폭 2.2칸): 몸이 들어가는 곳 72.4%, 플레이어 쪽에서 닿는 곳 48.2% / 길(방 밖) 44.1% / 끊긴 방 4 Room_0_0(RoomB_Square, 좁은 곳 Room_1_0(RoomD_Connected) 안 (57.88, 5.63) 폭 1.75칸),Room_1_0(RoomD_Connected, 좁은 곳 Room_1_0(RoomD_Connected) 안 (57.88, 5.63) 폭 1.75칸),Room_2_0(Room_Graveyard, 좁은 곳 Room_1_0(RoomD_Connected) 안 (63.38, 3.13) 폭 1.75칸),Room_2_1(RoomB_Square, 좁은 곳 Room_2_1(RoomB_Square) 안 (88.13, 50.38) 폭 1.75칸) / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 41.8%, 몸 폭까지 보면 벽에 닿음 59.0% (평균 5.8칸 달린 뒤)
+
+좁은 길 그림 자리: 방 사이 길(가로) 한가운데 (16.88, 59.88), 통로 폭(벽에서 벽) 6.00칸, 방향 (1.00, 0.00)
+  방마다 플레이어 자리에서 지나갈 수 있는 가장 넓은 길의 가장 좁은 폭(벽에서 벽): Room_0_0 2.45칸(Room_1_1(RoomC_LShape) 안), Room_1_0 2.45칸(Room_1_1(RoomC_LShape) 안), Room_2_0 2.45칸(Room_1_1(RoomC_LShape) 안), Room_0_1 2.45칸(Room_1_1(RoomC_LShape) 안), Room_1_1 2.45칸(Room_1_1(RoomC_LShape) 안), Room_2_1 2.45칸(Room_1_1(RoomC_LShape) 안), Room_0_2 2.45칸(Room_1_1(RoomC_LShape) 안), Room_1_2 2.45칸(Room_1_1(RoomC_LShape) 안), Room_2_2 1.75칸(Room_2_2(RoomA_Corridor) 입구), Room_0_3 2.45칸(Room_1_1(RoomC_LShape) 안), Room_1_3 2.45칸(Room_1_1(RoomC_LShape) 안), Room_2_3 1.75칸(Room_2_3(RoomD_Connected) 안)
+
+== 시드 2 (격자 3x4): 맵 111x118칸, 걸을 수 있는 칸 5015칸², 방 Room_0_0=Graveyard, Room_1_0=A_Corridor, Room_2_0=Forest, Room_0_1=Field, Room_1_1=C_LShape, Room_2_1=Graveyard, Room_0_2=B_Square, Room_1_2=Forest, Room_2_2=A_Corridor, Room_0_3=Field, Room_1_3=C_LShape, Room_2_3=D_Connected
+  배율 2 (반경 0.55, 지나가려면 폭 1.1칸): 몸이 들어가는 곳 92.8%, 플레이어 쪽에서 닿는 곳 92.8% / 길(방 밖) 92.7% / 끊긴 방 0 / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 45.1%, 몸 폭까지 보면 벽에 닿음 49.6% (평균 6.5칸 달린 뒤)
+  배율 3 (반경 0.825, 지나가려면 폭 1.65칸): 몸이 들어가는 곳 81.5%, 플레이어 쪽에서 닿는 곳 81.3% / 길(방 밖) 82.6% / 끊긴 방 0 / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 44.4%, 몸 폭까지 보면 벽에 닿음 55.6% (평균 6.1칸 달린 뒤)
+  배율 4 (반경 1.1, 지나가려면 폭 2.2칸): 몸이 들어가는 곳 71.7%, 플레이어 쪽에서 닿는 곳 62.2% / 길(방 밖) 57.4% / 끊긴 방 2 Room_2_2(RoomA_Corridor, 좁은 곳 Room_2_2(RoomA_Corridor) 입구 (88.88, 74.38) 폭 1.75칸),Room_2_3(RoomD_Connected, 좁은 곳 Room_2_3(RoomD_Connected) 안 (85.88, 97.88) 폭 1.75칸) / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 42.2%, 몸 폭까지 보면 벽에 닿음 58.3% (평균 5.7칸 달린 뒤)
+  방마다 플레이어 자리에서 지나갈 수 있는 가장 넓은 길의 가장 좁은 폭(벽에서 벽): Room_0_0 2.45칸(Room_1_1(Room_Field) 안), Room_1_0 2.45칸(Room_1_1(Room_Field) 안), Room_2_0 2.45칸(Room_1_1(Room_Field) 안), Room_0_1 2.45칸(Room_1_1(Room_Field) 안), Room_1_1 2.45칸(Room_1_1(Room_Field) 안), Room_2_1 2.45칸(Room_1_1(Room_Field) 안), Room_0_2 2.45칸(Room_1_1(Room_Field) 안), Room_1_2 2.45칸(Room_1_1(Room_Field) 안), Room_2_2 2.45칸(Room_1_1(Room_Field) 안), Room_0_3 2.45칸(Room_1_1(Room_Field) 안), Room_1_3 2.45칸(Room_1_1(Room_Field) 안), Room_2_3 2.45칸(Room_1_1(Room_Field) 안)
+
+== 시드 3 (격자 3x4): 맵 110x118칸, 걸을 수 있는 칸 5225칸², 방 Room_0_0=B_Square, Room_1_0=Forest, Room_2_0=C_LShape, Room_0_1=A_Corridor, Room_1_1=Field, Room_2_1=B_Square, Room_0_2=D_Connected, Room_1_2=C_LShape, Room_2_2=A_Corridor, Room_0_3=Forest, Room_1_3=Field, Room_2_3=Graveyard
+  배율 2 (반경 0.55, 지나가려면 폭 1.1칸): 몸이 들어가는 곳 93.1%, 플레이어 쪽에서 닿는 곳 93.1% / 길(방 밖) 92.3% / 끊긴 방 0 / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 45.2%, 몸 폭까지 보면 벽에 닿음 48.8% (평균 6.6칸 달린 뒤)
+  배율 3 (반경 0.825, 지나가려면 폭 1.65칸): 몸이 들어가는 곳 82.8%, 플레이어 쪽에서 닿는 곳 82.8% / 길(방 밖) 82.3% / 끊긴 방 0 / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 47.9%, 몸 폭까지 보면 벽에 닿음 59.7% (평균 6.0칸 달린 뒤)
+  배율 4 (반경 1.1, 지나가려면 폭 2.2칸): 몸이 들어가는 곳 73.4%, 플레이어 쪽에서 닿는 곳 72.8% / 길(방 밖) 72.5% / 끊긴 방 0 / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 45.5%, 몸 폭까지 보면 벽에 닿음 63.2% (평균 5.6칸 달린 뒤)
+  방마다 플레이어 자리에서 지나갈 수 있는 가장 넓은 길의 가장 좁은 폭(벽에서 벽): Room_0_0 2.45칸(Room_1_1(Room_Field) 안), Room_1_0 2.45칸(Room_1_1(Room_Field) 안), Room_2_0 2.45칸(Room_1_1(Room_Field) 안), Room_0_1 2.45칸(Room_1_1(Room_Field) 안), Room_1_1 2.45칸(Room_1_1(Room_Field) 안), Room_2_1 2.45칸(Room_1_1(Room_Field) 안), Room_0_2 2.45칸(Room_1_1(Room_Field) 안), Room_1_2 2.45칸(Room_1_1(Room_Field) 안), Room_2_2 2.45칸(Room_1_1(Room_Field) 안), Room_0_3 2.45칸(Room_1_1(Room_Field) 안), Room_1_3 2.45칸(Room_1_1(Room_Field) 안), Room_2_3 2.45칸(Room_1_1(Room_Field) 안)
+
+== 시드 4 (격자 3x4): 맵 106x118칸, 걸을 수 있는 칸 5197칸², 방 Room_0_0=B_Square, Room_1_0=Graveyard, Room_2_0=C_LShape, Room_0_1=A_Corridor, Room_1_1=Field, Room_2_1=D_Connected, Room_0_2=B_Square, Room_1_2=A_Corridor, Room_2_2=Forest, Room_0_3=Graveyard, Room_1_3=Field, Room_2_3=C_LShape
+  배율 2 (반경 0.55, 지나가려면 폭 1.1칸): 몸이 들어가는 곳 92.9%, 플레이어 쪽에서 닿는 곳 92.9% / 길(방 밖) 92.6% / 끊긴 방 0 / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 46.5%, 몸 폭까지 보면 벽에 닿음 50.9% (평균 6.4칸 달린 뒤)
+  배율 3 (반경 0.825, 지나가려면 폭 1.65칸): 몸이 들어가는 곳 82.1%, 플레이어 쪽에서 닿는 곳 82.0% / 길(방 밖) 82.5% / 끊긴 방 0 / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 45.2%, 몸 폭까지 보면 벽에 닿음 57.0% (평균 6.0칸 달린 뒤)
+  배율 4 (반경 1.1, 지나가려면 폭 2.2칸): 몸이 들어가는 곳 72.3%, 플레이어 쪽에서 닿는 곳 71.7% / 길(방 밖) 72.7% / 끊긴 방 0 / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 46.1%, 몸 폭까지 보면 벽에 닿음 62.1% (평균 5.7칸 달린 뒤)
+  방마다 플레이어 자리에서 지나갈 수 있는 가장 넓은 길의 가장 좁은 폭(벽에서 벽): Room_0_0 2.45칸(Room_1_2(Room_Field) 안), Room_1_0 2.45칸(Room_1_2(Room_Field) 안), Room_2_0 2.45칸(Room_1_2(Room_Field) 안), Room_0_1 2.45칸(Room_1_2(Room_Field) 안), Room_1_1 2.45칸(Room_1_2(Room_Field) 안), Room_2_1 2.45칸(Room_1_2(Room_Field) 안), Room_0_2 2.45칸(Room_1_2(Room_Field) 안), Room_1_2 2.45칸(Room_1_2(Room_Field) 안), Room_2_2 2.45칸(Room_1_2(Room_Field) 안), Room_0_3 2.45칸(Room_1_2(Room_Field) 안), Room_1_3 1.75칸(Room_1_3(RoomA_Corridor) 안), Room_2_3 1.75칸(Room_2_3(Room_Field) 입구)
+
+== 시드 5 (격자 3x4): 맵 108x119칸, 걸을 수 있는 칸 5134칸², 방 Room_0_0=D_Connected, Room_1_0=A_Corridor, Room_2_0=C_LShape, Room_0_1=B_Square, Room_1_1=D_Connected, Room_2_1=B_Square, Room_0_2=Forest, Room_1_2=Field, Room_2_2=Graveyard, Room_0_3=C_LShape, Room_1_3=A_Corridor, Room_2_3=Field
+  배율 2 (반경 0.55, 지나가려면 폭 1.1칸): 몸이 들어가는 곳 92.9%, 플레이어 쪽에서 닿는 곳 92.9% / 길(방 밖) 91.8% / 끊긴 방 0 / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 46.9%, 몸 폭까지 보면 벽에 닿음 51.1% (평균 6.6칸 달린 뒤)
+  배율 3 (반경 0.825, 지나가려면 폭 1.65칸): 몸이 들어가는 곳 82.8%, 플레이어 쪽에서 닿는 곳 82.8% / 길(방 밖) 81.9% / 끊긴 방 0 / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 46.7%, 몸 폭까지 보면 벽에 닿음 59.0% (평균 5.9칸 달린 뒤)
+  배율 4 (반경 1.1, 지나가려면 폭 2.2칸): 몸이 들어가는 곳 73.7%, 플레이어 쪽에서 닿는 곳 58.0% / 길(방 밖) 64.5% / 끊긴 방 2 Room_1_3(RoomA_Corridor, 좁은 곳 Room_1_3(RoomA_Corridor) 안 (42.13, 104.88) 폭 1.75칸),Room_2_3(Room_Field, 좁은 곳 Room_2_3(Room_Field) 입구 (80.13, 105.88) 폭 1.75칸) / 돌진 8칸 1500번: 지금 코드(몸 가운데 줄)로 벽에 부딪힘 47.2%, 몸 폭까지 보면 벽에 닿음 67.3% (평균 5.4칸 달린 뒤)
+
+== 요약 (시드 1~5 합)
+  배율 2: 몸이 들어가는 곳 93.0%, 닿는 곳 93.0%, 길(방 밖) 92.4%, 끊긴 방 0/60, 돌진 벽 충돌 지금 코드 46.3% · 몸 폭 기준 50.5% (평균 6.5칸)
+  배율 3: 몸이 들어가는 곳 82.3%, 닿는 곳 82.2%, 길(방 밖) 82.4%, 끊긴 방 0/60, 돌진 벽 충돌 지금 코드 45.9% · 몸 폭 기준 58.0% (평균 6.0칸)
+  배율 4: 몸이 들어가는 곳 72.7%, 닿는 곳 62.6%, 길(방 밖) 62.3%, 끊긴 방 8/60, 돌진 벽 충돌 지금 코드 44.6% · 몸 폭 기준 62.0% (평균 5.7칸)
+  방 종류별 닿는 면적(걸을 수 있는 면적 대비, 배율 2/3/4):
+    Room_Field: 96.3% / 91.1% / 77.1%
+    Room_Forest: 90.7% / 74.5% / 62.4%
+    Room_Graveyard: 84.5% / 56.0% / 21.8%
+    RoomA_Corridor: 91.3% / 78.3% / 52.0%
+    RoomB_Square: 93.7% / 84.7% / 59.1%
+    RoomC_LShape: 94.1% / 85.0% / 76.0%
+    RoomD_Connected: 92.0% / 80.0% / 48.9%
+
+비교 그림: C:\Users\Main\Documents\GitHub\animal-keeper\Logs\Rhino\size_test\size_compare.png
+
+콘솔 에러 0건

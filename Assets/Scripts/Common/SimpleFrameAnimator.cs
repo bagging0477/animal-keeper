@@ -13,7 +13,8 @@ public class SimpleFrameAnimator : MonoBehaviour
 {
     // Once/Hold는 바깥에서 넘겨준 프레임을 한 번 재생한다(거북이 숨기/나오기). Once는 끝나면 이동 상태로 돌아가고,
     // Hold는 마지막 프레임에 머물다가 ReleaseHold()로만 빠져나간다.
-    private enum Mode { Idle, Walk, Flee, Attack, Hurt, Dead, Once, Hold }
+    // Loop는 바깥에서 넘겨준 프레임을 ReleaseHold()까지 반복한다(코뿔소 돌진).
+    private enum Mode { Idle, Walk, Flee, Attack, Hurt, Dead, Once, Hold, Loop }
 
     [SerializeField] private Sprite idleSprite;
     [SerializeField] private Sprite[] walkFrames;
@@ -166,16 +167,26 @@ public class SimpleFrameAnimator : MonoBehaviour
         StartOneShot(frames, Mode.Hold, rate);
     }
 
+    /// <summary>frames를 rate(0이면 frameRate)로 ReleaseHold() 전까지 반복한다(코뿔소 돌진). 피격 그림은 끼어들 수 있고, 끝나면 이동 상태로 돌아간다. 비어 있으면 아무 일도 없다.</summary>
+    public void PlayLoop(Sprite[] frames, float rate = 0f)
+    {
+        if (mode == Mode.Dead) return;
+        StartOneShot(frames, Mode.Loop, rate);
+    }
+
+    /// <summary>PlayLoop로 반복 중인지.</summary>
+    public bool IsLooping => mode == Mode.Loop;
+
     /// <summary>PlayAndHold로 재생 중이거나 마지막 프레임에 멈춰 있는지.</summary>
     public bool IsHolding => mode == Mode.Hold;
 
     /// <summary>피격 그림(hurtFrames)을 재생 중인지.</summary>
     public bool IsPlayingHurt => mode == Mode.Hurt;
 
-    /// <summary>PlayAndHold로 멈춰 있던 것을 풀고 지금 이동 상태로 돌아간다. Hold가 아니면 아무 일도 없다.</summary>
+    /// <summary>PlayAndHold로 멈춰 있던 것(또는 PlayLoop 반복)을 풀고 지금 이동 상태로 돌아간다. Hold·Loop가 아니면 아무 일도 없다.</summary>
     public void ReleaseHold()
     {
-        if (mode != Mode.Hold) return;
+        if (mode != Mode.Hold && mode != Mode.Loop) return;
         mode = isFleeing ? Mode.Flee : isMoving ? Mode.Walk : Mode.Idle;
         frameIndex = 0;
         frameTimer = 0f;
@@ -184,7 +195,7 @@ public class SimpleFrameAnimator : MonoBehaviour
     /// <summary>PlayOnce로 시작한 재생이 아직 끝나지 않았는지.</summary>
     public bool IsPlayingOnce => mode == Mode.Once;
 
-    private bool IsOneShotMode => mode == Mode.Attack || mode == Mode.Hurt || mode == Mode.Dead || mode == Mode.Once || mode == Mode.Hold;
+    private bool IsOneShotMode => mode == Mode.Attack || mode == Mode.Hurt || mode == Mode.Dead || mode == Mode.Once || mode == Mode.Hold || mode == Mode.Loop;
 
     private void StartOneShot(Sprite[] frames, Mode oneShotMode, float rate = 0f)
     {
@@ -231,7 +242,7 @@ public class SimpleFrameAnimator : MonoBehaviour
         // 피격/사망 모션은 그대로 재생하고, 진행 중이던 공격은 끊는다.
         if (IsKnockedOut && mode != Mode.Hurt && mode != Mode.Dead)
         {
-            if (mode == Mode.Attack || mode == Mode.Once || mode == Mode.Hold) mode = Mode.Idle;
+            if (mode == Mode.Attack || mode == Mode.Once || mode == Mode.Hold || mode == Mode.Loop) mode = Mode.Idle;
             if (!wasKnockedOut)
             {
                 frameIndex = 0;
@@ -317,14 +328,14 @@ public class SimpleFrameAnimator : MonoBehaviour
         if (frameDuration > 0f && frameTimer >= frameDuration)
         {
             frameTimer -= frameDuration;
-            // 반복하지 않는 1회성 동작이라 마지막 프레임에서 멈추고 되감지 않는다.
-            frameIndex = Mathf.Min(frameIndex + 1, activeOneShotFrames.Length - 1);
+            // 반복하지 않는 1회성 동작이라 마지막 프레임에서 멈추고 되감지 않는다. Loop만 처음으로 되감는다.
+            frameIndex = mode == Mode.Loop ? (frameIndex + 1) % activeOneShotFrames.Length : Mathf.Min(frameIndex + 1, activeOneShotFrames.Length - 1);
         }
 
         spriteRenderer.sprite = activeOneShotFrames[Mathf.Clamp(frameIndex, 0, activeOneShotFrames.Length - 1)];
 
-        // Dead는 끝까지 재생한 뒤에도 마지막 프레임에 영구히 머문다 - 이동 상태로 복귀하지 않는다. Hold는 ReleaseHold()까지 머문다.
-        if (mode == Mode.Dead || mode == Mode.Hold) return;
+        // Dead는 끝까지 재생한 뒤에도 마지막 프레임에 영구히 머문다 - 이동 상태로 복귀하지 않는다. Hold·Loop는 ReleaseHold()까지 머문다.
+        if (mode == Mode.Dead || mode == Mode.Hold || mode == Mode.Loop) return;
 
         oneShotTimeRemaining -= Time.deltaTime;
         if (oneShotTimeRemaining <= 0f)
