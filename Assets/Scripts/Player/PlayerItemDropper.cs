@@ -45,7 +45,7 @@ public class PlayerItemDropper : MonoBehaviour
                 // MonsterCorpse(몬스터 시체)는 걸어다니는 동물로 되살리지 않고, 같은 자리에 쓰러진 시체로 놓는다.
                 if (dropped.AnimalKind == AnimalBehaviorKind.MonsterCorpse)
                 {
-                    DropMonsterCorpse(dropped.AnimalId, position);
+                    DropMonsterCorpse(dropped, position);
                     break;
                 }
                 AnimalRescue animalPrefab = dropped.AnimalPrefab != null ? dropped.AnimalPrefab
@@ -76,10 +76,14 @@ public class PlayerItemDropper : MonoBehaviour
 
     // 몬스터 시체도 동물과 같은 자리(바라보는 방향으로 dropDistance 앞)에 놓는다. 다만 몬스터는 NavMesh(x,z 평면) 위의 오브젝트이고
     // 동물처럼 벽에서 밀어내 줄 2D 충돌체가 없으므로, 플레이어 자리에서 그 지점까지 NavMesh 위로 막히기 전까지만 간다(벽 너머나 벽 속에 놓이지 않게).
-    // 시체는 원래 늑대의 Id를 그대로 이어받는다 - 재진입 때 그 Id로 다시 생긴 늑대가 버린 자리의 시체로 돌아간다(MonsterCorpsePickup).
-    private void DropMonsterCorpse(string monsterId, Vector2 position)
+    // 시체는 원래 몬스터의 Id와 주웠을 때의 무게를 그대로 이어받는다 - 재진입 때 그 Id로 다시 생긴 몬스터가 버린 자리의 시체로 돌아간다(MonsterCorpsePickup).
+    // 다시 만드는 프리팹은 주울 때 칸에 담긴 원래 몬스터(MonsterPrefab)다. 모르면(예전 칸, 시험용으로 직접 만든 몬스터) 기본 시체 프리팹(늑대)을 쓴다.
+    private void DropMonsterCorpse(InventorySlotData dropped, Vector2 position)
     {
-        if (droppedMonsterCorpsePrefab == null) return;
+        GameObject prefab = dropped.MonsterPrefab != null && dropped.MonsterPrefab.GetComponent<MonsterCorpsePickup>() != null
+            ? dropped.MonsterPrefab
+            : droppedMonsterCorpsePrefab != null ? droppedMonsterCorpsePrefab.gameObject : null;
+        if (prefab == null) return;
 
         Vector3 navTarget = new Vector3(position.x, 0f, position.y);
         Vector3 navFrom = new Vector3(transform.position.x, 0f, transform.position.y);
@@ -92,8 +96,10 @@ public class PlayerItemDropper : MonoBehaviour
         // 여기서 맞춘 시체 그림(Visual 자식)이 같이 밀린다.
         if (NavMesh.SamplePosition(navTarget, out NavMeshHit onMesh, CorpseNavSnapRadius, NavMesh.AllAreas)) navTarget = onMesh.position;
 
-        MonsterCorpsePickup corpse = Instantiate(droppedMonsterCorpsePrefab, navTarget, Quaternion.identity);
-        corpse.PlaceDroppedCorpse(monsterId);
+        GameObject instance = Instantiate(prefab, navTarget, Quaternion.identity);
+        MonsterCorpsePickup corpse = instance.GetComponent<MonsterCorpsePickup>();
+        corpse.SourcePrefab = prefab; // 다시 주웠다가 또 내려놓아도 같은 몬스터
+        corpse.PlaceDroppedCorpse(dropped.AnimalId, dropped.AnimalWeight);
     }
 
     // 플레이어 자리에서 가장 가까운 NavMesh를 찾는 반경 - 몬스터 스폰 스냅(VillageMapGenerator.SpawnMonsterAt)과 같은 값.

@@ -15,6 +15,10 @@ public struct InventorySlotData
     /// <summary>동물을 내려놓을 때 되살릴 원본 프리팹(AnimalRescue.SourcePrefab). 비어 있으면 AnimalKind로 고른다.</summary>
     public AnimalRescue AnimalPrefab;
 
+    /// <summary>몬스터 시체(AnimalKind == MonsterCorpse)를 내려놓을 때 다시 만들 원래 몬스터 프리팹(MonsterCorpsePickup.SourcePrefab).
+    /// 비어 있으면 PlayerItemDropper의 기본 시체 프리팹(늑대)을 쓴다.</summary>
+    public GameObject MonsterPrefab;
+
     /// <summary>슬롯 UI에 그릴 아이콘. 동물은 AnimalRescue.InventoryIcon(수동 지정 또는 시트 첫 프레임),
     /// 바닥에서 주운 지뢰/폭탄은 GadgetPickup의 스프라이트에서 온다. 시작 지급/상점 구매처럼 아이콘 없이
     /// 들어오면 null로 남고, InventoryUI가 종류별 기본 아이콘(없으면 임시 아이콘)으로 대신 그린다.</summary>

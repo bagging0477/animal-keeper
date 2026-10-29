@@ -670,7 +670,9 @@ public class VillageMapGenerator : MonoBehaviour
                 if (!IsOnMainNavMesh(hit.position, 0.1f)) continue; // 스냅된 자리가 끊긴 NavMesh 섬이면 버린다
                 Vector2 snapped = new Vector2(hit.position.x, hit.position.z);
                 if (!GridSpawnSpotFits(snapped, radius, placedBodies)) continue;
-                Instantiate(prefab, hit.position, Quaternion.identity, room.Root.transform).name = $"{prefab.name}_{i}";
+                GameObject monster = Instantiate(prefab, hit.position, Quaternion.identity, room.Root.transform);
+                monster.name = $"{prefab.name}_{i}";
+                MonsterCorpsePickup.RememberSource(monster, prefab); // 시체를 내려놓을 때 같은 몬스터로 다시 만들게(동물의 SourcePrefab과 같다)
                 placedBodies.Add(SpawnBody.Circle(snapped, radius));
                 placed = true;
             }
@@ -2333,7 +2335,9 @@ public class VillageMapGenerator : MonoBehaviour
         // doorway into a different room, which read as monsters spawning "outside" the map.
         if (NavMesh.SamplePosition(desired, out NavMeshHit hit, 1.5f, NavMesh.AllAreas) && IsWithinRoom(room, hit.position))
         {
-            Instantiate(prefab, hit.position, Quaternion.identity, parent).name = instanceName;
+            GameObject monster = Instantiate(prefab, hit.position, Quaternion.identity, parent);
+            monster.name = instanceName;
+            MonsterCorpsePickup.RememberSource(monster, prefab);
         }
         else
         {

@@ -288,7 +288,9 @@ public class VillageMonsterSpawner : MonoBehaviour
     // VillageMapGenerator.SpawnMonsterAt과 같은 방식: NavMesh에 붙인 자리(x, 0, z)에 회전 없이 만들고 이름에 번호를 붙인다(Id = 계층 경로).
     private void Create(GameObject prefab, Vector3 navPosition, string instanceName)
     {
-        Instantiate(prefab, navPosition, Quaternion.identity, SpawnParentTransform()).name = instanceName;
+        GameObject monster = Instantiate(prefab, navPosition, Quaternion.identity, SpawnParentTransform());
+        monster.name = instanceName;
+        MonsterCorpsePickup.RememberSource(monster, prefab); // 시체를 내려놓을 때 같은 몬스터로 다시 만들게
     }
 
     private Transform SpawnParentTransform()

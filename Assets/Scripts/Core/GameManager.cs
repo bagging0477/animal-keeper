@@ -567,6 +567,10 @@ public class GameManager : MonoBehaviour
     public bool TryAddAnimal(string animalId, int weight, AnimalBehaviorKind kind, Sprite icon, AnimalRescue sourcePrefab = null) =>
         TryAddItem(new InventorySlotData { Type = InventoryItemType.Animal, AnimalId = animalId, AnimalWeight = weight, AnimalKind = kind, Icon = icon, AnimalPrefab = sourcePrefab });
 
+    /// <summary>몬스터 시체를 동물 칸(AnimalKind.MonsterCorpse)으로 담는다 - 납품·정산은 동물과 같다. monsterPrefab은 내려놓을 때 다시 만들 원래 몬스터다.</summary>
+    public bool TryAddMonsterCorpse(string monsterId, int weight, Sprite icon, GameObject monsterPrefab) =>
+        TryAddItem(new InventorySlotData { Type = InventoryItemType.Animal, AnimalId = monsterId, AnimalWeight = weight, AnimalKind = AnimalBehaviorKind.MonsterCorpse, Icon = icon, MonsterPrefab = monsterPrefab });
+
     public bool TryAddMine(Sprite icon = null) => TryAddItem(new InventorySlotData { Type = InventoryItemType.Mine, Icon = icon });
 
     public bool TryAddBomb(Sprite icon = null) => TryAddItem(new InventorySlotData { Type = InventoryItemType.Bomb, Icon = icon });

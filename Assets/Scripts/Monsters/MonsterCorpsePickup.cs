@@ -43,8 +43,20 @@ public class MonsterCorpsePickup : MonoBehaviour
     private bool fullNoticeShown;
 
     // 몬스터마다 다른 무게(ICorpseWeight, 예: 호저)가 있으면 그 값, 없으면 늑대 시체 무게(늑대·박쥐).
+    // 내려놓은 시체는 주웠을 때의 무게(인벤토리 칸에 담겨 있던 값)를 그대로 이어받는다(droppedWeight).
     private ICorpseWeight corpseWeight;
-    public int Weight => corpseWeight != null ? corpseWeight.CorpseWeight : config != null ? config.wolfCorpseWeight : 15;
+    private int droppedWeight;
+    public int Weight => droppedWeight > 0 ? droppedWeight : corpseWeight != null ? corpseWeight.CorpseWeight : config != null ? config.wolfCorpseWeight : 15;
+
+    /// <summary>이 몬스터를 만든 원래 프리팹. 스폰하는 쪽(VillageMapGenerator, VillageMonsterSpawner, PlayerItemDropper)이 만들자마자 RememberSource로 넣는다
+    /// (동물의 AnimalRescue.SourcePrefab과 같다). 주울 때 인벤토리 칸에 담겨, 내려놓으면 같은 프리팹으로 다시 만든다 - 몬스터 종류마다 따로 처리하지 않는다.</summary>
+    public GameObject SourcePrefab { get; set; }
+
+    /// <summary>instance가 시체를 남기는 몬스터(MonsterCorpsePickup)면 원래 프리팹을 기억시킨다. 아니면(소리반응형 등) 아무 일도 없다.</summary>
+    public static void RememberSource(GameObject instance, GameObject prefab)
+    {
+        if (instance != null && instance.TryGetComponent(out MonsterCorpsePickup corpse)) corpse.SourcePrefab = prefab;
+    }
 
     private void Awake()
     {
@@ -86,23 +98,30 @@ public class MonsterCorpsePickup : MonoBehaviour
 
     /// <summary>PlayerItemDropper가 G로 내려놓은 시체를 만든 직후(Start 전) 부른다. 원래 늑대의 Id를 그대로 이어받고, 사망 애니메이션 없이
     /// 쓰러진 모습으로 지금 자리에 둔다. 마을을 떠날 때 OnDestroy가 이 자리를 그 Id의 시체 자리로 남겨, 재진입 때 원래 늑대가 여기 시체로 돌아온다.</summary>
-    public void PlaceDroppedCorpse(string monsterId)
+    public void PlaceDroppedCorpse(string monsterId, int weight = 0)
     {
         isDroppedCorpse = true;
         id = monsterId;
+        if (weight > 0) droppedWeight = weight;
         RestoreCorpse(transform.position);
     }
 
     // 남겨 둔 시체 자리로 옮기고 바로 시체로 만든다. 죽은 늑대는 MonsterAI.Update가 Visual을 따라 옮기지 않으므로 여기서 한 번 맞춘다
-    // (MonsterAI와 같은 매핑: NavMesh x,z → 2D x,y).
+    // (MonsterAI와 같은 매핑: NavMesh x,z → 2D x,y). 옮기는 것은 그림 묶음 전체(루트 바로 아래 Visual)다 - 박쥐·호저처럼 그림이
+    // Visual 아래 Body에 있으면 Body만 옮길 경우 그림자·몸이 어긋난다. 늑대는 그림이 Visual 자체라 예전과 같다.
     private void RestoreCorpse(Vector3 position)
     {
         UnityEngine.AI.NavMeshAgent agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (agent != null && agent.isOnNavMesh) agent.Warp(position);
         else transform.position = position;
 
-        SimpleFrameAnimator visual = GetComponentInChildren<SimpleFrameAnimator>();
-        if (visual != null) visual.transform.position = new Vector3(transform.position.x, transform.position.z, 0f);
+        SimpleFrameAnimator animator = GetComponentInChildren<SimpleFrameAnimator>();
+        if (animator != null)
+        {
+            Transform visual = animator.transform;
+            while (visual.parent != null && visual.parent != transform) visual = visual.parent;
+            visual.position = new Vector3(transform.position.x, transform.position.z, 0f);
+        }
 
         health.RestoreAsCorpse();
     }
@@ -163,7 +182,7 @@ public class MonsterCorpsePickup : MonoBehaviour
 
     private void PickUp()
     {
-        if (!GameManager.Instance.TryAddAnimal(id, Weight, AnimalBehaviorKind.MonsterCorpse, resolvedIcon)) return; // 인벤토리가 가득 찼을 때의 로그는 GameManager가 찍는다.
+        if (!GameManager.Instance.TryAddMonsterCorpse(id, Weight, resolvedIcon, SourcePrefab)) return; // 인벤토리가 가득 찼을 때의 로그는 GameManager가 찍는다.
         GameManager.Instance.ForgetMonsterCorpse(id);
 
         if (pickupSound == null)
