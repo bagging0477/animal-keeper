@@ -42,11 +42,14 @@ public class MonsterCorpsePickup : MonoBehaviour
     // 인벤토리가 가득 찼다는 안내를 이번에 범위에 들어와 이미 띄웠는지(InventoryFullNotice). 살아 있는 늑대는 Update가 먼저 빠져나가 띄우지 않는다.
     private bool fullNoticeShown;
 
-    private int Weight => config != null ? config.wolfCorpseWeight : 15;
+    // 몬스터마다 다른 무게(ICorpseWeight, 예: 호저)가 있으면 그 값, 없으면 늑대 시체 무게(늑대·박쥐).
+    private ICorpseWeight corpseWeight;
+    public int Weight => corpseWeight != null ? corpseWeight.CorpseWeight : config != null ? config.wolfCorpseWeight : 15;
 
     private void Awake()
     {
         health = GetComponent<MonsterHealth>();
+        corpseWeight = GetComponent<ICorpseWeight>();
     }
 
     // 같은 Day 재진입 때 늑대는 같은 시드와 같은 스폰 순서로 같은 Id에 다시 생긴다. 오늘 납품했거나 들고 있는 시체의 늑대는

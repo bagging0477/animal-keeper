@@ -501,6 +501,26 @@ public class GameBalanceConfig : ScriptableObject
     /// <summary>박쥐가 맞을 때마다 도망가는 거리(칸) = 거위 도망 거리 x batFleeDistanceRatio.</summary>
     public float BatFleeDistance => gooseFleeDistance * batFleeDistanceRatio;
 
+    [Header("몬스터 - 호저 (PorcupineMonsterAI, 제자리 터렛. 아직 스폰 목록에 없음 - 테스트에서만 배치)")]
+    [Tooltip("이 거리(칸) 안에 있고 사이를 벽·장애물이 막지 않으면 플레이어가 호저 시야에 들어온 것으로 본다. 가시 사거리와 같게 시작한다.")]
+    public float porcupineSightRange = 8f;
+    [Tooltip("플레이어를 본 뒤 가시를 세우고(예고) 쏘기까지의 시간(초).")]
+    public float porcupineWindupDuration = 0.8f;
+    [Tooltip("한 번 쏜 뒤 다음에 쏘기까지의 간격(초, 발사부터 발사까지). 예고 시간이 이 안에 들어간다.")]
+    public float porcupineVolleyInterval = 2.5f;
+    [Tooltip("한 번에 쏘는 가시 수.")]
+    [Min(1)] public int porcupineQuillCount = 3;
+    [Tooltip("가시를 펼쳐 쏘는 부채꼴 전체 각도(도). 가운데 가시가 플레이어 방향이고 나머지는 이 각도 안에 고르게 퍼진다.")]
+    public float porcupineSpreadAngle = 30f;
+    [Tooltip("가시 한 발이 플레이어에게 주는 피해(%).")]
+    public int porcupineQuillDamage = 20;
+    [Tooltip("가시 사거리(칸).")]
+    public float porcupineQuillRange = 8f;
+    [Tooltip("가시 속도(칸/초).")]
+    public float porcupineQuillSpeed = 9f;
+    [Tooltip("호저 시체 무게(늑대 wolfCorpseWeight와 따로 정한다).")]
+    public int porcupineCorpseWeight = 12;
+
     [Header("장애물 가림 반투명 (ObstacleOccluderFade)")]
     [Tooltip("장애물(나무·덤불 등)이 플레이어·동물·몬스터를 가릴 때 흐려지는 불투명도. 1이면 흐려지지 않는다.")]
     [Range(0f, 1f)] public float occluderFadeAlpha = 0.45f;

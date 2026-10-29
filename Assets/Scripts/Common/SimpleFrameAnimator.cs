@@ -57,6 +57,7 @@ public class SimpleFrameAnimator : MonoBehaviour
     private int frameIndex;
     private float frameTimer;
     private Sprite[] activeOneShotFrames;
+    private float oneShotRate;
     private float oneShotTimeRemaining;
     private float hurtFlashTimeRemaining;
     private bool wasKnockedOut;
@@ -149,20 +150,27 @@ public class SimpleFrameAnimator : MonoBehaviour
         if (spriteRenderer != null) spriteRenderer.sprite = deathFrames[frameIndex];
     }
 
-    /// <summary>frames를 한 번만 재생한 뒤 그 시점의 이동 상태로 돌아간다(Attack/Hurt와 같은 규칙). 비어 있으면 아무 일도 없다.</summary>
-    public void PlayOnce(Sprite[] frames)
+    /// <summary>frames를 한 번만 재생한 뒤 그 시점의 이동 상태로 돌아간다(Attack/Hurt와 같은 규칙). 비어 있으면 아무 일도 없다.
+    /// rate가 0이면 frameRate로 재생한다(예전과 같다). 호저의 가시 발사처럼 동작마다 속도가 다르면 넘긴다.</summary>
+    public void PlayOnce(Sprite[] frames, float rate = 0f)
     {
         if (mode == Mode.Dead) return;
-        StartOneShot(frames, Mode.Once);
+        StartOneShot(frames, Mode.Once, rate);
     }
 
     /// <summary>frames를 한 번 재생하고 마지막 프레임에 멈춰 있는다. ReleaseHold() 전까지 IsMoving/IsFleeing 변경은
-    /// 반영되지 않는다(거북이가 등껍질 속에 숨은 동안). 비어 있으면 아무 일도 없다.</summary>
-    public void PlayAndHold(Sprite[] frames)
+    /// 반영되지 않는다(거북이가 등껍질 속에 숨은 동안). 비어 있으면 아무 일도 없다. rate는 PlayOnce와 같다.</summary>
+    public void PlayAndHold(Sprite[] frames, float rate = 0f)
     {
         if (mode == Mode.Dead) return;
-        StartOneShot(frames, Mode.Hold);
+        StartOneShot(frames, Mode.Hold, rate);
     }
+
+    /// <summary>PlayAndHold로 재생 중이거나 마지막 프레임에 멈춰 있는지.</summary>
+    public bool IsHolding => mode == Mode.Hold;
+
+    /// <summary>피격 그림(hurtFrames)을 재생 중인지.</summary>
+    public bool IsPlayingHurt => mode == Mode.Hurt;
 
     /// <summary>PlayAndHold로 멈춰 있던 것을 풀고 지금 이동 상태로 돌아간다. Hold가 아니면 아무 일도 없다.</summary>
     public void ReleaseHold()
@@ -178,7 +186,7 @@ public class SimpleFrameAnimator : MonoBehaviour
 
     private bool IsOneShotMode => mode == Mode.Attack || mode == Mode.Hurt || mode == Mode.Dead || mode == Mode.Once || mode == Mode.Hold;
 
-    private void StartOneShot(Sprite[] frames, Mode oneShotMode)
+    private void StartOneShot(Sprite[] frames, Mode oneShotMode, float rate = 0f)
     {
         if (frames == null || frames.Length == 0) return;
 
@@ -186,7 +194,8 @@ public class SimpleFrameAnimator : MonoBehaviour
         mode = oneShotMode;
         frameIndex = 0;
         frameTimer = 0f;
-        oneShotTimeRemaining = frames.Length / Mathf.Max(frameRate, 0.01f);
+        oneShotRate = rate > 0f ? rate : frameRate;
+        oneShotTimeRemaining = frames.Length / Mathf.Max(oneShotRate, 0.01f);
     }
 
     // 실제로 재생 모드가 바뀔 때만 프레임 인덱스를 리셋해서, 매 프레임 같은 값으로
@@ -304,7 +313,7 @@ public class SimpleFrameAnimator : MonoBehaviour
     private void UpdateOneShotFrame()
     {
         frameTimer += Time.deltaTime;
-        float frameDuration = frameRate > 0f ? 1f / frameRate : 0f;
+        float frameDuration = oneShotRate > 0f ? 1f / oneShotRate : 0f;
         if (frameDuration > 0f && frameTimer >= frameDuration)
         {
             frameTimer -= frameDuration;
