@@ -8,6 +8,7 @@ using System.Text;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.LowLevel;
 using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
@@ -22,6 +23,7 @@ using Random = UnityEngine.Random;
 /// - 상황: 플레이어 없음(배회·순찰) / 발견과 추격 시작 / 추격 포기·탐색·최대 추격 시간 / 소리 강도 0.3·0.6·1.0과 거리별 조사 / 포획망·마취·폭탄·지뢰 피해와 사망 / 같은 Day 재진입 복원
 /// 결과: 메뉴는 Logs/monster_trace_latest.txt, batch는 -traceOut 경로(기본 Logs/monster_trace_before.txt)
 /// batchmode: -executeMethod MonsterTraceTest.RunBatch -traceOut Logs/monster_trace_before.txt
+/// 기준 기록 비교는 batch 실행 결과로 한다.
 /// 비교: Tools > Monsters > Compare Monster Trace (before와 latest), batch: -executeMethod MonsterTraceTest.CompareBatch -traceA a.txt -traceB b.txt
 /// </summary>
 [InitializeOnLoad]
@@ -255,7 +257,10 @@ public static class MonsterTraceTest
     // 기록이 흔들리지 않게 테스트 동안만 바꾸는 엔진 전역 설정(런타임 코드는 그대로). 끝나면 되돌린다.
     // - NavMesh 경로 계산을 한 프레임 안에 끝내게 해 경로가 몇 프레임 뒤에 나오는지가 실행마다 달라지지 않게 한다
     // - 작업 스레드를 쓰지 않게 해 NavMesh 카빙·군중 이동 같은 비동기 작업이 끝나는 프레임을 고정한다
+    // - 실제 마우스·키보드를 끊는다. PlayerMovement가 마우스 위치로 몸을 돌리고(rb.MoveRotation) WASD로 움직이기 때문에,
+    //   에디터에서는 Game 뷰 포커스와 마우스 위치에 따라 플레이어 콜라이더가 벽에 닿는 결과가 달라지고 몬스터가 그 위치를 따라가며 어긋난다
     private static int savedPathIterations = -1, savedWorkers = -1;
+    private static readonly List<InputDevice> disabledDevices = new List<InputDevice>();
 
     private static void PinEngine()
     {
@@ -263,6 +268,15 @@ public static class MonsterTraceTest
         UnityEngine.AI.NavMesh.pathfindingIterationsPerFrame = 100000;
         savedWorkers = Unity.Jobs.LowLevel.Unsafe.JobsUtility.JobWorkerCount;
         Unity.Jobs.LowLevel.Unsafe.JobsUtility.JobWorkerCount = 0;
+
+        disabledDevices.Clear();
+        foreach (InputDevice device in new InputDevice[] { Mouse.current, Keyboard.current })
+        {
+            if (device == null || !device.enabled) continue;
+            InputSystem.ResetDevice(device, true); // 마우스 위치 같은 리셋 제외 컨트롤까지 0으로
+            InputSystem.DisableDevice(device);
+            disabledDevices.Add(device);
+        }
     }
 
     private static void UnpinEngine()
@@ -270,6 +284,10 @@ public static class MonsterTraceTest
         if (savedPathIterations >= 0) UnityEngine.AI.NavMesh.pathfindingIterationsPerFrame = savedPathIterations;
         if (savedWorkers >= 0) Unity.Jobs.LowLevel.Unsafe.JobsUtility.JobWorkerCount = savedWorkers;
         savedPathIterations = savedWorkers = -1;
+
+        foreach (InputDevice device in disabledDevices)
+            if (device != null && device.added) InputSystem.EnableDevice(device);
+        disabledDevices.Clear();
     }
 
     private static IEnumerator Run()
@@ -327,11 +345,25 @@ public static class MonsterTraceTest
         player = p != null ? p.transform : null;
         playerBody = p != null ? p.GetComponent<Rigidbody2D>() : null;
         if (player == null) problems.Add($"시드 {seed}: 플레이어가 없다");
+        PinPlayerLook(p);
 
         // 대상이 아닌 동물은 모두 끈다(도주 소리 이벤트가 소리반응형을 건드리지 않게).
         foreach (AnimalRescue a in Object.FindObjectsByType<AnimalRescue>(FindObjectsInactive.Exclude)) a.gameObject.SetActive(false);
         MovePlayer(Far);
         yield return null;
+    }
+
+    // 플레이어가 바라보는 방향을 고정한다. PlayerMovement는 마우스 화면 위치를 aimCamera로 월드 좌표로 바꿔 몸을 돌리는데(rb.MoveRotation),
+    // 플레이어 콜라이더는 BoxCollider2D라서 회전에 따라 벽에 닿는 결과가 달라진다. 화면 위치의 월드 좌표는 Game 뷰 크기·종횡비에도 달라지므로
+    // 마우스를 끊는 것(PinEngine)만으로는 부족하다. aimCamera를 비우면 UpdateLookDirection이 바로 끝나 방향이 기본값(위쪽)에 고정된다.
+    // 맵을 불러올 때마다 플레이어가 새로 만들어지고 Awake가 aimCamera를 다시 채우므로 매번 비운다. 런타임 코드는 바꾸지 않는다.
+    private static void PinPlayerLook(GameObject playerObject)
+    {
+        PlayerMovement movement = playerObject != null ? playerObject.GetComponent<PlayerMovement>() : null;
+        if (movement == null) return;
+        FieldInfo aimCamera = typeof(PlayerMovement).GetField("aimCamera", BindingFlags.Instance | BindingFlags.NonPublic);
+        if (aimCamera == null) { problems.Add("PlayerMovement.aimCamera 필드를 찾지 못했다(이름이 바뀌었는지 확인)"); return; }
+        aimCamera.SetValue(movement, null);
     }
 
     private static readonly Vector2 Far = new Vector2(100000f, 100000f);
