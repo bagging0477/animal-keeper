@@ -49,6 +49,8 @@ MonoBehaviour:
   floorPatchThreshold: 0.62
   wolfCorpseWeight: 15
   monsterMinSpawnDistanceFromPlayer: 6
+  patrolMonsterSpawnShare: 0.4
+  soundReactiveMonsterSpawnShare: 0.3
   gridCorridorWidth: 6
   gridCorridorGap: 8
   gridCorridorFadeDepth: 1
@@ -141,15 +143,48 @@ MonoBehaviour:
     \uC788\uB2E4."
   - "\uB354\uB294 \uC774\uACF3\uC5D0 \uBA38\uBB3C \uC218 \uC5C6\uB2E4. \uC9C0\uAE08
     \uB2F9\uC7A5 \uB5A0\uB098\uC57C \uD55C\uB2E4!"
-  weepingAngelSpeed: 8.4
-  weepingAngelWanderSpeed: 1.5
-  weepingAngelChaseRange: 15
-  weepingAngelDamage: 80
-  weepingAngelCatchRange: 0.7
-  weepingAngelWanderRadius: 5
-  weepingAngelWanderWaitMin: 1
-  weepingAngelWanderWaitMax: 3
-  weepingAngelWarningInterval: 1.5
+  batSpeed: 8.4
+  batWanderSpeed: 1.5
+  batChaseRange: 15
+  batCatchDamageRatio: 0.8
+  batCatchRange: 0.7
+  batWanderRadius: 5
+  batWanderWaitMin: 1
+  batWanderWaitMax: 3
+  batWarningInterval: 1.5
+  batFleeDistanceRatio: 0.5
+  porcupinePrefab: {fileID: 8059513018795157324, guid: 70132399cdf69284dad53d8c56d6abe0, type: 3}
+  porcupineSpawnChance: 0.15
+  porcupineSpawnInLinearMode: 0
+  porcupineSightRange: 8
+  porcupineWindupDuration: 0.8
+  porcupineVolleyInterval: 2.5
+  porcupineQuillCount: 3
+  porcupineSpreadAngle: 30
+  porcupineQuillDamage: 20
+  porcupineQuillRange: 8
+  porcupineQuillSpeed: 9
+  porcupineCorpseWeight: 12
+  rhinoPrefab: {fileID: 7707983886238342982, guid: 900ee8ff5fd15f84a91b75288439d348, type: 3}
+  rhinoSpawnChance: 0.15
+  rhinoSpawnInLinearMode: 0
+  rhinoWalkSpeed: 1
+  rhinoWanderRadius: 4
+  rhinoWanderWaitMin: 1.5
+  rhinoWanderWaitMax: 3
+  rhinoDetectRange: 6
+  rhinoChargeDuration: 1
+  rhinoDashSpeed: 9
+  rhinoDashDistance: 8
+  rhinoDashDamage: 60
+  rhinoDashHitRadius: 1.5
+  rhinoRecoverDuration: 1.5
+  rhinoWallStunDuration: 2
+  rhinoCorpseWeight: 25
+  occluderFadeAlpha: 0.45
+  occluderFadeSpeed: 6
+  occluderMinCover: 0.2
+  occluderTargetRadius: 10
   villagePhaseSpawns:
   - entries:
     - monsterPrefab: {fileID: 6555077884092434632, guid: 1d6367ff8fdf9d04d8ad7d0591760909, type: 3}

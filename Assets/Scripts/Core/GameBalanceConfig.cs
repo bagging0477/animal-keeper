@@ -158,6 +158,15 @@ public class GameBalanceConfig : ScriptableObject
         "스폰 시점에만 적용되며, 스폰 이후 순찰/배회로 이 범위 안에 들어오는 것은 막지 않는다.")]
     public float monsterMinSpawnDistanceFromPlayer = 6f;
 
+    [Tooltip("맵 생성 몬스터 중 늑대(MonsterAI) 비율. 새 종류(호저·코뿔소 등 MonsterSpawnPool)가 허용되는 배치에서만 쓴다 - 새 종류 확률을 뺀 나머지를 " +
+        "늑대와 소리반응형이 이 값과 soundReactiveMonsterSpawnShare의 비로 나눈다. 새 종류가 하나도 허용되지 않는 배치(한 줄 배치)는 예전처럼 균등하게 뽑는다.")]
+    [Range(0f, 1f)]
+    public float patrolMonsterSpawnShare = 0.4f;
+
+    [Tooltip("맵 생성 몬스터 중 소리반응형(SoundReactiveMonsterAI) 비율. patrolMonsterSpawnShare 설명 참고.")]
+    [Range(0f, 1f)]
+    public float soundReactiveMonsterSpawnShare = 0.3f;
+
     [Header("격자 맵 길 (VillageScene 격자 배치 전용)")]
     [Tooltip("방과 방을 잇는 길의 폭(칸). 방의 변마다 이 폭의 차선(입구 안쪽 2칸까지 장애물 없음)이 있어야 그 변으로 이웃과 이어진다. " +
         "기본 6, 7은 시험용(Forest 남/북, Graveyard 북 입구가 7칸까지 열려 있다).")]
@@ -501,7 +510,14 @@ public class GameBalanceConfig : ScriptableObject
     /// <summary>박쥐가 맞을 때마다 도망가는 거리(칸) = 거위 도망 거리 x batFleeDistanceRatio.</summary>
     public float BatFleeDistance => gooseFleeDistance * batFleeDistanceRatio;
 
-    [Header("몬스터 - 호저 (PorcupineMonsterAI, 제자리 터렛. 아직 스폰 목록에 없음 - 테스트에서만 배치)")]
+    [Header("몬스터 - 호저 (PorcupineMonsterAI, 제자리 터렛. 맵 생성 스폰만 - 시간 소환에는 없다)")]
+    [Tooltip("맵 생성 스폰 풀에 더하는 호저 프리팹 (MonsterSpawnPool, VillageMapGenerator.monsterPrefabs와 따로 둔다)")]
+    public GameObject porcupinePrefab;
+    [Tooltip("맵 생성 몬스터 한 마리가 호저일 확률 (0~1). 총 마리 수는 그대로다.")]
+    [Range(0f, 1f)]
+    public float porcupineSpawnChance = 0.15f;
+    [Tooltip("체크하면 한 줄 배치에서도 호저가 나온다. 끄면 격자 배치에서만 나오고, 한 줄 배치는 예전과 같은 결과가 나온다.")]
+    public bool porcupineSpawnInLinearMode = false;
     [Tooltip("이 거리(칸) 안에 있고 사이를 벽·장애물이 막지 않으면 플레이어가 호저 시야에 들어온 것으로 본다. 가시 사거리와 같게 시작한다.")]
     public float porcupineSightRange = 8f;
     [Tooltip("플레이어를 본 뒤 가시를 세우고(예고) 쏘기까지의 시간(초).")]
@@ -521,7 +537,14 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("호저 시체 무게(늑대 wolfCorpseWeight와 따로 정한다).")]
     public int porcupineCorpseWeight = 12;
 
-    [Header("몬스터 - 코뿔소 (RhinoMonsterAI, 돌진형. 아직 스폰 목록에 없음 - 테스트에서만 배치)")]
+    [Header("몬스터 - 코뿔소 (RhinoMonsterAI, 돌진형. 맵 생성 스폰만 - 시간 소환에는 없다)")]
+    [Tooltip("맵 생성 스폰 풀에 더하는 코뿔소 프리팹 (MonsterSpawnPool). 몸이 커서 스폰 자리는 몸 상자(ISpawnFootprint)로 겹침을 검사한다.")]
+    public GameObject rhinoPrefab;
+    [Tooltip("맵 생성 몬스터 한 마리가 코뿔소일 확률 (0~1). 총 마리 수는 그대로다.")]
+    [Range(0f, 1f)]
+    public float rhinoSpawnChance = 0.15f;
+    [Tooltip("체크하면 한 줄 배치에서도 코뿔소가 나온다. 끄면 격자 배치에서만 나오고, 한 줄 배치는 예전과 같은 결과가 나온다.")]
+    public bool rhinoSpawnInLinearMode = false;
     [Tooltip("평소 배회 걷기 속도(칸/초).")]
     public float rhinoWalkSpeed = 1f;
     [Tooltip("배회할 때 처음 자리에서 이 반경(칸) 안의 지점으로 걷는다.")]

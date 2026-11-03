@@ -605,7 +605,7 @@ public class VillageMapGenerator : MonoBehaviour
         {
             GameObject prefab = AnimalSpawnPool.Pick(animalPrefabs, config, gridLayout: true);
             float radius = SpawnRadius(prefab);
-            Vector2Int? picked = PickGridSpawnCell(room, usedCells, radius, placedBodies);
+            Vector2Int? picked = PickGridSpawnCell(room, usedCells, SpawnShape.Circle(radius), placedBodies);
             if (!picked.HasValue)
             {
                 skipped++;
@@ -648,15 +648,16 @@ public class VillageMapGenerator : MonoBehaviour
         {
             GameObject prefab = MonsterSpawnPool.Pick(monsterPrefabs, config, gridLayout: true);
             float radius = SpawnRadius(prefab);
+            SpawnShape shape = SpawnShapeOf(prefab, radius);
             bool placed = false;
             for (int attempt = 0; attempt < MonsterSnapRetryCount && !placed; attempt++)
             {
-                Vector2Int? best = PickGridSpawnCell(room, usedCells, radius, placedBodies);
+                Vector2Int? best = PickGridSpawnCell(room, usedCells, shape, placedBodies);
                 if (!best.HasValue) break;
                 float bestDistance = Vector2.Distance(ToWorldXY(room, best.Value), playerSpawnWorldXY);
                 for (int retry = 1; retry < MonsterSpawnDistanceRetryCount && bestDistance < MonsterMinSpawnDistanceFromPlayer; retry++)
                 {
-                    Vector2Int? candidate = PickGridSpawnCell(room, usedCells, radius, placedBodies);
+                    Vector2Int? candidate = PickGridSpawnCell(room, usedCells, shape, placedBodies);
                     if (!candidate.HasValue) break;
                     float distance = Vector2.Distance(ToWorldXY(room, candidate.Value), playerSpawnWorldXY);
                     if (distance > bestDistance) { bestDistance = distance; best = candidate; }
@@ -669,11 +670,12 @@ public class VillageMapGenerator : MonoBehaviour
                 if (!NavMesh.SamplePosition(desired, out NavMeshHit hit, 1.5f, NavMesh.AllAreas) || !IsWithinRoom(room, hit.position)) continue;
                 if (!IsOnMainNavMesh(hit.position, 0.1f)) continue; // 스냅된 자리가 끊긴 NavMesh 섬이면 버린다
                 Vector2 snapped = new Vector2(hit.position.x, hit.position.z);
-                if (!GridSpawnSpotFits(snapped, radius, placedBodies)) continue;
+                if (!GridSpawnSpotFits(snapped, shape, placedBodies)) continue;
                 GameObject monster = Instantiate(prefab, hit.position, Quaternion.identity, room.Root.transform);
                 monster.name = $"{prefab.name}_{i}";
                 MonsterCorpsePickup.RememberSource(monster, prefab); // 시체를 내려놓을 때 같은 몬스터로 다시 만들게(동물의 SourcePrefab과 같다)
                 placedBodies.Add(SpawnBody.Circle(snapped, radius));
+                if (shape.HasBox) placedBodies.Add(SpawnBody.Box(snapped + shape.BoxOffset, shape.BoxHalfExtents * 2f));
                 placed = true;
             }
             if (!placed)
@@ -702,6 +704,41 @@ public class VillageMapGenerator : MonoBehaviour
             Vector2 closest = new Vector2(Mathf.Clamp(center.x, Center.x - HalfSize.x, Center.x + HalfSize.x), Mathf.Clamp(center.y, Center.y - HalfSize.y, Center.y + HalfSize.y));
             return (center - closest).sqrMagnitude < radius * radius;
         }
+
+        // 축 정렬 상자(boxCenter ± halfExtents)와 겹치는지.
+        public bool OverlapsBox(Vector2 boxCenter, Vector2 halfExtents)
+        {
+            if (Radius > 0f)
+            {
+                Vector2 closest = new Vector2(Mathf.Clamp(Center.x, boxCenter.x - halfExtents.x, boxCenter.x + halfExtents.x),
+                                              Mathf.Clamp(Center.y, boxCenter.y - halfExtents.y, boxCenter.y + halfExtents.y));
+                return (Center - closest).sqrMagnitude < Radius * Radius;
+            }
+            return Mathf.Abs(Center.x - boxCenter.x) < HalfSize.x + halfExtents.x && Mathf.Abs(Center.y - boxCenter.y) < HalfSize.y + halfExtents.y;
+        }
+    }
+
+    // 스폰 자리를 고를 때 검사하는 몸 모양. 원(반경)은 늘 검사하고, 몸이 큰 프리팹(ISpawnFootprint - 코뿔소)은 몸 상자도 함께 검사한다.
+    private readonly struct SpawnShape
+    {
+        public readonly float Radius;
+        public readonly bool HasBox;
+        public readonly Vector2 BoxOffset;       // 스폰 위치(발밑)에서 몸 상자 가운데까지
+        public readonly Vector2 BoxHalfExtents;
+
+        private SpawnShape(float radius, bool hasBox, Vector2 boxOffset, Vector2 boxHalfExtents)
+        {
+            Radius = radius; HasBox = hasBox; BoxOffset = boxOffset; BoxHalfExtents = boxHalfExtents;
+        }
+
+        public static SpawnShape Circle(float radius) => new SpawnShape(radius, false, Vector2.zero, Vector2.zero);
+        public static SpawnShape WithBox(float radius, Vector2 boxOffset, Vector2 boxHalfExtents) => new SpawnShape(radius, true, boxOffset, boxHalfExtents);
+    }
+
+    private static SpawnShape SpawnShapeOf(GameObject prefab, float radius)
+    {
+        ISpawnFootprint footprint = prefab.GetComponentInChildren<ISpawnFootprint>(true);
+        return footprint != null ? SpawnShape.WithBox(radius, footprint.SpawnFootprintOffset, footprint.SpawnFootprintHalfExtents) : SpawnShape.Circle(radius);
     }
 
     // 몬스터 한 마리에 NavMesh 스냅 후 겹침 때문에 칸을 다시 고르는 최대 횟수.
@@ -742,6 +779,24 @@ public class VillageMapGenerator : MonoBehaviour
         return true;
     }
 
+    // 몸 모양 겹침 검사: 원은 위와 같고, 몸 상자가 있으면 같은 규칙(이미 놓인 몸체, 막는 정적 충돌체)을 상자로도 검사한다.
+    // 코뿔소처럼 그림이 NavMeshAgent 반경보다 훨씬 큰 몬스터가 벽·장애물에 몸이 걸친 채 생기지 않게 한다.
+    private static bool GridSpawnSpotFits(Vector2 center, SpawnShape shape, List<SpawnBody> placedBodies)
+    {
+        if (!GridSpawnSpotFits(center, shape.Radius, placedBodies)) return false;
+        if (!shape.HasBox) return true;
+        Vector2 boxCenter = center + shape.BoxOffset;
+        foreach (SpawnBody body in placedBodies)
+            if (body.OverlapsBox(boxCenter, shape.BoxHalfExtents)) return false;
+        foreach (Collider2D c in Physics2D.OverlapBoxAll(boxCenter, shape.BoxHalfExtents * 2f, 0f))
+        {
+            if (c == null || !c.enabled || c.isTrigger) continue;
+            if (c.attachedRigidbody != null && c.attachedRigidbody.bodyType == RigidbodyType2D.Dynamic) continue;
+            return false;
+        }
+        return true;
+    }
+
     // 격자 스폰 중에만 쓰는 기준 자리(플레이어 시작 자리의 NavMesh 위치). 스폰이 끝나면 비운다 - 비어 있으면 아래 검사는 그냥 통과한다.
     private static Vector3? gridSpawnNavReference;
     private static NavMeshPath gridSpawnPath;
@@ -761,7 +816,7 @@ public class VillageMapGenerator : MonoBehaviour
     // 격자 경로의 스폰 칸 고르기. 후보는 PickInteriorCell과 같은 칸(장애물 아님, 상하좌우가 바닥, usedCells 아님)이고, 거기서 무작위로 뽑아
     // GridSpawnSpotFits와 IsOnMainNavMesh(큰 NavMesh 위)를 통과하는 칸을 고른다. 실패한 칸은 후보에서 빼므로 같은 칸을 다시 보지 않는다. GridSpawnRandomAttempts번 안에 못 찾으면
     // 남은 후보를 순서대로 한 번 훑는다(Random을 더 쓰지 않는다). 그래도 없으면 null - 무한히 돌지 않는다.
-    private static Vector2Int? PickGridSpawnCell(RoomInstance room, HashSet<Vector2Int> usedCells, float radius, List<SpawnBody> placedBodies)
+    private static Vector2Int? PickGridSpawnCell(RoomInstance room, HashSet<Vector2Int> usedCells, SpawnShape shape, List<SpawnBody> placedBodies)
     {
         HashSet<Vector2Int> floorSet = new HashSet<Vector2Int>(room.FloorCells);
         List<Vector2Int> candidates = new List<Vector2Int>();
@@ -777,12 +832,12 @@ public class VillageMapGenerator : MonoBehaviour
         {
             int index = Random.Range(0, candidates.Count);
             Vector2Int c = candidates[index];
-            if (GridSpawnSpotFits(ToWorldXY(room, c), radius, placedBodies) && IsOnMainNavMesh(ToNavPosition(room, c), GridSpawnNavTolerance)) return c;
+            if (GridSpawnSpotFits(ToWorldXY(room, c), shape, placedBodies) && IsOnMainNavMesh(ToNavPosition(room, c), GridSpawnNavTolerance)) return c;
             candidates[index] = candidates[candidates.Count - 1];
             candidates.RemoveAt(candidates.Count - 1);
         }
         foreach (Vector2Int c in candidates)
-            if (GridSpawnSpotFits(ToWorldXY(room, c), radius, placedBodies) && IsOnMainNavMesh(ToNavPosition(room, c), GridSpawnNavTolerance)) return c;
+            if (GridSpawnSpotFits(ToWorldXY(room, c), shape, placedBodies) && IsOnMainNavMesh(ToNavPosition(room, c), GridSpawnNavTolerance)) return c;
         return null;
     }
 

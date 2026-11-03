@@ -192,6 +192,8 @@ public static class VillageMapGenerationTest
         public int PathsChecked, PathsComplete;
         public int Animals, Monsters, TruckRoomMonsters, DuplicateIds, RoomsOverCap;
         public List<RoomSpawn> RoomSpawns = new List<RoomSpawn>(); // 격자 방별 스폰 수(방 종류별 분포 표용)
+        public Dictionary<string, int> MonsterTypes = new Dictionary<string, int>(); // 맵 생성 몬스터 종류별 수(방 안, 시간 소환 제외)
+        public int FootprintsChecked; // 몸 상자(ISpawnFootprint)로 생성 자리를 검사한 몬스터 수
         public string TruckRoomPrefab;
         public bool FloorConnected = true, WalkableConnected = true;
 
@@ -451,6 +453,9 @@ public static class VillageMapGenerationTest
                 {
                     Vector2Int cell = CellOf(monster.transform.position.x, monster.transform.position.z);
                     if (!mapFloor.Contains(cell) || obstacleCells[room].Contains(cell)) r.Failures.Add($"{name}: 몬스터 {monster.name}이 바닥이 아니거나 장애물 칸 {cell}에 스폰");
+                    string type = MonsterTypeName(monster);
+                    r.MonsterTypes[type] = (r.MonsterTypes.TryGetValue(type, out int typeCount) ? typeCount : 0) + 1;
+                    CheckSpawnFootprint(r, name, monster, mapFloor);
                 }
             }
 
@@ -729,6 +734,44 @@ public static class VillageMapGenerationTest
 
         private static Vector2Int CellOf(float x, float y) => new Vector2Int(Mathf.FloorToInt(x), Mathf.FloorToInt(y));
 
+        private static string MonsterTypeName(MonsterHealth monster)
+        {
+            if (monster.GetComponent<MonsterAI>() != null) return "늑대";
+            if (monster.GetComponent<SoundReactiveMonsterAI>() != null) return "소리반응형";
+            if (monster.GetComponent<PorcupineMonsterAI>() != null) return "호저";
+            if (monster.GetComponent<RhinoMonsterAI>() != null) return "코뿔소";
+            if (monster.GetComponent<BatMonsterAI>() != null) return "박쥐";
+            return monster.name;
+        }
+
+        // 몸 상자(ISpawnFootprint - 코뿔소)가 있는 몬스터는 생성 자리(배회 기준점 origin, 아직 없으면 지금 자리)에서 몸 상자가
+        // 막는 정적 충돌체(장애물·벽·트럭)와 겹치지 않고 네 모서리가 모두 맵 바닥 위인지 본다. 이미 걸어 다닌 자리는 보지 않는다.
+        private static void CheckSpawnFootprint(RunResult r, string roomName, MonsterHealth monster, HashSet<Vector2Int> mapFloor)
+        {
+            ISpawnFootprint footprint = monster.GetComponent<ISpawnFootprint>();
+            if (footprint == null) return;
+            r.FootprintsChecked++;
+            Vector2 start = monster.GamePosition;
+            FieldInfo originField = monster.GetComponent<RhinoMonsterAI>()?.GetType().GetField("origin", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (originField != null && originField.GetValue(monster.GetComponent<RhinoMonsterAI>()) is Vector3 origin && origin != Vector3.zero)
+                start = new Vector2(origin.x, origin.z);
+            Vector2 center = start + footprint.SpawnFootprintOffset, half = footprint.SpawnFootprintHalfExtents;
+            foreach (Collider2D c in Physics2D.OverlapBoxAll(center, half * 2f, 0f))
+            {
+                if (c == null || !c.enabled || c.isTrigger) continue;
+                if (c.attachedRigidbody != null && c.attachedRigidbody.bodyType == RigidbodyType2D.Dynamic) continue;
+                if (c.GetComponentInParent<MonsterHealth>() != null || c.GetComponentInParent<AnimalRescue>() != null || c.CompareTag("Player")) continue;
+                r.Failures.Add($"{roomName}: 몬스터 {monster.name}의 몸 상자(가운데 {center.x:F2},{center.y:F2}, 반 크기 {half.x:F2}x{half.y:F2})가 {c.name}과 겹친 자리에 생겼다");
+                return;
+            }
+            foreach (Vector2 corner in new[] { center - half, center + half, new Vector2(center.x - half.x, center.y + half.y), new Vector2(center.x + half.x, center.y - half.y) })
+            {
+                if (mapFloor.Contains(CellOf(corner.x, corner.y))) continue;
+                r.Failures.Add($"{roomName}: 몬스터 {monster.name}의 몸 상자 모서리 ({corner.x:F2},{corner.y:F2})가 맵 바닥 밖에 있다");
+                return;
+            }
+        }
+
         private static bool IsFinite(Vector3 v) => !float.IsInfinity(v.x) && !float.IsNaN(v.x);
 
         private static int ReadInt(Object target, string field) =>
@@ -843,6 +886,7 @@ public static class VillageMapGenerationTest
                 sb.AppendLine($"  방당 최대: 동물 {gridRuns.SelectMany(x => x.RoomSpawns).DefaultIfEmpty(new RoomSpawn()).Max(s => s.Animals)}, " +
                               $"몬스터 {gridRuns.SelectMany(x => x.RoomSpawns).DefaultIfEmpty(new RoomSpawn()).Max(s => s.Monsters)}");
                 AppendRoomSpawnTable(sb, gridRuns);
+                AppendMonsterTypeTable(sb, gridRuns);
                 sb.AppendLine("  트럭 방: " + string.Join(", ", gridRuns.GroupBy(x => x.TruckRoomPrefab).OrderBy(g => g.Key).Select(g => $"{g.Key} {g.Count()}회")));
                 sb.AppendLine($"  바닥(방 + 길) 한 덩어리: {gridRuns.Count(x => x.FloorConnected)}/{gridRuns.Count}회, " +
                               $"장애물 뺀 걸을 수 있는 바닥 한 덩어리: {gridRuns.Count(x => x.WalkableConnected)}/{gridRuns.Count}회");
@@ -895,6 +939,25 @@ public static class VillageMapGenerationTest
                               $"{(twoPlusTotal > 0 ? 100.0 * two / twoPlusTotal : 0):F0}% | {g.Average(s => s.MonsterWeight):F0} | {g.Average(s => s.Animals):F2}");
             }
             sb.AppendLine($"  합계 | {spawns.Count} | {spawns.Count(s => s.Monsters == 0)} | {spawns.Count(s => s.Monsters == 1)} | {twoPlusTotal} |");
+        }
+
+        // 맵 생성 몬스터 종류별 수: 전체 합 비율과 회차별 비율 평균, 몸 상자로 생성 자리를 검사한 수.
+        private static void AppendMonsterTypeTable(StringBuilder sb, List<RunResult> gridRuns)
+        {
+            int total = gridRuns.Sum(x => x.MonsterTypes.Values.Sum());
+            if (total == 0) return;
+            sb.AppendLine();
+            sb.AppendLine("== 몬스터 종류 (맵 생성 스폰, 시간 소환 제외)");
+            sb.AppendLine("  종류 | 합계 | 전체 비율 | 회차별 비율 평균 | 회차별 수 최소~최대");
+            foreach (string type in gridRuns.SelectMany(x => x.MonsterTypes.Keys).Distinct().OrderByDescending(t => gridRuns.Sum(x => x.MonsterTypes.TryGetValue(t, out int n) ? n : 0)))
+            {
+                List<int> perRun = gridRuns.Select(x => x.MonsterTypes.TryGetValue(type, out int n) ? n : 0).ToList();
+                int sum = perRun.Sum();
+                double meanShare = gridRuns.Where(x => x.MonsterTypes.Values.Sum() > 0)
+                    .Average(x => (x.MonsterTypes.TryGetValue(type, out int n) ? n : 0) / (double)x.MonsterTypes.Values.Sum());
+                sb.AppendLine($"  {type} | {sum} | {100.0 * sum / total:F1}% | {100.0 * meanShare:F1}% | {perRun.Min()}~{perRun.Max()}");
+            }
+            sb.AppendLine($"  합계 | {total} | 회차 {gridRuns.Count}개 | 몸 상자로 생성 자리 검사 {gridRuns.Sum(x => x.FootprintsChecked)}마리");
         }
 
         private static string Stat(IEnumerable<double> values, string format = "F1")

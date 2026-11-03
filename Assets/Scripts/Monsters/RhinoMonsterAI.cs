@@ -18,7 +18,7 @@ using UnityEngine.AI;
 /// - 몸 그림 가운데가 피벗보다 bodyCenterTexels만큼 앞(오른쪽)에 있어 좌우로 돌 때 그림자·다트 맞힘 원·몸 가운데를 같이 옮긴다(호저와 같다).
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent), typeof(MonsterHealth))]
-public class RhinoMonsterAI : MonsterBrain, ICorpseWeight
+public class RhinoMonsterAI : MonsterBrain, ICorpseWeight, ISpawnFootprint
 {
     public enum State { Wander, Charge, Dash, Recover }
     public enum DashEnd { None, Distance, Wall, Incapacitated }
@@ -80,6 +80,11 @@ public class RhinoMonsterAI : MonsterBrain, ICorpseWeight
     public Vector2 BodyHalfExtents => bodyHalfExtentsTexels * texelWorldSize;
 
     private float BodyCenterOffsetX => (FacingLeft ? -bodyCenterTexels : bodyCenterTexels) * texelWorldSize;
+
+    // 맵 생성 스폰의 겹침 검사용 몸 상자(ISpawnFootprint). 오른쪽·왼쪽을 볼 때의 몸 상자를 모두 덮는다(가로로 몸 가운데 어긋남만큼 넓힌다).
+    // 직렬화 값만 쓰므로 프리팹 에셋에서 바로 읽을 수 있다. 행동에는 쓰지 않는다.
+    public Vector2 SpawnFootprintOffset => new Vector2(0f, bodyCenterYTexels * texelWorldSize);
+    public Vector2 SpawnFootprintHalfExtents => BodyHalfExtents + new Vector2(Mathf.Abs(bodyCenterTexels) * texelWorldSize, 0f);
 
     /// <summary>땅 위치 ground에서 바라보는 쪽(facingLeft)일 때 몸 상자 가운데.</summary>
     public Vector2 BodyCenterAt(Vector2 ground, bool facingLeft) =>
