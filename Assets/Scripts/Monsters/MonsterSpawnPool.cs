@@ -1,18 +1,18 @@
 using UnityEngine;
 
 /// <summary>마을 몬스터 한 마리를 어떤 프리팹으로 만들지 고른다(VillageMapGenerator의 몬스터 스폰이 부른다). AnimalSpawnPool과 같은 방식이다.
-/// 새 몬스터 종류(호저·코뿔소)는 각자의 확률로 자리를 대신하고, 나머지는 기존 몬스터 풀(VillageMapGenerator.monsterPrefabs - 늑대, 소리반응형)에서 뽑는다.
+/// 새 몬스터 종류(호저·코뿔소·박쥐)는 각자의 확률로 자리를 대신하고, 나머지는 기존 몬스터 풀(VillageMapGenerator.monsterPrefabs - 늑대, 소리반응형)에서 뽑는다.
 /// - 총 마리 수는 그대로다. 새 종류가 하나도 허용되지 않으면(새 종류가 없거나 확률이 0이거나, 한 줄 배치에서 꺼져 있으면)
 /// 확률을 굴리지 않고 기존 풀에서 균등하게 뽑아서 Random 호출 순서와 결과가 예전과 완전히 같다.
 /// - 새 종류가 허용되면 한 번 굴린 값으로 새 종류와 기존 풀을 함께 고른다. 새 종류 확률을 뺀 나머지는 늑대·소리반응형이
-/// GameBalanceConfig.patrolMonsterSpawnShare : soundReactiveMonsterSpawnShare 비로 나눈다(지금 40% : 30%, 호저 15%, 코뿔소 15%).
+/// GameBalanceConfig.patrolMonsterSpawnShare : soundReactiveMonsterSpawnShare 비로 나눈다(지금 35% : 20%, 호저 20%, 코뿔소 10%, 박쥐 15%).
 ///
 /// 새 몬스터를 넣을 때: GameBalanceConfig에 "프리팹, 스폰 확률, 한 줄 배치 허용(기본 꺼짐)" 세 값을 추가하고,
 /// 아래 NewTypeCount와 NewType에 한 줄씩 넣는다. 확률은 [0, 첫 종류) → 첫 종류, [첫 종류, 첫 종류 + 둘째) → 둘째 … 순서로 한 번 굴린 값으로 고른다.</summary>
 public static class MonsterSpawnPool
 {
     // 새 몬스터 종류 수.
-    private const int NewTypeCount = 2;
+    private const int NewTypeCount = 3;
 
     // i번째 새 몬스터 종류의 (프리팹, 스폰 확률, 한 줄 배치 허용).
     private static (GameObject prefab, float chance, bool inLinearMode) NewType(GameBalanceConfig config, int i)
@@ -21,6 +21,7 @@ public static class MonsterSpawnPool
         {
             case 0: return (config.porcupinePrefab, config.porcupineSpawnChance, config.porcupineSpawnInLinearMode);
             case 1: return (config.rhinoPrefab, config.rhinoSpawnChance, config.rhinoSpawnInLinearMode);
+            case 2: return (config.batPrefab, config.batSpawnChance, config.batSpawnInLinearMode);
             default: return (null, 0f, false);
         }
     }

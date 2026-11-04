@@ -158,14 +158,14 @@ public class GameBalanceConfig : ScriptableObject
         "스폰 시점에만 적용되며, 스폰 이후 순찰/배회로 이 범위 안에 들어오는 것은 막지 않는다.")]
     public float monsterMinSpawnDistanceFromPlayer = 6f;
 
-    [Tooltip("맵 생성 몬스터 중 늑대(MonsterAI) 비율. 새 종류(호저·코뿔소 등 MonsterSpawnPool)가 허용되는 배치에서만 쓴다 - 새 종류 확률을 뺀 나머지를 " +
+    [Tooltip("맵 생성 몬스터 중 늑대(MonsterAI) 비율. 새 종류(호저·코뿔소·박쥐 등 MonsterSpawnPool)가 허용되는 배치에서만 쓴다 - 새 종류 확률을 뺀 나머지를 " +
         "늑대와 소리반응형이 이 값과 soundReactiveMonsterSpawnShare의 비로 나눈다. 새 종류가 하나도 허용되지 않는 배치(한 줄 배치)는 예전처럼 균등하게 뽑는다.")]
     [Range(0f, 1f)]
-    public float patrolMonsterSpawnShare = 0.4f;
+    public float patrolMonsterSpawnShare = 0.35f;
 
     [Tooltip("맵 생성 몬스터 중 소리반응형(SoundReactiveMonsterAI) 비율. patrolMonsterSpawnShare 설명 참고.")]
     [Range(0f, 1f)]
-    public float soundReactiveMonsterSpawnShare = 0.3f;
+    public float soundReactiveMonsterSpawnShare = 0.2f;
 
     [Header("격자 맵 길 (VillageScene 격자 배치 전용)")]
     [Tooltip("방과 방을 잇는 길의 폭(칸). 방의 변마다 이 폭의 차선(입구 안쪽 2칸까지 장애물 없음)이 있어야 그 변으로 이웃과 이어진다. " +
@@ -476,7 +476,14 @@ public class GameBalanceConfig : ScriptableObject
     }
 
     // 예전 이름(weepingAngel*)으로 저장된 값을 그대로 읽는다(FormerlySerializedAs) - 우는천사 자리를 박쥐가 이어받았다.
-    [Header("몬스터 - 박쥐 (BatMonsterAI, 시간 소환 전용, 예전 우는천사 자리)")]
+    [Header("몬스터 - 박쥐 (BatMonsterAI, 시간 소환 + 맵 생성 스폰, 예전 우는천사 자리)")]
+    [Tooltip("맵 생성 스폰 풀에 더하는 박쥐 프리팹 (MonsterSpawnPool). 시간 소환(villagePhaseSpawns)은 이것과 따로 그대로 나온다.")]
+    public GameObject batPrefab;
+    [Tooltip("맵 생성 몬스터 한 마리가 박쥐일 확률 (0~1). 총 마리 수는 그대로다.")]
+    [Range(0f, 1f)]
+    public float batSpawnChance = 0.15f;
+    [Tooltip("체크하면 한 줄 배치에서도 박쥐가 맵 생성으로 나온다. 끄면 격자 배치에서만 나오고, 한 줄 배치는 예전과 같은 결과가 나온다.")]
+    public bool batSpawnInLinearMode = false;
     [Tooltip("놀람 전 돌진과 놀람 후 추격 속도. 플레이어 스프린트 최고 속도(러닝화 없이, 스카우트 5.12325)의 약 1.64배.")]
     [FormerlySerializedAs("weepingAngelSpeed")] public float batSpeed = 8.4f;
 
@@ -515,7 +522,7 @@ public class GameBalanceConfig : ScriptableObject
     public GameObject porcupinePrefab;
     [Tooltip("맵 생성 몬스터 한 마리가 호저일 확률 (0~1). 총 마리 수는 그대로다.")]
     [Range(0f, 1f)]
-    public float porcupineSpawnChance = 0.15f;
+    public float porcupineSpawnChance = 0.2f;
     [Tooltip("체크하면 한 줄 배치에서도 호저가 나온다. 끄면 격자 배치에서만 나오고, 한 줄 배치는 예전과 같은 결과가 나온다.")]
     public bool porcupineSpawnInLinearMode = false;
     [Tooltip("이 거리(칸) 안에 있고 사이를 벽·장애물이 막지 않으면 플레이어가 호저 시야에 들어온 것으로 본다. 가시 사거리와 같게 시작한다.")]
@@ -542,7 +549,7 @@ public class GameBalanceConfig : ScriptableObject
     public GameObject rhinoPrefab;
     [Tooltip("맵 생성 몬스터 한 마리가 코뿔소일 확률 (0~1). 총 마리 수는 그대로다.")]
     [Range(0f, 1f)]
-    public float rhinoSpawnChance = 0.15f;
+    public float rhinoSpawnChance = 0.1f;
     [Tooltip("체크하면 한 줄 배치에서도 코뿔소가 나온다. 끄면 격자 배치에서만 나오고, 한 줄 배치는 예전과 같은 결과가 나온다.")]
     public bool rhinoSpawnInLinearMode = false;
     [Tooltip("평소 배회 걷기 속도(칸/초).")]

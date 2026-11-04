@@ -1489,6 +1489,21 @@ public static class BatMonsterTest
         yield return WaitFrames(5);
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null) player = p.transform;
+        if (sceneName == "VillageScene") DisableMapBats();
+    }
+
+    // 맵 생성 박쥐(MonsterSpawnPool, 방 아래)는 생기자마자 플레이어에게 날아와 검사(데미지·경고음·박쥐 수)에 끼어든다.
+    // 1구간 시간 소환 박쥐를 빼는 것과 같은 이유로, 마을을 불러올 때마다 끈다. 시간 소환 박쥐(TimedMonsters 아래)와 시험용 박쥐는 그대로다.
+    private static void DisableMapBats()
+    {
+        int count = 0;
+        foreach (BatMonsterAI bat in Object.FindObjectsByType<BatMonsterAI>(FindObjectsInactive.Exclude))
+        {
+            if (bat.transform.parent == null || !bat.transform.parent.name.StartsWith("Room_")) continue;
+            bat.gameObject.SetActive(false);
+            count++;
+        }
+        if (count > 0) sb.AppendLine($"(참고) 맵 생성 박쥐 {count}마리를 끄고 검사한다");
     }
 
     private static IEnumerator WaitForScene(string sceneName)

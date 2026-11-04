@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
-/// 박쥐 몬스터(예전 우는천사 자리). 시간 시스템(VillageMonsterSpawner, GameBalanceConfig.villagePhaseSpawns)으로만 나온다 - 맵 생성 스폰 풀(MonsterSpawnPool)에는 없다.
+/// 박쥐 몬스터(예전 우는천사 자리). 시간 시스템(VillageMonsterSpawner, GameBalanceConfig.villagePhaseSpawns)과 맵 생성 스폰 풀(MonsterSpawnPool, 격자 배치만)로 나온다.
 ///
 /// - 시야 판정은 정면 부채꼴(손전등) 시야만 본다(PlayerVision.IsInFocusedVision). 원형 주변 시야 안에서는 멈추지 않고 계속 다가온다.
 /// - 놀람 전(Ambush): 스폰되면 거리 제한 없이 플레이어에게 날아간다. 자기 위치가 정면 시야 안에 처음 들어온 순간
