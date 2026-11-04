@@ -251,6 +251,37 @@ public class GameBalanceConfig : ScriptableObject
     [Range(0f, 1f)]
     public float focusedVisionInnerRadiusRatio = 0.55f;
 
+    [Header("시야 라이트 색 (빛 효과 규칙 - Logs/Lighting/lighting_proposal.md)")]
+    [Tooltip("원형 기본 시야(Ambient Vision)와 트럭 주변 시야 라이트 색 - 차가운 흰색. 밝기는 visionLightIntensity 그대로.")]
+    public Color ambientVisionLightColor = new Color(0.86f, 0.92f, 1f, 1f);
+
+    [Tooltip("부채꼴 손전등 시야(Focused Vision) 라이트 색 - 따뜻한 흰색. 밝기는 visionLightIntensity 그대로.")]
+    public Color focusedVisionLightColor = new Color(1f, 0.87f, 0.66f, 1f);
+
+    [Header("트럭 주변 시야 (VillageScene)")]
+    [Tooltip("트럭 가운데를 중심으로 늘 밝게 보이는 원형 시야 반경(칸). 0이면 끈다. 원형 기본 시야와 같은 밝기·감쇠·색이고 벽·장애물 그림자는 쓰지 않는다(트럭 자신이 막지 않게). " +
+        "시야 판정(PlayerVision.IsVisibleToPlayer - 몬스터 눈 발광, 시간 소환 위치)에 들어가지만, 박쥐가 멈추는 정면 손전등 시야(IsInFocusedVision)에는 들어가지 않는다.")]
+    [Min(0f)] public float truckVisionRadius = 5f;
+
+    [Header("마을 어둠 색 (구간별 - 화면 전체에 같은 색을 더한다, VillageNightTint)")]
+    [Tooltip("1~5구간에 화면 전체에 더하는 색. 해질녘 보라 → 밤 남색 → 깊은 밤 → 새벽 전(가장 어두움) → 5구간 붉은 경고. " +
+        "보이는 곳·안 보이는 곳에 똑같이 더하므로 시야 밖 몬스터가 드러나지 않는다. 비어 있거나 모자라면 마지막 색을 쓰고, 없으면 검정(더하지 않음).")]
+    public Color[] villagePhaseDarknessColors =
+    {
+        new Color32(0x0A, 0x08, 0x10, 0xFF),
+        new Color32(0x05, 0x08, 0x12, 0xFF),
+        new Color32(0x03, 0x05, 0x0C, 0xFF),
+        new Color32(0x02, 0x03, 0x06, 0xFF),
+        new Color32(0x0C, 0x03, 0x06, 0xFF),
+    };
+
+    /// <summary>phase(1~5) 구간의 어둠 색. 목록이 모자라면 마지막 색, 비어 있으면 검정.</summary>
+    public Color GetVillagePhaseDarknessColor(int phase)
+    {
+        if (villagePhaseDarknessColors == null || villagePhaseDarknessColors.Length == 0) return Color.black;
+        return villagePhaseDarknessColors[Mathf.Clamp(phase - 1, 0, villagePhaseDarknessColors.Length - 1)];
+    }
+
     [Header("클래스 - 시야 범위 배율 (기준치 대비, %) - 100이면 기준치(위 ambientVisionRadius 등) 그대로. " +
         "원형 시야(Ambient)와 부채꼴 시야(Focused)를 따로 조절할 수 있다.")]
     [Tooltip("스카우트 기본 원형 시야(Ambient Vision) 반경 배율.")]

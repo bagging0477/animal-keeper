@@ -6,6 +6,8 @@ using UnityEngine.Rendering.Universal;
 /// 바라보는 방향(마우스 방향)의 넓은 부채꼴 시야(Focused)를 Light2D 두 개로 구현한다.
 /// 두 라이트가 겹쳐서 밝히는 범위 밖은 VillageScene의 Global Light 2D를 어둡게 낮춰둔 덕분에
 /// 자연스럽게 어두워진다(별도의 검은 오버레이 스프라이트 불필요).
+/// 트럭 주변 시야: 맵에 트럭(TruckPoint)이 있으면 원형 기본 시야 라이트를 복제해 트럭 가운데에 두고(반경 GameBalanceConfig.truckVisionRadius,
+/// 그림자 없음) 시야 판정(IsPointVisible)에 넣는다. 정면 손전등 판정(IsPointInFocusedVision - 박쥐 굳음)에는 넣지 않는다.
 /// </summary>
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerVision : MonoBehaviour
@@ -34,6 +36,17 @@ public class PlayerVision : MonoBehaviour
     private float lastLightFalloff;
     private float lastFocusedEdgeFadeAngle;
     private float lastFocusedInnerRadiusRatio;
+    private Color lastAmbientColor;
+    private Color lastFocusedColor;
+
+    // 트럭 주변 시야(맵 생성 뒤 트럭을 찾으면 만든다). 트럭은 VillageMapGenerator.truckPointObjectName(기본 "TruckPoint") 오브젝트다.
+    private const string TruckPointObjectName = "TruckPoint";
+    private Light2D truckVisionLight;
+    private bool truckSearchDone;
+    private float lastTruckRadius = -1f;
+
+    /// <summary>트럭 주변 시야 라이트(트럭이 없거나 아직 못 찾았으면 null).</summary>
+    public Light2D TruckVisionLight => truckVisionLight;
 
     /// <summary>지금 마을에서 켜져 있는 플레이어 시야. 몬스터 등이 매 프레임 Find 없이 시야를 물을 때 쓴다(없으면 null).</summary>
     public static PlayerVision Current { get; private set; }
@@ -65,8 +78,9 @@ public class PlayerVision : MonoBehaviour
     ///   몬스터 시야와 같은 규칙). 원형 시야는 기본 설정(ambientVisionIgnoresShadows)에서 그림자를 끄므로, 화면처럼 벽 너머도 반경 안이면 보인다.
     /// 가장자리의 부드러운 감쇠(안쪽 반경·안쪽 각도 밖의 흐려지는 띠)는 "보임"으로 친다. 맵 바깥 마스크로 가려지는 맵 밖은 따지지 않는다.
     /// 부채꼴 방향은 LateUpdate에서 갱신되므로 Update에서 부르면 직전 프레임에 그려진 방향과 같다.</summary>
+    /// 트럭 주변 시야(원형, 그림자 없음) 안도 보이는 것으로 본다.
     public bool IsPointVisible(Vector2 point) =>
-        InsideLight(ambientVisionLight, point) || InsideLight(focusedVisionLight, point);
+        InsideLight(ambientVisionLight, point) || InsideLight(focusedVisionLight, point) || InsideLight(truckVisionLight, point);
 
     /// <summary>월드 위치(x, y)가 지금 정면 부채꼴(손전등) 시야 안인지 - 원형 주변 시야는 보지 않는다. 플레이어나 시야가 없으면 false.
     /// 판정 기준(반경, 각도, 방향, 켜짐, 벽)은 IsPointVisible의 부채꼴 쪽과 같다. 박쥐 굳음이 쓴다.</summary>
@@ -111,6 +125,19 @@ public class PlayerVision : MonoBehaviour
         bool blendChanged = !visionRangesApplied || lastLightIntensity != config.visionLightIntensity ||
             lastLightFalloff != config.visionLightFalloffStrength;
 
+        // 라이트 색(원형·트럭 = 차가운 흰색, 손전등 = 따뜻한 흰색). 색은 모양을 다시 계산하지 않지만 같은 방식으로 바뀐 때만 넣는다.
+        if (ambientVisionLight != null && (!visionRangesApplied || lastAmbientColor != config.ambientVisionLightColor))
+        {
+            ambientVisionLight.color = config.ambientVisionLightColor;
+            if (truckVisionLight != null) truckVisionLight.color = config.ambientVisionLightColor;
+            lastAmbientColor = config.ambientVisionLightColor;
+        }
+        if (focusedVisionLight != null && (!visionRangesApplied || lastFocusedColor != config.focusedVisionLightColor))
+        {
+            focusedVisionLight.color = config.focusedVisionLightColor;
+            lastFocusedColor = config.focusedVisionLightColor;
+        }
+
         if (ambientVisionLight != null &&
             (blendChanged || lastClass != currentClass || lastAmbientRadius != targetAmbientRadius ||
              lastAmbientIgnoresShadows != config.ambientVisionIgnoresShadows))
@@ -153,10 +180,52 @@ public class PlayerVision : MonoBehaviour
         bool focusedOn = targetFocusedRadius > 0f && targetFocusedAngle > 0f;
         if (focusedVisionLight != null && focusedVisionLight.enabled != focusedOn) focusedVisionLight.enabled = focusedOn;
 
+        ApplyTruckVision(blendChanged);
+
         lastLightIntensity = config.visionLightIntensity;
         lastLightFalloff = config.visionLightFalloffStrength;
         lastClass = currentClass;
         visionRangesApplied = true;
+    }
+
+    // 트럭 주변 시야: 트럭을 처음 찾은 프레임에 원형 시야 라이트를 복제해 트럭 그림 가운데에 둔다(같은 블렌드·정렬 레이어·감쇠).
+    // 반경은 config.truckVisionRadius, 그림자는 끈다. 반경이 0이면 라이트를 끈다.
+    private void ApplyTruckVision(bool blendChanged)
+    {
+        if (truckVisionLight == null && !truckSearchDone && ambientVisionLight != null)
+        {
+            GameObject truck = GameObject.Find(TruckPointObjectName);
+            if (truck == null) return; // 맵이 아직 안 만들어졌다 - 다음 프레임에 다시 찾는다
+            truckSearchDone = true;
+            Vector3 center = truck.transform.position;
+            Renderer[] renderers = truck.GetComponentsInChildren<Renderer>();
+            if (renderers.Length > 0)
+            {
+                Bounds b = renderers[0].bounds;
+                foreach (Renderer r in renderers) b.Encapsulate(r.bounds);
+                center = new Vector3(b.center.x, b.center.y, center.z);
+            }
+            GameObject copy = Instantiate(ambientVisionLight.gameObject, truck.transform);
+            copy.name = "TruckVisionLight";
+            copy.transform.position = new Vector3(center.x, center.y, ambientVisionLight.transform.position.z);
+            copy.transform.rotation = Quaternion.identity;
+            truckVisionLight = copy.GetComponent<Light2D>();
+            truckVisionLight.color = config.ambientVisionLightColor;
+            lastTruckRadius = -1f;
+        }
+        if (truckVisionLight == null) return;
+        if (blendChanged || lastTruckRadius != config.truckVisionRadius)
+        {
+            truckVisionLight.intensity = config.visionLightIntensity;
+            truckVisionLight.falloffIntensity = config.visionLightFalloffStrength;
+            truckVisionLight.pointLightOuterRadius = config.truckVisionRadius;
+            truckVisionLight.pointLightOuterAngle = 360f;
+            truckVisionLight.pointLightInnerAngle = 360f;
+            truckVisionLight.shadowsEnabled = false;
+            lastTruckRadius = config.truckVisionRadius;
+        }
+        bool on = config.truckVisionRadius > 0f;
+        if (truckVisionLight.enabled != on) truckVisionLight.enabled = on;
     }
 
     private void LateUpdate()

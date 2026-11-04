@@ -71,6 +71,15 @@ MonoBehaviour:
   visionLightFalloffStrength: 0.5
   focusedVisionEdgeFadeAngle: 30
   focusedVisionInnerRadiusRatio: 0.55
+  ambientVisionLightColor: {r: 0.86, g: 0.92, b: 1, a: 1}
+  focusedVisionLightColor: {r: 1, g: 0.87, b: 0.66, a: 1}
+  truckVisionRadius: 5
+  villagePhaseDarknessColors:
+  - {r: 0.039215688, g: 0.03137255, b: 0.0627451, a: 1}
+  - {r: 0.019607844, g: 0.03137255, b: 0.07058824, a: 1}
+  - {r: 0.011764706, g: 0.019607844, b: 0.047058824, a: 1}
+  - {r: 0.007843138, g: 0.011764706, b: 0.023529412, a: 1}
+  - {r: 0.047058824, g: 0.011764706, b: 0.023529412, a: 1}
   scoutAmbientVisionRangePercent: 100
   trapperAmbientVisionRangePercent: 100
   gunnerAmbientVisionRangePercent: 150

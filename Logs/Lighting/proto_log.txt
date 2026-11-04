@@ -1,0 +1,52 @@
+시드 1: Field 트럭 방 True
+시드 2: Field 트럭 방 False
+셰이더 LightProto/GlowKey, 지원 True
+조명: 전체 RGBA(1.000, 1.000, 1.000, 1.000) x0 레이어 Floor,Walls,Default, 원형 RGBA(1.000, 1.000, 1.000, 1.000) x1, 부채꼴 RGBA(1.000, 1.000, 1.000, 1.000) x1, 후처리 False, HDR True
+Room_Field: 플레이어 (15.50, 43.50), 바닥인 자리 10/10
+  Proto_PatrolMonster_front @ (18.70, 44.50) 시야 안 True, 몸 그림 Visual
+  Proto_SoundReactiveMonster_front @ (20.10, 42.40) 시야 안 True, 몸 그림 Visual
+  Proto_BatMonster_front @ (16.40, 41.30) 시야 안 True, 몸 그림 Body
+  Proto_PorcupineMonster_front @ (21.50, 44.80) 시야 안 True, 몸 그림 Body
+  Proto_RhinoMonster_front @ (22.30, 43.10) 시야 안 True, 몸 그림 Body
+  Proto_PatrolMonster_back @ (11.30, 45.10) 시야 안 False, 몸 그림 Visual
+  Proto_SoundReactiveMonster_back @ (10.30, 42.10) 시야 안 False, 몸 그림 Visual
+  Proto_BatMonster_back @ (8.90, 44.10) 시야 안 False, 몸 그림 Body
+  Proto_PorcupineMonster_back @ (10.90, 40.10) 시야 안 False, 몸 그림 Body
+  Proto_RhinoMonster_back @ (8.10, 46.30) 시야 안 False, 몸 그림 Body
+  찍음 Room_Field current
+    발광 GeneratedMap/Proto_SoundReactiveMonster_back: 그림 Blood Monster_A_Idle_0, 켜짐 False
+    발광 GeneratedMap/Visual: 그림 raise-01, 켜짐 False
+    발광 GeneratedMap/Visual: 그림 idle-01, 켜짐 True
+    발광 GeneratedMap/Visual: 그림 fly-01, 켜짐 False
+    발광 GeneratedMap/Proto_PatrolMonster_back: 그림 Wolf Cub Sprite Sheet_8, 켜짐 False
+    발광 GeneratedMap/Visual: 그림 fly-01, 켜짐 True
+    발광 GeneratedMap/Proto_SoundReactiveMonster_front: 그림 Blood Monster_A_Idle_0, 켜짐 True
+    발광 GeneratedMap/Proto_PatrolMonster_front: 그림 Wolf Cub Sprite Sheet_20, 켜짐 True
+    발광 GeneratedMap/Visual: 그림 raise-01, 켜짐 True
+    발광 GeneratedMap/Visual: 그림 idle-01, 켜짐 False
+  찍음 Room_Field A
+  찍음 Room_Field B
+Room_Forest: 플레이어 (99.50, 6.50), 바닥인 자리 10/10
+  Proto_PatrolMonster_front @ (102.70, 7.50) 시야 안 True, 몸 그림 Visual
+  Proto_SoundReactiveMonster_front @ (104.10, 5.40) 시야 안 True, 몸 그림 Visual
+  Proto_BatMonster_front @ (100.40, 4.30) 시야 안 True, 몸 그림 Body
+  Proto_PorcupineMonster_front @ (105.50, 7.80) 시야 안 True, 몸 그림 Body
+  Proto_RhinoMonster_front @ (106.30, 6.10) 시야 안 True, 몸 그림 Body
+  Proto_PatrolMonster_back @ (95.30, 8.10) 시야 안 False, 몸 그림 Visual
+  Proto_SoundReactiveMonster_back @ (94.30, 5.10) 시야 안 False, 몸 그림 Visual
+  Proto_BatMonster_back @ (92.90, 7.10) 시야 안 False, 몸 그림 Body
+  Proto_PorcupineMonster_back @ (94.90, 3.10) 시야 안 False, 몸 그림 Body
+  Proto_RhinoMonster_back @ (92.10, 9.30) 시야 안 False, 몸 그림 Body
+  찍음 Room_Forest current
+    발광 GeneratedMap/Proto_SoundReactiveMonster_front: 그림 Blood Monster_A_Idle_0, 켜짐 True
+    발광 GeneratedMap/Visual: 그림 idle-01, 켜짐 True
+    발광 GeneratedMap/Proto_PatrolMonster_front: 그림 Wolf Cub Sprite Sheet_20, 켜짐 True
+    발광 GeneratedMap/Visual: 그림 raise-01, 켜짐 False
+    발광 GeneratedMap/Proto_PatrolMonster_back: 그림 Wolf Cub Sprite Sheet_8, 켜짐 False
+    발광 GeneratedMap/Proto_SoundReactiveMonster_back: 그림 Blood Monster_A_Idle_0, 켜짐 False
+    발광 GeneratedMap/Visual: 그림 fly-01, 켜짐 False
+    발광 GeneratedMap/Visual: 그림 fly-01, 켜짐 True
+    발광 GeneratedMap/Visual: 그림 idle-01, 켜짐 False
+    발광 GeneratedMap/Visual: 그림 raise-01, 켜짐 True
+  찍음 Room_Forest A
+  찍음 Room_Forest B

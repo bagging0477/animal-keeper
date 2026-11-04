@@ -1,0 +1,7 @@
+재질: Animal Keeper/Sprite-Lit-Emission, Animal Keeper/Screen Add Color
+Assets/Prefabs/Monsters/PatrolMonster.prefab: 몸 Visual 재질 MonsterSpriteLitEmission → MonsterSpriteLitEmission, 눈 #9FE8FF x5, 마스크 Wolf 1장
+Assets/Prefabs/SoundReactiveMonster.prefab: 몸 Visual 재질 Sprite-Lit-Default → MonsterSpriteLitEmission, 눈 #FF5A8A x3.2, 마스크 SoundReactive 6장
+Assets/Prefabs/Monsters/BatMonster.prefab: 몸 Body 재질 Sprite-Lit-Default → MonsterSpriteLitEmission, 눈 #FFC04D x5, 마스크 Bat 16장
+Assets/Prefabs/Monsters/PorcupineMonster.prefab: 몸 Body 재질 Sprite-Lit-Default → MonsterSpriteLitEmission, 눈 #FFC04D x5, 마스크 Porcupine 16장
+Assets/Prefabs/Monsters/RhinoMonster.prefab: 몸 Body 재질 Sprite-Lit-Default → MonsterSpriteLitEmission, 눈 #FFC04D x5, 마스크 Rhino 22장
+VillageScene: 카메라 Main Camera 후처리 True, Volume VillageVolume(VillageVolumeProfile), VillageNightTint 붙임

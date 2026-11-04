@@ -61,7 +61,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 30c4afb73c0fb4a4c8f06a7c13453a70, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -107,6 +107,7 @@ GameObject:
   - component: {fileID: 3620270898512992539}
   - component: {fileID: 8804958515107421916}
   - component: {fileID: 6996777279432024342}
+  - component: {fileID: 6993481219749264546}
   m_Layer: 0
   m_Name: SoundReactiveMonster
   m_TagString: Untagged
@@ -283,3 +284,19 @@ MonoBehaviour:
   footWorldOffset: 0
   isStatic: 0
   shadow: {fileID: 0}
+--- !u!114 &6993481219749264546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5382451385581636795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 305616fd45686454b88c0bbdb1e86594, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterEyeGlow
+  body: {fileID: 3733329674057690218}
+  maskFolder: SoundReactive
+  glowColor: {r: 1, g: 0.3529412, b: 0.5411765, a: 1}
+  glowIntensity: 3.2

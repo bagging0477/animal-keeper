@@ -135,6 +135,10 @@ public static class VillageSpawnTest
         }
         // 플레이어가 잡혀 강제 복귀하지 않게 모든 몬스터를 기절시켜 둔다(움직임·추격 없음). 처치·기록 동작은 그대로다.
         foreach (MonsterHealth m in MonsterHealth.Active.ToArray()) if (m != null && !m.IsDead) m.Stun(1000f);
+        // 맵 생성 박쥐(MonsterSpawnPool, 방 아래)는 기절하지 않아(ignoreStunAndSleep) 플레이어를 쓰러뜨려 강제 복귀시킨다 - 끈다.
+        // 시간 소환 박쥐(TimedMonsters 아래)는 이 테스트가 세는 대상이라 그대로 둔다.
+        foreach (MonsterHealth m in MonsterHealth.Active.ToArray())
+            if (m != null && m.GetComponent<BatMonsterAI>() != null && m.transform.parent != null && m.transform.parent.name.StartsWith("Room_")) m.gameObject.SetActive(false);
         if (watchSpawns) CheckNewSpawns();
         bool more;
         try { more = MoveNextNested(); }
