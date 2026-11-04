@@ -1,0 +1,8 @@
+[after] 타이틀 연출 스크립트: AnimalKeeperNight, 낮 루트 활성 False, 밤 루트 활성 True
+[after] 루트 Canvas: AnimalKeeper Canvas(정렬 0, ScreenSpaceOverlay), TitleCanvas(정렬 10, ScreenSpaceOverlay), PauseMenu(정렬 1000, ScreenSpaceOverlay)
+[after] 1920x1080: 그림 판 1728x1080 @(96,0) 비율 1.600(원본 1.600), 화면 안 True; 로고 1728x432 비율 4.000(원본 4.000) 화면 안 True; 하늘 1728x1080 = 판 True; PlayButton 화면 안 True (599~807, 430~486); SettingButton 화면 안 True (856~1064, 430~486); ExitButton 화면 안 True (1113~1321, 430~486); 
+[after] 1280x720: 그림 판 1152x720 @(64,0) 비율 1.600(원본 1.600), 화면 안 True; 로고 1152x288 비율 4.000(원본 4.000) 화면 안 True; 하늘 1152x720 = 판 True; PlayButton 화면 안 True (399~538, 287~324); SettingButton 화면 안 True (571~709, 287~324); ExitButton 화면 안 True (742~881, 287~324); 
+[after] 2560x1440: 그림 판 2304x1440 @(128,0) 비율 1.600(원본 1.600), 화면 안 True; 로고 2304x576 비율 4.000(원본 4.000) 화면 안 True; 하늘 2304x1440 = 판 True; PlayButton 화면 안 True (798~1076, 574~649); SettingButton 화면 안 True (1141~1419, 574~649); ExitButton 화면 안 True (1484~1762, 574~649); 
+[after] 1920x1200: 그림 판 1920x1200 @(0,0) 비율 1.600(원본 1.600), 화면 안 True; 로고 1920x480 비율 4.000(원본 4.000) 화면 안 True; 하늘 1920x1200 = 판 True; PlayButton 화면 안 True (579~799, 480~539); SettingButton 화면 안 True (850~1070, 480~539); ExitButton 화면 안 True (1121~1341, 480~539); 
+[after] 시작 버튼 화면 640x480 위치 (221.03, 209.85): 레이캐스트 최상단 PlayButton → 버튼 맞음
+[after] 시작 버튼 클릭 뒤 씬: ClassSelectScene (통과)

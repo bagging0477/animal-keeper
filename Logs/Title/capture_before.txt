@@ -1,0 +1,5 @@
+[before] 타이틀 연출 스크립트: AnimalKeeperTitle, 낮 루트 활성 True, 밤 루트 활성 False
+[before] 루트 Canvas: AnimalKeeper Canvas(정렬 0, ScreenSpaceOverlay), TitleCanvas(정렬 10, ScreenSpaceOverlay), PauseMenu(정렬 1000, ScreenSpaceOverlay)
+[before] 1920x1080: 그림 판 1728x1080 @(96,0) 비율 1.600(원본 1.600), 화면 안 True; 로고 1728x432 비율 4.000(원본 4.000) 화면 안 True; 하늘 1728x1080 = 판 True; PlayButton 화면 안 True (599~807, 430~486); SettingButton 화면 안 True (856~1064, 430~486); ExitButton 화면 안 True (1113~1321, 430~486); 
+[before] 시작 버튼 화면 640x480 위치 (221.03, 209.85): 레이캐스트 최상단 PlayButton → 버튼 맞음
+[before] 시작 버튼 클릭 뒤 씬: ClassSelectScene (통과)

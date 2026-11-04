@@ -1,0 +1,8 @@
+[before] TitleArtFill 없음
+[before] 1920x1080 (1.778): 꽉 채우기 -, 판 1728x1080 @(96,0) 비율 1.600, 잘림(원본 칸) 위 0.00 아래 0.00 왼쪽 0.00 오른쪽 0.00, 좌우 여백 96px/96px; Title 다 보임, Truck 다 보임, Headlight 다 보임, 길(y 208~264) 다 보임; PlayButton 화면 안 True, SettingButton 화면 안 True, ExitButton 화면 안 True
+[before] 1280x720 (1.778): 꽉 채우기 -, 판 1152x720 @(64,0) 비율 1.600, 잘림(원본 칸) 위 0.00 아래 0.00 왼쪽 0.00 오른쪽 0.00, 좌우 여백 64px/64px; Title 다 보임, Truck 다 보임, Headlight 다 보임, 길(y 208~264) 다 보임; PlayButton 화면 안 True, SettingButton 화면 안 True, ExitButton 화면 안 True
+[before] 2560x1440 (1.778): 꽉 채우기 -, 판 2304x1440 @(128,0) 비율 1.600, 잘림(원본 칸) 위 0.00 아래 0.00 왼쪽 0.00 오른쪽 0.00, 좌우 여백 128px/128px; Title 다 보임, Truck 다 보임, Headlight 다 보임, 길(y 208~264) 다 보임; PlayButton 화면 안 True, SettingButton 화면 안 True, ExitButton 화면 안 True
+[before] 1920x1200 (1.600): 꽉 채우기 -, 판 1920x1200 @(0,0) 비율 1.600, 잘림(원본 칸) 위 0.00 아래 0.00 왼쪽 0.00 오른쪽 0.00, 좌우 여백 0px/0px; Title 다 보임, Truck 다 보임, Headlight 다 보임, 길(y 208~264) 다 보임; PlayButton 화면 안 True, SettingButton 화면 안 True, ExitButton 화면 안 True
+[before] 2560x1080 (2.370): 꽉 채우기 -, 판 1728x1080 @(416,0) 비율 1.600, 잘림(원본 칸) 위 0.00 아래 0.00 왼쪽 0.00 오른쪽 0.00, 좌우 여백 416px/416px; Title 다 보임, Truck 다 보임, Headlight 다 보임, 길(y 208~264) 다 보임; PlayButton 화면 안 True, SettingButton 화면 안 True, ExitButton 화면 안 True
+[before] 시작 버튼 레이캐스트 최상단 PlayButton → 버튼 맞음
+[before] 시작 버튼 클릭 뒤 씬: ClassSelectScene (통과)
