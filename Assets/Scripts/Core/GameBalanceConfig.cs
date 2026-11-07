@@ -158,7 +158,7 @@ public class GameBalanceConfig : ScriptableObject
         "스폰 시점에만 적용되며, 스폰 이후 순찰/배회로 이 범위 안에 들어오는 것은 막지 않는다.")]
     public float monsterMinSpawnDistanceFromPlayer = 6f;
 
-    [Tooltip("맵 생성 몬스터 중 늑대(MonsterAI) 비율. 새 종류(호저·코뿔소·박쥐 등 MonsterSpawnPool)가 허용되는 배치에서만 쓴다 - 새 종류 확률을 뺀 나머지를 " +
+    [Tooltip("맵 생성 몬스터 중 늑대(MonsterAI) 비율. 격자 배치는 날짜별 표(dayMonsterPlans)가 비어 있을 때만 쓴다. 새 종류(호저·코뿔소·박쥐 등 MonsterSpawnPool)가 허용되는 배치에서만 쓴다 - 새 종류 확률을 뺀 나머지를 " +
         "늑대와 소리반응형이 이 값과 soundReactiveMonsterSpawnShare의 비로 나눈다. 새 종류가 하나도 허용되지 않는 배치(한 줄 배치)는 예전처럼 균등하게 뽑는다.")]
     [Range(0f, 1f)]
     public float patrolMonsterSpawnShare = 0.35f;
@@ -188,7 +188,8 @@ public class GameBalanceConfig : ScriptableObject
     [Min(0)]
     public int gridAnimalTotal = 41;
 
-    [Tooltip("격자 맵 전체 몬스터 수. 트럭 방(과 VillageMapGenerator.monsterFreeRoomRadius 안의 방)에는 두지 않고, 나머지 방에 동물과 같은 규칙으로 나눈다.")]
+    [Tooltip("격자 맵 전체 몬스터 수 - 날짜별 표(dayMonsterPlans)가 비어 있을 때만 쓴다. 표가 있으면 그날 mapMonsters 합계가 총량이다. " +
+        "트럭 방(과 VillageMapGenerator.monsterFreeRoomRadius 안의 방)에는 두지 않고, 나머지 방에 동물과 같은 규칙으로 나눈다.")]
     [Min(0)]
     public int gridMonsterTotal = 18;
 
@@ -479,11 +480,11 @@ public class GameBalanceConfig : ScriptableObject
     public int targetRescueCount = 3;
 
     [Tooltip("사이클(날)이 하나 넘어갈 때마다 목표 마릿수가 늘어나는 양")]
-    public int targetRescueIncreasePerDay = 4;
+    public int targetRescueIncreasePerDay = 2;
 
-    [Tooltip("이 사이클(순찰) 수를 목표 달성과 함께 완주하면 게임 클리어 화면이 뜬다. 예: 10이면 " +
-        "10번째 사이클 정산에서 목표를 달성하는 순간 클리어된다.")]
-    public int totalCyclesToWin = 10;
+    [Tooltip("이 사이클(순찰) 수를 목표 달성과 함께 완주하면 게임 클리어 화면이 뜬다. 예: 2면 " +
+        "2번째 사이클 정산에서 목표를 달성하는 순간 클리어된다.")]
+    public int totalCyclesToWin = 2;
 
     [Header("마을 시간 (VillageScene에 있는 동안만 흐른다)")]
     [Tooltip("1~5구간이 시작하는 누적 시각(초). 5개, 오름차순. 마지막(5구간)은 끝없이 이어진다. 사이클과 무관하게 항상 같다.")]
@@ -507,10 +508,10 @@ public class GameBalanceConfig : ScriptableObject
     }
 
     // 예전 이름(weepingAngel*)으로 저장된 값을 그대로 읽는다(FormerlySerializedAs) - 우는천사 자리를 박쥐가 이어받았다.
-    [Header("몬스터 - 박쥐 (BatMonsterAI, 시간 소환 + 맵 생성 스폰, 예전 우는천사 자리)")]
-    [Tooltip("맵 생성 스폰 풀에 더하는 박쥐 프리팹 (MonsterSpawnPool). 시간 소환(villagePhaseSpawns)은 이것과 따로 그대로 나온다.")]
+    [Header("몬스터 - 박쥐 (BatMonsterAI, 예전 우는천사 자리. 나오는 날·수는 날짜별 표 dayMonsterPlans)")]
+    [Tooltip("박쥐 프리팹. 날짜별 표가 비어 있을 때 맵 생성 스폰 풀(MonsterSpawnPool)에 더한다.")]
     public GameObject batPrefab;
-    [Tooltip("맵 생성 몬스터 한 마리가 박쥐일 확률 (0~1). 총 마리 수는 그대로다.")]
+    [Tooltip("맵 생성 몬스터 한 마리가 박쥐일 확률 (0~1). 총 마리 수는 그대로다. 격자 배치는 날짜별 표(dayMonsterPlans)가 비어 있을 때만 쓴다.")]
     [Range(0f, 1f)]
     public float batSpawnChance = 0.15f;
     [Tooltip("체크하면 한 줄 배치에서도 박쥐가 맵 생성으로 나온다. 끄면 격자 배치에서만 나오고, 한 줄 배치는 예전과 같은 결과가 나온다.")]
@@ -548,7 +549,7 @@ public class GameBalanceConfig : ScriptableObject
     /// <summary>박쥐가 맞을 때마다 도망가는 거리(칸) = 거위 도망 거리 x batFleeDistanceRatio.</summary>
     public float BatFleeDistance => gooseFleeDistance * batFleeDistanceRatio;
 
-    [Header("몬스터 - 호저 (PorcupineMonsterAI, 제자리 터렛. 맵 생성 스폰만 - 시간 소환에는 없다)")]
+    [Header("몬스터 - 호저 (PorcupineMonsterAI, 제자리 터렛. 나오는 날·수는 날짜별 표 dayMonsterPlans)")]
     [Tooltip("맵 생성 스폰 풀에 더하는 호저 프리팹 (MonsterSpawnPool, VillageMapGenerator.monsterPrefabs와 따로 둔다)")]
     public GameObject porcupinePrefab;
     [Tooltip("맵 생성 몬스터 한 마리가 호저일 확률 (0~1). 총 마리 수는 그대로다.")]
@@ -575,7 +576,7 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("호저 시체 무게(늑대 wolfCorpseWeight와 따로 정한다).")]
     public int porcupineCorpseWeight = 12;
 
-    [Header("몬스터 - 코뿔소 (RhinoMonsterAI, 돌진형. 맵 생성 스폰만 - 시간 소환에는 없다)")]
+    [Header("몬스터 - 코뿔소 (RhinoMonsterAI, 돌진형. 나오는 날·수는 날짜별 표 dayMonsterPlans)")]
     [Tooltip("맵 생성 스폰 풀에 더하는 코뿔소 프리팹 (MonsterSpawnPool). 몸이 커서 스폰 자리는 몸 상자(ISpawnFootprint)로 겹침을 검사한다.")]
     public GameObject rhinoPrefab;
     [Tooltip("맵 생성 몬스터 한 마리가 코뿔소일 확률 (0~1). 총 마리 수는 그대로다.")]
@@ -619,19 +620,40 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("동물·몬스터는 플레이어에게서 이 거리(칸) 안에 있을 때만 가림 판정을 한다. 플레이어는 항상 한다.")]
     [Min(0f)] public float occluderTargetRadius = 10f;
 
-    [Header("마을 시간 - 구간별 추가 몬스터 소환 (VillageMonsterSpawner)")]
-    [Tooltip("1~5구간마다 그 구간에 들어갈 때부터 추가로 소환할 몬스터 목록. 5개, 1구간부터 순서대로. 모두 비어 있으면 아무것도 소환하지 않는다. " +
-        "새 몬스터를 시간으로 소환하려면 코드 수정 없이 여기에 항목만 추가한다.")]
-    public VillagePhaseSpawnList[] villagePhaseSpawns =
-    {
-        new VillagePhaseSpawnList(), new VillagePhaseSpawnList(), new VillagePhaseSpawnList(), new VillagePhaseSpawnList(), new VillagePhaseSpawnList(),
-    };
+    [Header("날짜별 몬스터 출현 - 맵 생성 수 + 구간별 추가 소환 (VillageMapGenerator 격자 배치, VillageMonsterSpawner)")]
+    [Tooltip("날짜별 표. 0번이 1일차, 1번이 2일차… 표보다 뒤의 날은 마지막 줄을 그대로 쓴다. " +
+        "맵 생성(mapMonsters)은 격자 배치에서 종류별 수 그대로 나온다(비율 추첨 없음). 구간별 추가 소환(phaseSpawns)은 배치 방식과 상관없이 쓴다. " +
+        "표가 비어 있으면 격자 맵은 예전처럼 gridMonsterTotal과 비율 추첨으로 만들고, 구간별 추가 소환은 하지 않는다.")]
+    public DayMonsterPlan[] dayMonsterPlans = new DayMonsterPlan[0];
 
     [Tooltip("마을 전체에 살아 있는 몬스터 수 상한(맵 생성 때 스폰된 몬스터 포함). 닿으면 소환을 멈추고, 처치해서 줄어들면 다시 소환한다.")]
     public int villageMonsterCap = 60;
 
     [Tooltip("추가 소환 위치가 플레이어에게서 떨어져야 하는 최소 거리(칸).")]
     public float villageSpawnMinPlayerDistance = 15f;
+
+    /// <summary>하루치 몬스터 출현 표: 맵 생성 종류별 수와 1~5구간 추가 소환 목록.</summary>
+    [Serializable]
+    public class DayMonsterPlan
+    {
+        [Tooltip("표시용 이름(예: 1일차). 동작에는 쓰지 않는다.")]
+        public string label;
+        [Tooltip("마을에 들어갈 때 맵 생성으로 놓는 몬스터. 종류별 수 그대로 놓는다(격자 배치).")]
+        public MonsterCount[] mapMonsters = new MonsterCount[0];
+        [Tooltip("1~5구간에 들어갈 때부터 추가로 소환할 목록. 5개, 1구간부터 순서대로.")]
+        public VillagePhaseSpawnList[] phaseSpawns =
+        {
+            new VillagePhaseSpawnList(), new VillagePhaseSpawnList(), new VillagePhaseSpawnList(), new VillagePhaseSpawnList(), new VillagePhaseSpawnList(),
+        };
+    }
+
+    /// <summary>몬스터 종류 하나와 마릿수.</summary>
+    [Serializable]
+    public class MonsterCount
+    {
+        public GameObject monsterPrefab;
+        [Min(0)] public int count;
+    }
 
     /// <summary>구간 하나의 추가 소환 목록.</summary>
     [Serializable]
@@ -647,6 +669,9 @@ public class GameBalanceConfig : ScriptableObject
     {
         [Tooltip("소환할 몬스터 프리팹. 기존 늑대(PatrolMonster), 소리반응형(SoundReactiveMonster), MonsterSpawnPool의 새 종류 프리팹 모두 된다.")]
         public GameObject monsterPrefab;
+        [Tooltip("켜면 monsterPrefab 대신 한 마리마다 그날 나올 수 있는 종류(그날 맵 생성 종류 + 그날 구간 소환 프리팹) 중 하나를 고른다. " +
+            "같은 Day 안에서는 같은 번호에 항상 같은 종류가 나온다.")]
+        public bool pickFromDayTypes;
         [Tooltip("이 항목으로 소환하는 총 마릿수")]
         public int count;
         [Tooltip("구간에 들어갈 때 한 번에 소환하는 수")]
@@ -657,26 +682,69 @@ public class GameBalanceConfig : ScriptableObject
         public float intervalSeconds;
     }
 
-    /// <summary>그 구간(1~5)의 추가 소환 항목. 없으면 빈 배열.</summary>
-    public VillageSpawnEntry[] GetVillagePhaseSpawns(int phase)
+    /// <summary>그 날(1부터)의 표. 표보다 뒤의 날은 마지막 줄, 표가 비어 있으면 null.</summary>
+    public DayMonsterPlan GetDayMonsterPlan(int day)
     {
-        int index = phase - 1;
-        if (villagePhaseSpawns == null || index < 0 || index >= villagePhaseSpawns.Length || villagePhaseSpawns[index] == null) return new VillageSpawnEntry[0];
-        return villagePhaseSpawns[index].entries ?? new VillageSpawnEntry[0];
+        if (dayMonsterPlans == null || dayMonsterPlans.Length == 0) return null;
+        return dayMonsterPlans[Mathf.Clamp(day - 1, 0, dayMonsterPlans.Length - 1)];
     }
 
-    /// <summary>어느 구간에든 소환할 항목(프리팹과 마릿수가 있는)이 하나라도 있는지.</summary>
-    public bool HasAnyVillagePhaseSpawns()
+    /// <summary>그 날 맵 생성 몬스터를 종류별 수만큼 펼친 목록(표 순서). 표가 비어 있으면 null - 호출하는 쪽이 예전 방식(gridMonsterTotal + 비율 추첨)을 쓴다.</summary>
+    public List<GameObject> GetMapMonsterList(int day)
     {
-        if (villagePhaseSpawns == null) return false;
-        foreach (VillagePhaseSpawnList list in villagePhaseSpawns)
+        DayMonsterPlan plan = GetDayMonsterPlan(day);
+        if (plan == null) return null;
+        List<GameObject> list = new List<GameObject>();
+        if (plan.mapMonsters == null) return list;
+        foreach (MonsterCount m in plan.mapMonsters)
         {
-            if (list?.entries == null) continue;
-            foreach (VillageSpawnEntry entry in list.entries)
-            {
-                if (entry != null && entry.monsterPrefab != null && entry.count > 0) return true;
-            }
+            if (m == null || m.monsterPrefab == null) continue;
+            for (int i = 0; i < m.count; i++) list.Add(m.monsterPrefab);
         }
+        return list;
+    }
+
+    /// <summary>그 날, 그 구간(1~5)의 추가 소환 항목. 없으면 빈 배열.</summary>
+    public VillageSpawnEntry[] GetVillagePhaseSpawns(int day, int phase)
+    {
+        DayMonsterPlan plan = GetDayMonsterPlan(day);
+        int index = phase - 1;
+        if (plan?.phaseSpawns == null || index < 0 || index >= plan.phaseSpawns.Length || plan.phaseSpawns[index] == null) return new VillageSpawnEntry[0];
+        return plan.phaseSpawns[index].entries ?? new VillageSpawnEntry[0];
+    }
+
+    /// <summary>그 날 나올 수 있는 몬스터 종류: 맵 생성 종류(수가 1 이상) + 구간 소환에 직접 적힌 프리팹. 표 순서, 중복 없음.</summary>
+    public List<GameObject> GetDayMonsterTypes(int day)
+    {
+        List<GameObject> types = new List<GameObject>();
+        DayMonsterPlan plan = GetDayMonsterPlan(day);
+        if (plan == null) return types;
+        if (plan.mapMonsters != null)
+            foreach (MonsterCount m in plan.mapMonsters)
+                if (m != null && m.monsterPrefab != null && m.count > 0 && !types.Contains(m.monsterPrefab)) types.Add(m.monsterPrefab);
+        if (plan.phaseSpawns != null)
+            foreach (VillagePhaseSpawnList list in plan.phaseSpawns)
+            {
+                if (list?.entries == null) continue;
+                foreach (VillageSpawnEntry e in list.entries)
+                    if (e != null && !e.pickFromDayTypes && e.monsterPrefab != null && e.count > 0 && !types.Contains(e.monsterPrefab)) types.Add(e.monsterPrefab);
+            }
+        return types;
+    }
+
+    /// <summary>항목이 실제로 소환할 수 있는지: 마릿수가 있고, 프리팹이 있거나 그날 종류에서 고르는 항목이면서 그날 종류가 하나라도 있다.</summary>
+    public bool IsUsableSpawnEntry(int day, VillageSpawnEntry entry)
+    {
+        if (entry == null || entry.count <= 0) return false;
+        return entry.pickFromDayTypes ? GetDayMonsterTypes(day).Count > 0 : entry.monsterPrefab != null;
+    }
+
+    /// <summary>그 날 어느 구간에든 소환할 항목이 하나라도 있는지.</summary>
+    public bool HasAnyVillagePhaseSpawns(int day)
+    {
+        for (int phase = 1; phase <= GameManager.VillagePhaseCount; phase++)
+            foreach (VillageSpawnEntry entry in GetVillagePhaseSpawns(day, phase))
+                if (IsUsableSpawnEntry(day, entry)) return true;
         return false;
     }
 

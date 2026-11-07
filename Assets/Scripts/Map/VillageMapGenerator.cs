@@ -98,7 +98,9 @@ public class VillageMapGenerator : MonoBehaviour
     private int CorridorGapSetting => config != null ? Mathf.Max(0, config.gridCorridorGap) : 8;
     private float CorridorFadeDepth => config != null ? Mathf.Max(0f, config.gridCorridorFadeDepth) : 1f;
     private int GridAnimalTotal => config != null ? config.gridAnimalTotal : 27;
-    private int GridMonsterTotal => config != null ? config.gridMonsterTotal : 12;
+    // 오늘 맵 생성 몬스터 목록(날짜별 표, 종류별 수만큼). 표가 없으면 null - 예전처럼 gridMonsterTotal과 비율 추첨(MonsterSpawnPool)을 쓴다.
+    private List<GameObject> TodayMapMonsters => config != null ? config.GetMapMonsterList(GameManager.Instance != null ? GameManager.Instance.CycleCount : 1) : null;
+    private int GridMonsterTotal => TodayMapMonsters?.Count ?? (config != null ? config.gridMonsterTotal : 12);
     private int GridMaxAnimalsPerRoom => config != null ? Mathf.Max(1, config.gridMaxAnimalsPerRoom) : 3;
     private int GridMaxMonstersPerRoom => config != null ? Mathf.Max(1, config.gridMaxMonstersPerRoom) : 2;
 
@@ -507,6 +509,17 @@ public class VillageMapGenerator : MonoBehaviour
             Mathf.Max(Mathf.Abs(roomCells[i].x - plan.TruckCell.x), Mathf.Abs(roomCells[i].y - plan.TruckCell.y)) > monsterFreeRoomRadius;
         int[] animalCounts = DistributeSpawnBudget(placedRooms, GridAnimalTotal, GridMaxAnimalsPerRoom, i => true, AnimalSpawnWeight, "동물");
         int[] monsterCounts = DistributeSpawnBudget(placedRooms, GridMonsterTotal, GridMaxMonstersPerRoom, MonsterAllowed, MonsterSpawnWeight, "몬스터");
+        // 날짜별 표가 있으면 종류별 수 그대로인 목록을 섞어서 방 순서대로 하나씩 꺼낸다(맵 시드로 섞으므로 같은 Day 재진입에는 같은 배치).
+        List<GameObject> monsterQueue = TodayMapMonsters;
+        if (monsterQueue != null)
+        {
+            for (int k = monsterQueue.Count - 1; k > 0; k--)
+            {
+                int j = Random.Range(0, k + 1);
+                (monsterQueue[k], monsterQueue[j]) = (monsterQueue[j], monsterQueue[k]);
+            }
+        }
+        int monsterCursor = 0;
         // 이미 놓인 몸체(플레이어·트럭 + 먼저 스폰한 동물/몬스터). 스폰 칸 후보는 이것들과 실제 몸 크기로 겹치지 않아야 한다(GridSpawnSpotFits).
         List<SpawnBody> placedBodies = new List<SpawnBody>
         {
@@ -524,7 +537,7 @@ public class VillageMapGenerator : MonoBehaviour
             Vector2Int roomOffset = ToWorldCell(room, Vector2Int.zero);
             HashSet<Vector2Int> usedCells = new HashSet<Vector2Int>(playerAndTruckWorldCells.Select(c => c - roomOffset));
             animalShortfall += SpawnGridAnimals(room, animalCounts[i], usedCells, placedBodies);
-            monsterShortfall += SpawnGridMonsters(room, monsterCounts[i], playerSpawnWorldXY, usedCells, placedBodies);
+            monsterShortfall += SpawnGridMonsters(room, monsterCounts[i], playerSpawnWorldXY, usedCells, placedBodies, monsterQueue, ref monsterCursor);
         }
         gridSpawnNavReference = null;
         LastGridSpawnCounts = (animalCounts.Sum() - animalShortfall, monsterCounts.Sum() - monsterShortfall);
@@ -640,13 +653,16 @@ public class VillageMapGenerator : MonoBehaviour
 
     // 격자 경로의 몬스터 스폰. 플레이어에게서 MonsterMinSpawnDistanceFromPlayer 이상 떨어진 자리를 우선하는 규칙은 PickMonsterSpawnCell과 같고,
     // 후보 칸은 PickGridSpawnCell(몸 크기로 겹침 검사)에서 뽑는다. NavMesh에 붙인 뒤의 위치도 다시 검사해서, 겹치면 그 칸을 버리고 다시 고른다.
-    private int SpawnGridMonsters(RoomInstance room, int count, Vector2 playerSpawnWorldXY, HashSet<Vector2Int> usedCells, List<SpawnBody> placedBodies)
+    // queue가 있으면(날짜별 표) 종류를 그 목록에서 차례로 꺼내고, 없으면 예전처럼 비율 추첨(MonsterSpawnPool)한다.
+    private int SpawnGridMonsters(RoomInstance room, int count, Vector2 playerSpawnWorldXY, HashSet<Vector2Int> usedCells, List<SpawnBody> placedBodies,
+        List<GameObject> queue, ref int cursor)
     {
-        if (monsterPrefabs == null || monsterPrefabs.Length == 0 || room.FloorCells.Count == 0) return 0;
+        if (queue == null && (monsterPrefabs == null || monsterPrefabs.Length == 0)) return 0;
+        if (room.FloorCells.Count == 0) return 0;
         int skipped = 0;
         for (int i = 0; i < count; i++)
         {
-            GameObject prefab = MonsterSpawnPool.Pick(monsterPrefabs, config, gridLayout: true);
+            GameObject prefab = queue != null ? queue[cursor++] : MonsterSpawnPool.Pick(monsterPrefabs, config, gridLayout: true);
             float radius = SpawnRadius(prefab);
             SpawnShape shape = SpawnShapeOf(prefab, radius);
             bool placed = false;

@@ -827,7 +827,10 @@ public static class GridMapAuditInspector
     private static void InspectTotals(AuditSeedResult r, VillageMapGenerator gen, GridLayoutPlan plan, List<RoomData> rooms)
     {
         GameBalanceConfig config = ReadField<GameBalanceConfig>(gen, "config");
-        int animalTotal = config != null ? config.gridAnimalTotal : 27, monsterTotal = config != null ? config.gridMonsterTotal : 12;
+        // 몬스터 총량은 생성기와 같이 그날 날짜별 표의 맵 생성 합계(표가 없으면 gridMonsterTotal).
+        int day = GameManager.Instance != null ? GameManager.Instance.CycleCount : 1;
+        int animalTotal = config != null ? config.gridAnimalTotal : 27;
+        int monsterTotal = config != null ? config.GetMapMonsterList(day)?.Count ?? config.gridMonsterTotal : 12;
         int animalCap = config != null ? Mathf.Max(1, config.gridMaxAnimalsPerRoom) : 3, monsterCap = config != null ? Mathf.Max(1, config.gridMaxMonstersPerRoom) : 2;
         int freeRadius = ReadField<int>(gen, "monsterFreeRoomRadius");
         bool MonsterAllowed(Vector2Int g) => freeRadius < 0 || Mathf.Max(Mathf.Abs(g.x - plan.TruckCell.x), Mathf.Abs(g.y - plan.TruckCell.y)) > freeRadius;

@@ -11,7 +11,7 @@ using UnityEngine;
 ///    MonsterHealth·MonsterCorpsePickup 값은 늑대(PatrolMonster)에서 복사하고, 박쥐만 최대 체력 -1·기절/마취 무시를 켠다.
 ///    그림자는 몸 폭(날개 접은 웅크림 프레임 14텍셀) x 0.75 → 10x3(CharacterShadowBuilder와 같은 규칙, 거위와 같은 Shadow_10x3.png).
 ///    그림자 맨 윗줄 = 몸 가운데 아래 14텍셀(비행 프레임의 몸 아랫줄 -10~-12에서 2~4텍셀 띄운 바닥). 발 기준 정렬(FootSortOrder)의 발도 그 줄이다.
-/// 3) 시간 소환 목록(villagePhaseSpawns)은 프리팹 GUID와 루트가 그대로라 건드리지 않는다.
+/// 3) 날짜별 표(dayMonsterPlans)의 박쥐 항목은 프리팹 GUID와 루트가 그대로라 건드리지 않는다.
 /// CharacterShadowBuilder는 박쥐를 대상에서 뺐다(그림자를 몸 자식이 아니라 바닥에 따로 두기 때문) - 그림자는 이 빌더가 맡는다.
 /// batchmode: -executeMethod BatMonsterAssetBuilder.BuildBatch  (끝나면 에디터가 종료된다)
 /// </summary>

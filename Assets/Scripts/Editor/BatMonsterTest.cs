@@ -24,7 +24,7 @@ using UnityEngine.Tilemaps;
 /// 접촉 데미지(최대 체력 x 0.8, 굳은 동안 없음), 무기 데미지 = 늑대와 같은 값(기절·마취 없음), 맞으면 도망(거리 = 거위 x 0.5, 속도 = 거위),
 /// 피격 모션(hurt-01 + 늑대와 같은 빨간 깜빡임, 비행·굳음·도망 중 모두, 피격 중에도 바로 도망, 연속 피격 → Logs/Bat/hurt_compare.png),
 /// 도망 중 쳐다봐도 안 멈춤, 도망 중 또 맞으면 그 자리에서 다시 도망, 무적 없음, 도망 뒤 다시 다가옴, 체력 0이면 쓰러지고 E로 회수,
-/// 시간 소환(180초에 1마리), 재진입, ResetDay/ResetGame. 프레임 시간 1/30초 고정. 다른 몬스터는 기절시켜 둔다(박쥐는 기절하지 않는다).
+/// 시간 소환(날짜별 표의 박쥐 항목 - 지금 4구간 540초에 1마리), 재진입, ResetDay/ResetGame. 프레임 시간 1/30초 고정. 다른 몬스터는 기절시켜 둔다(박쥐는 기절하지 않는다).
 /// 실제 게임 카메라 렌더: Logs/Bat/render/crouch_*.png, view_*.png + manifest.txt(비행 → 웅크림 → 굳음 → 풀림, 주변/정면 시야 장면).
 /// 결과: Logs/BatMonsterTest.txt / batchmode: -executeMethod BatMonsterTest.RunBatch (통과면 0 아니면 1)
 /// </summary>
@@ -230,16 +230,6 @@ public static class BatMonsterTest
         yield return WaitFrames(5);
         gm = GameManager.Instance;
         config = gm != null ? gm.Config : null;
-        // 임시 박쥐 증가(1구간 항목, 2026-10-24)는 이 테스트가 보는 기본 일정(2구간 180초에 1마리)과 다르다 - 1구간을 비운 복제 설정으로 돈다.
-        if (config != null && config.GetVillagePhaseSpawns(1).Length > 0)
-        {
-            originalConfig = config;
-            config = Object.Instantiate(config);
-            config.name = "BatMonsterTestConfig";
-            config.villagePhaseSpawns[0] = new GameBalanceConfig.VillagePhaseSpawnList();
-            GmConfigField.SetValue(gm, config);
-            sb.AppendLine("(참고) 1구간 임시 박쥐 항목을 뺀 복제 설정으로 검사한다");
-        }
         batPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(BatMonsterAssetBuilder.PrefabPath);
         GameObject wolfPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Monsters/PatrolMonster.prefab");
         if (gm == null || config == null || batPrefab == null || wolfPrefab == null)
@@ -587,23 +577,25 @@ public static class BatMonsterTest
         sb.AppendLine("\n== 11. 체력 0이면 늑대처럼 쓰러지고 E로 회수");
         yield return DeathChecks(laneCenter, dir);
 
-        // --- 12. 시간 소환: 180초에 1마리
-        sb.AppendLine("\n== 12. 시간 소환: 180초 전에는 없고 180초에 1마리");
+        // --- 12. 시간 소환: 날짜별 표의 박쥐 항목(지금 1·2일차 모두 4구간 진입 때 1마리)
         forceLook = false;
         holdTime = false;
         yield return Load("TruckScene");
         gm.ResetDay();
+        (int batPhase, int batIndex) = FindTimedBatEntry(gm.CycleCount);
+        float batTime = batPhase > 0 ? config.villagePhaseStartSeconds[batPhase - 1] : 0f;
+        sb.AppendLine($"\n== 12. 시간 소환: {batTime:F0}초({batPhase}구간) 전에는 없고 그때 1마리 (Day {gm.CycleCount})");
+        Check(batPhase > 1, $"오늘 표에 1구간이 아닌 구간의 박쥐 시간 소환 항목이 있다 ({batPhase}구간 {batIndex}번)");
         yield return Load("VillageScene");
-        int livingBefore = VillageMonsterSpawner.CountLivingMonsters();
-        SetTime(179.5f);
+        SetTime(batTime - 0.5f);
         yield return WaitFrames(12);
-        Check(gm.VillageTime < 180f && Bats().Count == 0, $"{gm.VillageTime:F2}초: 박쥐 없음");
+        Check(gm.VillageTime < batTime && Bats().Count == 0, $"{gm.VillageTime:F2}초: 박쥐 없음");
         yield return WaitForBats(1, 45);
         List<BatMonsterAI> spawned = Bats();
-        Check(gm.VillageTime >= 180f && spawned.Count == 1, $"{gm.VillageTime:F2}초: 박쥐 {spawned.Count}마리");
+        Check(gm.VillageTime >= batTime && spawned.Count == 1, $"{gm.VillageTime:F2}초: 박쥐 {spawned.Count}마리");
         Check(spawned.Count == 1 && !spawned[0].IsSurprised, "소환 직후는 놀람 전");
-        Check(VillageMonsterSpawner.CountLivingMonsters() == livingBefore + 1,
-            $"MonsterHealth가 있어 마을 몬스터 수에 들어간다 ({livingBefore} → {VillageMonsterSpawner.CountLivingMonsters()}, 상한 {config.villageMonsterCap})");
+        Check(spawned.Count == 1 && MonsterHealth.Active.Contains(spawned[0].Health),
+            $"MonsterHealth가 있어 마을 몬스터 수에 들어간다 (살아 있는 몬스터 {VillageMonsterSpawner.CountLivingMonsters()}, 상한 {config.villageMonsterCap})");
         if (spawned.Count == 1)
         {
             float spawnDist = Vector2.Distance(Pos(spawned[0]), player.position);
@@ -622,20 +614,22 @@ public static class BatMonsterTest
         spawned = Bats();
         Check(spawned.Count == 1 && !spawned[0].IsSurprised && spawned[0].CurrentPhase == BatMonsterAI.Phase.Ambush,
             $"재진입 뒤 {spawned.Count}마리, 놀람 전 (나가기 전 놀람 {surprisedBeforeLeave})");
-        Check(gm.VillageSpawns.EnteredPhase == 2 && gm.VillageSpawns.Get(2, 0).Issued == 1, "2구간 진입 소환을 다시 하지 않았다(발급 1)");
+        Check(gm.VillageSpawns.EnteredPhase == batPhase && gm.VillageSpawns.Get(batPhase, batIndex).Issued == 1, $"{batPhase}구간 진입 소환을 다시 하지 않았다(발급 1)");
 
         // --- 14. Day 변경, 새 게임
         sb.AppendLine("\n== 14. Day 변경과 새 게임에서 초기화");
         yield return Load("TruckScene");
         gm.ResetDay();
         Check(gm.VillageSpawns.EnteredPhase == 0 && gm.VillageTime == 0f, "ResetDay: 소환 기록과 시간이 비었다");
+        (batPhase, batIndex) = FindTimedBatEntry(gm.CycleCount);
+        batTime = batPhase > 0 ? config.villagePhaseStartSeconds[batPhase - 1] : 0f;
         yield return Load("VillageScene");
         yield return WaitFrames(30);
         Check(Bats().Count == 0, "새 Day 마을 0초: 박쥐 없음");
-        SetTime(179.9f);
+        SetTime(batTime - 0.1f);
         yield return WaitFrames(5);
         yield return WaitForBats(1, 45);
-        Check(Bats().Count == 1, "새 Day에도 180초에 다시 1마리");
+        Check(Bats().Count == 1, $"새 Day(Day {gm.CycleCount})에도 {batTime:F0}초에 다시 1마리");
         yield return Load("TruckScene");
         gm.ResetGame();
         Check(gm.VillageSpawns.EnteredPhase == 0 && gm.VillageTime == 0f, "ResetGame: 소환 기록과 시간이 비었다");
@@ -1296,6 +1290,19 @@ public static class BatMonsterTest
     private static readonly MethodInfo VillageTimeSetter = typeof(GameManager).GetProperty(nameof(GameManager.VillageTime)).GetSetMethod(true);
 
     private static void SetTime(float seconds) => VillageTimeSetter.Invoke(gm, new object[] { seconds });
+
+    // 그날 표에서 박쥐를 직접 소환하는 첫 (구간, 항목 번호). 없으면 (0, 0).
+    private static (int phase, int index) FindTimedBatEntry(int day)
+    {
+        for (int phase = 1; phase <= GameManager.VillagePhaseCount; phase++)
+        {
+            GameBalanceConfig.VillageSpawnEntry[] entries = config.GetVillagePhaseSpawns(day, phase);
+            for (int i = 0; i < entries.Length; i++)
+                if (entries[i] != null && !entries[i].pickFromDayTypes && entries[i].monsterPrefab != null && entries[i].monsterPrefab.GetComponent<BatMonsterAI>() != null)
+                    return (phase, i);
+        }
+        return (0, 0);
+    }
 
     private static Vector2 Pos(BatMonsterAI a) => new Vector2(a.transform.position.x, a.transform.position.z);
 

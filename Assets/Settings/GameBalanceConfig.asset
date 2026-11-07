@@ -135,8 +135,8 @@ MonoBehaviour:
   staminaRegenPerSecond: 15
   staminaExhaustionCooldown: 1.5
   targetRescueCount: 3
-  targetRescueIncreasePerDay: 4
-  totalCyclesToWin: 10
+  targetRescueIncreasePerDay: 2
+  totalCyclesToWin: 2
   villagePhaseStartSeconds:
   - 0
   - 180
@@ -197,22 +197,93 @@ MonoBehaviour:
   occluderFadeSpeed: 6
   occluderMinCover: 0.2
   occluderTargetRadius: 10
-  villagePhaseSpawns:
-  - entries:
-    - monsterPrefab: {fileID: 6555077884092434632, guid: 1d6367ff8fdf9d04d8ad7d0591760909, type: 3}
-      count: 4
-      initialCount: 1
-      intervalCount: 1
-      intervalSeconds: 45
-  - entries:
+  dayMonsterPlans:
+  - label: "1\uC77C\uCC28"
+    mapMonsters:
+    - monsterPrefab: {fileID: 6555077884092434632, guid: 5b86696969f0f8e48ba300b904e7fcaf, type: 3}
+      count: 3
+    - monsterPrefab: {fileID: 5382451385581636795, guid: 17d880809c3e527428af5414eb32f690, type: 3}
+      count: 2
     - monsterPrefab: {fileID: 6555077884092434632, guid: 1d6367ff8fdf9d04d8ad7d0591760909, type: 3}
       count: 1
-      initialCount: 1
-      intervalCount: 0
-      intervalSeconds: 0
-  - entries: []
-  - entries: []
-  - entries: []
+    phaseSpawns:
+    - entries: []
+    - entries:
+      - monsterPrefab: {fileID: 6555077884092434632, guid: 5b86696969f0f8e48ba300b904e7fcaf, type: 3}
+        pickFromDayTypes: 0
+        count: 1
+        initialCount: 1
+        intervalCount: 0
+        intervalSeconds: 0
+    - entries:
+      - monsterPrefab: {fileID: 5382451385581636795, guid: 17d880809c3e527428af5414eb32f690, type: 3}
+        pickFromDayTypes: 0
+        count: 1
+        initialCount: 1
+        intervalCount: 0
+        intervalSeconds: 0
+    - entries:
+      - monsterPrefab: {fileID: 6555077884092434632, guid: 1d6367ff8fdf9d04d8ad7d0591760909, type: 3}
+        pickFromDayTypes: 0
+        count: 1
+        initialCount: 1
+        intervalCount: 0
+        intervalSeconds: 0
+    - entries:
+      - monsterPrefab: {fileID: 0}
+        pickFromDayTypes: 1
+        count: 2
+        initialCount: 0
+        intervalCount: 1
+        intervalSeconds: 30
+  - label: "2\uC77C\uCC28"
+    mapMonsters:
+    - monsterPrefab: {fileID: 6555077884092434632, guid: 5b86696969f0f8e48ba300b904e7fcaf, type: 3}
+      count: 3
+    - monsterPrefab: {fileID: 5382451385581636795, guid: 17d880809c3e527428af5414eb32f690, type: 3}
+      count: 2
+    - monsterPrefab: {fileID: 6555077884092434632, guid: 1d6367ff8fdf9d04d8ad7d0591760909, type: 3}
+      count: 1
+    - monsterPrefab: {fileID: 8059513018795157324, guid: 70132399cdf69284dad53d8c56d6abe0, type: 3}
+      count: 2
+    - monsterPrefab: {fileID: 7707983886238342982, guid: 900ee8ff5fd15f84a91b75288439d348, type: 3}
+      count: 1
+    phaseSpawns:
+    - entries: []
+    - entries:
+      - monsterPrefab: {fileID: 6555077884092434632, guid: 5b86696969f0f8e48ba300b904e7fcaf, type: 3}
+        pickFromDayTypes: 0
+        count: 1
+        initialCount: 1
+        intervalCount: 0
+        intervalSeconds: 0
+    - entries:
+      - monsterPrefab: {fileID: 8059513018795157324, guid: 70132399cdf69284dad53d8c56d6abe0, type: 3}
+        pickFromDayTypes: 0
+        count: 1
+        initialCount: 1
+        intervalCount: 0
+        intervalSeconds: 0
+    - entries:
+      - monsterPrefab: {fileID: 6555077884092434632, guid: 1d6367ff8fdf9d04d8ad7d0591760909, type: 3}
+        pickFromDayTypes: 0
+        count: 1
+        initialCount: 1
+        intervalCount: 0
+        intervalSeconds: 0
+      - monsterPrefab: {fileID: 7707983886238342982, guid: 900ee8ff5fd15f84a91b75288439d348, type: 3}
+        pickFromDayTypes: 0
+        count: 1
+        initialCount: 1
+        intervalCount: 0
+        intervalSeconds: 0
+    - entries:
+      - monsterPrefab: {fileID: 0}
+        pickFromDayTypes: 1
+        count: 3
+        initialCount: 0
+        intervalCount: 1
+        intervalSeconds: 30
   villageMonsterCap: 60
   villageSpawnMinPlayerDistance: 15
   mileagePerWeight: 10

@@ -171,8 +171,12 @@ public static class VillageSpawnTest
     private static GameBalanceConfig.VillageSpawnEntry E(GameObject prefab, int count, int initial, int intervalCount, float intervalSeconds) =>
         new GameBalanceConfig.VillageSpawnEntry { monsterPrefab = prefab, count = count, initialCount = initial, intervalCount = intervalCount, intervalSeconds = intervalSeconds };
 
-    private static void SetPhase(int phase, params GameBalanceConfig.VillageSpawnEntry[] entries) =>
-        clone.villagePhaseSpawns[phase - 1] = new GameBalanceConfig.VillagePhaseSpawnList { entries = entries };
+    // 복제 설정의 모든 날짜 줄에 같은 구간 목록을 넣는다(테스트 도중 ResetDay로 날짜가 바뀌어도 같은 목록).
+    private static void SetPhase(int phase, params GameBalanceConfig.VillageSpawnEntry[] entries)
+    {
+        foreach (GameBalanceConfig.DayMonsterPlan plan in clone.dayMonsterPlans)
+            plan.phaseSpawns[phase - 1] = new GameBalanceConfig.VillagePhaseSpawnList { entries = entries };
+    }
 
     private static IEnumerator Run()
     {
@@ -192,21 +196,14 @@ public static class VillageSpawnTest
             Finish();
             yield break;
         }
-        sb.AppendLine($"설정(원본): 상한 {original.villageMonsterCap}, 최소 거리 {original.villageSpawnMinPlayerDistance}, 구간 목록 {original.villagePhaseSpawns?.Length}개");
+        sb.AppendLine($"설정(원본): 상한 {original.villageMonsterCap}, 최소 거리 {original.villageSpawnMinPlayerDistance}, 날짜별 표 {original.dayMonsterPlans?.Length}줄");
 
-        // --- 0. 기본값
+        // --- 0. 기본값 (날짜별 표의 내용 자체는 MonsterPacingTest가 본다 - 여기서는 소환기가 쓰는 모양만 본다)
         sb.AppendLine("\n== 0. 기본 설정");
-        Check(original.villagePhaseSpawns != null && original.villagePhaseSpawns.Length == 5, "구간 목록이 5개");
-        // 기본 설정: 2구간에 박쥐(예전 우는천사 자리) 1마리(진입 때 1, 간격 없음)만 있고 나머지 구간은 비어 있다.
-        GameBalanceConfig.VillageSpawnEntry[] phase2 = original.GetVillagePhaseSpawns(2);
-        Check(phase2.Length == 1 && phase2[0].monsterPrefab != null && phase2[0].monsterPrefab.GetComponent<BatMonsterAI>() != null &&
-              phase2[0].count == 1 && phase2[0].initialCount == 1 && phase2[0].intervalCount == 0 && phase2[0].intervalSeconds == 0f,
-            "2구간 목록: 박쥐 1마리(진입 때 1, 간격 0)");
-        // 임시(박쥐 테스트용, 2026-10-24): 1구간에 박쥐 4마리(진입 때 1, 45초마다 1). 되돌리면 1구간도 비어 있어야 한다.
-        GameBalanceConfig.VillageSpawnEntry[] phase1 = original.GetVillagePhaseSpawns(1);
-        Check(phase1.Length == 0 || phase1.All(e => e.monsterPrefab != null && e.monsterPrefab.GetComponent<BatMonsterAI>() != null),
-            $"1구간 목록: 비었거나 임시 박쥐만 ({phase1.Length}개 항목)");
-        Check(new[] { 3, 4, 5 }.All(p => original.GetVillagePhaseSpawns(p).Length == 0), "3·4·5구간 목록은 비어 있다");
+        Check(original.dayMonsterPlans != null && original.dayMonsterPlans.Length >= 1 &&
+              original.dayMonsterPlans.All(d => d != null && d.phaseSpawns != null && d.phaseSpawns.Length == 5), "날짜별 표의 줄마다 구간 목록이 5개");
+        Check(original.dayMonsterPlans.All(d => d.phaseSpawns[0].entries == null || d.phaseSpawns[0].entries.Length == 0),
+            "1구간 목록은 모든 날 비어 있다(테스트용 박쥐 소환 없음)");
         Check(original.villageMonsterCap == 60 && Mathf.Approximately(original.villageSpawnMinPlayerDistance, 15f), "상한 60, 최소 거리 15");
 
         Object.FindAnyObjectByType<TitleMenu>().OnPlay();

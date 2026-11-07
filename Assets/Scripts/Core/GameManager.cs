@@ -34,10 +34,10 @@ public class GameManager : MonoBehaviour
     public static int ComputeTargetCount(int cycle, GameBalanceConfig balance)
     {
         int start = balance != null ? balance.targetRescueCount : 3;
-        int increase = balance != null ? balance.targetRescueIncreasePerDay : 4;
+        int increase = balance != null ? balance.targetRescueIncreasePerDay : 2;
         return start + (Mathf.Max(1, cycle) - 1) * increase;
     }
-    public int TotalCyclesToWin => config != null ? config.totalCyclesToWin : 10;
+    public int TotalCyclesToWin => config != null ? config.totalCyclesToWin : 2;
     public int RescuedCount { get; private set; }
     public int Health { get; private set; }
     public bool IsGameOver { get; private set; }

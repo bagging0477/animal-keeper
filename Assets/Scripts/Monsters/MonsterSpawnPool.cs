@@ -1,6 +1,7 @@
 using UnityEngine;
 
 /// <summary>마을 몬스터 한 마리를 어떤 프리팹으로 만들지 고른다(VillageMapGenerator의 몬스터 스폰이 부른다). AnimalSpawnPool과 같은 방식이다.
+/// 지금은 한 줄 배치와, 날짜별 표(GameBalanceConfig.dayMonsterPlans)가 비어 있을 때의 격자 배치만 쓴다 - 표가 있으면 격자 배치는 표의 종류별 수 그대로 놓는다.
 /// 새 몬스터 종류(호저·코뿔소·박쥐)는 각자의 확률로 자리를 대신하고, 나머지는 기존 몬스터 풀(VillageMapGenerator.monsterPrefabs - 늑대, 소리반응형)에서 뽑는다.
 /// - 총 마리 수는 그대로다. 새 종류가 하나도 허용되지 않으면(새 종류가 없거나 확률이 0이거나, 한 줄 배치에서 꺼져 있으면)
 /// 확률을 굴리지 않고 기존 풀에서 균등하게 뽑아서 Random 호출 순서와 결과가 예전과 완전히 같다.

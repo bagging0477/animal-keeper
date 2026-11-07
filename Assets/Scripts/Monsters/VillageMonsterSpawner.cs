@@ -42,9 +42,11 @@ public class VillageSpawnRecord
 }
 
 /// <summary>
-/// 마을 시간 구간(GameManager.VillagePhase)에 따라 GameBalanceConfig.villagePhaseSpawns 목록대로 몬스터를 마을에 추가로 소환한다.
-/// GameManager가 Awake에서 자기 오브젝트에 붙이고, VillageScene에 있을 때만 동작한다. 목록이 모두 비어 있으면 아무것도 하지 않는다
-/// (난수·탐색·오브젝트 생성 없음 - 게임 동작이 이 컴포넌트가 없을 때와 같다).
+/// 마을 시간 구간(GameManager.VillagePhase)에 따라 날짜별 표(GameBalanceConfig.dayMonsterPlans의 오늘 줄, phaseSpawns)대로 몬스터를 마을에 추가로 소환한다.
+/// GameManager가 Awake에서 자기 오브젝트에 붙이고, VillageScene에 있을 때만 동작한다. 오늘 목록이 모두 비어 있으면 아무것도 하지 않는다
+/// (난수·탐색·오브젝트 생성 없음 - 게임 동작이 이 컴포넌트가 없을 때와 같다). 오늘(CycleCount)은 같은 Day 안에서 바뀌지 않는다.
+/// - pickFromDayTypes 항목은 한 마리마다 그날 나올 수 있는 종류(GameBalanceConfig.GetDayMonsterTypes) 중 하나를 맵 시드·구간·항목·번호로 정해 고른다
+///   (난수 상태를 남기지 않는 계산이라 같은 Day 재진입에서 같은 번호는 같은 종류·같은 Id가 된다).
 ///
 /// - 구간에 들어가면 그 구간 항목마다 initialCount를, 이후 intervalSeconds마다 intervalCount를 소환 대기 수에 더한다(총 count까지).
 ///   한 프레임에 구간을 여러 개 건너뛰면 건너뛴 구간들까지 모두 처리한다. 타이머는 Time.deltaTime이라 일시정지(timeScale 0) 중에는 멈춘다.
@@ -116,7 +118,7 @@ public class VillageMonsterSpawner : MonoBehaviour
     private static GameBalanceConfig ActiveConfig()
     {
         GameManager gm = GameManager.Instance;
-        if (gm == null || gm.Config == null || !gm.Config.HasAnyVillagePhaseSpawns()) return null;
+        if (gm == null || gm.Config == null || !gm.Config.HasAnyVillagePhaseSpawns(gm.CycleCount)) return null;
         return SceneManager.GetActiveScene().name == VillageSceneName ? gm.Config : null;
     }
 
@@ -124,8 +126,10 @@ public class VillageMonsterSpawner : MonoBehaviour
     {
         GameBalanceConfig config = ActiveConfig();
         if (config == null || needsBegin) return; // 시작 처리(BeginVillage)가 현재 구간까지 한꺼번에 처리한다
-        EnterPhasesUpTo(GameManager.Instance.VillageSpawns, config, phase);
+        EnterPhasesUpTo(GameManager.Instance.VillageSpawns, config, Today, phase);
     }
+
+    private static int Today => GameManager.Instance != null ? GameManager.Instance.CycleCount : 1;
 
     private void Update()
     {
@@ -138,7 +142,7 @@ public class VillageMonsterSpawner : MonoBehaviour
         float dt = Time.deltaTime;
         if (dt <= 0f) return; // 일시정지 중에는 타이머도 소환도 멈춘다
 
-        TickIntervals(gm.VillageSpawns, config, dt);
+        TickIntervals(gm.VillageSpawns, config, Today, dt);
         if (retryTimer > 0f)
         {
             retryTimer -= dt;
@@ -162,39 +166,50 @@ public class VillageMonsterSpawner : MonoBehaviour
         VillageSpawnRecord record = gm.VillageSpawns;
         for (int phase = 1; phase <= record.EnteredPhase; phase++)
         {
-            GameBalanceConfig.VillageSpawnEntry[] entries = config.GetVillagePhaseSpawns(phase);
+            GameBalanceConfig.VillageSpawnEntry[] entries = config.GetVillagePhaseSpawns(Today, phase);
             for (int i = 0; i < entries.Length; i++)
             {
-                if (!IsValid(entries[i]) || !record.TryGet(phase, i, out VillageSpawnRecord.EntryState state)) continue;
+                if (!config.IsUsableSpawnEntry(Today, entries[i]) || !record.TryGet(phase, i, out VillageSpawnRecord.EntryState state)) continue;
                 for (int ordinal = 0; ordinal < state.Issued; ordinal++)
                 {
-                    string id = $"{MapRootName}/{ParentName}/{InstanceName(entries[i], phase, i, ordinal)}";
+                    GameObject prefab = PrefabFor(config, entries[i], phase, i, ordinal);
+                    string id = $"{MapRootName}/{ParentName}/{InstanceName(prefab, phase, i, ordinal)}";
                     // 납품했거나 들고 있는 늑대 시체는 MonsterCorpsePickup이 어차피 감추므로 만들지 않는다.
                     if (gm.IsAnimalRescuedToday(id) || gm.IsAnimalCurrentlyHeld(id)) continue;
                     // 오늘 처치한 개체는 남긴 자리에 만든다 - 늑대는 그 자리 시체로, 소리반응형은 숨김으로 돌아간다(각자의 Start가 기록을 본다).
-                    if (gm.TryGetMonsterCorpse(id, out Vector3 corpsePosition)) Create(entries[i].monsterPrefab, corpsePosition, InstanceName(entries[i], phase, i, ordinal));
+                    if (gm.TryGetMonsterCorpse(id, out Vector3 corpsePosition)) Create(prefab, corpsePosition, InstanceName(prefab, phase, i, ordinal));
                     else restoreQueue.Add((phase, i, ordinal));
                 }
             }
         }
 
-        EnterPhasesUpTo(record, config, gm.VillagePhase);
+        EnterPhasesUpTo(record, config, Today, gm.VillagePhase);
         return true;
     }
 
-    private static bool IsValid(GameBalanceConfig.VillageSpawnEntry entry) => entry != null && entry.monsterPrefab != null && entry.count > 0;
+    /// <summary>항목의 ordinal번째 개체 프리팹. 보통은 monsterPrefab이고, pickFromDayTypes면 그날 종류 중 하나를
+    /// (맵 시드, 구간, 항목, 번호)로 정한다 - 같은 Day에는 항상 같은 값이다.</summary>
+    public static GameObject PrefabFor(GameBalanceConfig config, GameBalanceConfig.VillageSpawnEntry entry, int phase, int index, int ordinal)
+    {
+        if (!entry.pickFromDayTypes) return entry.monsterPrefab;
+        List<GameObject> types = config.GetDayMonsterTypes(Today);
+        if (types.Count == 0) return null;
+        int seed = GameManager.Instance != null ? GameManager.Instance.GetVillageMapSeedForToday() : 0;
+        System.Random pick = new System.Random(unchecked(((seed * 31 + phase) * 31 + index) * 31 + ordinal));
+        return types[pick.Next(types.Count)];
+    }
 
     private static int Remaining(GameBalanceConfig.VillageSpawnEntry entry, VillageSpawnRecord.EntryState state) =>
         Mathf.Max(0, entry.count - state.Issued - state.Pending);
 
-    private static void EnterPhasesUpTo(VillageSpawnRecord record, GameBalanceConfig config, int phase)
+    private static void EnterPhasesUpTo(VillageSpawnRecord record, GameBalanceConfig config, int day, int phase)
     {
         for (int p = record.EnteredPhase + 1; p <= phase; p++)
         {
-            GameBalanceConfig.VillageSpawnEntry[] entries = config.GetVillagePhaseSpawns(p);
+            GameBalanceConfig.VillageSpawnEntry[] entries = config.GetVillagePhaseSpawns(day, p);
             for (int i = 0; i < entries.Length; i++)
             {
-                if (!IsValid(entries[i])) continue;
+                if (!config.IsUsableSpawnEntry(day, entries[i])) continue;
                 VillageSpawnRecord.EntryState state = record.Get(p, i);
                 state.Pending += Mathf.Clamp(entries[i].initialCount, 0, Remaining(entries[i], state));
             }
@@ -202,15 +217,15 @@ public class VillageMonsterSpawner : MonoBehaviour
         if (phase > record.EnteredPhase) record.EnteredPhase = phase;
     }
 
-    private static void TickIntervals(VillageSpawnRecord record, GameBalanceConfig config, float dt)
+    private static void TickIntervals(VillageSpawnRecord record, GameBalanceConfig config, int day, float dt)
     {
         for (int phase = 1; phase <= record.EnteredPhase; phase++)
         {
-            GameBalanceConfig.VillageSpawnEntry[] entries = config.GetVillagePhaseSpawns(phase);
+            GameBalanceConfig.VillageSpawnEntry[] entries = config.GetVillagePhaseSpawns(day, phase);
             for (int i = 0; i < entries.Length; i++)
             {
                 GameBalanceConfig.VillageSpawnEntry entry = entries[i];
-                if (!IsValid(entry) || entry.intervalCount <= 0 || entry.intervalSeconds <= 0f) continue;
+                if (!config.IsUsableSpawnEntry(day, entry) || entry.intervalCount <= 0 || entry.intervalSeconds <= 0f) continue;
                 VillageSpawnRecord.EntryState state = record.Get(phase, i);
                 if (Remaining(entry, state) <= 0) continue;
                 state.IntervalTimer += dt;
@@ -234,23 +249,23 @@ public class VillageMonsterSpawner : MonoBehaviour
         {
             if (living >= cap) return;
             (int phase, int index, int ordinal) = restoreQueue[0];
-            GameBalanceConfig.VillageSpawnEntry[] entries = config.GetVillagePhaseSpawns(phase);
-            if (index >= entries.Length || !IsValid(entries[index])) { restoreQueue.RemoveAt(0); continue; }
-            if (!TrySpawn(entries[index], phase, index, ordinal)) return;
+            GameBalanceConfig.VillageSpawnEntry[] entries = config.GetVillagePhaseSpawns(Today, phase);
+            if (index >= entries.Length || !config.IsUsableSpawnEntry(Today, entries[index])) { restoreQueue.RemoveAt(0); continue; }
+            if (!TrySpawn(config, entries[index], phase, index, ordinal)) return;
             restoreQueue.RemoveAt(0);
             living++;
         }
 
         for (int phase = 1; phase <= record.EnteredPhase; phase++)
         {
-            GameBalanceConfig.VillageSpawnEntry[] entries = config.GetVillagePhaseSpawns(phase);
+            GameBalanceConfig.VillageSpawnEntry[] entries = config.GetVillagePhaseSpawns(Today, phase);
             for (int i = 0; i < entries.Length; i++)
             {
-                if (!IsValid(entries[i]) || !record.TryGet(phase, i, out VillageSpawnRecord.EntryState state)) continue;
+                if (!config.IsUsableSpawnEntry(Today, entries[i]) || !record.TryGet(phase, i, out VillageSpawnRecord.EntryState state)) continue;
                 while (state.Pending > 0)
                 {
                     if (living >= cap) return;
-                    if (!TrySpawn(entries[i], phase, i, state.Issued)) return;
+                    if (!TrySpawn(config, entries[i], phase, i, state.Issued)) return;
                     state.Pending--;
                     state.Issued++;
                     living++;
@@ -270,20 +285,21 @@ public class VillageMonsterSpawner : MonoBehaviour
         return living;
     }
 
-    private bool TrySpawn(GameBalanceConfig.VillageSpawnEntry entry, int phase, int index, int ordinal)
+    private bool TrySpawn(GameBalanceConfig config, GameBalanceConfig.VillageSpawnEntry entry, int phase, int index, int ordinal)
     {
-        if (!TryFindSpot(entry.monsterPrefab, out Vector3 navPosition))
+        GameObject prefab = PrefabFor(config, entry, phase, index, ordinal);
+        if (!TryFindSpot(prefab, out Vector3 navPosition))
         {
             SkippedSpawns++;
             retryTimer = RetryDelaySeconds;
             return false;
         }
-        Create(entry.monsterPrefab, navPosition, InstanceName(entry, phase, index, ordinal));
+        Create(prefab, navPosition, InstanceName(prefab, phase, index, ordinal));
         return true;
     }
 
-    private static string InstanceName(GameBalanceConfig.VillageSpawnEntry entry, int phase, int index, int ordinal) =>
-        $"{entry.monsterPrefab.name}_T{phase}_{index}_{ordinal}";
+    private static string InstanceName(GameObject prefab, int phase, int index, int ordinal) =>
+        $"{prefab.name}_T{phase}_{index}_{ordinal}";
 
     // VillageMapGenerator.SpawnMonsterAt과 같은 방식: NavMesh에 붙인 자리(x, 0, z)에 회전 없이 만들고 이름에 번호를 붙인다(Id = 계층 경로).
     private void Create(GameObject prefab, Vector3 navPosition, string instanceName)

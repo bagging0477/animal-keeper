@@ -183,7 +183,8 @@ public static class PlayerStatusHudTest
         originalConfig = config;
         testConfig = Object.Instantiate(config);
         testConfig.name = "PlayerStatusHudTestConfig";
-        for (int p = 0; p < testConfig.villagePhaseSpawns.Length; p++) testConfig.villagePhaseSpawns[p] = new GameBalanceConfig.VillagePhaseSpawnList();
+        foreach (GameBalanceConfig.DayMonsterPlan dayPlan in testConfig.dayMonsterPlans)
+            for (int p = 0; p < dayPlan.phaseSpawns.Length; p++) dayPlan.phaseSpawns[p] = new GameBalanceConfig.VillagePhaseSpawnList();
         ConfigField.SetValue(gm, testConfig);
         config = testConfig;
 
