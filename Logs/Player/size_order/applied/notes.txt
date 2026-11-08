@@ -1,0 +1,24 @@
+클래스 크기 적용 (2026-11-08, 시안 A 기준 + 거너를 스카우트와 같게, 커밋 안 함)
+
+[바꾼 파일] PNG 3장만. .meta·클래스 배율·충돌체·씬은 그대로.
+  Assets/Sprites/Player/player_trapper.png      ← ../A/player_trapper_A.png (몸통 15도트)
+  Assets/Sprites/Player/player_gunner.png       ← player_gunner_13.png (몸통 13도트)
+  Assets/Sprites/Player/player_gunner_armed.png ← player_gunner_armed_13.png (같은 몸 + 총)
+  player_base.png(스카우트 13도트)는 그대로. 적용 전 PNG는 git(HEAD)에 있다.
+
+[생성] make_applied.py - make_size_order.py(= 지금 그림 규칙)를 그대로 씀. 지름 11로 그리면 적용 전 무장 거너와 0칸 차이.
+  거너 13: 원형 대칭(행 폭 5,9,11,11,13), 외곽선 #2F2F2E, 그늘 2겹, 손 3x3, 위장 무늬 큰 덩어리 3개(몸 크기에 비례).
+  무장 거너 13: 총 픽셀은 적용 전과 같은 자리(총신 row 10 col 13~18, 끝 col 19). 총을 쥔 손은 row 7·13 그대로, 가로만 몸 오른쪽 끝 칸에 맞춰 col 14 → 15.
+
+[크기] 1080p, 카메라 5.6, 1도트 6.03px. 충돌체 = 1x1 상자 x 배율.
+  클래스      몸통            충돌체          그림 - 충돌체
+  트래퍼      15도트 90.4px   0.72칸 69.4px   +21.0px
+  스카우트    13도트 78.3px   0.64칸 61.7px   +16.6px
+  거너        13도트 78.3px   0.64칸 61.7px   +16.6px
+  무장 거너   13도트 78.3px   0.826칸 79.6px  -1.3px (총 포함 가로 17도트 102.5px, 적용 전 16도트)
+
+[피벗] 네 그림 모두 (9.5, 9.5)px = 몸통 가운데 칸 (col 9, row 10)의 가운데 - 지름 13·15도 가운데 칸이 같아 벗어나지 않음.
+[총구] MuzzlePoint 로컬 (0.7567, 0) → 무장 거너 그림 (19.5, 9.5)px = 총 끝 칸(col 19, row 10) 가운데. 총 픽셀이 그대로라 바꾸지 않음.
+
+[비교 이미지] applied_compare.png - 실제 Unity 렌더(배치 모드). ① 같은 화면 배율 1:1 ② x4 0°·45° ③ Field lineup(Room_2_3, 시야 끔) ④ ClassSelectScene(시작 자리 둘레, 화면 UI 포함).
+  적용 전 그림은 적용 전 PNG로 임시 스프라이트를 만들어 같은 PPU·피벗·배율로 찍음. render/: 원본 1080p와 capture_log.txt.
