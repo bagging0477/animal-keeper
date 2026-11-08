@@ -1,0 +1,4 @@
+after ClassSelectScene: 카메라 ortho 4 (1칸 135.00px), 플레이어 배율 0.4571, 스프라이트 player_base PPU 10.24 → 1도트 6.03px, 몸통 78.3x78.3px, 손 포함 90.4x90.4px, 충돌체 없음, 화면 위치 (960, 601), 회전 90° | 겹침: 없음
+after ShelterScene: 카메라 ortho 6.15 (1칸 87.80px), 플레이어 배율 0.7029, 스프라이트 player_base PPU 10.24 → 1도트 6.03px, 몸통 78.3x78.3px, 손 포함 90.4x90.4px, 충돌체 56.2px, 화면 위치 (960, 841), 회전 90° | 겹침: 없음
+after VillageScene: 카메라 ortho 5.6 (1칸 96.43px), 플레이어 배율 0.64, 스프라이트 player_base PPU 10.24 → 1도트 6.03px, 몸통 78.3x78.3px, 손 포함 90.4x90.4px, 충돌체 61.7px, 화면 위치 (963, 535), 회전 60° | 겹침: 없음
+after TruckScene: 카메라 ortho 5.6 (1칸 96.43px), 플레이어 배율 0.64, 스프라이트 player_base PPU 10.24 → 1도트 6.03px, 몸통 78.3x78.3px, 손 포함 90.4x90.4px, 충돌체 61.7px, 화면 위치 (963, 631), 회전 60° | 겹침: 없음

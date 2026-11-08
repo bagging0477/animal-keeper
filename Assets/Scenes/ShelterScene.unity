@@ -2094,10 +2094,10 @@ MonoBehaviour:
   trapperSprite: {fileID: 21300000, guid: 008d6ddab8692bac01eda0e5cb6de329, type: 3}
   gunnerSprite: {fileID: 21300000, guid: c67d63129b2a84053fbe46118e431043, type: 3}
   gunnerArmedSprite: {fileID: 21300000, guid: f6b7fcba91c96f708cef460433898ebf, type: 3}
-  scoutScale: 0.64
-  trapperScale: 0.72
-  gunnerScale: 0.64
-  gunnerArmedScale: 0.826
+  scoutScale: 0.7028571
+  trapperScale: 0.7907143
+  gunnerScale: 0.7028571
+  gunnerArmedScale: 0.907125
 --- !u!1 &1986017234
 GameObject:
   m_ObjectHideFlags: 0
@@ -3007,7 +3007,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 0.4552846
 --- !u!1 &8400000000000000002
 GameObject:
   m_ObjectHideFlags: 0
