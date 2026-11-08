@@ -173,10 +173,15 @@ public static class WolfCorpseTest
         VillageMapGenerator.EditorLayoutOverride = new VillageMapGenerator.EditorOverride { Mode = MapLayoutMode.Grid, Columns = 3, Rows = 4, Seed = null };
 
         yield return EnterVillage(null);
-        List<string> wolfIds = SpawnedWolves().Select(CorpseId).ToList();
-        sb.AppendLine($"마을 늑대 {wolfIds.Count}마리 (Day {gm.CycleCount}, 인벤토리 {gm.InventorySlotCount}칸)");
+        // SpawnedWolves()에는 시체를 남기는 박쥐·호저·코뿔소도 섞여 있다. 실제 늑대(IsWolf)를 앞에 두고(같은 종류끼리는 원래 순서),
+        // 늑대 시체 그림·자세를 보는 흐름 2·3부터 1, 4, 5 순서로 늑대를 준다. 1일차 표는 늑대 3마리라 흐름 5(기록 초기화)에만 다른 시체 몬스터가 갈 수 있다.
+        List<MonsterCorpsePickup> corpseMonsters = SpawnedWolves().OrderBy(w => IsWolf(w) ? 0 : 1).ToList();
+        List<string> wolfIds = corpseMonsters.Select(CorpseId).ToList();
+        int realWolves = corpseMonsters.Count(IsWolf);
+        sb.AppendLine($"마을 늑대 {wolfIds.Count}마리, 그중 실제 늑대 {realWolves}마리 (Day {gm.CycleCount}, 인벤토리 {gm.InventorySlotCount}칸)");
         if (wolfIds.Count < 4) { Check(false, "늑대가 4마리보다 적어 흐름을 나눠 확인할 수 없다"); yield return Finish(); yield break; }
-        string idA = wolfIds[0], idB = wolfIds[1], idC = wolfIds[2], idD = wolfIds[3];
+        if (realWolves < 3) { Check(false, $"실제 늑대가 3마리보다 적어(늑대 {realWolves}마리) 흐름 1·2·3·4를 늑대로 확인할 수 없다"); yield return Finish(); yield break; }
+        string idB = wolfIds[0], idA = wolfIds[1], idD = wolfIds[2], idC = wolfIds[3];
         sb.AppendLine($"  흐름 1 늑대: {idA}\n  흐름 2·3 늑대: {idB}\n  흐름 4 늑대: {idD}\n  흐름 5 늑대: {idC}");
 
         yield return Flow1(gm, idA);
@@ -379,7 +384,7 @@ public static class WolfCorpseTest
         Check(dead == 0 && hidden == 0, $"새 Day 마을: 시체나 감춰진 늑대 없이 모두 살아서 나온다 (늑대 {SpawnedWolves().Count}마리, 시체 {dead}, 감춤 {hidden})");
 
         // SpawnedWolves()에는 시체를 줍는 박쥐도 섞여 있다 - 박쥐는 이미 고쳐져 있으므로 늑대(MonsterAI)만 고른다.
-        yield return Flow6(SpawnedWolves().LastOrDefault(w => w.GetComponent<MonsterAI>() != null && w.GetComponent<BatMonsterAI>() == null));
+        yield return Flow6(SpawnedWolves().LastOrDefault(IsWolf));
 
         Kill(SpawnedWolves().First());
         yield return WaitFrames(2);
@@ -453,6 +458,9 @@ public static class WolfCorpseTest
         GameObject root = GameObject.Find("GeneratedMap");
         return root != null ? root.GetComponentsInChildren<MonsterCorpsePickup>(true).ToList() : new List<MonsterCorpsePickup>();
     }
+
+    // 실제 늑대인지(늑대 두뇌 MonsterAI). 박쥐·호저·코뿔소도 MonsterCorpsePickup이 있어 시체를 남기지만 두뇌가 다르다.
+    private static bool IsWolf(MonsterCorpsePickup c) => c.GetComponent<MonsterAI>() != null && c.GetComponent<BatMonsterAI>() == null;
 
     private static MonsterCorpsePickup FindSpawned(string id) => SpawnedWolves().FirstOrDefault(w => CorpseId(w) == id);
 
