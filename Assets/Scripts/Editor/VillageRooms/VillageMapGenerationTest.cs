@@ -103,6 +103,7 @@ public static class VillageMapGenerationTest
         // 에디터 창이 포커스를 잃으면 Play 모드가 멈추므로 테스트 동안만 켜고 끝나면 원래 값으로 되돌린다.
         SessionState.SetBool(KeyRunInBackground, PlayerSettings.runInBackground);
         EditorSceneManager.OpenScene(VillageRoomBuilder.ScenePath, OpenSceneMode.Single);
+        EditorTestState.ClearStaleSingletons(); // 앞 테스트 Play에서 남은 파괴된 GameManager/AudioManager static을 비운다.
         EditorApplication.EnterPlaymode();
     }
 

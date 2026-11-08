@@ -46,6 +46,7 @@ public static class VillageVisionCapture
         SessionState.SetBool(KeyActive, true);
         SessionState.SetBool(KeyDone, false);
         EditorSceneManager.OpenScene(VillageRoomBuilder.ScenePath, OpenSceneMode.Single);
+        EditorTestState.ClearStaleSingletons(); // 앞 테스트 Play에서 남은 파괴된 GameManager/AudioManager static을 비운다.
         EditorApplication.EnterPlaymode();
     }
 

@@ -47,6 +47,7 @@ public static class PlayerVisionQueryTest
         SessionState.SetInt(KeyExit, 1);
         VillageMapGenerator.EditorLayoutOverride = new VillageMapGenerator.EditorOverride { Mode = MapLayoutMode.Grid, Columns = 3, Rows = 4, Seed = 1 };
         EditorSceneManager.OpenScene(VillageRoomBuilder.ScenePath, OpenSceneMode.Single);
+        EditorTestState.ClearStaleSingletons(); // 앞 테스트 Play에서 남은 파괴된 GameManager/AudioManager static을 비운다.
         EditorApplication.EnterPlaymode();
     }
 

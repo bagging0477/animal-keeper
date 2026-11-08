@@ -295,7 +295,7 @@ public static class MonsterTraceTest
         Time.captureDeltaTime = FrameTime;
         PinEngine();
         config = AssetDatabase.LoadAssetAtPath<GameBalanceConfig>("Assets/Settings/GameBalanceConfig.asset");
-        ClearStaleSingletons();
+        EditorTestState.ClearStaleSingletons();
         sb.AppendLine("# Monster Trace (격자 3x4, 프레임 1/30초). 열: 상황 / 프레임 / 몬스터 Id / 상태 / 위치(x,y) / 체력·플래그(D 사망 S 스턴 Z 수면) / 애니메이션(F 도주 M 이동:스프라이트) / 추격음 보고 / 잡기 판정");
 
         foreach (int seed in Seeds)
@@ -307,17 +307,6 @@ public static class MonsterTraceTest
             yield return Scenario($"s{seed}.weapons", seed, Weapons());
         }
         yield return Reentry("s1.reentry", 1);
-    }
-
-    // 도메인 리로드가 꺼진 에디터에서 이전 Play의 파괴된 GameManager/AudioManager가 static에 남아 있으면 비운다(테스트 쪽에서만).
-    private static void ClearStaleSingletons()
-    {
-        foreach (Type t in new[] { typeof(GameManager), typeof(AudioManager) })
-        {
-            PropertyInfo prop = t.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public);
-            var current = prop?.GetValue(null) as Object;
-            if (!ReferenceEquals(current, null) && current == null) prop.SetValue(null, null);
-        }
     }
 
     // 맵을 새로 불러오고 대상 몬스터를 고른 뒤 난수를 고정하고 기록을 시작한다.

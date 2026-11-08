@@ -59,6 +59,7 @@ public static class LinearRegressionDump
         SessionState.SetString(KeyLabel, label);
         SessionState.SetBool(KeyBatch, batch);
         EditorSceneManager.OpenScene(VillageRoomBuilder.ScenePath, OpenSceneMode.Single);
+        EditorTestState.ClearStaleSingletons(); // 앞 테스트 Play에서 남은 파괴된 GameManager/AudioManager static을 비운다.
         EditorApplication.EnterPlaymode();
     }
 
