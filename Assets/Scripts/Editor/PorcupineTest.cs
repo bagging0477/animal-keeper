@@ -579,8 +579,10 @@ public static class PorcupineTest
         gm.SelectSlot(Enumerable.Range(0, gm.InventorySlotCount).First(i => gm.GetSlot(i).Type == InventoryItemType.Bomb));
         UseBombMethod.Invoke(gadget, null);
         yield return WaitFrames(1);
-        Check(Same(ph, wh, config.bombDamage) && ph.IsDead && wh.IsStunned,
-            $"폭탄: 호저 −{ph.MaxHealth - ph.Health:0.##}(체력 3이라 쓰러짐), 늑대 −{wh.MaxHealth - wh.Health:0.##} (bombDamage {config.bombDamage}, 늑대 기절)");
+        // 폭탄 한 개로 호저가 쓰러지는지는 bombDamage와 호저 체력으로 정해진다(bombDamage 3이면 쓰러지고 2면 남는다).
+        bool porcupineFalls = config.bombDamage >= ph.MaxHealth;
+        Check(Same(ph, wh, config.bombDamage) && ph.IsDead == porcupineFalls && wh.IsStunned,
+            $"폭탄: 호저 −{ph.MaxHealth - Mathf.Max(ph.Health, 0f):0.##}(체력 {ph.MaxHealth}이라 {(porcupineFalls ? "쓰러짐" : "남음")}), 늑대 −{wh.MaxHealth - wh.Health:0.##} (bombDamage {config.bombDamage}, 늑대 기절)");
         Destroy(ph, wh);
         // 폭발 그림은 실제 시간(unscaledDeltaTime)으로 사라져서, 고정 프레임으로 빨리 도는 테스트에서는 오래 남는다 - 다음 캡처에 남지 않게 지운다.
         yield return WaitFrames(Mathf.CeilToInt(config.bombEffectDisplayDuration / FrameTime) + 15);

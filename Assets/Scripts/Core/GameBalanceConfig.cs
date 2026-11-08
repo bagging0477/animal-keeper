@@ -318,10 +318,10 @@ public class GameBalanceConfig : ScriptableObject
 
     [Header("클래스 - 이동속도 / 체력")]
     [Tooltip("스카우트 기본(걷기) 이동속도 배율 - 몬스터 추격 속도(monsterChaseSpeed, 고정값) 대비. " +
-        "1.05~1.1 정도로 잡아서 '몬스터보다 여전히 빠르지만 차이는 크지 않은' 상태를 만든다 - 스태미나 없이 그냥 도망만 쳐도 " +
-        "서서히 거리가 벌어지긴 하지만, 추격 포기 거리(patrolMonsterLoseRange 등)까지 벌어지려면 시간이 걸린다. " +
+        "지금 값(약 0.974, 걷기 4.2)은 1보다 작아서 걷기만으로는 늑대·소리반응형 추격(4.3125)보다 느려 조금씩 따라잡힌다. " +
+        "달리기(걷기 x scoutSprintSpeedMultiplier, 5.0)는 그 추격보다 빨라서 스태미나를 써야 거리를 벌릴 수 있다. " +
         "트래퍼/거너는 배율 1(기본 이동속도 그대로)을 쓴다.")]
-    [Range(1f, 1.3f)]
+    [Range(0.9f, 1.3f)]
     public float scoutMoveSpeedMultiplier = 1.08f;
 
     [Tooltip("스카우트 최대 체력 비율 (playerMaxHealth 대비, %) - 기준치. 이동속도가 빠른 대신 시야는 다른 클래스와 동일한 컨셉.")]
