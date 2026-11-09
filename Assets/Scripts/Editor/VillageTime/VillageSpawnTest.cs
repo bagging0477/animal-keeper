@@ -17,7 +17,7 @@ using UnityEngine.Tilemaps;
 /// 검사: 목록이 비면 아무것도 소환하지 않음, 구간 진입 시 한 번에 소환, 간격 소환, 총 마릿수에서 멈춤, 상한에서 멈추고 줄면 다시 소환,
 /// 소환 위치(시야 밖·최소 거리·트럭 방 제외·막는 충돌체와 겹치지 않음·NavMesh 위), 자리를 못 찾으면 에러 없이 건너뛰고 다시 시도,
 /// 같은 Day 재진입에서 중복 소환 없음·처치한 개체가 다시 살아나지 않음, 밀린 구간을 재진입 시작 때 처리, ResetDay/ResetGame 초기화, 일시정지 중 타이머 정지.
-/// 프레임 시간은 1/30초 고정(Time.captureDeltaTime). 시간을 빨리 보낼 때만 VillageTime 값을 직접 넣는다(리플렉션).
+/// 프레임 시간은 1/30초 고정(Time.captureDeltaTime). 시간을 빨리 보낼 때만 VillageTime 값을 직접 넣는다(리플렉션). 넣는 시각은 설정의 구간 시작 시각에서 계산한다.
 /// 테스트 동안 몬스터는 기절(Stun)시켜 플레이어를 잡지 않게 한다(AI 컴포넌트는 켜 둔다 - Start의 처치 기록 확인이 그대로 돌게).
 /// 결과: Logs/VillageSpawnTest.txt / batchmode: -executeMethod VillageSpawnTest.RunBatch (통과면 0 아니면 1)
 /// </summary>
@@ -222,9 +222,9 @@ public static class VillageSpawnTest
         yield return Load("VillageScene");
         Check(SceneManager.GetActiveScene().name == "VillageScene", $"마을에 들어왔다 ({SceneManager.GetActiveScene().name})");
         int mapMonsters = VillageMonsterSpawner.CountLivingMonsters();
-        SetTime(500f);
+        SetTime(MidPhase(3));
         yield return WaitFrames(60);
-        SetTime(5000f);
+        SetTime(PhaseStart(5) + 4400f);
         yield return WaitFrames(60);
         Check(gm.VillagePhase == 5, $"5구간까지 진행 (구간 {gm.VillagePhase}, 씬 {SceneManager.GetActiveScene().name})");
         Check(TimedRoot() == null, "GeneratedMap/TimedMonsters가 생기지 않았다");
@@ -247,7 +247,7 @@ public static class VillageSpawnTest
         watchSpawns = true;
         yield return WaitFrames(30);
         Check(Timed().Count == 0 && gm.VillageSpawns.EnteredPhase == 1, $"1구간(목록 없음): 소환 {Timed().Count}, 기록된 구간 {gm.VillageSpawns.EnteredPhase}");
-        SetTime(179.95f);
+        SetTime(PhaseStart(2) - 0.05f);
         yield return WaitFrames(6);
         Check(Names().SequenceEqual(new[] { $"{wolf.name}_T2_0_0", $"{wolf.name}_T2_0_1" }), $"2구간 진입: 한 번에 2마리 [{string.Join(", ", Names())}]");
         yield return WaitFrames(70); // 2초 + 여유
@@ -255,7 +255,7 @@ public static class VillageSpawnTest
         yield return WaitFrames(80);
         Check(Count(2, 0) == 3 && Timed().Count == 3, $"총 마릿수(3)에서 멈춘다 (발급 {Count(2, 0)}, 소환 {Timed().Count})");
 
-        SetTime(359.95f);
+        SetTime(PhaseStart(3) - 0.05f);
         yield return WaitFrames(6);
         Check(Count(3, 0) == 1 && Names().Contains($"{sound.name}_T3_0_0"), $"3구간 진입: 소리반응형 1마리 (발급 {Count(3, 0)})");
         yield return WaitFrames(60);
@@ -263,7 +263,7 @@ public static class VillageSpawnTest
 
         // --- 3. 일시정지
         sb.AppendLine("\n== 3. ESC 일시정지 중에는 소환 타이머가 멈춘다");
-        SetTime(539.95f);
+        SetTime(PhaseStart(4) - 0.05f);
         yield return WaitFrames(3);
         Check(gm.VillagePhase == 4 && Count(4, 0) == 0, $"4구간 진입(처음 0마리): 발급 {Count(4, 0)}");
         yield return WaitFrames(12);
@@ -298,7 +298,7 @@ public static class VillageSpawnTest
         sb.AppendLine("\n== 5. 자리를 못 찾으면 에러 없이 건너뛰고 다시 시도");
         clone.villageSpawnMinPlayerDistance = 1000000f;
         int logsBefore = logs.Count;
-        SetTime(599.95f);
+        SetTime(PhaseStart(5) - 0.05f);
         yield return WaitFrames(45);
         Check(gm.VillagePhase == 5 && Count(5, 0) == 0 && gm.VillageSpawns.Get(5, 0).Pending == 2 && spawner.SkippedSpawns > 0,
             $"최소 거리 100만: 발급 {Count(5, 0)}, 대기 {gm.VillageSpawns.Get(5, 0).Pending}, 건너뜀 {spawner.SkippedSpawns}회");
@@ -335,7 +335,7 @@ public static class VillageSpawnTest
         yield return Load("TruckScene");
         gm.ResetDay();
         Check(gm.VillageSpawns.EnteredPhase == 0 && !gm.VillageSpawns.TryGet(2, 0, out _), "ResetDay 뒤 소환 기록이 비었다");
-        SetTime(400f); // 테스트 전용: 3구간 시각으로 마을에 들어간다
+        SetTime(MidPhase(3)); // 테스트 전용: 3구간 시각으로 마을에 들어간다
         yield return Load("VillageScene");
         yield return WaitFrames(10);
         Check(gm.VillagePhase == 3 && gm.VillageSpawns.EnteredPhase == 3, $"들어오자마자 3구간까지 처리 (구간 {gm.VillagePhase}, 기록 {gm.VillageSpawns.EnteredPhase})");
@@ -446,6 +446,11 @@ public static class VillageSpawnTest
     private static readonly MethodInfo VillageTimeSetter = typeof(GameManager).GetProperty(nameof(GameManager.VillageTime)).GetSetMethod(true);
 
     private static void SetTime(float seconds) => VillageTimeSetter.Invoke(gm, new object[] { seconds });
+
+    // 구간(1~5) 시작 시각과 그 구간 가운데 시각 - 설정(villagePhaseStartSeconds)에서 계산한다.
+    private static float PhaseStart(int phase) => original.villagePhaseStartSeconds[phase - 1];
+
+    private static float MidPhase(int phase) => (PhaseStart(phase) + PhaseStart(phase + 1)) * 0.5f;
 
     private static IEnumerator WaitFrames(int frames)
     {

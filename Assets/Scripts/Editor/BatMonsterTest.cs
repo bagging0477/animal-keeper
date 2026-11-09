@@ -24,7 +24,7 @@ using UnityEngine.Tilemaps;
 /// 접촉 데미지(최대 체력 x 0.8, 굳은 동안 없음), 무기 데미지 = 늑대와 같은 값(기절·마취 없음), 맞으면 도망(거리 = 거위 x 0.5, 속도 = 거위),
 /// 피격 모션(hurt-01 + 늑대와 같은 빨간 깜빡임, 비행·굳음·도망 중 모두, 피격 중에도 바로 도망, 연속 피격 → Logs/Bat/hurt_compare.png),
 /// 도망 중 쳐다봐도 안 멈춤, 도망 중 또 맞으면 그 자리에서 다시 도망, 무적 없음, 도망 뒤 다시 다가옴, 체력 0이면 쓰러지고 E로 회수,
-/// 시간 소환(날짜별 표의 박쥐 항목 - 지금 4구간 540초에 1마리), 재진입, ResetDay/ResetGame. 프레임 시간 1/30초 고정. 다른 몬스터는 기절시켜 둔다(박쥐는 기절하지 않는다).
+/// 시간 소환(날짜별 표에서 박쥐를 직접 소환하는 첫 항목 - 구간과 시각은 설정에서 찾는다), 재진입, ResetDay/ResetGame. 프레임 시간 1/30초 고정. 다른 몬스터는 기절시켜 둔다(박쥐는 기절하지 않는다).
 /// 실제 게임 카메라 렌더: Logs/Bat/render/crouch_*.png, view_*.png + manifest.txt(비행 → 웅크림 → 굳음 → 풀림, 주변/정면 시야 장면).
 /// 결과: Logs/BatMonsterTest.txt / batchmode: -executeMethod BatMonsterTest.RunBatch (통과면 0 아니면 1)
 /// </summary>
@@ -577,7 +577,7 @@ public static class BatMonsterTest
         sb.AppendLine("\n== 11. 체력 0이면 늑대처럼 쓰러지고 E로 회수");
         yield return DeathChecks(laneCenter, dir);
 
-        // --- 12. 시간 소환: 날짜별 표의 박쥐 항목(지금 1·2일차 모두 4구간 진입 때 1마리)
+        // --- 12. 시간 소환: 날짜별 표의 박쥐 항목(그날 박쥐를 직접 소환하는 첫 구간 진입 때 1마리)
         forceLook = false;
         holdTime = false;
         yield return Load("TruckScene");
@@ -774,6 +774,14 @@ public static class BatMonsterTest
     {
         MovePlayer(laneCenter);
         lookDirection = dir;
+        // 다트는 날아가는 길의 모든 몬스터·동물에 맞는다 - 맵 생성 수·배치가 바뀌어도 박쥐 대신 다른 개체가 맞지 않게,
+        // 이 검사 동안만 쏘는 길(앞 10칸, 폭 양쪽 1.5칸) 위의 맵 몬스터·동물을 끄고 끝나면 다시 켠다.
+        List<GameObject> laneBlockers = MonsterHealth.Active.Where(m => m != null).Select(m => m.gameObject)
+            .Concat(AnimalSleep.Active.Where(s => s != null).Select(s => s.gameObject))
+            .Where(g => g.activeInHierarchy && g.GetComponent<BatMonsterAI>() == null && NearSegment(GamePos(g), laneCenter, laneCenter + dir * 10f, 1.5f))
+            .Distinct().ToList();
+        foreach (GameObject g in laneBlockers) g.SetActive(false);
+        if (laneBlockers.Count > 0) sb.AppendLine($"(참고) 쏘는 길 위의 맵 개체 {laneBlockers.Count}개를 이 검사 동안 끈다: {string.Join(", ", laneBlockers.Select(g => g.name))}");
         yield return WaitFrames(3);
 
         // 굳음: 정면 3칸에서 웅크려 바닥에 내려앉은 박쥐
@@ -810,6 +818,21 @@ public static class BatMonsterTest
         Object.Destroy(a.gameObject);
         yield return WaitFrames(2);
         lookDirection = dir;
+        foreach (GameObject g in laneBlockers) if (g != null) g.SetActive(true);
+    }
+
+    // 게임 평면(x, y) 위치. 몬스터는 3D(x, z), 동물은 2D(x, y)로 움직인다.
+    private static Vector2 GamePos(GameObject g)
+    {
+        MonsterHealth m = g.GetComponent<MonsterHealth>();
+        return m != null ? m.GamePosition : (Vector2)g.transform.position;
+    }
+
+    private static bool NearSegment(Vector2 p, Vector2 a, Vector2 b, float radius)
+    {
+        Vector2 ab = b - a;
+        float t = Mathf.Clamp01(Vector2.Dot(p - a, ab) / ab.sqrMagnitude);
+        return Vector2.Distance(p, a + ab * t) <= radius;
     }
 
     // aimHeight: 몸 그림의 보이는 높이 중 겨눌 자리(0 = 아랫줄, 0.5 = 가운데, 1 = 윗줄).

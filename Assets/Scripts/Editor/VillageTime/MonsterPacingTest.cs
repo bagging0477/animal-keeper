@@ -13,10 +13,12 @@ using UnityEngine.SceneManagement;
 /// Tools > Village Time > Run Monster Pacing Test. 박람회용 2일 흐름과 날짜별 몬스터 출현 표(GameBalanceConfig.dayMonsterPlans)를 실제 씬 흐름으로 확인한다.
 /// 설정 에셋은 읽기만 한다.
 /// 검사:
-/// 0. 설정: 2일, 목표 3·5마리, 날짜별 표가 요청한 표와 같음(종류별 맵 생성 수, 구간별 추가 소환), 1구간 박쥐 소환 없음
+/// 0. 설정: 2일, 목표 3·5마리, 구간 시작 시각과 날짜별 표가 요청한 박람회 설정과 같음(종류별 맵 생성 수, 구간별 추가 소환), 1구간 소환 없음,
+///    1일차에는 코뿔소 없음. 요청한 값을 직접 적어 두는 곳은 이 0번뿐이다.
 /// 1. 날짜(1·2일차) x 시드(격자 3x4)마다: 맵 생성 종류별 수, 구간별 추가 소환 수와 시점(경계 0.5초 전에는 없고 넘으면 나옴),
-///    5구간 30초 간격과 최대치에서 더 늘지 않음, 1일차에는 호저·코뿔소가 맵 생성·시간 소환 모두에서 없음, 5구간 종류는 그날 종류 안.
-///    첫 시드는 5구간을 실제 시간(30초 간격)으로 기다리고, 나머지 시드는 간격 타이머만 앞당긴다.
+///    5구간 간격과 최대치에서 더 늘지 않음, 그날 종류가 아닌 몬스터(1일차 코뿔소)는 맵 생성·시간 소환 모두에서 없음, 5구간 종류는 그날 종류 안.
+///    1번의 기대값(수·시각·간격·최대치)은 모두 설정(dayMonsterPlans, villagePhaseStartSeconds)에서 계산한다.
+///    첫 시드는 5구간을 실제 시간(설정 간격)으로 기다리고, 나머지 시드는 간격 타이머만 앞당긴다.
 /// 2. 1일차 목표 3마리 달성 → Day 클리어, 2일차 목표 5마리 달성 → 게임 클리어 화면(ShelterScene GameClearPanel), 2일차 미달 → 게임 오버.
 /// 날짜·시드별 구간 몬스터 수 표를 보고서에 남긴다. 테스트 동안 몬스터는 기절시키고 박쥐(기절하지 않음)는 꺼 둔다 - 꺼진 개체도 센다.
 /// 프레임 시간 1/30초 고정(Time.captureDeltaTime). 시간을 빨리 보낼 때만 VillageTime 값을 직접 넣는다(리플렉션).
@@ -217,20 +219,23 @@ public static class MonsterPacingTest
     // ---- 0. 설정: 요청한 표 그대로인지
     private static void CheckConfig()
     {
-        sb.AppendLine("\n== 0. 설정 (박람회용 2일, 날짜별 표)");
+        sb.AppendLine("\n== 0. 설정 (박람회용 2일, 구간 시작 시각, 날짜별 표)");
+        float[] expectedStarts = { 0f, 120f, 240f, 360f, 420f };
+        Check(config.villagePhaseStartSeconds != null && config.villagePhaseStartSeconds.SequenceEqual(expectedStarts),
+            $"구간 시작 시각 [{string.Join(", ", config.villagePhaseStartSeconds ?? new float[0])}]초 (기대 {string.Join(", ", expectedStarts)})");
         Check(config.totalCyclesToWin == 2, $"전체 날짜 2일 (totalCyclesToWin {config.totalCyclesToWin})");
         Check(GameManager.ComputeTargetCount(1, config) == 3 && GameManager.ComputeTargetCount(2, config) == 5,
             $"목표 마릿수 1일차 {GameManager.ComputeTargetCount(1, config)}, 2일차 {GameManager.ComputeTargetCount(2, config)} (기대 3, 5)");
         Check(config.dayMonsterPlans != null && config.dayMonsterPlans.Length == 2, $"날짜별 표 {config.dayMonsterPlans?.Length}줄 (기대 2)");
 
         // 요청한 표: 맵 생성 종류별 수, 구간 2~4 진입 소환, 5구간 30초마다 1마리 최대 n마리(그날 종류에서)
-        var expectedMap = new Dictionary<int, int[]> { { 1, new[] { 3, 2, 1, 0, 0 } }, { 2, new[] { 3, 2, 1, 2, 1 } } };
+        var expectedMap = new Dictionary<int, int[]> { { 1, new[] { 4, 2, 2, 1, 0 } }, { 2, new[] { 4, 2, 2, 2, 2 } } };
         var expectedPhase = new Dictionary<int, GameObject[][]>
         {
-            { 1, new[] { new GameObject[0], new[] { wolf }, new[] { sound }, new[] { bat } } },
-            { 2, new[] { new GameObject[0], new[] { wolf }, new[] { porcupine }, new[] { bat, rhino } } },
+            { 1, new[] { new GameObject[0], new[] { wolf }, new[] { sound, bat }, new[] { porcupine } } },
+            { 2, new[] { new GameObject[0], new[] { wolf, bat }, new[] { porcupine, sound }, new[] { rhino, wolf } } },
         };
-        var expectedPhase5Max = new Dictionary<int, int> { { 1, 2 }, { 2, 3 } };
+        var expectedPhase5Max = new Dictionary<int, int> { { 1, 3 }, { 2, 4 } };
         foreach (int day in new[] { 1, 2 })
         {
             int[] map = KindCounts(config.GetMapMonsterList(day) ?? new List<GameObject>());
@@ -250,8 +255,8 @@ public static class MonsterPacingTest
                 $"{day}일차 5구간: 그날 종류에서 30초마다 1마리, 최대 {expectedPhase5Max[day]} (설정 {string.Join(", ", p5.Select(Describe))})");
         }
         List<GameObject> day1Types = config.GetDayMonsterTypes(1);
-        Check(!day1Types.Contains(porcupine) && !day1Types.Contains(rhino) && day1Types.Count == 3,
-            $"1일차에 나올 수 있는 종류: {string.Join(", ", day1Types.Select(t => Short(t.name)))} (호저·코뿔소 없음)");
+        Check(!day1Types.Contains(rhino) && day1Types.Count == 4,
+            $"1일차에 나올 수 있는 종류: {string.Join(", ", day1Types.Select(t => Short(t.name)))} (코뿔소 없음)");
         Check(config.GetDayMonsterTypes(2).Count == 5, $"2일차에 나올 수 있는 종류 {config.GetDayMonsterTypes(2).Count}가지");
     }
 
@@ -292,7 +297,7 @@ public static class MonsterPacingTest
             row.Add($"{phase}구간 {Fmt(Total())}");
         }
 
-        // 5구간: 들어갈 때는 0, 그 뒤 30초마다 1마리씩 최대치까지, 그 뒤로는 늘지 않는다.
+        // 5구간: 들어갈 때는 0, 그 뒤 설정 간격마다 1마리씩 최대치까지, 그 뒤로는 늘지 않는다.
         GameBalanceConfig.VillageSpawnEntry p5 = config.GetVillagePhaseSpawns(day, 5).FirstOrDefault();
         int max = p5 != null ? p5.count : 0;
         float interval = p5 != null ? p5.intervalSeconds : 30f;
@@ -303,7 +308,7 @@ public static class MonsterPacingTest
         Check(gm.VillagePhase == 5 && Issued5() == 0, $"{tag}: 5구간 진입({gm.VillageTime:F1}초) 때는 소환 없음 (발급 {Issued5()})");
         if (realWaitPhase5)
         {
-            // 실제 시간으로 기다린다: k번째는 진입 + k x 30초에 나온다.
+            // 실제 시간으로 기다린다: k번째는 진입 + k x 간격에 나온다.
             for (int k = 1; k <= max; k++)
             {
                 float due = phase5Start + k * interval;
@@ -335,10 +340,12 @@ public static class MonsterPacingTest
             $"{tag}: 5구간 종류가 그날 종류 안 ({string.Join(", ", p5Objects.Select(m => Short(Kind(m.name))))})");
         row.Add($"5구간 끝 {Fmt(Total())} (5구간: {string.Join("·", p5Objects.Select(m => Short(Kind(m.name))))})");
 
-        if (day == 1)
+        // 그날 종류(맵 생성 + 구간 소환에 적힌 프리팹)가 아닌 몬스터는 맵 생성·시간 소환 모두에서 나오지 않는다(1일차 코뿔소).
         {
             int[] all = Total();
-            Check(all[3] == 0 && all[4] == 0, $"{tag}: 하루 동안 호저 {all[3]}, 코뿔소 {all[4]} (맵 생성·시간 소환 모두 없음)");
+            List<int> absent = Enumerable.Range(0, kindNames.Length).Where(i => !dayTypes.Any(t => t.name == kindNames[i])).ToList();
+            Check(absent.All(i => all[i] == 0),
+                $"{tag}: 그날 종류가 아닌 몬스터 없음 ({(absent.Count == 0 ? "해당 없음" : string.Join(", ", absent.Select(i => $"{ShortNames[i]} {all[i]}")))})");
         }
         Check(SceneManager.GetActiveScene().name == "VillageScene" && !gm.IsGameOver, $"{tag}: 패배나 강제 복귀 없음");
         table.Add(string.Join(" | ", row));

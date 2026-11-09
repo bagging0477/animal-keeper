@@ -12,7 +12,8 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// Tools > Village Time > Run Village Time Test. 마을 시간(GameManager.VillageTime/VillagePhase/OnVillagePhaseChanged)을 실제 씬 흐름으로 확인한다.
 /// 검사: 마을에서만 흐름(타이틀·클래스 선택·트럭·보호소에서는 그대로), ESC 일시정지 중 멈춤, 같은 Day 재진입에서 이어짐, ResetDay/ResetGame에서 0,
-/// 시작 시각 0·180·360·540·600초에서 구간이 바뀌고 이벤트가 한 번씩만 남, 5구간 유지, 큰 시간 점프에도 구간이 맞고 이벤트·자막이 마지막 구간 하나만,
+/// 설정(villagePhaseStartSeconds)의 구간 시작 시각에서 구간이 바뀌고 이벤트가 한 번씩만 남, 5구간 유지, 큰 시간 점프에도 구간이 맞고 이벤트·자막이 마지막 구간 하나만,
+/// 검사에 쓰는 시각은 모두 설정의 시작 시각에서 계산한다(시작 시각 값 자체는 MonsterPacingTest가 박람회 설정으로 본다).
 /// 알림은 구간이 바뀔 때만(1구간 시작·재진입·초기화에는 없음), 패배가 일어나지 않음.
 /// 프레임 시간은 1/30초로 고정한다(Time.captureDeltaTime). 시간을 빨리 보낼 때만 테스트 안에서 VillageTime 값을 직접 넣는다(리플렉션).
 /// 테스트 동안 마을 몬스터는 끈다(씬 파일은 바꾸지 않는다). 결과: Logs/VillageTimeTest.txt
@@ -204,8 +205,22 @@ public static class VillageTimeTest
         // --- 0. 시각 → 구간 계산
         sb.AppendLine("\n== 0. 시각 → 구간 (GameManager.ComputeVillagePhase)");
         Check(starts != null && starts.Length == GameManager.VillagePhaseCount, $"구간 시작 시각이 {GameManager.VillagePhaseCount}개");
-        Check(starts != null && starts.SequenceEqual(new[] { 0f, 180f, 360f, 540f, 600f }), "기본값이 0, 180, 360, 540, 600초");
-        foreach ((float t, int expected) in new[] { (0f, 1), (179.99f, 1), (180f, 2), (359.99f, 2), (360f, 3), (539.99f, 3), (540f, 4), (599.99f, 4), (600f, 5), (1000f, 5), (100000f, 5) })
+        if (starts == null || starts.Length != GameManager.VillagePhaseCount)
+        {
+            Finish();
+            yield break;
+        }
+        Check(starts[0] == 0f && Enumerable.Range(1, starts.Length - 1).All(i => starts[i] > starts[i - 1]), $"0초에서 시작하고 오름차순 [{string.Join(", ", starts)}]");
+        // 경계마다 바로 앞(0.01초 전)은 앞 구간, 시작 시각부터는 그 구간. 마지막 구간 뒤로 먼 시각도 5구간.
+        var boundaryCases = new List<(float t, int expected)> { (0f, 1) };
+        for (int p = 2; p <= GameManager.VillagePhaseCount; p++)
+        {
+            boundaryCases.Add((starts[p - 1] - 0.01f, p - 1));
+            boundaryCases.Add((starts[p - 1], p));
+        }
+        boundaryCases.Add((starts[4] + 400f, 5));
+        boundaryCases.Add((100000f, 5));
+        foreach ((float t, int expected) in boundaryCases)
         {
             int got = GameManager.ComputeVillagePhase(t, config);
             Check(got == expected, $"{t}초 → {got}구간 (기대 {expected})");
@@ -259,11 +274,12 @@ public static class VillageTimeTest
         sb.AppendLine("\n== 5. 시작 시각에서 구간이 바뀌고 이벤트·알림이 한 번씩");
         for (int p = 2; p <= 5; p++) yield return CrossBoundary(gm, config, p, starts[p - 1]);
 
-        sb.AppendLine("\n== 6. 600초 이후 5구간 유지");
+        sb.AppendLine($"\n== 6. {starts[4]}초 이후 5구간 유지");
         ClearObserved();
-        SetTime(gm, 5000f);
+        float farInPhase5 = starts[4] + 4400f;
+        SetTime(gm, farInPhase5);
         yield return WaitFrames(30);
-        Check(gm.VillagePhase == 5 && events.Count == 0 && noticesSeen.Count == 0, $"5000초: 구간 {gm.VillagePhase}, 이벤트 {events.Count}, 알림 {noticesSeen.Count}");
+        Check(gm.VillagePhase == 5 && events.Count == 0 && noticesSeen.Count == 0, $"{farInPhase5}초: 구간 {gm.VillagePhase}, 이벤트 {events.Count}, 알림 {noticesSeen.Count}");
 
         // --- 7. 같은 Day 재진입
         sb.AppendLine("\n== 7. 같은 Day 재진입에서 시간이 이어진다 (알림 없음)");
@@ -294,9 +310,10 @@ public static class VillageTimeTest
         yield return CrossBoundary(gm, config, 2, starts[1]);
 
         ClearObserved();
-        SetTime(gm, 550f); // 2구간 → 4구간 (3구간을 한 프레임에 건너뛴다)
+        float midPhase4 = (starts[3] + starts[4]) * 0.5f;
+        SetTime(gm, midPhase4); // 2구간 → 4구간 (3구간을 한 프레임에 건너뛴다)
         yield return WaitFrames(15);
-        Check(gm.VillagePhase == 4, $"550초로 점프: 구간 {gm.VillagePhase} (기대 4)");
+        Check(gm.VillagePhase == 4, $"{midPhase4}초로 점프: 구간 {gm.VillagePhase} (기대 4)");
         Check(events.Count == 1 && events[0].Phase == 4, $"이벤트 한 번, 4구간 ({Describe(events)})");
         Check(noticesSeen.SequenceEqual(new[] { Notice(4, config) }), $"자막은 4구간 문구 하나만 ([{string.Join(" | ", noticesSeen)}])");
 
@@ -308,7 +325,7 @@ public static class VillageTimeTest
 
         // --- 9. ResetGame (5구간에서)
         sb.AppendLine("\n== 9. 진행된 시간에서 ResetGame → 0");
-        SetTime(gm, 700f);
+        SetTime(gm, starts[4] + 100f);
         yield return WaitFrames(3);
         Check(gm.VillagePhase == 5, $"ResetGame 전 구간 {gm.VillagePhase}");
         yield return Load("TruckScene");
