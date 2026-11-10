@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -6,7 +7,9 @@ using UnityEngine.UI;
 /// <summary>TruckScene(캠핑카) 소파의 허브 지점. E로 상호작용하면 "다음 날로" 버튼이 있는 메뉴를 띄운다 -
 /// 하루를 끝내는 동작이라 문(TruckStartPoint)의 "구조 시작"처럼 E 한 번으로 바로 실행되지 않고, 버튼으로
 /// 한 번 더 확인받는다. 예전의 "다음 날로" 전용 지점(NextDayPoint)은 이 허브로 통합됐다. 메뉴가 떠 있는
-/// 동안에는 GameOverPanel과 같은 방식으로 시간을 멈춰 플레이어가 메뉴를 띄운 채 걸어가 버리지 않게 한다.</summary>
+/// 동안에는 GameOverPanel과 같은 방식으로 시간을 멈춰 플레이어가 메뉴를 띄운 채 걸어가 버리지 않게 한다.
+/// 오늘 목표를 못 채운 채 [다음 날로]를 누르면 바로 게임 오버로 가지 않고 확인 창(confirmPanel)을 띄운다 - [확인]이면
+/// 예전처럼 게임 오버, [취소]·E·ESC면 창과 메뉴를 닫고 트럭에 그대로 있다.</summary>
 public class TruckHubPoint : MonoBehaviour
 {
     [SerializeField] private float interactionRange = 2.1f;
@@ -15,14 +18,32 @@ public class TruckHubPoint : MonoBehaviour
     [SerializeField] private GameObject menuPanel;
     [SerializeField] private Button nextDayButton;
     [SerializeField] private GameOverPanel gameOverPanel;
+    [Header("목표 미달 확인 창")]
+    [SerializeField] private GameObject confirmPanel;
+    [SerializeField] private TMP_Text confirmMessage;
+    [SerializeField] private Button confirmButton;
+    [SerializeField] private Button cancelButton;
 
     private Transform player;
     private bool menuOpen;
+    private bool confirmOpen;
+
+    /// <summary>소파 메뉴가 열려 있는지.</summary>
+    public bool IsMenuOpen => menuOpen;
+
+    /// <summary>목표 미달 확인 창이 떠 있는지.</summary>
+    public bool IsConfirmOpen => confirmOpen;
+
+    /// <summary>확인 창 문구. remaining은 목표까지 남은 마릿수.</summary>
+    public static string ConfirmText(int remaining) => $"아직 {remaining}마리 남았어요. 지금 끝내면 실패예요!";
 
     private void Awake()
     {
         if (nextDayButton != null) nextDayButton.onClick.AddListener(OnNextDay);
+        if (confirmButton != null) confirmButton.onClick.AddListener(OnConfirmFail);
+        if (cancelButton != null) cancelButton.onClick.AddListener(CloseAll);
         if (menuPanel != null) menuPanel.SetActive(false);
+        if (confirmPanel != null) confirmPanel.SetActive(false);
     }
 
     private void Start()
@@ -45,6 +66,7 @@ public class TruckHubPoint : MonoBehaviour
         if (menuOpen)
         {
             menuOpen = false;
+            confirmOpen = false;
             Time.timeScale = 1f;
         }
     }
@@ -52,6 +74,13 @@ public class TruckHubPoint : MonoBehaviour
     private void Update()
     {
         Keyboard kb = GameplayInput.IsBlocked ? null : Keyboard.current;
+
+        if (confirmOpen)
+        {
+            // 확인 창에서는 E·ESC가 [취소]와 같다 - 실수로 게임 오버가 되지 않게 한다.
+            if (kb != null && (kb.eKey.wasPressedThisFrame || kb.escapeKey.wasPressedThisFrame)) CloseAll();
+            return;
+        }
 
         if (menuOpen)
         {
@@ -100,25 +129,58 @@ public class TruckHubPoint : MonoBehaviour
     /// 출구(ShelterExitPoint)에서만 일어난다.</summary>
     private void OnNextDay()
     {
-        if (!menuOpen) return;
-        CloseMenu();
+        if (!menuOpen || confirmOpen) return;
 
         if (GameManager.Instance != null && GameManager.Instance.IsGameOver)
         {
             // 이미 실패가 확정되어 게임 오버 화면이 떠 있는 상태 - 재시작은 GameOverPanel의 버튼 몫이고,
             // FinishCycle을 또 불러 사이클을 헛돌리지도 않는다.
+            CloseMenu();
             return;
         }
 
         if (GameManager.Instance != null && GameManager.Instance.RescuedCount < GameManager.Instance.TargetCount)
         {
-            GameManager.Instance.FinishCycle();
-            AudioManager.Instance?.PlayDayFail();
-            if (gameOverPanel != null) gameOverPanel.Show();
+            // 목표 미달: 바로 게임 오버로 가지 않고 확인 창을 띄운다(시간은 메뉴처럼 멈춘 채). 창이 없으면 예전처럼 바로 진행한다.
+            if (confirmPanel != null)
+            {
+                OpenConfirm(GameManager.Instance.TargetCount - GameManager.Instance.RescuedCount);
+                return;
+            }
+            OnConfirmFail();
             return;
         }
 
+        CloseMenu();
         if (!SceneTransitionGuard.TryBeginTransition()) return;
         SceneManager.LoadScene(shelterSceneName);
+    }
+
+    private void OpenConfirm(int remaining)
+    {
+        confirmOpen = true;
+        if (confirmMessage != null) confirmMessage.text = ConfirmText(remaining);
+        if (menuPanel != null) menuPanel.SetActive(false);
+        confirmPanel.transform.SetAsLastSibling();
+        confirmPanel.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    // 확인 창의 [확인]: 예전 목표 미달 처리 그대로(오늘을 마감하고 게임 오버 화면).
+    private void OnConfirmFail()
+    {
+        if (!menuOpen) return;
+        CloseAll();
+        GameManager.Instance.FinishCycle();
+        AudioManager.Instance?.PlayDayFail();
+        if (gameOverPanel != null) gameOverPanel.Show();
+    }
+
+    // 확인 창의 [취소]·E·ESC: 창과 메뉴를 닫고 트럭에 그대로 있는다.
+    private void CloseAll()
+    {
+        confirmOpen = false;
+        if (confirmPanel != null) confirmPanel.SetActive(false);
+        CloseMenu();
     }
 }

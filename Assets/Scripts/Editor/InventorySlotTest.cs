@@ -229,7 +229,7 @@ public static class InventorySlotTest
         yield return PickUpAnimal(gm);
         int animalSlot = FindSlot(gm, InventoryItemType.Animal);
         Check(animalSlot == 0, $"동물이 빈 1번 칸에 들어감: {Describe(gm)}");
-        yield return DeliverAnimal(gm, Key.Digit1 + animalSlot, animalSlot);
+        yield return DeliverAnimal(gm, animalSlot);
 
         // ================= 패시브 구매 =================
         sb.AppendLine("\n== 인벤토리 칸 +1 구매");
@@ -290,7 +290,7 @@ public static class InventorySlotTest
         sb.AppendLine("  -- 6번째 칸 동물 납품");
         yield return PickUpAnimal(gm);
         Check(gm.GetSlot(5).Type == InventoryItemType.Animal, $"동물이 6번째 칸에: {Describe(gm)}");
-        yield return DeliverAnimal(gm, Key.Digit6, 5);
+        yield return DeliverAnimal(gm, 5);
 
         // ================= 화면 겹침 =================
         sb.AppendLine("\n== 화면 겹침 (6칸, 거너 무기 슬롯 표시)");
@@ -408,21 +408,24 @@ public static class InventorySlotTest
         Check(!animal.gameObject.activeSelf, $"동물 줍기 (E): {before} → {Describe(gm)}");
     }
 
-    private static IEnumerator DeliverAnimal(GameManager gm, Key selectKey, int slot)
+    // 납품은 칸 선택과 상관없이 E 한 번에 동물을 모두 맡긴다(AnimalDeliveryPoint) - 숫자키를 누르지 않고, 동물이 아닌 칸·선택 칸은 그대로인지도 본다.
+    private static IEnumerator DeliverAnimal(GameManager gm, int slot)
     {
         yield return Load("TruckScene");
-        AnimalDeliveryPoint cage = Object.FindAnyObjectByType<AnimalDeliveryPoint>();
+        AnimalDeliveryPoint clerk = Object.FindAnyObjectByType<AnimalDeliveryPoint>();
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (cage == null || player == null) { Check(false, "TruckScene에 납품 케이지나 플레이어가 없다"); yield break; }
+        if (clerk == null || player == null) { Check(false, "TruckScene에 납품 직원이나 플레이어가 없다"); yield break; }
 
-        yield return Press(selectKey);
         int rescuedBefore = gm.RescuedCount;
+        int selectedBefore = gm.SelectedSlotIndex;
         string before = Describe(gm);
-        Teleport(player, cage.transform.position);
+        string othersBefore = string.Join(",", Enumerable.Range(0, gm.InventorySlotCount).Where(i => i != slot).Select(i => gm.GetSlot(i).Type));
+        Teleport(player, clerk.transform.position + new Vector3(-1.2f, -0.2f, 0f));
         yield return WaitFrames(3);
         yield return Press(Key.E);
-        Check(gm.GetSlot(slot).Type == InventoryItemType.None && gm.RescuedCount == rescuedBefore + 1,
-            $"{slot + 1}번 칸 동물 납품 (선택 {gm.SelectedSlotIndex + 1}번, E): {before} → {Describe(gm)}, 구조 {rescuedBefore} → {gm.RescuedCount}");
+        string othersAfter = string.Join(",", Enumerable.Range(0, gm.InventorySlotCount).Where(i => i != slot).Select(i => gm.GetSlot(i).Type));
+        Check(gm.GetSlot(slot).Type == InventoryItemType.None && gm.RescuedCount == rescuedBefore + 1 && othersAfter == othersBefore && gm.SelectedSlotIndex == selectedBefore,
+            $"{slot + 1}번 칸 동물 납품 (숫자키 없이 E, 선택 {selectedBefore + 1}번 그대로): {before} → {Describe(gm)}, 구조 {rescuedBefore} → {gm.RescuedCount}");
     }
 
     private static void Teleport(GameObject player, Vector3 position)

@@ -615,6 +615,36 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>인벤토리에 든 동물(몬스터 시체 포함) 칸 수. 지뢰·폭탄은 세지 않는다.</summary>
+    public int CarriedAnimalCount
+    {
+        get
+        {
+            int count = 0;
+            foreach (InventorySlotData slot in inventorySlots)
+                if (slot.Type == InventoryItemType.Animal) count++;
+            return count;
+        }
+    }
+
+    /// <summary>선택과 상관없이 인벤토리의 동물(몬스터 시체 포함)을 모두 납품한다. 칸 순서대로 한 마리씩
+    /// TryDeliverSelectedAnimal과 같은 처리(화물 적재 + 오늘 구조 기록 + 칸 비우기)를 하므로 마릿수·무게·정산 결과는
+    /// 한 마리씩 맡긴 것과 같다. 지뢰·폭탄 칸과 선택 칸은 그대로 둔다. 맡긴 마릿수를 돌려준다.</summary>
+    public int DeliverAllAnimals()
+    {
+        int delivered = 0;
+        for (int i = 0; i < inventorySlots.Count; i++)
+        {
+            InventorySlotData slot = inventorySlots[i];
+            if (slot.Type != InventoryItemType.Animal) continue;
+            AddCargo(slot.AnimalWeight);
+            MarkAnimalRescuedToday(slot.AnimalId);
+            inventorySlots[i] = InventorySlotData.Empty;
+            delivered++;
+        }
+        return delivered;
+    }
+
     /// <summary>현재 선택된 "일반" 슬롯(숫자키 칸)의 아이템을 꺼내 슬롯을 비운다. 무기 슬롯은 이 배열에
     /// 아예 들어있지 않으므로(클래스에 고정된 별도 장비) G로는 절대 버릴 수 없다.</summary>
     public bool TryDropSelectedItem(out InventorySlotData dropped)
