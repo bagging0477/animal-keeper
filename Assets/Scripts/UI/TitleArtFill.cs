@@ -8,6 +8,8 @@ using UnityEngine.UI;
 /// 예전처럼 원본 비율 그대로 화면 안에 맞춘다(FitInParent, 좌우 여백).
 /// AnimalKeeperNight 스크립트는 바꾸지 않는다 - 같은 오브젝트(AnimalKeeperNightRoot)에 붙여 그 스크립트가 만든 판의 맞춤 방식만 바꾼다.
 /// 그림 배치는 AnimalKeeperNight가 판 크기(surface.rect.width / 480)로 매 프레임 다시 하므로 따로 손대지 않는다.
+/// 낮 버전(AnimalKeeperTitle, AnimalKeeperTitleRoot)에도 같은 방식으로 붙인다. 낮 그림에는 헤드라이트가 없으므로 씬에서
+/// mustShowArea를 x 64~323(트럭 그림 왼쪽 끝 72 - 8부터 따라잡힌 뒤 트럭 오른쪽 끝 약 231 - 8 + 100까지), y 37~264로 둔다.
 /// </summary>
 public class TitleArtFill : MonoBehaviour
 {
