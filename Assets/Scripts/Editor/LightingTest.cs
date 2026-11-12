@@ -279,7 +279,7 @@ public static class LightingTest
         sb.AppendLine("\n== 2. 시야 밖 몬스터: 몸·눈 모두 안 보임 / 3. 시야 안 몬스터: 눈이 빛남 (Field, 플레이어는 오른쪽을 봄)");
         object field = RoomOf("Room_Field");
         Vector2 back = new Vector2(-5.5f, 0f), front = new Vector2(3.4f, 0.3f);
-        Vector2 pp = PickSpot(field, new[] { back, front }, 3f + config.truckVisionRadius + 6f);
+        Vector2 pp = PickSpot(field, new[] { back, front }, config.ambientVisionRadius + config.truckVisionRadius + 6f);
         yield return PlacePlayer(pp, Vector2.right);
         foreach (string path in MonsterPrefabs)
         {
