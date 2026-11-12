@@ -13,13 +13,13 @@ using UnityEngine.SceneManagement;
 /// Tools > Village Time > Run Monster Pacing Test. 박람회용 2일 흐름과 날짜별 몬스터 출현 표(GameBalanceConfig.dayMonsterPlans)를 실제 씬 흐름으로 확인한다.
 /// 설정 에셋은 읽기만 한다.
 /// 검사:
-/// 0. 설정: 2일, 목표 3·5마리, 구간 시작 시각과 날짜별 표가 요청한 박람회 설정과 같음(종류별 맵 생성 수, 구간별 추가 소환), 1구간 소환 없음,
+/// 0. 설정: 2일, 목표 5·10마리, 구간 시작 시각과 날짜별 표가 요청한 박람회 설정과 같음(종류별 맵 생성 수, 구간별 추가 소환), 1구간 소환 없음,
 ///    1일차에는 코뿔소 없음. 요청한 값을 직접 적어 두는 곳은 이 0번뿐이다.
 /// 1. 날짜(1·2일차) x 시드(격자 3x4)마다: 맵 생성 종류별 수, 구간별 추가 소환 수와 시점(경계 0.5초 전에는 없고 넘으면 나옴),
 ///    5구간 간격과 최대치에서 더 늘지 않음, 그날 종류가 아닌 몬스터(1일차 코뿔소)는 맵 생성·시간 소환 모두에서 없음, 5구간 종류는 그날 종류 안.
 ///    1번의 기대값(수·시각·간격·최대치)은 모두 설정(dayMonsterPlans, villagePhaseStartSeconds)에서 계산한다.
 ///    첫 시드는 5구간을 실제 시간(설정 간격)으로 기다리고, 나머지 시드는 간격 타이머만 앞당긴다.
-/// 2. 1일차 목표 3마리 달성 → Day 클리어, 2일차 목표 5마리 달성 → 게임 클리어 화면(ShelterScene GameClearPanel), 2일차 미달 → 게임 오버.
+/// 2. 1일차 목표(5마리) 달성 → Day 클리어, 2일차 목표(10마리) 달성 → 게임 클리어 화면(ShelterScene GameClearPanel), 2일차 미달 → 게임 오버.
 /// 날짜·시드별 구간 몬스터 수 표를 보고서에 남긴다. 테스트 동안 몬스터는 기절시키고 박쥐(기절하지 않음)는 꺼 둔다 - 꺼진 개체도 센다.
 /// 프레임 시간 1/30초 고정(Time.captureDeltaTime). 시간을 빨리 보낼 때만 VillageTime 값을 직접 넣는다(리플렉션).
 /// 결과: Logs/MonsterPacingTest.txt / batchmode: -executeMethod MonsterPacingTest.RunBatch (통과면 0 아니면 1)
@@ -224,8 +224,8 @@ public static class MonsterPacingTest
         Check(config.villagePhaseStartSeconds != null && config.villagePhaseStartSeconds.SequenceEqual(expectedStarts),
             $"구간 시작 시각 [{string.Join(", ", config.villagePhaseStartSeconds ?? new float[0])}]초 (기대 {string.Join(", ", expectedStarts)})");
         Check(config.totalCyclesToWin == 2, $"전체 날짜 2일 (totalCyclesToWin {config.totalCyclesToWin})");
-        Check(GameManager.ComputeTargetCount(1, config) == 3 && GameManager.ComputeTargetCount(2, config) == 5,
-            $"목표 마릿수 1일차 {GameManager.ComputeTargetCount(1, config)}, 2일차 {GameManager.ComputeTargetCount(2, config)} (기대 3, 5)");
+        Check(GameManager.ComputeTargetCount(1, config) == 5 && GameManager.ComputeTargetCount(2, config) == 10,
+            $"목표 마릿수 1일차 {GameManager.ComputeTargetCount(1, config)}, 2일차 {GameManager.ComputeTargetCount(2, config)} (기대 5, 10)");
         Check(config.dayMonsterPlans != null && config.dayMonsterPlans.Length == 2, $"날짜별 표 {config.dayMonsterPlans?.Length}줄 (기대 2)");
 
         // 요청한 표: 맵 생성 종류별 수, 구간 2~4 진입 소환, 5구간 30초마다 1마리 최대 n마리(그날 종류에서)
@@ -354,32 +354,33 @@ public static class MonsterPacingTest
     // ---- 2. 2일 흐름과 클리어 화면
     private static IEnumerator ClearFlow()
     {
-        sb.AppendLine("\n== 2. 2일 흐름: 1일차 3마리 → Day 클리어, 2일차 5마리 → 게임 클리어, 2일차 미달 → 게임 오버");
+        int day1Target = GameManager.ComputeTargetCount(1, config), day2Target = GameManager.ComputeTargetCount(2, config);
+        sb.AppendLine($"\n== 2. 2일 흐름: 1일차 {day1Target}마리 → Day 클리어, 2일차 {day2Target}마리 → 게임 클리어, 2일차 미달 → 게임 오버");
         yield return Load("TruckScene");
         gm.ResetGame();
         RestartClass();
-        Check(gm.CycleCount == 1 && gm.TargetCount == 3 && gm.TotalCyclesToWin == 2, $"1일차 목표 {gm.TargetCount}, 전체 {gm.TotalCyclesToWin}일");
+        Check(gm.CycleCount == 1 && gm.TargetCount == day1Target && gm.TotalCyclesToWin == 2, $"1일차 목표 {gm.TargetCount}, 전체 {gm.TotalCyclesToWin}일");
 
-        for (int i = 0; i < 3; i++) gm.AddCargo(5);
+        for (int i = 0; i < day1Target; i++) gm.AddCargo(5);
         yield return Load("ShelterScene");
         ShelterSettlement settlement = Object.FindAnyObjectByType<ShelterSettlement>();
         bool proceed1 = settlement != null && settlement.EvaluateCycleEnd();
         DayClearPanel dayClear = Object.FindAnyObjectByType<DayClearPanel>(FindObjectsInactive.Include);
         GameClearPanel gameClear = Object.FindAnyObjectByType<GameClearPanel>(FindObjectsInactive.Include);
-        Check(settlement != null && !gm.IsGameWon && !gm.IsGameOver && gm.CycleCount == 2 && gm.TargetCount == 5,
+        Check(settlement != null && !gm.IsGameWon && !gm.IsGameOver && gm.CycleCount == 2 && gm.TargetCount == day2Target,
             $"1일차 마감: 클리어 {gm.IsGameWon}, 게임 오버 {gm.IsGameOver}, 다음 날 Day {gm.CycleCount} 목표 {gm.TargetCount}");
         Check((dayClear != null && dayClear.gameObject.activeSelf) || proceed1, $"1일차 마감 화면: Day 클리어 패널 {(dayClear != null ? dayClear.gameObject.activeSelf.ToString() : "없음")}");
         Check(gameClear != null && !gameClear.gameObject.activeSelf, "1일차에는 게임 클리어 화면이 뜨지 않는다");
         Time.timeScale = 1f;
 
         yield return Load("TruckScene");
-        for (int i = 0; i < 5; i++) gm.AddCargo(5);
+        for (int i = 0; i < day2Target; i++) gm.AddCargo(5);
         yield return Load("ShelterScene");
         settlement = Object.FindAnyObjectByType<ShelterSettlement>();
         bool proceed2 = settlement != null && settlement.EvaluateCycleEnd();
         gameClear = Object.FindAnyObjectByType<GameClearPanel>(FindObjectsInactive.Include);
         TMPro.TMP_Text message = gameClear != null ? (TMPro.TMP_Text)typeof(GameClearPanel).GetField("messageText", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(gameClear) : null;
-        Check(!proceed2 && gm.IsGameWon && !gm.IsGameOver && gm.CycleCount == 2, $"2일차 5마리 마감: 게임 클리어 {gm.IsGameWon}, Day {gm.CycleCount} 그대로");
+        Check(!proceed2 && gm.IsGameWon && !gm.IsGameOver && gm.CycleCount == 2, $"2일차 {day2Target}마리 마감: 게임 클리어 {gm.IsGameWon}, Day {gm.CycleCount} 그대로");
         Check(gameClear != null && gameClear.gameObject.activeInHierarchy && Time.timeScale == 0f,
             $"게임 클리어 화면이 떴다 (켜짐 {gameClear?.gameObject.activeInHierarchy}, timeScale {Time.timeScale})");
         Check(message != null && message.text.Contains("2일"), $"클리어 문구: \"{message?.text}\"");
@@ -390,9 +391,9 @@ public static class MonsterPacingTest
         gm.ResetGame();
         RestartClass();
         gm.ResetDay();
-        for (int i = 0; i < 4; i++) gm.AddCargo(5);
+        for (int i = 0; i < day2Target - 1; i++) gm.AddCargo(5);
         GameManager.CycleOutcome fail = gm.FinishCycle();
-        Check(!fail.TargetMet && !fail.GameWon && gm.IsGameOver && !gm.IsGameWon, $"2일차 4/5마리: 게임 오버 {gm.IsGameOver}, 클리어 {gm.IsGameWon}");
+        Check(!fail.TargetMet && !fail.GameWon && gm.IsGameOver && !gm.IsGameWon, $"2일차 {day2Target - 1}/{day2Target}마리: 게임 오버 {gm.IsGameOver}, 클리어 {gm.IsGameWon}");
         gm.ResetGame();
         RestartClass();
     }

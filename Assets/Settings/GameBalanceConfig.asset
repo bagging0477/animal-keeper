@@ -134,8 +134,8 @@ MonoBehaviour:
   sprintStaminaDrainPerSecond: 18
   staminaRegenPerSecond: 15
   staminaExhaustionCooldown: 1.5
-  targetRescueCount: 3
-  targetRescueIncreasePerDay: 2
+  targetRescueCount: 5
+  targetRescueIncreasePerDay: 5
   totalCyclesToWin: 2
   villagePhaseStartSeconds:
   - 0

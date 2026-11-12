@@ -279,6 +279,10 @@ public static class TutorialGuideTest
         AnimalDeliveryPoint clerk = Object.FindAnyObjectByType<AnimalDeliveryPoint>();
         yield return Teleport(clerk.transform.position + new Vector3(-1.2f, -0.2f, 0f));
         yield return Press(Key.E);
+        // 가방(동물 칸)이 목표보다 작으면 한 번에 다 못 맡긴다 - 모자란 수는 앞서 다녀온 순찰에서 맡긴 것으로 친다.
+        int bagDelivered = gm.RescuedCount;
+        while (gm.RescuedCount < gm.TargetCount) gm.AddCargo(5);
+        if (gm.RescuedCount > bagDelivered) sb.AppendLine($"  (참고) 가방으로 {bagDelivered}마리 맡김, 목표 {gm.TargetCount}까지 {gm.RescuedCount - bagDelivered}마리는 앞 순찰분으로 채움");
         yield return WaitRealtime(0.7f);
         yield return WaitFrames(2);
         Check(guide.IsDone(7) && gm.RescuedCount >= gm.TargetCount && guide.IsShowing && guide.CurrentStep == 8, $"E로 모두 맡김(구조 {gm.RescuedCount}/{gm.TargetCount}): {Now()}");
