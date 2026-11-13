@@ -23,13 +23,21 @@ using UnityEngine.SceneManagement;
 /// 3. 240초·300초·400초: 해질녘을 끈(지금 밤) 그림과 픽셀까지 같고 라이트 값이 밤 값과 같다. 2와 같은 화면·판정 검사도 한다.
 /// 4. 밝을 때(0초) 박쥐: 원형 시야 안(판정 보임)이어도 손전등 밖이면 멈추지 않고, 손전등 정면이면 멈춘다.
 /// 5. 트럭에 다녀와도 시간이 이어지고 밝기가 그 시간을 따른다. 다음 날(ResetDay, 2일차)은 0초 해질녘부터 같은 연출.
+/// 6. 시간별 색(약·중·강): 원형 시야 빛 색과 화면에 더하는 색이 0초 주황 노을 → 120초 분홍 보라 황혼 → 240초 밤 색(구간 색)으로 바뀐다.
+/// 7. 노을빛 속 색 구분(프로젝트 세기, 지금 '약'): 0·60·120·180·240초에 늑대·동물·플레이어의 화면 평균 색 사이 거리가,
+///    같은 시각 노을 색을 뺀 빛(세기 0 = 밤 빛 색·해질녘 끝 어둠 색, 반경·밝기는 같음)에서의 거리의 70% 이상이다(노을빛이 구분을 크게 해치지 않는다).
 /// 그림: Field(위 줄)와 숲(아래 줄)에서 0·60·120·180·240초(왼쪽부터). 플레이어는 오른쪽을 보고, 왼쪽 뒤 6.5칸에 늑대, 아래 왼쪽 5칸에 동물.
+/// 노을 그림(Logs/Dusk/sunset/dusk_sunset_strengths.png): 위에서부터 약 Field·약 숲·중 Field·중 숲·강 Field·강 숲, 왼쪽부터 0·60·120·180·240초.
+///   가까운 늑대(왼쪽 위 3칸)·동물(왼쪽 아래 3칸)은 늘 시야 안, 먼 늑대(왼쪽 10칸)는 0·60초에만 시야 안.
 /// </summary>
 [InitializeOnLoad]
 public static class DuskTest
 {
     private const string ReportPath = "Logs/DuskTest.txt";
     private const string ImagePath = "Logs/Dusk/dusk_field_forest.png";
+    private const string SunsetImagePath = "Logs/Dusk/sunset/dusk_sunset_strengths.png";
+    private const int SunsetTileW = 768, SunsetTileH = 432;
+    private const float DistinctMinRatio = 0.7f;
     private const string KeyActive = "DT.Active", KeyBatch = "DT.Batch", KeyDone = "DT.Done", KeyPassed = "DT.Passed";
     private const int Seed = 2;
     private const int W = 1920, H = 1080;
@@ -54,6 +62,7 @@ public static class DuskTest
     private static InputSettings.EditorInputBehaviorInPlayMode savedEditorBehavior;
     private static IList rooms;
     private static float savedDuskDuration = -1f;
+    private static GameBalanceConfig.DuskColorStrength? savedStrength;
 
     private static readonly MethodInfo LookSetter = typeof(PlayerMovement).GetProperty(nameof(PlayerMovement.LookDirection)).GetSetMethod(true);
     private static readonly MethodInfo VillageTimeSetter = typeof(GameManager).GetProperty(nameof(GameManager.VillageTime)).GetSetMethod(true);
@@ -123,6 +132,7 @@ public static class DuskTest
     {
         Application.logMessageReceived -= OnLog;
         RestoreDusk();
+        RestoreStrength();
         Time.captureDeltaTime = 0f;
         Time.timeScale = 1f;
         VillageMapGenerator.EditorLayoutOverride = null;
@@ -229,10 +239,13 @@ public static class DuskTest
         yield return EnterVillage(true);
 
         yield return Settings();
+        yield return DuskColors();
+        yield return Distinct();
         yield return TimeSteps();
         yield return NightEqualsOld();
         yield return BatWhenBright();
         yield return Strip();
+        yield return SunsetStrip();
         yield return TruckAndNextDay();
     }
 
@@ -267,7 +280,10 @@ public static class DuskTest
         sb.AppendLine("\n== 1. 설정과 시간별 라이트 값 (트래퍼)");
         Check(Mathf.Approximately(config.duskDurationSeconds, 240f) && Mathf.Approximately(config.duskStartAmbientVisionRadius, 14f) && Mathf.Approximately(config.duskStartLightIntensity, 1f),
             $"GameBalanceConfig: 어두워지는 시간 {config.duskDurationSeconds}초, 시작 시야 반경 {config.duskStartAmbientVisionRadius}칸, 시작 밝기 {config.duskStartLightIntensity}, " +
-            $"시작 안쪽 비율 {config.duskStartInnerRadiusRatio}, 시작 색 {Hex(config.duskStartLightColor)}");
+            $"시작 안쪽 비율 {config.duskStartInnerRadiusRatio}, 황혼 {config.duskTwilightSeconds}초, 색 세기 {config.duskColorStrength}({config.DuskColorStrengthValue})");
+        Check(config.duskColorStrength == GameBalanceConfig.DuskColorStrength.Weak && Mathf.Approximately(config.duskTwilightSeconds, 120f) &&
+              config.duskColorStrengthWeak < config.duskColorStrengthMedium && config.duskColorStrengthMedium < config.duskColorStrengthStrong,
+            $"색 세기: 프로젝트 값 '약'({config.duskColorStrength}), 약 {config.duskColorStrengthWeak} < 중 {config.duskColorStrengthMedium} < 강 {config.duskColorStrengthStrong}, 황혼 {config.duskTwilightSeconds}초");
         Check(Mathf.Approximately(config.duskDurationSeconds, config.villagePhaseStartSeconds[2]),
             $"어두워지는 시간 {config.duskDurationSeconds}초 = 3구간 시작(2구간 끝) {config.villagePhaseStartSeconds[2]}초");
 
@@ -500,6 +516,152 @@ public static class DuskTest
         sb.AppendLine("  저장: " + Path.GetFullPath(ImagePath));
     }
 
+    // ---- 6. 시간별 색 (약·중·강)
+    private static IEnumerator DuskColors()
+    {
+        sb.AppendLine("\n== 6. 시간별 색: 0초 주황 노을 → 120초 분홍 보라 황혼 → 240초 밤 색 (빛 색 x 화면에 더하는 색)");
+        Light2D ambient = Ambient();
+        VillageNightTint nightTint = cam.GetComponent<VillageNightTint>();
+        float[] times = { 0f, 60f, 120f, 180f, 240f };
+        var sat0 = new List<float>();
+        foreach (GameBalanceConfig.DuskColorStrength level in new[] { GameBalanceConfig.DuskColorStrength.Weak, GameBalanceConfig.DuskColorStrength.Medium, GameBalanceConfig.DuskColorStrength.Strong })
+        {
+            SetStrength(level);
+            var lights = new List<Color>(); var tints = new List<Color>();
+            foreach (float t in times)
+            {
+                yield return SetTimeFrozen(t);
+                float p = config.GetSteppedDuskProgress(t);
+                Color wantLight = config.GetDuskAmbientLightColor(p), wantTint = config.GetDuskDarknessColor(p, gm.VillagePhase);
+                lights.Add(ambient.color); tints.Add(nightTint.CurrentColor);
+                Check(ambient.color == wantLight && nightTint.CurrentColor == wantTint,
+                    $"{level} {t,3:0}초({gm.VillagePhase}구간): 빛 색 {Hex(ambient.color)} (색상 {Hue(ambient.color):0}°) = 설정 {Hex(wantLight)}, 더하는 색 {Hex(nightTint.CurrentColor)} (색상 {Hue(nightTint.CurrentColor):0}°) = 설정 {Hex(wantTint)}");
+            }
+            bool changes = true;
+            for (int i = 1; i < times.Length; i++) changes &= lights[i] != lights[i - 1] && tints[i] != tints[i - 1];
+            Check(changes, $"{level}: 빛 색·더하는 색이 0→60→120→180→240초마다 바뀐다");
+            Check(InHue(lights[0], 10f, 45f) && InHue(tints[0], 5f, 45f) && lights[0].r > lights[0].b + 0.15f,
+                $"{level} 0초 주황 노을: 빛 색상 {Hue(lights[0]):0}° (10~45°), 더하는 색 색상 {Hue(tints[0]):0}° (5~45°), 빛 R-B {lights[0].r - lights[0].b:F2} (> 0.15)");
+            Check(InHue(lights[2], 270f, 330f) && InHue(tints[2], 260f, 330f) && lights[2].g < Mathf.Min(lights[2].r, lights[2].b) - 0.1f,
+                $"{level} 120초 분홍 보라 황혼: 빛 색상 {Hue(lights[2]):0}° (270~330°), 더하는 색 색상 {Hue(tints[2]):0}° (260~330°), 빛 G가 R·B보다 0.1 넘게 낮다");
+            Check(lights[4] == config.ambientVisionLightColor && tints[4] == config.GetVillagePhaseDarknessColor(gm.VillagePhase),
+                $"{level} 240초: 빛 색 {Hex(lights[4])} = 밤 빛 색 {Hex(config.ambientVisionLightColor)}, 더하는 색 {Hex(tints[4])} = {gm.VillagePhase}구간 어둠 색");
+            Color.RGBToHSV(lights[0], out _, out float sat, out _);
+            sat0.Add(sat);
+        }
+        RestoreStrength();
+        Check(sat0[0] < sat0[1] && sat0[1] < sat0[2], $"0초 빛 색 채도 약 {sat0[0]:F2} < 중 {sat0[1]:F2} < 강 {sat0[2]:F2}");
+        // 해질녘 끝 바로 앞(239.9초)과 240초가 거의 같다(갑자기 튀지 않는다).
+        yield return SetTimeFrozen(239.9f);
+        Color l239 = ambient.color, t239 = nightTint.CurrentColor;
+        yield return SetTimeFrozen(240f);
+        float jump = Mathf.Max(MaxChannel(l239, ambient.color), MaxChannel(t239, nightTint.CurrentColor));
+        Check(jump < 0.01f, $"239.9초 → 240초 색 차이 {jump:F4} (< 0.01, 끊김 없음)");
+    }
+
+    // ---- 7. 노을빛 속 색 구분 (프로젝트 세기)
+    private static IEnumerator Distinct()
+    {
+        sb.AppendLine($"\n== 7. 노을빛 속 늑대·동물·플레이어 색 구분 (세기 '{config.duskColorStrength}', Field, 화면 평균 색 사이 거리(0~441) ≥ 노을 색 뺀 빛에서의 거리 x {DistinctMinRatio})");
+        object field = RoomOf("Room_Field");
+        Vector2 pp = PickPlayerSpot(field);
+        yield return PlacePlayer(pp, Vector2.right);
+        Vector2 truck = TruckCenter();
+        Vector2? wp = FloorAround(pp, 2.5f, truck, new Vector2(-0.6f, 1f).normalized), ap = FloorAround(pp, 2.5f, truck, new Vector2(-0.6f, -1f).normalized);
+        Check(wp.HasValue && ap.HasValue, "늑대·동물 자리 (2.5칸, 밤 시야 안)");
+        if (!wp.HasValue || !ap.HasValue) yield break;
+        GameObject m = Spawn(AssetDatabase.LoadAssetAtPath<GameObject>(WolfPath), wp.Value);
+        yield return Freeze(m, 0f);
+        GameObject a = SpawnAnimal(AssetDatabase.LoadAssetAtPath<GameObject>(AnimalPath), ap.Value);
+        yield return FreezeAnimal(0f);
+        foreach (float t in new[] { 0f, 60f, 120f, 180f, 240f })
+        {
+            yield return SetTimeFrozen(t);
+            Color cw = MeanColor(m), ca = MeanColor(a), cp = MeanColor(player);
+            float dwa = Dist(cw, ca), dwp = Dist(cw, cp), dap = Dist(ca, cp);
+            // 같은 시각, 노을 색만 뺀(세기 0) 빛
+            float savedWeak = config.duskColorStrengthWeak;
+            SetStrength(GameBalanceConfig.DuskColorStrength.Weak);
+            config.duskColorStrengthWeak = 0f;
+            yield return SetTimeFrozen(t);
+            Color nw = MeanColor(m), na = MeanColor(a), np = MeanColor(player);
+            config.duskColorStrengthWeak = savedWeak;
+            RestoreStrength();
+            yield return SetTimeFrozen(t);
+            float nwa = Dist(nw, na), nwp = Dist(nw, np), nap = Dist(na, np);
+            bool ok = dwa >= nwa * DistinctMinRatio && dwp >= nwp * DistinctMinRatio && dap >= nap * DistinctMinRatio;
+            Check(ok, $"{t,3:0}초: 늑대 {Hex(cw)} · 동물 {Hex(ca)} · 플레이어 {Hex(cp)} - 거리 늑대-동물 {dwa:0} (노을 색 뺀 빛 {nwa:0}), " +
+                $"늑대-플레이어 {dwp:0} ({nwp:0}), 동물-플레이어 {dap:0} ({nap:0})");
+        }
+        Object.Destroy(m); Object.Destroy(a);
+        Time.timeScale = 1f;
+        yield return Frames(2);
+    }
+
+    // ---- 노을 그림: 약·중·강 x Field·숲 x 0·60·120·180·240초
+    private static IEnumerator SunsetStrip()
+    {
+        sb.AppendLine("\n== 노을 그림 " + SunsetImagePath + " (위에서부터 약 Field·약 숲·중 Field·중 숲·강 Field·강 숲 / 왼쪽부터 0·60·120·180·240초)");
+        float[] times = { 0f, 60f, 120f, 180f, 240f };
+        string[] roomNames = { "Room_Field", "Room_Forest" };
+        var levels = new[] { GameBalanceConfig.DuskColorStrength.Weak, GameBalanceConfig.DuskColorStrength.Medium, GameBalanceConfig.DuskColorStrength.Strong };
+        int rowsTotal = levels.Length * roomNames.Length;
+        var sheet = new Texture2D(SunsetTileW * times.Length, SunsetTileH * rowsTotal, TextureFormat.RGB24, false);
+        GameObject wolf = AssetDatabase.LoadAssetAtPath<GameObject>(WolfPath), animalPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(AnimalPath);
+        for (int ri = 0; ri < roomNames.Length; ri++)
+        {
+            object room = RoomOf(roomNames[ri]);
+            Vector2 pp = PickPlayerSpot(room);
+            yield return PlacePlayer(pp, Vector2.right);
+            Vector2 truck = TruckCenter();
+            Vector2? wp = FloorAround(pp, 3f, truck, new Vector2(-0.7f, 1f).normalized), ap = FloorAround(pp, 3f, truck, new Vector2(-0.7f, -1f).normalized);
+            Vector2? fp = FloorAround(pp, 10f, truck, Vector2.left);
+            GameObject m = wp.HasValue ? Spawn(wolf, wp.Value) : null;
+            if (m != null) yield return Freeze(m, 0f);
+            GameObject far = fp.HasValue ? Spawn(wolf, fp.Value) : null;
+            if (far != null) yield return Freeze(far, 0f);
+            GameObject a = ap.HasValue ? SpawnAnimal(animalPrefab, ap.Value) : null;
+            if (a != null) yield return FreezeAnimal(0f);
+            cam.transform.position = new Vector3(pp.x, pp.y, cam.transform.position.z);
+            for (int li = 0; li < levels.Length; li++)
+            {
+                SetStrength(levels[li]);
+                int row = li * roomNames.Length + ri;
+                for (int col = 0; col < times.Length; col++)
+                {
+                    yield return SetTimeFrozen(times[col]);
+                    Texture2D tex = Render(SunsetTileW, SunsetTileH);
+                    sheet.SetPixels(col * SunsetTileW, (rowsTotal - 1 - row) * SunsetTileH, SunsetTileW, SunsetTileH, tex.GetPixels());
+                    Object.DestroyImmediate(tex);
+                    bool wv = m != null && PlayerVision.IsVisibleToPlayer(m.GetComponent<MonsterHealth>().GamePosition);
+                    bool fv = far != null && (PlayerVision.IsVisibleToPlayer(far.GetComponent<MonsterHealth>().GamePosition) || far.GetComponent<MonsterEyeGlow>().IsGlowing);
+                    bool av = a != null && PlayerVision.IsVisibleToPlayer(a.transform.position);
+                    sb.AppendLine($"  {levels[li]} {roomNames[ri]} {times[col],3:0}초: 빛 {Hex(Ambient().color)}, 더하는 색 {Hex(cam.GetComponent<VillageNightTint>().CurrentColor)}, 반경 {Ambient().pointLightOuterRadius:F2}, " +
+                        $"가까운 늑대 {(wv ? "보임" : "안 보임")}, 동물 {(av ? "보임" : "안 보임")}, 먼 늑대({(fp.HasValue ? Vector2.Distance(pp, fp.Value).ToString("F1") : "-")}칸) {(fv ? "보임" : "안 보임")}");
+                }
+            }
+            RestoreStrength();
+            if (m != null) Object.Destroy(m);
+            if (far != null) Object.Destroy(far);
+            if (a != null) Object.Destroy(a);
+            Time.timeScale = 1f;
+            yield return Frames(2);
+        }
+        for (int col = 1; col < times.Length; col++)
+            for (int y = 0; y < sheet.height; y++) for (int dx = -1; dx <= 0; dx++) sheet.SetPixel(col * SunsetTileW + dx, y, Color.black);
+        for (int row = 1; row < rowsTotal; row++)
+        {
+            bool levelEdge = row % roomNames.Length == 0; // 세기 단계 사이는 굵은 흰 선
+            int thick = levelEdge ? 3 : 1;
+            for (int x = 0; x < sheet.width; x++) for (int dy = -thick; dy < thick; dy++) sheet.SetPixel(x, row * SunsetTileH + dy, levelEdge ? Color.white : Color.black);
+        }
+        sheet.Apply();
+        Directory.CreateDirectory(Path.GetDirectoryName(SunsetImagePath));
+        File.WriteAllBytes(SunsetImagePath, sheet.EncodeToPNG());
+        Object.DestroyImmediate(sheet);
+        sb.AppendLine("  저장: " + Path.GetFullPath(SunsetImagePath));
+    }
+
     // ---- 5. 트럭 왕복, 다음 날
     private static IEnumerator TruckAndNextDay()
     {
@@ -575,13 +737,8 @@ public static class DuskTest
     private static Light2D Focused() => (Light2D)FocusedField.GetValue(PlayerVision.Current);
     private static float NightRadius() => config.GetClassAmbientVisionRadius(gm.CurrentClass);
 
-    // PlayerVision과 같은 계산(진행도는 1/600 단위로 끊는다).
-    private static float ExpectedRadius(float t)
-    {
-        float p = config.GetDuskProgress(t);
-        if (p < 1f) p = Mathf.Floor(p * 600f) / 600f;
-        return config.GetDuskAmbientVisionRadius(NightRadius(), p);
-    }
+    // PlayerVision과 같은 계산(진행도는 DuskProgressSteps 단위로 끊는다).
+    private static float ExpectedRadius(float t) => config.GetDuskAmbientVisionRadius(NightRadius(), config.GetSteppedDuskProgress(t));
 
     private static void DisableDusk()
     {
@@ -593,6 +750,50 @@ public static class DuskTest
     {
         if (savedDuskDuration >= 0f && config != null) config.duskDurationSeconds = savedDuskDuration;
         savedDuskDuration = -1f;
+    }
+
+    private static void SetStrength(GameBalanceConfig.DuskColorStrength level)
+    {
+        if (!savedStrength.HasValue) savedStrength = config.duskColorStrength;
+        config.duskColorStrength = level;
+    }
+
+    private static void RestoreStrength()
+    {
+        if (savedStrength.HasValue && config != null) config.duskColorStrength = savedStrength.Value;
+        savedStrength = null;
+    }
+
+    private static float Hue(Color c) { Color.RGBToHSV(c, out float h, out _, out _); return h * 360f; }
+    private static bool InHue(Color c, float min, float max) { float h = Hue(c); return h >= min && h <= max; }
+    private static float MaxChannel(Color a, Color b) => Mathf.Max(Mathf.Abs(a.r - b.r), Mathf.Abs(a.g - b.g), Mathf.Abs(a.b - b.b));
+    private static float Dist(Color a, Color b) => 255f * Mathf.Sqrt((a.r - b.r) * (a.r - b.r) + (a.g - b.g) * (a.g - b.g) + (a.b - b.b) * (a.b - b.b));
+
+    // 대상 그림(렌더러를 켰을 때와 껐을 때 12 넘게 다른 픽셀)의 화면 평균 색. 라이트(플레이어 시야)는 그대로 두고 렌더러만 끈다.
+    private static Color MeanColor(GameObject target)
+    {
+        Renderer[] rs = target.GetComponentsInChildren<Renderer>().Where(r => r.enabled).ToArray();
+        Bounds b = rs[0].bounds;
+        foreach (Renderer r in rs) b.Encapsulate(r.bounds);
+        Vector3 saved = cam.transform.position;
+        cam.transform.position = new Vector3(b.center.x, b.center.y, saved.z);
+        Texture2D with = Render();
+        foreach (Renderer r in rs) r.enabled = false;
+        Texture2D without = Render();
+        foreach (Renderer r in rs) r.enabled = true;
+        RectInt rect = ScreenRect(b);
+        Color32[] pa = with.GetPixels32(), pb = without.GetPixels32();
+        double sr = 0, sg = 0, sbl = 0; int n = 0;
+        for (int y = rect.yMin; y < Mathf.Min(H, rect.yMax); y++)
+            for (int x = rect.xMin; x < Mathf.Min(W, rect.xMax); x++)
+            {
+                Color32 p = pa[y * W + x], q = pb[y * W + x];
+                if (Mathf.Max(Mathf.Abs(p.r - q.r), Mathf.Abs(p.g - q.g), Mathf.Abs(p.b - q.b)) <= 12) continue;
+                sr += p.r; sg += p.g; sbl += p.b; n++;
+            }
+        cam.transform.position = saved;
+        Object.DestroyImmediate(with); Object.DestroyImmediate(without);
+        return n == 0 ? Color.black : new Color((float)(sr / n / 255.0), (float)(sg / n / 255.0), (float)(sbl / n / 255.0), 1f);
     }
 
     private static void SetTime(float seconds) => VillageTimeSetter.Invoke(gm, new object[] { seconds });

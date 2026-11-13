@@ -281,19 +281,89 @@ public class GameBalanceConfig : ScriptableObject
         "해질녘이 끝나면 씬에 넣어 둔 안쪽 반경(0)으로 돌아간다. 화면 밝기만 바꾸고 시야 판정(바깥 반경 기준)에는 영향이 없다.")]
     [Range(0f, 0.95f)] public float duskStartInnerRadiusRatio = 0.7f;
 
-    [Tooltip("마을 시간 0초의 원형 기본 시야 색 - 따뜻한 노을빛. 해질녘이 끝나면 ambientVisionLightColor로 맞춰진다. 트럭 시야 색은 바뀌지 않는다.")]
-    public Color duskStartLightColor = new Color(1f, 0.86f, 0.72f, 1f);
+    [Header("마을 해질녘 색 (노을 → 황혼 → 밤 - 원형 시야 빛 색 x 화면 전체에 더하는 색)")]
+    [Tooltip("황혼 색이 가장 진한 시각(초). 0초 노을 → 이 시각 황혼 → duskDurationSeconds 밤 색. duskDurationSeconds보다 작아야 한다.")]
+    [Min(0f)] public float duskTwilightSeconds = 120f;
+
+    [Tooltip("0초 원형 기본 시야 빛 색(세기 '강' 기준) - 따뜻한 주황 노을. 빛 색은 바닥·동물·몬스터·플레이어 그림에 곱해지므로 빛이 닿은 곳만 물든다. " +
+        "실제 색 = 밤 빛 색(ambientVisionLightColor)에서 이 색 쪽으로 세기만큼 간 색. 트럭·손전등 빛 색은 바뀌지 않는다.")]
+    public Color duskSunsetLightColor = new Color(1f, 0.55f, 0.38f, 1f);
+
+    [Tooltip("황혼(duskTwilightSeconds) 원형 기본 시야 빛 색(세기 '강' 기준) - 분홍빛 도는 보라.")]
+    public Color duskTwilightLightColor = new Color(0.88f, 0.46f, 0.86f, 1f);
+
+    [Tooltip("0초에 화면 전체에 더하는 색(세기 '강' 기준, VillageNightTint) - 노을 하늘빛. 보이는 곳·안 보이는 곳에 똑같이 더해 시야 밖이 드러나지 않는다. " +
+        "실제 색 = 해질녘 끝 구간의 어둠 색에서 이 색 쪽으로 세기만큼 간 색. 해질녘 동안은 구간별 어둠 색 대신 이 색을 쓴다.")]
+    public Color duskSunsetTintColor = new Color(0.28f, 0.1f, 0f, 1f);
+
+    [Tooltip("황혼(duskTwilightSeconds)에 화면 전체에 더하는 색(세기 '강' 기준) - 보라 하늘빛.")]
+    public Color duskTwilightTintColor = new Color(0.12f, 0.02f, 0.15f, 1f);
+
+    public enum DuskColorStrength { Weak, Medium, Strong }
+
+    [Tooltip("노을·황혼 색 세기 단계(약·중·강). 단계별 값은 아래 세 값.")]
+    public DuskColorStrength duskColorStrength = DuskColorStrength.Weak;
+
+    [Tooltip("세기 '약': 밤 색에서 노을·황혼 색 쪽으로 가는 비율(0 = 밤 색 그대로, 1 = 위에 넣은 색 그대로).")]
+    [Range(0f, 1f)] public float duskColorStrengthWeak = 0.5f;
+    [Tooltip("세기 '중' 비율.")]
+    [Range(0f, 1f)] public float duskColorStrengthMedium = 0.8f;
+    [Tooltip("세기 '강' 비율.")]
+    [Range(0f, 1f)] public float duskColorStrengthStrong = 1f;
+
+    /// <summary>지금 세기 단계의 비율(0~1).</summary>
+    public float DuskColorStrengthValue => duskColorStrength switch
+    {
+        DuskColorStrength.Weak => duskColorStrengthWeak,
+        DuskColorStrength.Strong => duskColorStrengthStrong,
+        _ => duskColorStrengthMedium,
+    };
+
+    /// <summary>진행도를 몇 단계로 끊는지. 원형 시야 라이트와 화면 어둠 색이 같은 단계로 바뀐다(240초면 0.4초에 한 번).</summary>
+    public const int DuskProgressSteps = 600;
 
     /// <summary>해질녘 진행도: 마을 시간 0초 = 0(해질녘 시작), duskDurationSeconds 이상 = 1(밤). 해질녘을 껐으면(0초) 항상 1.</summary>
     public float GetDuskProgress(float villageSeconds) =>
         duskDurationSeconds <= 0f ? 1f : Mathf.Clamp01(villageSeconds / duskDurationSeconds);
+
+    /// <summary>GetDuskProgress를 DuskProgressSteps 단위로 끊은 값. 밤(1)은 끊지 않는다.</summary>
+    public float GetSteppedDuskProgress(float villageSeconds)
+    {
+        float p = GetDuskProgress(villageSeconds);
+        return p >= 1f ? 1f : Mathf.Floor(p * DuskProgressSteps) / DuskProgressSteps;
+    }
+
+    // 0 노을 → k 황혼 → 1 밤. 노을·황혼 색은 밤 색에서 세기만큼 간 색. 진행도 1이면 정확히 밤 색.
+    private Color DuskKeyed(float progress, Color sunset, Color twilight, Color night)
+    {
+        if (progress >= 1f) return night;
+        float s = DuskColorStrengthValue;
+        Color a = Color.Lerp(night, sunset, s), b = Color.Lerp(night, twilight, s);
+        float k = duskDurationSeconds > 0f ? Mathf.Clamp(duskTwilightSeconds / duskDurationSeconds, 0f, 0.999f) : 0f;
+        progress = Mathf.Clamp01(progress);
+        Color c = progress <= k && k > 0f ? Color.Lerp(a, b, progress / k) : Color.Lerp(b, night, (progress - k) / (1f - k));
+        c.a = 1f;
+        return c;
+    }
+
+    /// <summary>진행도 progress에서의 원형 기본 시야 빛 색. 1이면 정확히 ambientVisionLightColor.</summary>
+    public Color GetDuskAmbientLightColor(float progress) =>
+        DuskKeyed(progress, duskSunsetLightColor, duskTwilightLightColor, ambientVisionLightColor);
+
+    /// <summary>진행도 progress에서 화면 전체에 더하는 색. 해질녘 동안은 노을·황혼 색에서 해질녘 끝 구간의 어둠 색으로 가고, 1이면 phase 구간의 어둠 색 그대로.</summary>
+    public Color GetDuskDarknessColor(float progress, int phase)
+    {
+        if (progress >= 1f) return GetVillagePhaseDarknessColor(phase);
+        Color end = GetVillagePhaseDarknessColor(GameManager.ComputeVillagePhase(duskDurationSeconds, this));
+        return DuskKeyed(progress, duskSunsetTintColor, duskTwilightTintColor, end);
+    }
 
     /// <summary>진행도 progress(0~1)에서의 원형 기본 시야 반경. nightRadius는 밤 반경(클래스 배율 적용). 1이면 정확히 nightRadius.</summary>
     public float GetDuskAmbientVisionRadius(float nightRadius, float progress) =>
         progress >= 1f ? nightRadius : Mathf.Lerp(Mathf.Max(duskStartAmbientVisionRadius, nightRadius), nightRadius, Mathf.Clamp01(progress));
 
     [Header("마을 어둠 색 (구간별 - 화면 전체에 같은 색을 더한다, VillageNightTint)")]
-    [Tooltip("1~5구간에 화면 전체에 더하는 색. 해질녘 보라 → 밤 남색 → 깊은 밤 → 새벽 전(가장 어두움) → 5구간 붉은 경고. " +
+    [Tooltip("1~5구간에 화면 전체에 더하는 색. 해질녘(duskDurationSeconds) 동안은 위 해질녘 색을 쓰고, 그 뒤 이 색을 따른다. 해질녘 보라 → 밤 남색 → 깊은 밤 → 새벽 전(가장 어두움) → 5구간 붉은 경고. " +
         "보이는 곳·안 보이는 곳에 똑같이 더하므로 시야 밖 몬스터가 드러나지 않는다. 비어 있거나 모자라면 마지막 색을 쓰고, 없으면 검정(더하지 않음).")]
     public Color[] villagePhaseDarknessColors =
     {

@@ -6,7 +6,7 @@ using UnityEngine.Rendering.Universal;
 /// 바라보는 방향(마우스 방향)의 넓은 부채꼴 시야(Focused)를 Light2D 두 개로 구현한다.
 /// 두 라이트가 겹쳐서 밝히는 범위 밖은 VillageScene의 Global Light 2D를 어둡게 낮춰둔 덕분에
 /// 자연스럽게 어두워진다(별도의 검은 오버레이 스프라이트 불필요).
-/// 해질녘: 마을 시간 0초에는 원형 기본 시야가 화면을 다 덮을 만큼 크고(GameBalanceConfig.duskStartAmbientVisionRadius) 노을빛이며,
+/// 해질녘: 마을 시간 0초에는 원형 기본 시야가 화면을 다 덮을 만큼 크고(GameBalanceConfig.duskStartAmbientVisionRadius) 주황 노을빛(→ 120초 분홍 보라 황혼 → 밤 색)이며,
 /// duskDurationSeconds(240초)까지 밤 반경(ambientVisionRadius x 클래스 배율)으로 줄어든다. Global Light는 계속 0이라 밝은 곳은 늘 이 라이트들 안뿐이고,
 /// 시야 판정이 라이트의 실제 반경을 읽으므로 화면과 판정이 시간 내내 같다. 손전등·트럭 시야는 시간과 무관하다.
 /// 트럭 주변 시야: 맵에 트럭(TruckPoint)이 있으면 원형 기본 시야 라이트를 복제해 트럭 가운데에 두고(반경 GameBalanceConfig.truckVisionRadius,
@@ -42,8 +42,7 @@ public class PlayerVision : MonoBehaviour
     private Color lastAmbientColor;
     private Color lastFocusedColor;
 
-    // 해질녘. 진행도는 1/DuskSteps 단위로 끊어서 반경이 바뀌는 프레임만 라이트 모양을 다시 계산한다(240초면 0.4초에 한 번, 반경 약 0.017칸씩).
-    private const int DuskSteps = 600;
+    // 해질녘. 진행도는 GameBalanceConfig.DuskProgressSteps(600) 단위로 끊어서 반경이 바뀌는 프레임만 라이트 모양을 다시 계산한다(240초면 0.4초에 한 번, 반경 약 0.017칸씩).
     private float lastDuskProgress = -1f;
     private float sceneAmbientInnerRadius;
     private bool sceneAmbientInnerRadiusRead;
@@ -78,12 +77,12 @@ public class PlayerVision : MonoBehaviour
         }
     }
 
-    /// <summary>마을 시간(초)의 해질녘 진행도를 DuskSteps 단위로 끊은 값. 밤(1)은 끊지 않는다. GameManager가 없으면 밤.</summary>
+    /// <summary>마을 시간(초)의 해질녘 진행도를 DuskProgressSteps 단위로 끊은 값. 밤(1)은 끊지 않는다. GameManager가 없으면 밤.
+    /// VillageNightTint(화면 어둠 색)도 같은 값을 써서 빛 색과 화면 색이 같은 단계로 바뀐다.</summary>
     private float CurrentDuskProgress()
     {
         if (GameManager.Instance == null) return 1f;
-        float p = config.GetDuskProgress(GameManager.Instance.VillageTime);
-        return p >= 1f ? 1f : Mathf.Floor(p * DuskSteps) / DuskSteps;
+        return config.GetSteppedDuskProgress(GameManager.Instance.VillageTime);
     }
 
     private void OnEnable() => Current = this;
@@ -143,7 +142,8 @@ public class PlayerVision : MonoBehaviour
         float nightInner = sceneAmbientInnerRadiusRead ? sceneAmbientInnerRadius : 0f;
         float targetAmbientInner = dusk >= 1f ? nightInner : Mathf.Lerp(targetAmbientRadius * config.duskStartInnerRadiusRatio, nightInner, dusk);
         float targetAmbientIntensity = dusk >= 1f ? config.visionLightIntensity : Mathf.Lerp(config.duskStartLightIntensity, config.visionLightIntensity, dusk);
-        Color targetAmbientColor = dusk >= 1f ? config.ambientVisionLightColor : Color.Lerp(config.duskStartLightColor, config.ambientVisionLightColor, dusk);
+        // 빛 색: 0초 주황 노을 → duskTwilightSeconds 분홍 보라 황혼 → 밤 색(세기 단계만큼, GameBalanceConfig.GetDuskAmbientLightColor).
+        Color targetAmbientColor = config.GetDuskAmbientLightColor(dusk);
         bool duskChanged = dusk != lastDuskProgress;
 
         // 플래시라이트 패시브가 없으면 부채꼴만 config 배율(기본 0.7)로 줄인다: 최종 = 기본 x 클래스 x 플래시라이트 배율.
@@ -160,7 +160,7 @@ public class PlayerVision : MonoBehaviour
             lastLightFalloff != config.visionLightFalloffStrength;
 
         // 라이트 색(원형·트럭 = 차가운 흰색, 손전등 = 따뜻한 흰색). 색은 모양을 다시 계산하지 않지만 같은 방식으로 바뀐 때만 넣는다.
-        // 원형 시야 색은 해질녘 동안 노을빛에서 차가운 흰색으로 간다. 트럭 시야 색은 늘 config.ambientVisionLightColor다.
+        // 원형 시야 색은 해질녘 동안 노을 → 황혼 → 차가운 흰색으로 간다. 트럭 시야 색은 늘 config.ambientVisionLightColor다.
         if (ambientVisionLight != null && (!visionRangesApplied || lastAmbientColor != targetAmbientColor))
         {
             ambientVisionLight.color = targetAmbientColor;

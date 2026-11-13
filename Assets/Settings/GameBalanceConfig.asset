@@ -78,7 +78,15 @@ MonoBehaviour:
   duskStartAmbientVisionRadius: 14
   duskStartLightIntensity: 1
   duskStartInnerRadiusRatio: 0.7
-  duskStartLightColor: {r: 1, g: 0.86, b: 0.72, a: 1}
+  duskTwilightSeconds: 120
+  duskSunsetLightColor: {r: 1, g: 0.55, b: 0.38, a: 1}
+  duskTwilightLightColor: {r: 0.88, g: 0.46, b: 0.86, a: 1}
+  duskSunsetTintColor: {r: 0.28, g: 0.1, b: 0, a: 1}
+  duskTwilightTintColor: {r: 0.12, g: 0.02, b: 0.15, a: 1}
+  duskColorStrength: 0
+  duskColorStrengthWeak: 0.5
+  duskColorStrengthMedium: 0.8
+  duskColorStrengthStrong: 1
   villagePhaseDarknessColors:
   - {r: 0.039215688, g: 0.03137255, b: 0.0627451, a: 1}
   - {r: 0.019607844, g: 0.03137255, b: 0.07058824, a: 1}

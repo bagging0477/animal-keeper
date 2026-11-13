@@ -3,6 +3,8 @@ using UnityEngine;
 /// <summary>
 /// 마을 어둠 색: 카메라 바로 앞에 화면을 덮는 사각형을 두고 지금 시간 구간의 색(GameBalanceConfig.villagePhaseDarknessColors)을
 /// 화면 전체에 똑같이 더한다(셰이더 "Animal Keeper/Screen Add Color", 가산). 해질녘 보라 → 밤 남색 → … → 5구간 붉은색.
+/// 마을 해질녘(0초 ~ duskDurationSeconds) 동안은 구간 색 대신 노을(주황) → 황혼(보라) → 해질녘 끝 구간 색을 더한다(GameBalanceConfig.GetDuskDarknessColor).
+/// 진행도는 PlayerVision과 같은 단계(GetSteppedDuskProgress)라 원형 시야 빛 색과 같이 바뀐다.
 /// 시야 밖(빛을 못 받아 검은) 곳과 바닥이 같은 색이 되므로 몬스터·나무 실루엣이 생기지 않는다 - 시야 판정과 화면이 계속 일치한다.
 /// VillageScene의 Main Camera에 붙인다. 정렬은 Default 레이어 맨 위라 월드 그림 위, 화면 UI(Overlay Canvas) 아래다.
 /// </summary>
@@ -57,7 +59,8 @@ public class VillageNightTint : MonoBehaviour
 
         GameBalanceConfig c = Config;
         int phase = GameManager.Instance != null ? GameManager.Instance.VillagePhase : 1;
-        Color color = c != null ? c.GetVillagePhaseDarknessColor(phase) : Color.black;
+        float dusk = c != null && GameManager.Instance != null ? c.GetSteppedDuskProgress(GameManager.Instance.VillageTime) : 1f;
+        Color color = c != null ? c.GetDuskDarknessColor(dusk, phase) : Color.black;
         CurrentColor = color;
         tint.enabled = additiveMaterial != null && (color.r > 0f || color.g > 0f || color.b > 0f);
         if (color == applied) return;
