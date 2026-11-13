@@ -6,6 +6,9 @@ using UnityEngine.Rendering.Universal;
 /// 바라보는 방향(마우스 방향)의 넓은 부채꼴 시야(Focused)를 Light2D 두 개로 구현한다.
 /// 두 라이트가 겹쳐서 밝히는 범위 밖은 VillageScene의 Global Light 2D를 어둡게 낮춰둔 덕분에
 /// 자연스럽게 어두워진다(별도의 검은 오버레이 스프라이트 불필요).
+/// 해질녘: 마을 시간 0초에는 원형 기본 시야가 화면을 다 덮을 만큼 크고(GameBalanceConfig.duskStartAmbientVisionRadius) 노을빛이며,
+/// duskDurationSeconds(240초)까지 밤 반경(ambientVisionRadius x 클래스 배율)으로 줄어든다. Global Light는 계속 0이라 밝은 곳은 늘 이 라이트들 안뿐이고,
+/// 시야 판정이 라이트의 실제 반경을 읽으므로 화면과 판정이 시간 내내 같다. 손전등·트럭 시야는 시간과 무관하다.
 /// 트럭 주변 시야: 맵에 트럭(TruckPoint)이 있으면 원형 기본 시야 라이트를 복제해 트럭 가운데에 두고(반경 GameBalanceConfig.truckVisionRadius,
 /// 그림자 없음) 시야 판정(IsPointVisible)에 넣는다. 정면 손전등 판정(IsPointInFocusedVision - 박쥐 굳음)에는 넣지 않는다.
 /// </summary>
@@ -39,6 +42,15 @@ public class PlayerVision : MonoBehaviour
     private Color lastAmbientColor;
     private Color lastFocusedColor;
 
+    // 해질녘. 진행도는 1/DuskSteps 단위로 끊어서 반경이 바뀌는 프레임만 라이트 모양을 다시 계산한다(240초면 0.4초에 한 번, 반경 약 0.017칸씩).
+    private const int DuskSteps = 600;
+    private float lastDuskProgress = -1f;
+    private float sceneAmbientInnerRadius;
+    private bool sceneAmbientInnerRadiusRead;
+
+    /// <summary>지금 원형 기본 시야에 적용된 해질녘 진행도(0 = 해질녘 시작, 1 = 밤). 아직 적용 전이면 -1.</summary>
+    public float AppliedDuskProgress => lastDuskProgress;
+
     // 트럭 주변 시야(맵 생성 뒤 트럭을 찾으면 만든다). 트럭은 VillageMapGenerator.truckPointObjectName(기본 "TruckPoint") 오브젝트다.
     private const string TruckPointObjectName = "TruckPoint";
     private Light2D truckVisionLight;
@@ -58,6 +70,20 @@ public class PlayerVision : MonoBehaviour
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
+        if (ambientVisionLight != null)
+        {
+            // 밤(해질녘 끝)에는 씬에 넣어 둔 안쪽 반경으로 돌아간다.
+            sceneAmbientInnerRadius = ambientVisionLight.pointLightInnerRadius;
+            sceneAmbientInnerRadiusRead = true;
+        }
+    }
+
+    /// <summary>마을 시간(초)의 해질녘 진행도를 DuskSteps 단위로 끊은 값. 밤(1)은 끊지 않는다. GameManager가 없으면 밤.</summary>
+    private float CurrentDuskProgress()
+    {
+        if (GameManager.Instance == null) return 1f;
+        float p = config.GetDuskProgress(GameManager.Instance.VillageTime);
+        return p >= 1f ? 1f : Mathf.Floor(p * DuskSteps) / DuskSteps;
     }
 
     private void OnEnable() => Current = this;
@@ -110,7 +136,15 @@ public class PlayerVision : MonoBehaviour
         // 값을 기준치로 쓴다. VillageScene 진입 전 ClassSelectScene에서 클래스가 정해지므로 보통
         // 한 세션 동안 안 바뀌지만, lastClass도 함께 캐싱해서 클래스가 바뀌는 경우에도 즉시 반영한다.
         PlayerClass currentClass = GameManager.Instance != null ? GameManager.Instance.CurrentClass : PlayerClass.Scout;
-        float targetAmbientRadius = config.GetClassAmbientVisionRadius(currentClass);
+        float nightAmbientRadius = config.GetClassAmbientVisionRadius(currentClass);
+        // 해질녘: 마을 시간에 따라 원형 시야 반경·안쪽 반경·밝기·색이 해질녘 값에서 밤 값으로 간다(진행도 1이면 정확히 밤 값).
+        float dusk = CurrentDuskProgress();
+        float targetAmbientRadius = config.GetDuskAmbientVisionRadius(nightAmbientRadius, dusk);
+        float nightInner = sceneAmbientInnerRadiusRead ? sceneAmbientInnerRadius : 0f;
+        float targetAmbientInner = dusk >= 1f ? nightInner : Mathf.Lerp(targetAmbientRadius * config.duskStartInnerRadiusRatio, nightInner, dusk);
+        float targetAmbientIntensity = dusk >= 1f ? config.visionLightIntensity : Mathf.Lerp(config.duskStartLightIntensity, config.visionLightIntensity, dusk);
+        Color targetAmbientColor = dusk >= 1f ? config.ambientVisionLightColor : Color.Lerp(config.duskStartLightColor, config.ambientVisionLightColor, dusk);
+        bool duskChanged = dusk != lastDuskProgress;
 
         // 플래시라이트 패시브가 없으면 부채꼴만 config 배율(기본 0.7)로 줄인다: 최종 = 기본 x 클래스 x 플래시라이트 배율.
         // 산 뒤에는 배율 1이라 예전 크기 그대로다. 원형 시야는 이 배율과 무관하다.
@@ -126,12 +160,13 @@ public class PlayerVision : MonoBehaviour
             lastLightFalloff != config.visionLightFalloffStrength;
 
         // 라이트 색(원형·트럭 = 차가운 흰색, 손전등 = 따뜻한 흰색). 색은 모양을 다시 계산하지 않지만 같은 방식으로 바뀐 때만 넣는다.
-        if (ambientVisionLight != null && (!visionRangesApplied || lastAmbientColor != config.ambientVisionLightColor))
+        // 원형 시야 색은 해질녘 동안 노을빛에서 차가운 흰색으로 간다. 트럭 시야 색은 늘 config.ambientVisionLightColor다.
+        if (ambientVisionLight != null && (!visionRangesApplied || lastAmbientColor != targetAmbientColor))
         {
-            ambientVisionLight.color = config.ambientVisionLightColor;
-            if (truckVisionLight != null) truckVisionLight.color = config.ambientVisionLightColor;
-            lastAmbientColor = config.ambientVisionLightColor;
+            ambientVisionLight.color = targetAmbientColor;
+            lastAmbientColor = targetAmbientColor;
         }
+        if (truckVisionLight != null && truckVisionLight.color != config.ambientVisionLightColor) truckVisionLight.color = config.ambientVisionLightColor;
         if (focusedVisionLight != null && (!visionRangesApplied || lastFocusedColor != config.focusedVisionLightColor))
         {
             focusedVisionLight.color = config.focusedVisionLightColor;
@@ -139,12 +174,13 @@ public class PlayerVision : MonoBehaviour
         }
 
         if (ambientVisionLight != null &&
-            (blendChanged || lastClass != currentClass || lastAmbientRadius != targetAmbientRadius ||
+            (blendChanged || duskChanged || lastClass != currentClass || lastAmbientRadius != targetAmbientRadius ||
              lastAmbientIgnoresShadows != config.ambientVisionIgnoresShadows))
         {
-            ambientVisionLight.intensity = config.visionLightIntensity;
+            ambientVisionLight.intensity = targetAmbientIntensity;
             ambientVisionLight.falloffIntensity = config.visionLightFalloffStrength;
             ambientVisionLight.pointLightOuterRadius = targetAmbientRadius;
+            ambientVisionLight.pointLightInnerRadius = targetAmbientInner;
             // 바로 옆인데 벽 때문에 기본 시야가 뚝 끊겨 보이는 이질감을 없애기 위해, 기본 원형 시야는
             // 기본적으로 그림자(벽/장애물 가림)를 무시하고 범위 안을 항상 전부 보여준다.
             ambientVisionLight.shadowsEnabled = !config.ambientVisionIgnoresShadows;
@@ -182,6 +218,8 @@ public class PlayerVision : MonoBehaviour
 
         ApplyTruckVision(blendChanged);
 
+        lastDuskProgress = dusk;
+
         lastLightIntensity = config.visionLightIntensity;
         lastLightFalloff = config.visionLightFalloffStrength;
         lastClass = currentClass;
@@ -211,6 +249,8 @@ public class PlayerVision : MonoBehaviour
             copy.transform.rotation = Quaternion.identity;
             truckVisionLight = copy.GetComponent<Light2D>();
             truckVisionLight.color = config.ambientVisionLightColor;
+            // 복제 원본(원형 시야)은 해질녘 동안 안쪽 반경이 커져 있을 수 있다 - 트럭 시야는 늘 씬에 넣어 둔 안쪽 반경(밤 값)이다.
+            truckVisionLight.pointLightInnerRadius = sceneAmbientInnerRadiusRead ? sceneAmbientInnerRadius : 0f;
             lastTruckRadius = -1f;
         }
         if (truckVisionLight == null) return;

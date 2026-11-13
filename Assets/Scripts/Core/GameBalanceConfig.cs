@@ -264,6 +264,34 @@ public class GameBalanceConfig : ScriptableObject
         "시야 판정(PlayerVision.IsVisibleToPlayer - 몬스터 눈 발광, 시간 소환 위치)에 들어가지만, 박쥐가 멈추는 정면 손전등 시야(IsInFocusedVision)에는 들어가지 않는다.")]
     [Min(0f)] public float truckVisionRadius = 5f;
 
+    [Header("마을 해질녘 (VillageScene - 마을 시간에 따라 점점 어두워짐, PlayerVision)")]
+    [Tooltip("마을 시간 0초부터 이 시간(초)까지 원형 기본 시야가 해질녘 값에서 밤 값(ambientVisionRadius x 클래스 배율)으로 줄어든다. " +
+        "이 시간 뒤로는 지금 밤 그대로다. 0이면 해질녘 없이 처음부터 밤.")]
+    [Min(0f)] public float duskDurationSeconds = 240f;
+
+    [Tooltip("마을 시간 0초의 원형 기본 시야 반경(칸). 화면(세로 반 5.6칸, 16:9 대각 반 약 11.4칸)을 다 덮을 만큼 크게 잡는다. " +
+        "전체 조명(Global Light)은 계속 0이라 밝은 곳은 이 원 안뿐이다 - 그래서 시야 판정(IsVisibleToPlayer)이 화면과 그대로 같다. " +
+        "밤 반경보다 작으면 밤 반경을 쓴다.")]
+    [Min(0f)] public float duskStartAmbientVisionRadius = 14f;
+
+    [Tooltip("마을 시간 0초의 원형 기본 시야 밝기(Light2D 세기). 해질녘이 끝나면 visionLightIntensity로 맞춰진다. 손전등·트럭 시야 밝기는 바뀌지 않는다.")]
+    [Min(0f)] public float duskStartLightIntensity = 1f;
+
+    [Tooltip("마을 시간 0초에 원형 기본 시야 안쪽(감쇠 없이 고르게 밝은 부분)이 반경에서 차지하는 비율. 크면 화면 가장자리까지 고르게 밝다. " +
+        "해질녘이 끝나면 씬에 넣어 둔 안쪽 반경(0)으로 돌아간다. 화면 밝기만 바꾸고 시야 판정(바깥 반경 기준)에는 영향이 없다.")]
+    [Range(0f, 0.95f)] public float duskStartInnerRadiusRatio = 0.7f;
+
+    [Tooltip("마을 시간 0초의 원형 기본 시야 색 - 따뜻한 노을빛. 해질녘이 끝나면 ambientVisionLightColor로 맞춰진다. 트럭 시야 색은 바뀌지 않는다.")]
+    public Color duskStartLightColor = new Color(1f, 0.86f, 0.72f, 1f);
+
+    /// <summary>해질녘 진행도: 마을 시간 0초 = 0(해질녘 시작), duskDurationSeconds 이상 = 1(밤). 해질녘을 껐으면(0초) 항상 1.</summary>
+    public float GetDuskProgress(float villageSeconds) =>
+        duskDurationSeconds <= 0f ? 1f : Mathf.Clamp01(villageSeconds / duskDurationSeconds);
+
+    /// <summary>진행도 progress(0~1)에서의 원형 기본 시야 반경. nightRadius는 밤 반경(클래스 배율 적용). 1이면 정확히 nightRadius.</summary>
+    public float GetDuskAmbientVisionRadius(float nightRadius, float progress) =>
+        progress >= 1f ? nightRadius : Mathf.Lerp(Mathf.Max(duskStartAmbientVisionRadius, nightRadius), nightRadius, Mathf.Clamp01(progress));
+
     [Header("마을 어둠 색 (구간별 - 화면 전체에 같은 색을 더한다, VillageNightTint)")]
     [Tooltip("1~5구간에 화면 전체에 더하는 색. 해질녘 보라 → 밤 남색 → 깊은 밤 → 새벽 전(가장 어두움) → 5구간 붉은 경고. " +
         "보이는 곳·안 보이는 곳에 똑같이 더하므로 시야 밖 몬스터가 드러나지 않는다. 비어 있거나 모자라면 마지막 색을 쓰고, 없으면 검정(더하지 않음).")]

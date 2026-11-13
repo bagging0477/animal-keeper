@@ -118,6 +118,7 @@ public static class LightingTest
     private static void TearDown()
     {
         Application.logMessageReceived -= OnLog;
+        EditorTestState.RestoreVillageDusk();
         Time.captureDeltaTime = 0f;
         Time.timeScale = 1f;
         VillageMapGenerator.EditorLayoutOverride = null;
@@ -209,6 +210,7 @@ public static class LightingTest
         sb = new StringBuilder();
         failures = new List<string>();
         sb.AppendLine($"LightingTest {System.DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+        EditorTestState.PinVillageNight(); // 밤 시야(원형 4칸) 기준 검사 - 해질녘은 DuskTest가 본다
         yield return Frames(5);
         Object.FindAnyObjectByType<TitleMenu>().OnPlay();
         yield return WaitScene("ClassSelectScene");

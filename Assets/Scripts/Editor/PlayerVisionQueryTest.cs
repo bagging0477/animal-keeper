@@ -98,6 +98,7 @@ public static class PlayerVisionQueryTest
         }
         if (more) return;
         EditorApplication.update -= Step;
+        EditorTestState.RestoreVillageDusk();
         sb.AppendLine();
         sb.AppendLine(failures.Count == 0 ? "결과: 통과" : $"결과: 실패 {failures.Count}건");
         foreach (string f in failures) sb.AppendLine("  " + f);
@@ -134,6 +135,7 @@ public static class PlayerVisionQueryTest
 
     private static IEnumerator Run()
     {
+        EditorTestState.PinVillageNight(); // 밤 시야(원형 4칸) 기준 검사 - 해질녘은 DuskTest가 본다
         yield return Frames(10);
         var config = AssetDatabase.LoadAssetAtPath<GameBalanceConfig>("Assets/Settings/GameBalanceConfig.asset");
         var flashlight = AssetDatabase.LoadAssetAtPath<PassiveDefinition>("Assets/Settings/Passives/Flashlight.asset");

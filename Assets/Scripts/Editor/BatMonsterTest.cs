@@ -130,6 +130,7 @@ public static class BatMonsterTest
     private static void TearDown()
     {
         Application.logMessageReceived -= OnLog;
+        EditorTestState.RestoreVillageDusk();
         if (gm != null && originalConfig != null) GmConfigField.SetValue(gm, originalConfig);
         originalConfig = null;
         Time.captureDeltaTime = 0f;
@@ -226,6 +227,7 @@ public static class BatMonsterTest
         sb = new StringBuilder();
         failures = new List<string>();
         sb.AppendLine($"BatMonsterTest {System.DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+        EditorTestState.PinVillageNight(); // 밤 시야(원형 4칸) 기준 검사 - 밝을 때 박쥐는 DuskTest가 본다
 
         yield return WaitFrames(5);
         gm = GameManager.Instance;

@@ -74,6 +74,11 @@ MonoBehaviour:
   ambientVisionLightColor: {r: 0.86, g: 0.92, b: 1, a: 1}
   focusedVisionLightColor: {r: 1, g: 0.87, b: 0.66, a: 1}
   truckVisionRadius: 5
+  duskDurationSeconds: 240
+  duskStartAmbientVisionRadius: 14
+  duskStartLightIntensity: 1
+  duskStartInnerRadiusRatio: 0.7
+  duskStartLightColor: {r: 1, g: 0.86, b: 0.72, a: 1}
   villagePhaseDarknessColors:
   - {r: 0.039215688, g: 0.03137255, b: 0.0627451, a: 1}
   - {r: 0.019607844, g: 0.03137255, b: 0.07058824, a: 1}

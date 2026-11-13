@@ -9,6 +9,28 @@ using Object = UnityEngine.Object;
 /// 그 뒤 맵마다 이전 맵의 동물 위치가 되살아난다. 살아 있는 인스턴스는 건드리지 않는다.</summary>
 public static class EditorTestState
 {
+    private const string BalanceConfigPath = "Assets/Settings/GameBalanceConfig.asset";
+    private static float savedDuskDuration = -1f;
+
+    /// <summary>마을 해질녘(GameBalanceConfig.duskDurationSeconds)을 테스트 동안 끈다 - 마을 시간 0초부터 밤 시야(원형 4칸)로 시험하는 테스트용.
+    /// 에셋 값은 메모리에서만 바꾸고 RestoreVillageDusk에서 되돌린다(저장하지 않는다).</summary>
+    public static void PinVillageNight()
+    {
+        var config = UnityEditor.AssetDatabase.LoadAssetAtPath<GameBalanceConfig>(BalanceConfigPath);
+        if (config == null) return;
+        if (savedDuskDuration < 0f) savedDuskDuration = config.duskDurationSeconds;
+        config.duskDurationSeconds = 0f;
+    }
+
+    /// <summary>PinVillageNight로 끈 해질녘 시간을 원래 값으로 되돌린다. 끈 적이 없으면 아무것도 하지 않는다.</summary>
+    public static void RestoreVillageDusk()
+    {
+        if (savedDuskDuration < 0f) return;
+        var config = UnityEditor.AssetDatabase.LoadAssetAtPath<GameBalanceConfig>(BalanceConfigPath);
+        if (config != null) config.duskDurationSeconds = savedDuskDuration;
+        savedDuskDuration = -1f;
+    }
+
     public static void ClearStaleSingletons()
     {
         foreach (Type t in new[] { typeof(GameManager), typeof(AudioManager) })
