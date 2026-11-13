@@ -3,5 +3,5 @@
 /// 상호작용으로 이어지지 않게) 막는다.</summary>
 public static class GameplayInput
 {
-    public static bool IsBlocked => PauseMenu.IsPaused || ShopMenuUI.IsOpen || ShopMenuUI.ClosedThisFrame;
+    public static bool IsBlocked => PauseMenu.IsPaused || ShopMenuUI.IsOpen || ShopMenuUI.ClosedThisFrame || TutorialGuide.BlocksInput;
 }

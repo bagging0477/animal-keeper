@@ -73,6 +73,14 @@ public class InventoryUI : MonoBehaviour
     private float slotPitch;
     private int laidOutCount = -1;
 
+    /// <summary>i번 칸 틀(화면에 보일 때만, 아니면 null). 튜토리얼 강조(TutorialGuide)가 자리를 읽는 데만 쓴다.</summary>
+    public RectTransform SlotRect(int i) =>
+        i >= 0 && i < slotViews.Count && slotViews[i]?.frame != null && slotViews[i].frame.gameObject.activeInHierarchy ? slotViews[i].frame.rectTransform : null;
+
+    /// <summary>무기 칸 틀(화면에 보일 때만, 아니면 null). 튜토리얼 강조용.</summary>
+    public RectTransform WeaponSlotRect =>
+        weaponSlot?.frame != null && weaponSlot.frame.gameObject.activeInHierarchy ? weaponSlot.frame.rectTransform : null;
+
     private void Awake()
     {
         foreach (InventorySlotUI slot in slots)
