@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// TitleScene의 PLAY / SETTING / EXIT 버튼 처리. 각 Button의 OnClick에 연결해서 쓴다.
+/// TitleScene의 PLAY / SETTING / CREDITS / EXIT 버튼 처리. 각 Button의 OnClick에 연결해서 쓴다.
 /// PLAY는 항상 새 게임으로 시작한다 - 게임 중에 타이틀로 돌아왔다가 다시 PLAY를 누르면, 씬을 넘어 살아있는
 /// GameManager의 진행 상태(마일리지, 클래스, 인벤토리 등)를 ResetGame()으로 처음 상태로 되돌린 뒤
 /// 시작 클래스 선택(ClassSelectScene)부터 다시 시작한다.
@@ -14,9 +14,25 @@ public class TitleMenu : MonoBehaviour
     [Tooltip("SETTING 버튼으로 여닫는 설정 패널. 지금은 빈 틀만 있고 기능은 나중에 추가한다.")]
     [SerializeField] private GameObject settingsPanel;
 
+    [Tooltip("CREDITS 버튼으로 여는 크레딧 창. 내용은 CREDITS.md(→ Resources/Credits/Credits.md)에서 읽는다. ESC나 닫기 버튼으로 닫힌다.")]
+    [SerializeField] private CreditsPanel creditsPanel;
+
+    public CreditsPanel Credits => creditsPanel;
+
     private void Awake()
     {
         if (settingsPanel != null) settingsPanel.SetActive(false);
+        if (creditsPanel != null) creditsPanel.gameObject.SetActive(false);
+    }
+
+    public void OnCredits()
+    {
+        if (creditsPanel != null) creditsPanel.Open();
+    }
+
+    public void OnCloseCredits()
+    {
+        if (creditsPanel != null) creditsPanel.Close();
     }
 
     public void OnPlay()

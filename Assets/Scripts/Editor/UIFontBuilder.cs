@@ -31,6 +31,8 @@ public static class UIFontBuilder
     // Face 색만 바꾸므로 Outline 두께 등은 항상 기본 머티리얼과 같다.
     public const string YellowPresetPath = GeneratedFolder + "/UIFont SDF - Yellow.mat";
     public static readonly Color YellowFaceColor = new Color32(0xFF, 0xD8, 0x4D, 0xFF);
+    // 밝은 창 위의 어두운 본문용(타이틀 크레딧 창): 검은 Outline 없이 Face만. 글자색은 정점 색(TMP color)으로 준다.
+    public const string PlainPresetPath = GeneratedFolder + "/UIFont SDF - Plain.mat";
     private const string CharacterListPath = GeneratedFolder + "/UIFont Characters.txt";
     private const string HangulListPath = FontFolder + "/Charsets/KSX1001_Hangul2350.txt";
     private const string TmpSettingsPath = "Assets/TextMesh Pro/Resources/TMP Settings.asset";
@@ -371,20 +373,30 @@ public static class UIFontBuilder
     /// 폰트를 다시 만들면 Padding 등이 바뀔 수 있으므로 Rebuild 때마다 같이 맞춘다.</summary>
     public static void RebuildPresets(TMP_FontAsset main)
     {
-        Material source = main.material;
-        Material preset = AssetDatabase.LoadAssetAtPath<Material>(YellowPresetPath);
+        Material yellow = Preset(main.material, YellowPresetPath);
+        yellow.SetColor("_FaceColor", YellowFaceColor);
+        EditorUtility.SetDirty(yellow);
+
+        Material plain = Preset(main.material, PlainPresetPath);
+        plain.SetFloat("_OutlineWidth", 0f);
+        plain.SetFloat("_FaceDilate", 0f);
+        EditorUtility.SetDirty(plain);
+    }
+
+    private static Material Preset(Material source, string path)
+    {
+        Material preset = AssetDatabase.LoadAssetAtPath<Material>(path);
         if (preset == null)
         {
             preset = new Material(source);
-            AssetDatabase.CreateAsset(preset, YellowPresetPath);
+            AssetDatabase.CreateAsset(preset, path);
         }
         else
         {
             preset.shader = source.shader;
             preset.CopyPropertiesFromMaterial(source);
         }
-        preset.SetColor("_FaceColor", YellowFaceColor);
-        EditorUtility.SetDirty(preset);
+        return preset;
     }
 
     private static void SetSerializedBool(UnityEngine.Object target, string property, bool value)
