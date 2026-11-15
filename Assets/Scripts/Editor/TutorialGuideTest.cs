@@ -19,10 +19,12 @@ using UnityEngine.UI;
 /// 검사: 문구·이름표 글자가 모두 글꼴에 있음 / 단계가 시작되면 게임과 마을 시간(해질녘)이 멈추고 화면이 어두워지며 가운데 카드와 "[Space] 또는 클릭으로 시작"이 뜸 /
 /// 그 단계의 대상(월드·UI)마다 지금 그림 모양을 딴 도트 1칸 노란 외곽선(네모 테두리 없음, 실제 그림으로 모양에 붙은 띠인지 판정), 대상은 어둠 없이 밝음,
 /// 화면 밖 대상은 그쪽을 가리키는 가장자리 화살표, 그림 프레임·뒤집기가 바뀌면 외곽선도 따라감 / Space·클릭으로 다시 움직이고 그 키·클릭은 게임에 새지 않으며 외곽선은 사라짐 /
-/// 다시 움직이면 작은 알림만 남고 다른 화면 UI·하단 자막 칸과 겹치지 않음(1920x1080·1440x1080·1280x1024·2560x1080, 석상 정보 팝업 앞 포함) /
+/// 4단계 강조 대상은 동물(AnimalRescue - 플레이어가 아님)이고 플레이어 그림과 겹치지 않음 / 모든 단계에서 실제 렌더에 노란 외곽선이 대상 둘레 8방향 모두에 보임 /
+/// 멈춤 화면 카드(본문 75·키 63 - 처음의 1.5배)가 다른 화면 UI(HUD·목표 표시·인벤토리 등)·강조 대상·이름표와 겹치지 않고 화면 안(1920x1080·1920x1200·1440x1080) /
+/// 다시 움직이면 작은 알림만 남고(글씨 크기 그대로) 다른 화면 UI·하단 자막 칸과 겹치지 않음(1920x1080·1440x1080·1280x1024·2560x1080, 석상 정보 팝업 앞 포함) /
 /// 일시정지 메뉴·소파 메뉴·소파 확인 창이 열리면 숨음 / 행동하면 다음 단계로 / 2일차에는 안 나옴 / 다시 시작하면 1단계부터 / 이미 한 행동은 건너뜀(멈추지도 않음).
-/// 그림: Logs/Tutorial/applied_v3/tutorial_v3.png (9단계 멈춤 화면 - 1920x1080을 반으로 줄여 4칸씩, 마지막 줄은 외곽선 부분 x4 확대).
-/// 키·마우스는 가상 장치로 누른다. 몬스터는 끄거나 기절시켜 둔다. 프레임 시간 1/30초 고정.
+/// 그림: Logs/Tutorial/applied_v4/tutorial_v4.png (9단계 멈춤 화면 - 1920x1080을 반으로 줄여 4칸씩, 아래 줄은 외곽선 부분 x4 확대: 석상·동물·몬스터·인벤토리 칸·수의사).
+/// 키·마우스는 가상 장치로 누른다. 몬스터는 끄거나 기절시켜 두고 마을 몬스터 생성기도 끈다(테스트가 켠 몬스터만 보이게). 프레임 시간 1/30초 고정.
 /// 결과: Logs/TutorialGuideTest.txt / batchmode: -executeMethod TutorialGuideTest.RunBatch (통과면 0 아니면 1)
 /// </summary>
 [InitializeOnLoad]
@@ -30,11 +32,14 @@ public static class TutorialGuideTest
 {
     private const string KeyActive = "TGT.Active", KeyDone = "TGT.Done", KeyBatch = "TGT.Batch", KeyPassed = "TGT.Passed";
     private const string ReportPath = "Logs/TutorialGuideTest.txt";
-    private const string SheetPath = "Logs/Tutorial/applied_v3/tutorial_v3.png";
+    private const string SheetPath = "Logs/Tutorial/applied_v4/tutorial_v4.png";
     private const float FrameTime = 1f / 30f;
     private const int TileW = 960, TileH = 540, SheetCols = 4;
     private static readonly Vector2Int ShotRes = new Vector2Int(1920, 1080);
     private static readonly Vector2Int[] NoticeResolutions = { new Vector2Int(1920, 1080), new Vector2Int(1440, 1080), new Vector2Int(1280, 1024), new Vector2Int(2560, 1080) };
+    // 멈춤 화면 카드 자리 검사: 1080p(16:9), 16:10, 4:3
+    private static readonly Vector2Int[] CardResolutions = { new Vector2Int(1920, 1080), new Vector2Int(1920, 1200), new Vector2Int(1440, 1080) };
+    private const float CardTextSize = 75f, CardKeySize = 63f, NoticeTextSize = 28f, NoticeKeySize = 24f;
 
     private static IEnumerator routine;
     private static readonly Stack<IEnumerator> nested = new Stack<IEnumerator>();
@@ -279,12 +284,15 @@ public static class TutorialGuideTest
             $"끝난 단계는 알림이 잠깐 \"{TutorialGuide.DoneChipText}\"로 바뀜");
 
         // --- 4. 동물 발견 → 줍기
+        // 실제 게임처럼 조금 떨어진 곳(2칸, 막힌 데 없는 쪽)에서 동물을 보게 한다 - 바로 옆(0.2칸)에 세우면 플레이어 그림이 동물 뒤로 삐져나와
+        // 강조(동물 모양 외곽선)가 "플레이어 몸의 왼쪽 절반"처럼 보이고, 코앞 손전등에 동물이 하얗게 뜬다.
         AnimalRescue animal = NearestAnimal();
-        yield return Teleport(animal.transform.position + new Vector3(0.2f, 0f, 0f));
+        yield return ApproachAnimal(animal);
         yield return WaitRealtime(0.8f); // "완료!" 0.6초(실제 시간) + 시야 확인 0.25초
         yield return WaitFrames(4);
         yield return ExpectIntro(4, "동물이 시야에 들어옴");
         AnimalRescue near = NearestVisibleAnimal();
+        CheckStep4Target(near);
         CheckHighlights("4단계", new[] { "동물" }, new[] { ((GameObject)near.gameObject, (RectTransform)null) }, "4단계 멈춤: 가장 가까운 동물",
             null, false, ("동물", 0, new Vector2(0.5f, 0.5f)));
         CheckFollowsFrame("4단계 동물", near.gameObject);
@@ -315,7 +323,7 @@ public static class TutorialGuideTest
         InventoryUI inv = Object.FindAnyObjectByType<InventoryUI>();
         RectTransform[] toolRects = Enumerable.Range(0, gm.InventorySlotCount).Where(i => gm.GetSlot(i).Type == InventoryItemType.Mine || gm.GetSlot(i).Type == InventoryItemType.Bomb).Select(inv.SlotRect).ToArray();
         CheckHighlights("5단계", new[] { "몬스터", "지뢰·폭탄 칸" }, new[] { (wolf, (RectTransform)null) }.Concat(toolRects.Select(r => ((GameObject)null, r))).ToArray(),
-            "5단계 멈춤: 처음 본 몬스터(월드)·지뢰·폭탄 칸(UI)", "지뢰·폭탄 칸", false, ("인벤토리 칸", 1, new Vector2(0.15f, 0.85f)));
+            "5단계 멈춤: 처음 본 몬스터(월드)·지뢰·폭탄 칸(UI)", "지뢰·폭탄 칸", false, ("몬스터", 0, new Vector2(0.5f, 0.5f)), ("인벤토리 칸", 1, new Vector2(0.15f, 0.85f)));
         yield return Press(Key.Digit1 + mine); // 멈춘 동안 숫자 키는 막힌다
         int selectedWhilePaused = gm.SelectedSlotIndex;
         yield return Dismiss(false, "5단계");
@@ -487,8 +495,10 @@ public static class TutorialGuideTest
     private static void CheckHighlights(string tileLabel, string[] labels, (GameObject world, RectTransform ui)[] targets, string what, string mergedUiLabel = null, bool allowOffscreen = false,
         params (string name, int view, Vector2 anchor)[] zooms)
     {
+        CheckCardPlacement(tileLabel);
         using (var shot = new UiScreenShot(ShotRes))
         {
+            shot.Refresh(); // 다른 화면 UI가 이 해상도로 먼저 다시 배치된 뒤 카드 자리를 고르게
             guide.RefreshLayoutNow();
             shot.Refresh();
             var hs = guide.Highlights.ToList();
@@ -542,7 +552,7 @@ public static class TutorialGuideTest
                 (problems.Count > 0 ? " - " + string.Join("; ", problems) : arrows > 0 ? " - 화면 밖 대상은 그쪽을 가리키는 화살표" : " - 대상마다 지금 그림 모양 그대로"));
 
             // 2) 네모 테두리가 없다: 외곽선 조각은 모두 대상 그림의 실루엣(그림 없는 네모는 그림 없는 UI 칸·스프라이트 없는 대상뿐), 노랑 9조각 틀 없음
-            var outlineImgs = guide.transform.Find("TutorialIntro/Outline").GetComponentsInChildren<Image>().Where(i => i.enabled).ToList();
+            var outlineImgs = hs.SelectMany(h => h.Outlines).Where(i => i.enabled && i.gameObject.activeInHierarchy).ToList();
             var shapeSprites = new HashSet<Sprite>(hs.SelectMany(h => h.Shapes).Select(s => s.sprite));
             bool noFrame = guide.GetComponentsInChildren<Image>(true).All(i => i.sprite == null || !i.sprite.name.Contains("Frame")) &&
                            outlineImgs.All(o => shapeSprites.Contains(o.sprite) && o.color == TutorialGuide.HighlightYellow);
@@ -559,7 +569,8 @@ public static class TutorialGuideTest
             Rect card = shot.ScreenRect(guide.CardRect);
             Texture2D mask = RenderMask(shot, hs, -1);
             Color32[] mp = mask.GetPixels32(), onp = on.GetPixels32(), offp = off.GetPixels32();
-            AnalyzeOutlines(tileLabel, hs, shot);
+            AnalyzeOutlines(tileLabel, hs, shot, on);
+            CheckClearOfPlayer(tileLabel, hs, shot);
 
             // 어둠: 마젠타 자리(대상·외곽선·카드·이름표 밖)가 멈춤 화면을 껐을 때보다 확실히 어둡다. 대상 모양 자리는 그대로 밝다.
             double dimOn = 0, dimOff = 0, shapeOn = 0, shapeOff = 0; int nd = 0, ns = 0;
@@ -602,10 +613,16 @@ public static class TutorialGuideTest
     //  - 노랑이 있다 / 노랑은 모두 대상 모양에서 도트 1칸(+1px) 안 - 모양에 딱 붙은 얇은 띠(떨어진 네모 테두리가 아님)
     //  - 모양 둘레가 노랑 없이 어둠에 바로 닿는 곳이 거의 없다(외곽선이 모양을 빙 둘러쌈)
     //  - 노랑 전체를 감싸는 네모의 네 모서리에 노랑이 없다(모서리가 모양을 따라 깎이거나 둥글다 - 네모 틀이면 모서리가 꽉 찬다)
-    private static void AnalyzeOutlines(string tileLabel, List<TutorialGuide.HighlightView> hs, UiScreenShot shot)
+    //  - 실제 렌더(on)에서: 모양 둘레를 가운데 기준 8방향으로 나눠, 방향마다 둘레 점의 90% 넘게 바로 옆(도트 1칸 + 1px 안)에 노랑이 보인다
+    //    (손전등 빛·다른 그림·카드·이름표에 가리거나 화면 밖으로 잘려 한쪽만 남는 외곽선을 잡는다)
+    private static void AnalyzeOutlines(string tileLabel, List<TutorialGuide.HighlightView> hs, UiScreenShot shot, Texture2D on = null)
     {
         float sf = guide.GetComponent<Canvas>().scaleFactor;
         int W = ShotRes.x, H = ShotRes.y;
+        bool ownOn = on == null;
+        if (ownOn) on = shot.Render();
+        Color32[] onp = on.GetPixels32();
+        if (ownOn) Object.DestroyImmediate(on);
         for (int vi = 0; vi < hs.Count; vi++)
         {
             var hv = hs[vi];
@@ -669,7 +686,123 @@ public static class TutorialGuideTest
             Check(yellow > 0 && far <= yellow * 0.01f && gapRate <= 0.05f && cornerYellow == 0,
                 $"{tileLabel} {name} 외곽선이 모양을 따라감: 노랑 {yellow}px, 모양에서 {R}px 넘게 떨어진 노랑 {far}, 노랑 없이 어둠에 닿은 모양 둘레 {gaps}/{boundary}({gapRate:P1}), " +
                 $"네 모서리({cw}px) 노랑 {cornerYellow} (도트 1칸 {dotPx:F1}px)");
+
+            // 실제 렌더에서 둘레 8방향 모두 노랑이 보이는지
+            long sumX = 0, sumY = 0; int sn = 0;
+            for (int y = y0; y < y1; y++) for (int x = x0; x < x1; x++) if (Shape(x, y)) { sumX += x; sumY += y; sn++; }
+            var total = new int[8]; var seen = new int[8];
+            if (sn > 0)
+            {
+                float cx = sumX / (float)sn, cy = sumY / (float)sn;
+                for (int y = y0 + 1; y < y1 - 1; y++)
+                    for (int x = x0 + 1; x < x1 - 1; x++)
+                    {
+                        if (!Shape(x, y) || x < 3 || y < 3 || x > W - 4 || y > H - 4) continue;
+                        if (Shape(x - 1, y) && Shape(x + 1, y) && Shape(x, y - 1) && Shape(x, y + 1)) continue;
+                        int sector = ((int)Mathf.Floor((Mathf.Atan2(y - cy, x - cx) * Mathf.Rad2Deg + 360f + 22.5f) / 45f)) % 8;
+                        total[sector]++;
+                        bool yel = false;
+                        for (int dy = -R; dy <= R && !yel; dy++)
+                            for (int dx = -R; dx <= R && !yel; dx++)
+                            {
+                                int xx = x + dx, yy = y + dy;
+                                if (xx >= 0 && yy >= 0 && xx < W && yy < H && IsYellow(onp[yy * W + xx])) yel = true;
+                            }
+                        if (yel) seen[sector]++;
+                    }
+            }
+            string[] dirNames = { "→", "↗", "↑", "↖", "←", "↙", "↓", "↘" };
+            var weak = Enumerable.Range(0, 8).Where(i => total[i] >= 4 && seen[i] < total[i] * 0.9f).ToList();
+            int dirs = Enumerable.Range(0, 8).Count(i => total[i] >= 4);
+            Check(sn > 0 && dirs >= 6 && weak.Count == 0,
+                $"{tileLabel} {name} 실제 그림에서 외곽선이 대상 둘레 전체에 보임: 방향별 노랑 보이는 둘레 " +
+                string.Join(" ", Enumerable.Range(0, 8).Select(i => $"{dirNames[i]}{(total[i] > 0 ? seen[i] * 100 / total[i] : 100)}%")) +
+                (weak.Count > 0 ? $" - 모자란 방향 [{string.Join("", weak.Select(i => dirNames[i]))}]" : ""));
         }
+    }
+
+    // 4단계 강조 대상: 동물(AnimalRescue)이고, 그 모양 조각은 모두 그 동물의 스프라이트(플레이어·다른 오브젝트 아님).
+    private static void CheckStep4Target(AnimalRescue expected)
+    {
+        guide.RefreshLayoutNow();
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        var hs = guide.Highlights.ToList();
+        var hv = hs.FirstOrDefault();
+        var srcs = hv != null ? hv.Sources.OfType<Component>().ToList() : new List<Component>();
+        bool allAnimal = srcs.Count > 0 && srcs.All(c => c.GetComponentInParent<AnimalRescue>() == expected);
+        bool anyPlayer = srcs.Any(c => player != null && c.transform.IsChildOf(player.transform));
+        Check(hs.Count == 1 && hv.Label == "동물" && allAnimal && !anyPlayer && !hv.Offscreen,
+            $"4단계 강조 대상이 동물: {expected.name}({expected.BehaviorKind}) - 모양 조각 [{string.Join(", ", srcs.Select(c => c is SpriteRenderer r ? $"{c.name}:{r.sprite.name}" : c.name))}], " +
+            $"모두 그 동물 {allAnimal}, 플레이어 그림 포함 {anyPlayer}");
+    }
+
+    // 월드 대상(플레이어 자신 제외)의 그림이 플레이어 그림과 화면에서 겹치지 않는다 - 겹치면 강조된 모양이 플레이어처럼 보인다.
+    private static void CheckClearOfPlayer(string tileLabel, List<TutorialGuide.HighlightView> hs, UiScreenShot shot)
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null) return;
+        var worldViews = hs.Where(h => !h.Offscreen && h.Sources.OfType<Component>().Any(c => !(c is Graphic) && !(c is RectTransform))).ToList();
+        if (worldViews.Count == 0) return;
+        if (worldViews.Any(h => h.Sources.OfType<Component>().Any(c => c.transform.IsChildOf(player.transform)))) return; // 3단계: 대상이 플레이어
+        List<SpriteRenderer> prs = ShapeRenderers(player);
+        if (prs.Count == 0) return;
+        Bounds pb = prs[0].bounds;
+        foreach (SpriteRenderer r in prs) pb.Encapsulate(r.bounds);
+        Vector3 a = shot.Cam.WorldToScreenPoint(pb.min), b = shot.Cam.WorldToScreenPoint(pb.max);
+        Rect pr = Rect.MinMaxRect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
+        var hits = worldViews.Where(h => h.Shapes.Any(s => shot.ScreenRect(s.rectTransform).Overlaps(pr))).Select(h => h.Label ?? h.Sources[0].name).ToList();
+        Check(hits.Count == 0, $"{tileLabel} 강조된 월드 대상 그림이 플레이어 그림({UiScreenShot.Fmt(pr, ShotRes.y)})과 겹치지 않음" + (hits.Count > 0 ? $" - 겹침 [{string.Join(", ", hits)}]" : ""));
+    }
+
+    // 멈춤 화면 카드: 글씨 크기(본문 75·키 63), 그리고 1080p·16:10·4:3에서 화면 안이고 다른 화면 UI(HUD·목표 표시·인벤토리·자막 등)·
+    // 강조(모양·외곽선·화살표)·이름표와 겹치지 않는다.
+    private static void CheckCardPlacement(string tileLabel)
+    {
+        RectTransform card = guide.CardRect;
+        var lineTexts = card.Find("Line").GetComponentsInChildren<TMP_Text>();
+        float body = lineTexts.Where(t => t.transform.parent.name != "Key").Select(t => t.fontSize).DefaultIfEmpty(0f).Max();
+        float keys = lineTexts.Where(t => t.transform.parent.name == "Key").Select(t => t.fontSize).DefaultIfEmpty(CardKeySize).Max();
+        foreach (Vector2Int res in CardResolutions)
+        {
+            using (var shot = new UiScreenShot(res))
+            {
+                shot.Refresh(); // 다른 화면 UI(HUD·자막 등)가 이 해상도로 먼저 다시 배치된 뒤 카드 자리를 고르게
+                guide.RefreshLayoutNow();
+                shot.Refresh();
+                Rect cr = shot.ScreenRect(card);
+                int rows = card.Find("Line").childCount;
+                float screenArea = res.x * (float)res.y;
+                var others = shot.Graphics(g => g.transform.IsChildOf(guide.transform)).Where(o => o.rect.width * o.rect.height <= screenArea * 0.5f).ToList();
+                var uiHits = others.Where(o => o.rect.Overlaps(cr)).Select(o => o.group).Distinct().ToList();
+                var hs = guide.Highlights.ToList();
+                var hlHits = hs.Where(h => ScreenOf(h.Bounds).Overlaps(cr)).Select(h => h.Label ?? "대상").ToList();
+                var labelHits = hs.Where(h => h.LabelRect.gameObject.activeInHierarchy && shot.ScreenRect(h.LabelRect).Overlaps(cr)).Select(h => h.Label).ToList();
+                bool inside = cr.xMin >= 0 && cr.yMin >= 0 && cr.xMax <= res.x && cr.yMax <= res.y;
+                Check(inside && uiHits.Count == 0 && hlHits.Count == 0 && labelHits.Count == 0 && body == CardTextSize && keys == CardKeySize,
+                    $"{tileLabel} 카드 {res.x}x{res.y}: {UiScreenShot.Fmt(cr, res.y)} ({cr.width:F0}x{cr.height:F0}px, 본문 {rows}줄, 글씨 {body}·키 {keys}), 화면 안 {inside}, " +
+                    $"다른 화면 UI {others.Select(o => o.group).Distinct().Count()}묶음과 겹침 {uiHits.Count}{(uiHits.Count > 0 ? " [" + string.Join(", ", uiHits) + "]" : "")}, " +
+                    $"강조 겹침 {hlHits.Count}{(hlHits.Count > 0 ? " [" + string.Join(", ", hlHits) + "]" : "")}, 이름표 겹침 {labelHits.Count}");
+            }
+        }
+    }
+
+    // 4단계: 동물에서 2칸 떨어진 막히지 않은 자리(좌·우·아래·위 순)에 서서 동물 쪽을 본다.
+    private static IEnumerator ApproachAnimal(AnimalRescue animal)
+    {
+        Vector3 ap = animal.transform.position;
+        Vector3[] offs = { new Vector3(-2f, 0f, 0f), new Vector3(2f, 0f, 0f), new Vector3(0f, -2f, 0f), new Vector3(0f, 2f, 0f), new Vector3(-1.5f, -1.5f, 0f), new Vector3(1.5f, -1.5f, 0f) };
+        Vector3 at = ap + offs[0];
+        foreach (Vector3 o in offs)
+        {
+            Vector2 p = ap + o;
+            bool blocked = Physics2D.OverlapCircleAll(p, 0.35f).Any(c => !c.isTrigger && c.GetComponentInParent<AnimalRescue>() == null && !c.CompareTag("Player"));
+            bool wall = Physics2D.LinecastAll(p, ap).Any(h => !h.collider.isTrigger && h.collider.GetComponentInParent<AnimalRescue>() == null && !h.collider.CompareTag("Player"));
+            if (!blocked && !wall) { at = p; break; }
+        }
+        yield return Teleport(at);
+        Camera cam = Camera.main;
+        Vector3 vp = cam.WorldToViewportPoint(animal.transform.position);
+        yield return LookAt(new Vector2(Mathf.Clamp01(vp.x), Mathf.Clamp01(vp.y)));
     }
 
     // 판정용 그림: 어둠을 마젠타로, 카드·이름표는 숨김. only >= 0이면 그 강조만 남긴다(나머지 강조의 모양·외곽선·화살표를 잠깐 끈다).
@@ -794,9 +927,11 @@ public static class TutorialGuideTest
                 var hits = others.Where(o => o.rect.Overlaps(nr)).Select(o => o.group).Distinct().ToList();
                 bool sub = shot.SubtitleSlots().Any(r => r.Overlaps(nr));
                 bool inside = nr.xMin >= 0 && nr.yMin >= 0 && nr.xMax <= res.x && nr.yMax <= res.y;
-                Check(hits.Count == 0 && !sub && inside && nr.height < res.y * 0.1f,
+                var nTexts = guide.NoticeRect.Find("Line").GetComponentsInChildren<TMP_Text>();
+                bool sizeSame = nTexts.All(t => t.fontSize == (t.transform.parent.name == "Key" ? NoticeKeySize : NoticeTextSize));
+                Check(hits.Count == 0 && !sub && inside && nr.height < res.y * 0.1f && sizeSame,
                     $"{what} {res.x}x{res.y}: 작은 알림 '{guide.NoticeSlot}' {UiScreenShot.Fmt(nr, res.y)} ({nr.width:F0}x{nr.height:F0}px), 다른 화면 UI {others.Select(o => o.group).Distinct().Count()}묶음과 겹침 {hits.Count}" +
-                    (hits.Count > 0 ? $" [{string.Join(", ", hits)}]" : "") + $", 자막 칸 겹침 {sub}");
+                    (hits.Count > 0 ? $" [{string.Join(", ", hits)}]" : "") + $", 자막 칸 겹침 {sub}, 글씨 크기 그대로({NoticeTextSize}·키 {NoticeKeySize}) {sizeSame}");
             }
         }
     }
@@ -871,6 +1006,8 @@ public static class TutorialGuideTest
 
     private static List<GameObject> DisableMonsters()
     {
+        // 시간이 지나며 몬스터를 새로 만드는 생성기도 끈다 - 새 몬스터를 먼저 보면 5단계 강조가 테스트가 켠 몬스터가 아니게 된다
+        foreach (VillageMonsterSpawner spawner in Object.FindObjectsByType<VillageMonsterSpawner>(FindObjectsInactive.Exclude)) spawner.enabled = false;
         List<GameObject> list = MonsterHealth.Active.Where(m => m != null).Select(m => m.gameObject).ToList();
         foreach (GameObject m in list) m.SetActive(false);
         return list;

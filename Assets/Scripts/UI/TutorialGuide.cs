@@ -33,7 +33,15 @@ public class TutorialGuide : MonoBehaviour
     private static readonly Vector2 ReferenceResolution = new Vector2(2240f, 1260f); // 씬 UI Canvas와 같은 기준
     private const int CanvasSortingOrder = 600;  // HUD(0)·자막(500) 위(멈춤 화면 어둠이 자막도 덮는다), 일시정지 메뉴(1000) 아래
     private const float PixelUnits = 4.67f;      // 도트 1칸 = 1080p 4px
-    private const float CardTextSize = 50f, CardKeySize = 42f, CardChipSize = 30f, CardPromptSize = 32f, CardPromptKeySize = 28f;
+    // 멈춤 화면 카드: 박람회 화면에서 멀리서도 읽히게 본문 글씨·키 칸(시작 안내 줄 포함)은 처음 크기(50·42·32·28)의 1.5배
+    private const float CardTextSize = 75f, CardKeySize = 63f, CardChipSize = 30f, CardPromptSize = 48f, CardPromptKeySize = 42f;
+    private const int CardKeyPadY = 6;           // 카드 키 칸 위아래 여백(작은 알림은 4 그대로)
+    private const float CardLineSpacing = 15f;   // 카드 본문 조각 사이 간격(작은 알림은 6 그대로)
+    private const float CardScreenMargin = 40f;  // 카드 본문이 너무 길면 화면 가장자리에서 이만큼 안쪽에서 줄을 바꾼다
+    private const float CardClearance = 24f;     // 카드와 다른 화면 UI·강조(외곽선·화살표·이름표) 사이 최소 간격
+    private static readonly RectOffset CardPadding = new RectOffset(56, 56, 26, 30);
+    // 카드 본문 폭 후보(화면 폭 기준 최대 폭의 비율): 넓은 것부터 - 빈자리에 안 들어가면 더 좁게(줄을 더 나눠) 다시 찾는다
+    private static readonly float[] CardWidthSteps = { 1f, 0.85f, 0.7f, 0.58f, 0.48f, 0.4f };
     private const float NoticeTextSize = 28f, NoticeKeySize = 24f, NoticeChipSize = 22f;
     private const float LabelSize = 34f;
     private const int MaxOutlineSteps = 6;       // UI 외곽선: 도트 1칸(PixelUnits)을 그림 한 칸 이하 간격으로 나눠 민다
@@ -144,19 +152,22 @@ public class TutorialGuide : MonoBehaviour
     // ---------------- 화면 ----------------
     private RectTransform canvasRect;
     private Sprite panelSprite, stepSprite, keySprite, arrowSprite;
-    // 멈춤 화면: 대상 모양 표시(스텐실) → 어둠(표시 밖만) → 노란 외곽선(표시 밖만) → 표시 지우기 → 화살표·이름표 → 카드
+    // 멈춤 화면: 모든 대상 모양 표시(스텐실) → 어둠(표시 밖만) → 표시 지우기 → 대상마다 [그 대상 모양 표시 → 노란 외곽선(그 표시 밖만) → 표시 지우기]
+    //  → 화살표·이름표 → 카드. 외곽선은 대상마다 따로 그려, 붙어 있는 다른 대상(예: 문 바로 위 "오늘 목표")의 모양에 묻혀 한쪽이 사라지지 않는다.
     private GameObject introRoot;
     private RectTransform maskRoot, dimRoot, outlineRoot, clearRoot, labelRoot;
     private Image dim;
     private Material maskMat, dimMat, outlineMat, clearMat;
-    private readonly List<Image> maskImages = new List<Image>(), outlineImages = new List<Image>(), clearImages = new List<Image>();
-    private int usedMask, usedOutline, usedClear;
+    private readonly List<Image> maskImages = new List<Image>(), clearImages = new List<Image>();
+    private int usedMask, usedClear;
     private readonly List<HighlightView> views = new List<HighlightView>();
     private int activeViews;
     private GameObject card;
     private TMP_Text cardChip;
     private RectTransform cardLine, cardPrompt;
     private string cardBuilt;
+    private readonly List<(List<string> rows, Vector2 size)> cardOptions = new List<(List<string>, Vector2)>();
+    private int cardShown = -1;
     // 작은 알림
     private GameObject notice;
     private TMP_Text noticeChip;
@@ -183,6 +194,10 @@ public class TutorialGuide : MonoBehaviour
         public RectTransform LabelRect;
         internal GameObject labelGo;
         internal TMP_Text labelText;
+        // 이 대상만의 외곽선 묶음(Outline 아래): 모양 표시 → 외곽선 → 표시 지우기
+        internal RectTransform gMask, gOutline, gClear;
+        internal readonly List<Image> poolMask = new List<Image>(), poolOutline = new List<Image>(), poolClear = new List<Image>();
+        internal int usedMask, usedOutline, usedClear;
     }
 
     private struct Target
@@ -245,19 +260,20 @@ public class TutorialGuide : MonoBehaviour
         dim.color = DimColor;
         dim.material = dimMat;
         dim.raycastTarget = false;
-        outlineRoot = StretchChild("Outline", introRoot.transform);
         clearRoot = StretchChild("MaskClear", introRoot.transform);
+        outlineRoot = StretchChild("Outline", introRoot.transform);
         labelRoot = StretchChild("Highlights", introRoot.transform);
 
-        card = Box("TutorialCard", introRoot.transform, panelSprite, new RectOffset(48, 48, 30, 34), 20f, true);
+        card = Box("TutorialCard", introRoot.transform, panelSprite, CardPadding, 14f, true);
         RectTransform crt = (RectTransform)card.transform;
         crt.anchorMin = crt.anchorMax = crt.pivot = new Vector2(0.5f, 0.5f);
         FitToContent(card);
         GameObject cchip = Box("Step", card.transform, stepSprite, new RectOffset(16, 16, 6, 6), 0f, false);
         cardChip = Label(cchip.transform, "", CardChipSize, Cream);
-        cardLine = (RectTransform)Box("Line", card.transform, null, new RectOffset(0, 0, 0, 0), 10f, false).transform;
-        cardPrompt = (RectTransform)Box("Prompt", card.transform, null, new RectOffset(0, 0, 0, 0), 8f, false).transform;
-        BuildLine(cardPrompt, StartPromptText, CardPromptSize, CardPromptKeySize, HighlightYellow);
+        // 본문은 줄(Row) 여러 개를 세로로 쌓는다 - 글씨가 커져 화면 폭을 넘으면 띄어쓰기 자리에서 줄을 바꾼다
+        cardLine = (RectTransform)Box("Line", card.transform, null, new RectOffset(0, 0, 0, 0), 4f, true).transform;
+        cardPrompt = (RectTransform)Box("Prompt", card.transform, null, new RectOffset(0, 0, 0, 0), 12f, false).transform;
+        BuildLine(cardPrompt, StartPromptText, CardPromptSize, CardPromptKeySize, HighlightYellow, CardKeyPadY);
         introRoot.SetActive(false);
 
         // 작은 알림
@@ -365,20 +381,88 @@ public class TutorialGuide : MonoBehaviour
         return t;
     }
 
-    // "[WASD] 걷기 · [Shift] 달리기" → 키 칸과 글자 조각으로 다시 만든다.
-    private void BuildLine(RectTransform line, string text, float textSize, float keySize, Color color)
+    private static void ClearChildren(Transform t)
     {
-        for (int i = line.childCount - 1; i >= 0; i--)
+        for (int i = t.childCount - 1; i >= 0; i--)
         {
-            GameObject c = line.GetChild(i).gameObject;
+            GameObject c = t.GetChild(i).gameObject;
             c.transform.SetParent(null);
             Destroy(c);
         }
-        foreach (Match m in Regex.Matches(text, @"\[([^\]]+)\]|[^\[]+"))
+    }
+
+    private static readonly Regex LinePieces = new Regex(@"\[([^\]]+)\]|[^\[]+");
+
+    // 카드 본문 줄 나누기: 한 줄로 maxWidth 안에 들어가면 한 줄, 넘으면 띄어쓰기 자리(키 칸 [..] 안은 나누지 않음)에서 줄을 바꾼다.
+    private List<string> WrapRows(string text, float textSize, float keySize, float spacing, float maxWidth)
+    {
+        var words = new List<string>();
+        var cur = new System.Text.StringBuilder();
+        bool inKey = false;
+        foreach (char ch in text)
+        {
+            if (ch == '[') inKey = true;
+            else if (ch == ']') inKey = false;
+            if (ch == ' ' && !inKey) { if (cur.Length > 0) words.Add(cur.ToString()); cur.Clear(); }
+            else cur.Append(ch);
+        }
+        if (cur.Length > 0) words.Add(cur.ToString());
+
+        var rows = new List<string>();
+        string row = null;
+        foreach (string w in words)
+        {
+            string next = row == null ? w : row + " " + w;
+            if (row != null && MeasureLine(next, textSize, keySize, spacing) > maxWidth) { rows.Add(row); row = w; }
+            else row = next;
+        }
+        if (row != null) rows.Add(row);
+        return rows;
+    }
+
+    // 나눈 줄마다 Row(가로 줄)를 만들어 세로로 쌓는다.
+    private void BuildRows(RectTransform line, List<string> rows, float textSize, float keySize, Color color, int keyPadY, float spacing)
+    {
+        ClearChildren(line);
+        foreach (string r in rows)
+        {
+            RectTransform rowRt = (RectTransform)Box("Row", line, null, new RectOffset(0, 0, 0, 0), spacing, false).transform;
+            BuildLine(rowRt, r, textSize, keySize, color, keyPadY);
+        }
+    }
+
+    private TMP_Text measure;
+
+    // BuildLine으로 만들 한 줄의 폭(이 Canvas 단위) - 글자는 TMP 선호 폭, 키 칸은 글자 폭 + 좌우 여백.
+    private float MeasureLine(string text, float textSize, float keySize, float spacing)
+    {
+        if (measure == null)
+        {
+            measure = Label(transform, "", textSize, Color.clear);
+            measure.gameObject.name = "Measure"; // 글자를 넣지 않으니 그려지는 것은 없다(폭만 잰다)
+        }
+        float w = 0f; int n = 0;
+        foreach (Match m in LinePieces.Matches(text))
+        {
+            bool key = m.Groups[1].Success;
+            string piece = key ? m.Groups[1].Value : m.Value.Trim();
+            if (piece.Length == 0) continue;
+            measure.fontSize = key ? keySize : textSize;
+            w += measure.GetPreferredValues(piece).x + (key ? 2 * Mathf.RoundToInt(keySize * 0.42f) : 0f);
+            n++;
+        }
+        return w + Mathf.Max(0, n - 1) * spacing;
+    }
+
+    // "[WASD] 걷기 · [Shift] 달리기" → 키 칸과 글자 조각으로 다시 만든다.
+    private void BuildLine(RectTransform line, string text, float textSize, float keySize, Color color, int keyPadY = 4)
+    {
+        ClearChildren(line);
+        foreach (Match m in LinePieces.Matches(text))
         {
             if (m.Groups[1].Success)
             {
-                GameObject cap = Box("Key", line, keySprite, new RectOffset(Mathf.RoundToInt(keySize * 0.42f), Mathf.RoundToInt(keySize * 0.42f), 4, 4), 0f, false);
+                GameObject cap = Box("Key", line, keySprite, new RectOffset(Mathf.RoundToInt(keySize * 0.42f), Mathf.RoundToInt(keySize * 0.42f), keyPadY, keyPadY), 0f, false);
                 Label(cap.transform, m.Groups[1].Value, keySize, KeyText);
             }
             else if (m.Value.Trim().Length > 0)
@@ -757,13 +841,28 @@ public class TutorialGuide : MonoBehaviour
     {
         GameManager gm = GameManager.Instance;
         // 카드 글자(단계 문구가 바뀔 때만 다시 만든다)
-        string key = $"{introStep}|{CurrentText}";
+        // 화면 폭이 바뀌면(해상도·비율) 줄바꿈도 다시 한다
+        float maxLineWidth = CanvasSize.x - 2f * CardScreenMargin - CardPadding.left - CardPadding.right;
+        string key = $"{introStep}|{CurrentText}|{Mathf.RoundToInt(maxLineWidth)}";
+        RectTransform crt = (RectTransform)card.transform;
         if (cardBuilt != key && CurrentText != null)
         {
+            // 본문 폭 후보마다 줄을 나눠 카드 크기를 미리 잰다(같은 줄 나눔은 한 번만)
             cardBuilt = key;
             cardChip.text = $"안내 {introStep}/{StepCount}";
-            BuildLine(cardLine, CurrentText, CardTextSize, CardKeySize, Cream);
-            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)card.transform);
+            cardOptions.Clear();
+            string lastSig = null;
+            foreach (float f in CardWidthSteps)
+            {
+                List<string> rows = WrapRows(CurrentText, CardTextSize, CardKeySize, CardLineSpacing, maxLineWidth * f);
+                string sig = string.Join("\n", rows);
+                if (sig == lastSig) continue;
+                lastSig = sig;
+                BuildRows(cardLine, rows, CardTextSize, CardKeySize, Cream, CardKeyPadY, CardLineSpacing);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(crt);
+                cardOptions.Add((rows, crt.rect.size));
+            }
+            cardShown = cardOptions.Count - 1;
         }
 
         // 대상마다: 모양(스텐실 표시) + 노란 외곽선, 화면 밖이면 가장자리 화살표. 이름표는 그 아래(모자라면 위).
@@ -773,11 +872,12 @@ public class TutorialGuide : MonoBehaviour
         Vector2 size = CanvasSize;
         Rect screen = Rect.MinMaxRect(-size.x * 0.5f, -size.y * 0.5f, size.x * 0.5f, size.y * 0.5f);
         holeBuffer.Clear();
-        activeViews = usedMask = usedOutline = usedClear = 0;
+        activeViews = usedMask = usedClear = 0;
         foreach (Target t in targetBuffer)
         {
             HighlightView hv = ViewAt(activeViews);
             hv.Shapes.Clear(); hv.Outlines.Clear(); hv.Sources.Clear();
+            hv.usedMask = hv.usedOutline = hv.usedClear = 0;
             hv.Label = t.label;
             bool ok = t.ui != null ? BuildUiShapes(hv, t.ui) : BuildWorldShapes(hv, t.world, cam);
             if (!ok) continue;
@@ -787,6 +887,7 @@ public class TutorialGuide : MonoBehaviour
             {
                 // 화면 밖: 모양 조각은 치우고, 화면 가운데에서 대상 쪽으로 그은 선이 화면 가장자리와 만나는 자리에 그쪽을 가리키는 화살표
                 ReleaseShapes(hv);
+                hv.usedMask = hv.usedOutline = hv.usedClear = 0;
                 Vector2 d = hv.Bounds.center;
                 float arrowSize = ArrowTexels * ArrowDot;
                 Vector2 half = screen.size * 0.5f - Vector2.one * (arrowSize * 0.5f + ArrowEdgeMargin);
@@ -824,6 +925,14 @@ public class TutorialGuide : MonoBehaviour
                 holeBuffer.Add(outer);
             }
         }
+        for (int i = 0; i < views.Count; i++)
+        {
+            HighlightView v = views[i];
+            if (i >= activeViews) v.usedMask = v.usedOutline = v.usedClear = 0;
+            HideUnused(v.poolMask, v.usedMask);
+            HideUnused(v.poolOutline, v.usedOutline);
+            HideUnused(v.poolClear, v.usedClear);
+        }
         for (int i = activeViews; i < views.Count; i++)
         {
             views[i].labelGo.SetActive(false);
@@ -831,26 +940,87 @@ public class TutorialGuide : MonoBehaviour
             views[i].Shapes.Clear(); views[i].Outlines.Clear(); views[i].Sources.Clear();
         }
         HideUnused(maskImages, usedMask);
-        HideUnused(outlineImages, usedOutline);
         HideUnused(clearImages, usedClear);
 
-        // 카드: 가운데. 강조(모양·외곽선·화살표·이름표)와 겹치면 위쪽 → 아래쪽으로 비킨다. 강조를 절대 가리지 않는 것이 먼저이고,
-        // 그다음으로 다른 화면 UI(HUD·인벤토리·자막 칸 등)도 되도록 피한다(가장 덜 겹치는 자리).
-        var otherUi = OtherUiViewportRects().Select(ToLocal).ToList();
-        RectTransform crt = (RectTransform)card.transform;
-        Vector2 cs = crt.rect.size;
-        float[] offsets = { 0f, size.y * 0.27f, -size.y * 0.27f, size.y * 0.36f, -size.y * 0.36f };
-        float bestArea = float.MaxValue; float bestY = 0f;
-        foreach (float oy in offsets)
+        // 카드: 강조(모양·외곽선·화살표·이름표)와 다른 화면 UI(HUD·목표 표시·인벤토리 등) 어느 것과도 CardClearance 안으로 붙지 않는 자리 중
+        // 화면 가운데에 가장 가까운 곳(가로로 비키는 것보다 위아래로 비키는 쪽을 먼저, 같으면 위쪽). 넓은 카드가 들어갈 자리가 없으면 본문을
+        // 더 좁게(줄을 더 나눠) 다시 찾는다. 하단 자막 칸도 되도록 피하고, 어느 폭으로도 안 될 때만 자막 칸(멈춤 중에는 어둠에 덮임)은 겹쳐도 된다.
+        // 그래도 없을 때만 가장 덜 겹치는 자리(강조를 가리는 것은 다른 UI보다 훨씬 나쁘게 친다).
+        if (cardOptions.Count == 0) return;
+        List<Rect> subtitleRects = new List<Rect>();
+        var otherUi = OtherUiViewportRects(subtitleRects).Select(ToLocal).ToList();
+        var withSubtitle = otherUi.Concat(subtitleRects.Select(ToLocal)).ToList();
+        int pick = -1;
+        Vector2 pos = Vector2.zero;
+        foreach (List<Rect> blocked in new[] { withSubtitle, otherUi })
         {
-            Rect cr = new Rect(new Vector2(-cs.x * 0.5f, oy - cs.y * 0.5f), cs);
-            if (cr.yMin < screen.yMin + 10f || cr.yMax > screen.yMax - 10f) continue;
-            Rect padded = Expand(cr, 12f);
-            float area = holeBuffer.Sum(h => OverlapArea(h, padded)) * 1000f + otherUi.Sum(h => OverlapArea(h, padded));
-            if (area < bestArea - 0.5f) { bestArea = area; bestY = oy; }
-            if (area <= 0f) break;
+            for (int i = 0; i < cardOptions.Count && pick < 0; i++)
+                if (TryFindCardPosition(cardOptions[i].size, screen, holeBuffer, blocked, out pos)) pick = i;
+            if (pick >= 0) break;
         }
-        crt.anchoredPosition = new Vector2(0f, bestY);
+        if (pick < 0)
+        {
+            pick = 0;
+            pos = FallbackCardPosition(cardOptions[0].size, screen, holeBuffer, withSubtitle);
+        }
+        if (cardShown != pick)
+        {
+            cardShown = pick;
+            BuildRows(cardLine, cardOptions[pick].rows, CardTextSize, CardKeySize, Cream, CardKeyPadY, CardLineSpacing);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(crt);
+        }
+        crt.anchoredPosition = pos;
+    }
+
+    private const float CardStepX = 40f, CardStepY = 20f, CardEdge = 10f;
+
+    private static float CardOverlap(Vector2 c, Vector2 cs, List<Rect> holes, List<Rect> blocked)
+    {
+        Rect padded = Expand(new Rect(c - cs * 0.5f, cs), CardClearance);
+        float area = 0f;
+        foreach (Rect h in holes) area += OverlapArea(h, padded) * 1000f;
+        foreach (Rect h in blocked) area += OverlapArea(h, padded);
+        return area;
+    }
+
+    private static void CardGrid(Vector2 cs, Rect screen, out int nx, out int ny)
+    {
+        float maxX = Mathf.Max(0f, screen.xMax - CardEdge - cs.x * 0.5f), maxY = Mathf.Max(0f, screen.yMax - CardEdge - cs.y * 0.5f);
+        nx = Mathf.FloorToInt(maxX / CardStepX);
+        ny = Mathf.FloorToInt(maxY / CardStepY);
+    }
+
+    // 하나도 안 겹치는 자리 중 가운데에 가장 가까운 곳.
+    private static bool TryFindCardPosition(Vector2 cs, Rect screen, List<Rect> holes, List<Rect> blocked, out Vector2 best)
+    {
+        CardGrid(cs, screen, out int nx, out int ny);
+        best = Vector2.zero;
+        float bestCost = float.MaxValue;
+        for (int iy = -ny; iy <= ny; iy++)
+            for (int ix = -nx; ix <= nx; ix++)
+            {
+                Vector2 c = new Vector2(ix * CardStepX, iy * CardStepY);
+                float cost = Mathf.Abs(c.x) * 2f + Mathf.Abs(c.y) + (c.y < 0f ? 0.5f : 0f);
+                if (cost >= bestCost || CardOverlap(c, cs, holes, blocked) > 0f) continue;
+                bestCost = cost;
+                best = c;
+            }
+        return bestCost < float.MaxValue;
+    }
+
+    private static Vector2 FallbackCardPosition(Vector2 cs, Rect screen, List<Rect> holes, List<Rect> blocked)
+    {
+        CardGrid(cs, screen, out int nx, out int ny);
+        Vector2 best = Vector2.zero;
+        float bestArea = float.MaxValue;
+        for (int iy = -ny; iy <= ny; iy++)
+            for (int ix = -nx; ix <= nx; ix++)
+            {
+                Vector2 c = new Vector2(ix * CardStepX, iy * CardStepY);
+                float area = CardOverlap(c, cs, holes, blocked);
+                if (area < bestArea - 0.5f) { bestArea = area; best = c; }
+            }
+        return best;
     }
 
     private static float OverlapArea(Rect a, Rect b)
@@ -953,7 +1123,8 @@ public class TutorialGuide : MonoBehaviour
         return any;
     }
 
-    // 모양 한 조각: 스텐실 표시용 + 표시 지우기용 + 노란 외곽선(모양을 du·dv 방향으로 1~steps번 민 실루엣, 모양 밖에만 칠해진다).
+    // 모양 한 조각: 어둠용 스텐실 표시 + 표시 지우기, 그리고 이 대상 묶음 안에 표시 + 노란 외곽선(모양을 du·dv 방향으로 1~steps번 민 실루엣,
+    // 이 대상 모양 밖에만 칠해진다) + 표시 지우기.
     private void AddShape(HighlightView hv, Sprite sprite, Image src, float ppuMult, Vector2 p00, Vector2 u, Vector2 v, Vector2 du, Vector2 dv, int steps)
     {
         Image m = PoolImage(maskImages, maskRoot, maskMat, ref usedMask);
@@ -963,13 +1134,19 @@ public class TutorialGuide : MonoBehaviour
         Image c = PoolImage(clearImages, clearRoot, clearMat, ref usedClear);
         CopyLook(c, sprite, src, ppuMult);
         PlaceQuad(c.rectTransform, p00, u, v);
+        Image vm = PoolImage(hv.poolMask, hv.gMask, maskMat, ref hv.usedMask);
+        CopyLook(vm, sprite, src, ppuMult);
+        PlaceQuad(vm.rectTransform, p00, u, v);
+        Image vc = PoolImage(hv.poolClear, hv.gClear, clearMat, ref hv.usedClear);
+        CopyLook(vc, sprite, src, ppuMult);
+        PlaceQuad(vc.rectTransform, p00, u, v);
         for (int k = 1; k <= steps; k++)
         {
             Vector2 a = du * k, b = dv * k;
             Vector2[] offs = { a, -a, b, -b };
             foreach (Vector2 off in offs)
             {
-                Image o = PoolImage(outlineImages, outlineRoot, outlineMat, ref usedOutline);
+                Image o = PoolImage(hv.poolOutline, hv.gOutline, outlineMat, ref hv.usedOutline);
                 CopyLook(o, sprite, src, ppuMult);
                 o.color = HighlightYellow;
                 PlaceQuad(o.rectTransform, p00 + off, u, v);
@@ -1084,7 +1261,12 @@ public class TutorialGuide : MonoBehaviour
             GameObject label = Box("Label", labelRoot, stepSprite, new RectOffset(12, 12, 4, 4), 0f, false);
             FitToContent(label);
             TMP_Text t = Label(label.transform, "", LabelSize, Cream);
-            views.Add(new HighlightView { labelGo = label, labelText = t, LabelRect = (RectTransform)label.transform });
+            RectTransform group = StretchChild("Target", outlineRoot);
+            views.Add(new HighlightView
+            {
+                labelGo = label, labelText = t, LabelRect = (RectTransform)label.transform,
+                gMask = StretchChild("Mask", group), gOutline = StretchChild("Outline", group), gClear = StretchChild("MaskClear", group),
+            });
         }
         return views[i];
     }
@@ -1131,11 +1313,14 @@ public class TutorialGuide : MonoBehaviour
     }
 
     // 다른 화면 UI(이 Canvas 제외, 그려지는 그래픽)와 하단 자막 칸(글자가 없어도 그 줄)의 자리(뷰포트 0~1).
-    private List<Rect> OtherUiViewportRects()
+    // subtitleOut을 주면 하단 자막 칸(자막 글자 포함)은 결과에 넣지 않고 subtitleOut에 따로 담는다.
+    private List<Rect> OtherUiViewportRects(List<Rect> subtitleOut = null)
     {
         var blocked = new List<Rect>();
+        SubtitleManager subtitle = FindAnyObjectByType<SubtitleManager>();
         foreach (Graphic g in FindObjectsByType<Graphic>(FindObjectsInactive.Exclude))
         {
+            if (subtitleOut != null && subtitle != null && g != null && g.transform.IsChildOf(subtitle.transform)) continue;
             if (g == null || !g.enabled || g.canvas == null || g.color.a <= 0.01f) continue;
             Canvas root = g.canvas.rootCanvas;
             if (root == null || root.transform == transform || root.renderMode == RenderMode.WorldSpace) continue;
@@ -1144,10 +1329,9 @@ public class TutorialGuide : MonoBehaviour
             if (vr.width * vr.height > 0.5f) continue; // 화면을 덮는 배경·페이드는 자리 판단에서 뺀다
             blocked.Add(vr);
         }
-        SubtitleManager subtitle = FindAnyObjectByType<SubtitleManager>();
         if (subtitle != null)
             foreach (TMP_Text t in subtitle.GetComponentsInChildren<TMP_Text>(true))
-                if (UiViewportRect(t.rectTransform, out Rect sr)) blocked.Add(sr);
+                if (UiViewportRect(t.rectTransform, out Rect sr)) (subtitleOut ?? blocked).Add(sr);
         return blocked;
     }
 
