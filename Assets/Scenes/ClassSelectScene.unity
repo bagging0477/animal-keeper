@@ -246,7 +246,7 @@ MonoBehaviour:
   interactionRange: 2
   popup: {fileID: 1725396600}
   bodySprite: {fileID: 321690044}
-  idleColor: {r: 1, g: 0.6, b: 0.6, a: 1}
+  idleColor: {r: 1, g: 0.76, b: 0.76, a: 1}
 --- !u!212 &321690044
 SpriteRenderer:
   serializedVersion: 3
@@ -297,7 +297,7 @@ SpriteRenderer:
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: -3680518950676972392, guid: 5241f4cb0d1410343992801776513ce6, type: 3}
-  m_Color: {r: 1, g: 0.6, b: 0.6, a: 1}
+  m_Color: {r: 1, g: 0.76, b: 0.76, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -842,7 +842,7 @@ MonoBehaviour:
   interactionRange: 2
   popup: {fileID: 1725396600}
   bodySprite: {fileID: 704313532}
-  idleColor: {r: 0.62, g: 0.8, b: 1, a: 1}
+  idleColor: {r: 0.772, g: 0.88, b: 1, a: 1}
 --- !u!212 &704313532
 SpriteRenderer:
   serializedVersion: 3
@@ -893,7 +893,7 @@ SpriteRenderer:
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: -3680518950676972392, guid: 5241f4cb0d1410343992801776513ce6, type: 3}
-  m_Color: {r: 0.62, g: 0.8, b: 1, a: 1}
+  m_Color: {r: 0.772, g: 0.88, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1399,7 +1399,7 @@ MonoBehaviour:
   interactionRange: 2
   popup: {fileID: 1725396600}
   bodySprite: {fileID: 1510841856}
-  idleColor: {r: 0.62, g: 1, b: 0.62, a: 1}
+  idleColor: {r: 0.772, g: 1, b: 0.772, a: 1}
 --- !u!212 &1510841856
 SpriteRenderer:
   serializedVersion: 3
@@ -1450,7 +1450,7 @@ SpriteRenderer:
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: -3680518950676972392, guid: 5241f4cb0d1410343992801776513ce6, type: 3}
-  m_Color: {r: 0.62, g: 1, b: 0.62, a: 1}
+  m_Color: {r: 0.772, g: 1, b: 0.772, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5609,7 +5609,7 @@ MonoBehaviour:
   m_SelectionSources:
     rid: 2604622880237966336
   m_FalloffIntensity: 0.6
-  m_Color: {r: 1, g: 0.82, b: 0.6, a: 1}
+  m_Color: {r: 0.9490196, g: 0.8862745, b: 0.78431374, a: 1}
   m_Intensity: 0.85
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
@@ -5710,7 +5710,7 @@ MonoBehaviour:
   m_SelectionSources:
     rid: 3107520803294394368
   m_FalloffIntensity: 0.6
-  m_Color: {r: 1, g: 0.82, b: 0.6, a: 1}
+  m_Color: {r: 0.9490196, g: 0.8862745, b: 0.78431374, a: 1}
   m_Intensity: 0.85
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
@@ -5811,7 +5811,7 @@ MonoBehaviour:
   m_SelectionSources:
     rid: 6799386977360696320
   m_FalloffIntensity: 0.6
-  m_Color: {r: 1, g: 0.82, b: 0.6, a: 1}
+  m_Color: {r: 0.9490196, g: 0.8862745, b: 0.78431374, a: 1}
   m_Intensity: 0.85
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
