@@ -114,6 +114,8 @@ public class MonsterHealth : MonoBehaviour, ISleepable
             frameAnimator?.PlayHurt();
             Damaged?.Invoke(amount);
         }
+        // 히트스톱: 맞은 이 몬스터의 그림만 잠깐 멈춘다(이동·AI·timeScale은 그대로).
+        frameAnimator?.HitStop(HitFeel.HitStopDuration);
     }
 
     public void Stun(float duration)
@@ -147,6 +149,8 @@ public class MonsterHealth : MonoBehaviour, ISleepable
         else frameAnimator?.PlayDeath();
         if (spriteRenderer != null) spriteRenderer.color = deadColor;
         if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
+        // 쓰러짐 손맛(소리·흙먼지·흔들림 약). 재진입으로 시체를 되살릴 때(skipDeathAnimation)는 내지 않는다.
+        if (!skipDeathAnimation) HitFeel.MonsterDown(this);
 
         Debug.Log($"{gameObject.name} 몬스터 사망!");
     }

@@ -68,6 +68,7 @@ public class PlayerWeaponController : MonoBehaviour
         Vector2 aimDirection = playerMovement.LookDirection;
         if (netSwingEffect != null) netSwingEffect.Play(aimDirection);
 
+        bool netHitAny = false;
         for (int i = MonsterHealth.Active.Count - 1; i >= 0; i--)
         {
             MonsterHealth monster = MonsterHealth.Active[i];
@@ -79,7 +80,11 @@ public class PlayerWeaponController : MonoBehaviour
 
             monster.TakeDamage(netDamage);
             monster.Stun(netStunDuration);
+            HitFeel.NetHitParticles(monster);
+            netHitAny = true;
         }
+        // 손맛: 몬스터에 맞았을 때만 피격음 + 흔들림 약(한 번 휘두를 때 한 번).
+        if (netHitAny) HitFeel.NetHit();
 
         // 거위만 같은 부채꼴 안에서 포획망에 맞는다 - 마취 다트, 폭탄과 같은 PutToSleep으로 쓰러지는 동작 뒤에 잠들고(AnimalSleep.DownDuration),
         // 수면 시간과 깬 뒤 동작도 같다. 데미지는 주지 않는다. 다른 동물은 포획망에 맞지 않는다.

@@ -718,6 +718,29 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("동물·몬스터는 플레이어에게서 이 거리(칸) 안에 있을 때만 가림 판정을 한다. 플레이어는 항상 한다.")]
     [Min(0f)] public float occluderTargetRadius = 10f;
 
+    [Header("손맛 - 화면 흔들림·히트스톱·피격 깜빡임·파티클 (HitFeel)")]
+    [Tooltip("끄면 화면 흔들림이 전혀 없다(멀미 대응, 카메라가 따라가는 상태로 캡처하는 테스트용).")]
+    public bool screenShakeEnabled = true;
+    [Tooltip("흔들림 '중' 세기(칸): 폭탄 폭발, 플레이어 피격, 코뿔소 벽 충돌. 1080p에서 1칸 ≈ 96px.")]
+    [Min(0f)] public float shakeMediumAmplitude = 0.09f;
+    [Tooltip("흔들림 '중' 시간(초). 이 시간 동안 세기가 0까지 선형으로 줄어든다.")]
+    [Min(0f)] public float shakeMediumDuration = 0.22f;
+    [Tooltip("흔들림 '중' 방향을 바꾸는 횟수(초당).")]
+    [Min(1f)] public float shakeMediumFrequency = 25f;
+    [Tooltip("흔들림 '약' 세기(칸): 그물 명중, 몬스터 쓰러짐.")]
+    [Min(0f)] public float shakeWeakAmplitude = 0.04f;
+    [Tooltip("흔들림 '약' 시간(초).")]
+    [Min(0f)] public float shakeWeakDuration = 0.10f;
+    [Tooltip("흔들림 '약' 방향을 바꾸는 횟수(초당).")]
+    [Min(1f)] public float shakeWeakFrequency = 30f;
+    [Tooltip("맞은 대상의 그림(애니메이션)만 이 시간(초) 동안 멈춘다. 이동·AI·Time.timeScale은 그대로다.")]
+    [Min(0f)] public float hitStopDuration = 0.05f;
+    [Tooltip("플레이어가 맞았을 때 몸 그림 깜빡임 색과 시간(몬스터 피격 깜빡임과 같은 값).")]
+    public Color playerHurtFlashColor = new Color(1f, 0.25f, 0.25f, 1f);
+    [Min(0f)] public float playerHurtFlashDuration = 0.15f;
+    [Tooltip("타격 파티클 재질. 빛을 받는 재질(Sprite-Lit-Default)이어야 시야 밖에서 보이지 않는다. 비우면 파티클을 만들지 않는다.")]
+    public Material hitParticleMaterial;
+
     [Header("날짜별 몬스터 출현 - 맵 생성 수 + 구간별 추가 소환 (VillageMapGenerator 격자 배치, VillageMonsterSpawner)")]
     [Tooltip("날짜별 표. 0번이 1일차, 1번이 2일차… 표보다 뒤의 날은 마지막 줄을 그대로 쓴다. " +
         "맵 생성(mapMonsters)은 격자 배치에서 종류별 수 그대로 나온다(비율 추첨 없음). 구간별 추가 소환(phaseSpawns)은 배치 방식과 상관없이 쓴다. " +

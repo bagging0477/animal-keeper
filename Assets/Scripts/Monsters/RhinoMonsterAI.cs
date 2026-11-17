@@ -358,6 +358,9 @@ public class RhinoMonsterAI : MonsterBrain, ICorpseWeight, ISpawnFootprint
 
         if (wall)
         {
+            // 손맛: 충돌음·먼지 + 시야 안이면 흔들림 중, 코뿔소 그림만 잠깐 멈춤.
+            HitFeel.RhinoWall(frameAnimator != null ? frameAnimator.GetComponent<SpriteRenderer>() : null, GamePosition, DashDirection);
+            frameAnimator?.HitStop(HitFeel.HitStopDuration);
             EndDash(DashEnd.Wall);
             ToWander();
             health.Stun(WallStunDuration);

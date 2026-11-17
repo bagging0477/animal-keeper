@@ -32,6 +32,13 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip daySuccessClip;
     [SerializeField] private AudioClip dayFailClip;
 
+    [Header("타격 손맛 효과음 (HitFeel, Kenney CC0. 비워두면 소리 없이 넘어간다)")]
+    [SerializeField] private AudioClip dartHitClip;
+    [SerializeField] private AudioClip netHitClip;
+    [SerializeField] private AudioClip bombExplosionClip;
+    [SerializeField] private AudioClip monsterDownClip;
+    [SerializeField] private AudioClip rhinoWallClip;
+
     [Header("배경음 (비워두면 임시 루프 자동 생성)")]
     [SerializeField] private AudioClip truckMusicClip;
     [SerializeField] private AudioClip villageMusicClip;
@@ -44,6 +51,12 @@ public class AudioManager : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float monsterChaseVolume = 0.56f;
     [SerializeField, Range(0f, 1f)] private float daySuccessVolume = 0.4f;
     [SerializeField, Range(0f, 1f)] private float dayFailVolume = 0.19f;
+    [Tooltip("타격 효과음 볼륨. 원본 평균 음량을 재서 마취총 발사음·피격음과 비슷하게 맞춘 값이다(폭발·코뿔소는 조금 크게).")]
+    [SerializeField, Range(0f, 1f)] private float dartHitVolume = 0.16f;
+    [SerializeField, Range(0f, 1f)] private float netHitVolume = 0.31f;
+    [SerializeField, Range(0f, 1f)] private float bombExplosionVolume = 0.38f;
+    [SerializeField, Range(0f, 1f)] private float monsterDownVolume = 0.30f;
+    [SerializeField, Range(0f, 1f)] private float rhinoWallVolume = 0.48f;
     [Tooltip("cozy ambient는 RMS 측정치로는 마을 배경음과 비슷하지만 실제로 들으면 훨씬 크게 들린다. 귀로 맞췄던 원래 비율(마을 배경음의 0.4배)을 유지한다.")]
     [SerializeField, Range(0f, 1f)] private float truckMusicVolume = 0.33f;
     [SerializeField, Range(0f, 1f)] private float villageMusicVolume = 0.83f;
@@ -111,8 +124,10 @@ public class AudioManager : MonoBehaviour
         EnsurePlaceholderClips();
 
         // 처음 재생하는 순간에 자르느라 한 박자 늦지 않게, 이미 아는 클립은 미리 잘라둔다.
-        foreach (AudioClip clip in new[] { pickupClip, hitClip, netSwingClip, tranquilizerShotClip, monsterChaseClip, daySuccessClip, dayFailClip })
+        foreach (AudioClip clip in new[] { pickupClip, hitClip, netSwingClip, tranquilizerShotClip, monsterChaseClip, daySuccessClip, dayFailClip,
+                                            dartHitClip, netHitClip, bombExplosionClip, monsterDownClip, rhinoWallClip })
         {
+            if (clip == null) continue;
             GetTrimmedClip(clip);
         }
     }
@@ -183,6 +198,12 @@ public class AudioManager : MonoBehaviour
     public void PlayTranquilizerShot() => PlaySfx(tranquilizerShotClip, tranquilizerShotVolume);
     public void PlayDaySuccess() => PlayUi(daySuccessClip, daySuccessVolume);
     public void PlayDayFail() => PlayUi(dayFailClip, dayFailVolume);
+    // 타격 손맛(HitFeel). SoundEvents.Emit에는 연결하지 않는다 - 소리반응형 몬스터가 이 소리에 반응하지 않는다.
+    public void PlayDartHit() => PlaySfx(dartHitClip, dartHitVolume);
+    public void PlayNetHit() => PlaySfx(netHitClip, netHitVolume);
+    public void PlayBombExplosion() => PlaySfx(bombExplosionClip, bombExplosionVolume);
+    public void PlayMonsterDown() => PlaySfx(monsterDownClip, monsterDownVolume);
+    public void PlayRhinoWall() => PlaySfx(rhinoWallClip, rhinoWallVolume);
 
     /// <summary>동물별 개별 픽업음처럼, 미리 정의된 슬롯이 없는 임의의 클립을 재생할 때 사용.</summary>
     public void PlaySfx(AudioClip clip, float volume = 1f)

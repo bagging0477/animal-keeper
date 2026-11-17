@@ -276,6 +276,7 @@ public class GameManager : MonoBehaviour
         if (Health <= 0 || amount < 0) return; // 음수 데미지가 체력을 회복시키지 않게 한다
 
         AudioManager.Instance?.PlayHit();
+        HitFeel.PlayerHit(); // 손맛: 흔들림 중 + 몸 빨강 깜빡임·그림 멈춤
         Health = Mathf.Clamp(Health - amount, 0, MaxHealth);
         Debug.Log($"{monsterTypeName} 몬스터에게 당함! 데미지: {amount}%, 남은 체력: {Health}%");
 

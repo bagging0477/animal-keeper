@@ -210,6 +210,17 @@ MonoBehaviour:
   occluderFadeSpeed: 6
   occluderMinCover: 0.2
   occluderTargetRadius: 10
+  screenShakeEnabled: 1
+  shakeMediumAmplitude: 0.09
+  shakeMediumDuration: 0.22
+  shakeMediumFrequency: 25
+  shakeWeakAmplitude: 0.04
+  shakeWeakDuration: 0.1
+  shakeWeakFrequency: 30
+  hitStopDuration: 0.05
+  playerHurtFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
+  playerHurtFlashDuration: 0.15
+  hitParticleMaterial: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   dayMonsterPlans:
   - label: "1\uC77C\uCC28"
     mapMonsters:

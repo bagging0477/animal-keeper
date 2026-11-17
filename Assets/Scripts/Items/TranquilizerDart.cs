@@ -59,6 +59,7 @@ public class TranquilizerDart : MonoBehaviour
             if (TryHit(monster, position, monster.DartHitCenter, monster.DartHitRadius(hitRadius)))
             {
                 monster.TakeDamage(monsterDamage);
+                HitFeel.DartHit(position, monster); // 손맛: 피격음·흰 점(흔들림 없음)
                 return;
             }
         }

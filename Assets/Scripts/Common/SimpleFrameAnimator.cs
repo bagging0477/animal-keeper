@@ -183,6 +183,32 @@ public class SimpleFrameAnimator : MonoBehaviour
     /// <summary>피격 그림(hurtFrames)을 재생 중인지.</summary>
     public bool IsPlayingHurt => mode == Mode.Hurt;
 
+    // 히트스톱(HitFeel): 보이는 그림만 seconds 동안 그대로 둔다. 재생 모드·프레임 타이머·IsPlayingHurt 등 상태는
+    // 평소대로 흐르므로 이 애니메이터를 보는 AI(호저·코뿔소)의 판단은 바뀌지 않는다. 끝나면 그 시점의 그림으로 바로 이어진다.
+    private float hitStopRemaining;
+    private Sprite hitStopSprite;
+
+    /// <summary>맞은 순간의 그림을 seconds(게임 시간) 동안 멈춰 보인다. 이동·AI·Time.timeScale은 건드리지 않는다.</summary>
+    public void HitStop(float seconds)
+    {
+        if (seconds <= 0f) return;
+        hitStopRemaining = Mathf.Max(hitStopRemaining, seconds);
+        hitStopSprite = null;
+    }
+
+    /// <summary>히트스톱으로 그림이 멈춰 있는 중인지(테스트용).</summary>
+    public bool IsHitStopped => hitStopRemaining > 0f;
+
+    private void LateUpdate()
+    {
+        if (hitStopRemaining <= 0f) return;
+        // 맞은 프레임에 보이던 그림을 붙잡는다. 다트·그물처럼 애니메이터 Update 뒤에 맞으면 맞기 직전 모습이 멈춰 보이고, 0.05초 뒤 피격 그림으로 이어진다.
+        if (hitStopSprite == null) hitStopSprite = spriteRenderer.sprite;
+        else spriteRenderer.sprite = hitStopSprite;
+        hitStopRemaining -= Time.deltaTime;
+        if (hitStopRemaining <= 0f) hitStopSprite = null;
+    }
+
     /// <summary>PlayAndHold로 멈춰 있던 것(또는 PlayLoop 반복)을 풀고 지금 이동 상태로 돌아간다. Hold·Loop가 아니면 아무 일도 없다.</summary>
     public void ReleaseHold()
     {

@@ -76,6 +76,8 @@ public class PlayerGadgetController : MonoBehaviour
             Color effectColor = config != null ? config.bombEffectColor : new Color(1f, 0f, 0f, 0.5f);
             BombExplosionEffect.Spawn(transform.position, radius, effectDuration, effectColor);
         }
+        // 손맛: 폭발음·연기 + 시야 안이면 흔들림 중.
+        HitFeel.BombExplosion(origin);
 
         for (int i = MonsterHealth.Active.Count - 1; i >= 0; i--)
         {

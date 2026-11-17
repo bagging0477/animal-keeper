@@ -1,0 +1,30 @@
+ZzTempHitFeelCapture 2026-11-17 20:23:53
+설정: 흔들림 True 중 0.09칸/0.22초, 약 0.04칸/0.1초, 히트스톱 0.05초, 플레이어 깜빡임 0.15초, 파티클 재질 Sprite-Lit-Default / Universal Render Pipeline/2D/Sprite-Lit-Default
+플레이어 자리 (15.50, 43.50), 카메라 따라가기 True
+
+== 손맛 끔
+  맞은 뒤 프레임별 그림(*=멈춤 중): Wolf Cub Sprite Sheet_21, Wolf Cub Sprite Sheet_21, Wolf Cub Sprite Sheet_21, Wolf Cub Sprite Sheet_21, Wolf Cub Sprite Sheet_22, Wolf Cub Sprite Sheet_22
+  [OK] 다트 명중(끔): 파티클 0, 흔들림 False
+  [OK] 폭탄(끔): 파티클 0, 흔들림 False
+  [OK] 코뿔소 벽 충돌(끔): 끝난 이유 Wall, 파티클 0, 흔들림 False
+
+== 손맛 켬
+  맞은 뒤 프레임별 그림(*=멈춤 중): Wolf Cub Sprite Sheet_20*, Wolf Cub Sprite Sheet_20, Wolf Cub Sprite Sheet_21, Wolf Cub Sprite Sheet_21, Wolf Cub Sprite Sheet_22, Wolf Cub Sprite Sheet_22
+  [OK] 다트 명중: 체력 5→4.2, 히트스톱 True(그림 유지 True), 파티클 1묶음, 흔들림 False(없어야 함)
+  [OK] 폭탄: 파티클 1묶음, 흔들림 True, 카메라 어긋남 0.035칸
+  [OK] 코뿔소 벽 충돌: 끝난 이유 Wall, 시야 안 True, 히트스톱 True, 파티클 1, 흔들림 True, 플레이어 체력 130
+
+== 추가 확인 (손맛 켬)
+  [OK] 그물 명중: 흔들림 True, 파티클 1, 히트스톱 켜짐
+  [OK] 그물 흔들림(약 0.10초)은 0.5초 뒤 끝남
+  [OK] 빗나간 그물: 흔들림·파티클 없음
+  [OK] 쓰러짐: 죽음 True, 흔들림 True, 파티클 있음
+  [OK] 플레이어 피격: 체력 130→129, 깜빡임 색 #FF4040 (0.15초 뒤 #FFFFFF = 원래 #FFFFFF), 흔들림 중 True
+  (대조) 폭발 없이 4프레임 뒤 화면 차이 2 @ 최대 (1655,422) a RGBA(65, 70, 42, 255) b RGBA(63, 70, 42, 255), 차이>3 픽셀 0개 범위 x 1920~0 y 1080~0
+  (폭발 자리 ±2칸 안만 비교) 시야 밖 폭발 차이 위치 최대 (0,0) a RGBA(0, 0, 0, 255) b RGBA(0, 0, 0, 255), 차이>3 픽셀 0개 범위 x 1920~0 y 1080~0, 파티클 화면 위치 (320.00, 240.00, 10.00)
+  [OK] 시야 밖(7.0칸, 판정 보임 False) 폭발 파티클 1묶음: 화면 차이 최대 0 (≤3), 흔들림 False
+  [OK] 대조: 시야 안 폭발 파티클은 보임(화면 차이 65 ≥ 15)
+  [OK] 확인 동안 Time.timeScale은 늘 1 (히트스톱이 timeScale을 건드리지 않음)
+
+콘솔 에러/예외: 0건
+결과: 검사 14개 중 실패 0

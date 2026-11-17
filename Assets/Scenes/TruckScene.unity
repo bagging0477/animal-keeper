@@ -725,6 +725,11 @@ MonoBehaviour:
   monsterChaseClip: {fileID: 8300000, guid: 448abe687ce09de47b4bdd5effa93a96, type: 3}
   daySuccessClip: {fileID: 8300000, guid: 01a39061bec7bb24c955e616f51d1289, type: 3}
   dayFailClip: {fileID: 8300000, guid: 9b1f4b47dc84c6a4eac85773b0e42b5c, type: 3}
+  dartHitClip: {fileID: 8300000, guid: 3ed714f2330f3364c9335e8fc56d5765, type: 3}
+  netHitClip: {fileID: 8300000, guid: 1e56b01222ee65e498758cede27fd566, type: 3}
+  bombExplosionClip: {fileID: 8300000, guid: 31eb70ce71a9806489295dd5bced7ee8, type: 3}
+  monsterDownClip: {fileID: 8300000, guid: 1cc85ef0370ecf44d8d7f310d3269bcc, type: 3}
+  rhinoWallClip: {fileID: 8300000, guid: a170e6e7d67ea7b42ab0b6bf7a8abdb9, type: 3}
   truckMusicClip: {fileID: 8300000, guid: ad4ec7ad1723afe4d9317be895f10afc, type: 3}
   villageMusicClip: {fileID: 8300000, guid: 8987cf16a6e3214448e044ce50d85443, type: 3}
   pickupVolume: 0.32
@@ -734,6 +739,11 @@ MonoBehaviour:
   monsterChaseVolume: 0.56
   daySuccessVolume: 0.4
   dayFailVolume: 0.19
+  dartHitVolume: 0.16
+  netHitVolume: 0.31
+  bombExplosionVolume: 0.38
+  monsterDownVolume: 0.3
+  rhinoWallVolume: 0.48
   truckMusicVolume: 0.33
   villageMusicVolume: 0.83
   chaseReleaseDelay: 1.5
