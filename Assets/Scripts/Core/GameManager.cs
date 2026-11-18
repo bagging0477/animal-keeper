@@ -641,10 +641,14 @@ public class GameManager : MonoBehaviour
             AddCargo(slot.AnimalWeight);
             MarkAnimalRescuedToday(slot.AnimalId);
             inventorySlots[i] = InventorySlotData.Empty;
+            LastDeliveredAnimal = slot;
             delivered++;
         }
         return delivered;
     }
+
+    /// <summary>DeliverAllAnimals로 마지막에 넘긴 동물 칸(칸 순서상 마지막). 수의사 대사(ClerkLines)가 종류를 고를 때 쓴다.</summary>
+    public InventorySlotData LastDeliveredAnimal { get; private set; }
 
     /// <summary>현재 선택된 "일반" 슬롯(숫자키 칸)의 아이템을 꺼내 슬롯을 비운다. 무기 슬롯은 이 배열에
     /// 아예 들어있지 않으므로(클래스에 고정된 별도 장비) G로는 절대 버릴 수 없다.</summary>

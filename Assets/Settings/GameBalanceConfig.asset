@@ -221,6 +221,13 @@ MonoBehaviour:
   playerHurtFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
   playerHurtFlashDuration: 0.15
   hitParticleMaterial: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  dizzyStarSprite: {fileID: 21300000, guid: 875a7832aff89124daf7c674ced995a0, type: 3}
+  dizzyStarCount: 3
+  dizzyStarOrbitRadius: {x: 0.5, y: 0.1875}
+  dizzyStarTurnsPerSecond: 0.9
+  clerkBubbleSprite: {fileID: 21300000, guid: e6afbdfbb0b97a349a977d43394875d1, type: 3}
+  clerkBubbleTailSprite: {fileID: 21300000, guid: 974f8e504b83d5c429ca54c53c460b6e, type: 3}
+  clerkBubbleDuration: 2.6
   dayMonsterPlans:
   - label: "1\uC77C\uCC28"
     mapMonsters:

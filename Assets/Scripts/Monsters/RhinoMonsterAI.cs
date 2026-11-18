@@ -41,6 +41,8 @@ public class RhinoMonsterAI : MonsterBrain, ICorpseWeight, ISpawnFootprint
     [SerializeField] private float texelWorldSize = 1f / 16f;
     [Tooltip("보이는 몸(idle)의 반폭·반높이(텍셀). 돌진 벽 판정에 쓰는 몸 상자 = 몸 가운데 ± 이 값.")]
     [SerializeField] private Vector2 bodyHalfExtentsTexels = new Vector2(14.5f, 9f);
+    [Tooltip("기절 별(DizzyStars) 자리: 오른쪽을 볼 때 그림 가운데에서 머리 윗끝(귀 끝)까지(텍셀). 기절 그림 recover-01에서 잰 값.")]
+    [SerializeField] private Vector2 dizzyHeadTopTexels = new Vector2(14f, 5f);
 
     [Header("기타")]
     [SerializeField] private string monsterTypeName = "코뿔소";
@@ -364,6 +366,7 @@ public class RhinoMonsterAI : MonsterBrain, ICorpseWeight, ISpawnFootprint
             EndDash(DashEnd.Wall);
             ToWander();
             health.Stun(WallStunDuration);
+            DizzyStars.Play(visualRenderer, health, dizzyHeadTopTexels * texelWorldSize); // 밈: 기절해 있는 동안 머리 바로 위에 별이 돈다(그림만)
             return;
         }
         if (DashTraveled >= DashDistance - 0.0001f)

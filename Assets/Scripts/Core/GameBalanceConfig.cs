@@ -741,6 +741,22 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("타격 파티클 재질. 빛을 받는 재질(Sprite-Lit-Default)이어야 시야 밖에서 보이지 않는다. 비우면 파티클을 만들지 않는다.")]
     public Material hitParticleMaterial;
 
+    [Header("밈 - 코뿔소 기절 별·수의사 말풍선 (DizzyStars, ClerkSpeechBubble). 그림은 Tools > Memes > Build Meme Sprites가 만든다")]
+    [Tooltip("코뿔소가 벽에 부딪혀 기절한 동안 머리 위를 도는 별 그림(7x7 도트, PPU 16). 비우면 별을 띄우지 않는다.")]
+    public Sprite dizzyStarSprite;
+    [Tooltip("도는 별 수.")]
+    [Min(1)] public int dizzyStarCount = 3;
+    [Tooltip("별 궤도 타원의 반지름(칸, 가로·세로).")]
+    public Vector2 dizzyStarOrbitRadius = new Vector2(0.5f, 0.1875f);
+    [Tooltip("별이 1초에 도는 바퀴 수.")]
+    [Min(0f)] public float dizzyStarTurnsPerSecond = 0.9f;
+    [Tooltip("수의사 말풍선 몸통(9-slice, 테두리 4도트).")]
+    public Sprite clerkBubbleSprite;
+    [Tooltip("수의사 말풍선 꼬리(아래로 뾰족).")]
+    public Sprite clerkBubbleTailSprite;
+    [Tooltip("말풍선이 떠 있는 시간(초). 끝나기 전 0.2초 동안 흐려진다.")]
+    [Min(0.1f)] public float clerkBubbleDuration = 2.6f;
+
     [Header("날짜별 몬스터 출현 - 맵 생성 수 + 구간별 추가 소환 (VillageMapGenerator 격자 배치, VillageMonsterSpawner)")]
     [Tooltip("날짜별 표. 0번이 1일차, 1번이 2일차… 표보다 뒤의 날은 마지막 줄을 그대로 쓴다. " +
         "맵 생성(mapMonsters)은 격자 배치에서 종류별 수 그대로 나온다(비율 추첨 없음). 구간별 추가 소환(phaseSpawns)은 배치 방식과 상관없이 쓴다. " +

@@ -20,6 +20,10 @@ public class GameOverPanel : MonoBehaviour
         // 시간을 멈춰 실질적으로 조작이 먹히지 않게 한다. 재시작 시 반드시 1로 되돌려야 한다 -
         // 안 그러면 다음 씬 전체가 얼어붙은 채로 남는다.
         Time.timeScale = 0f;
+
+        // 밈: 트럭이 플레이어를 두고 떠나는 짧은 장면을 패널 위에 덮어 재생한다. 끝나면 막이 사라져 이 패널이 그대로 보인다.
+        Image background = GetComponent<Image>();
+        GameOverTruckScene.Play((RectTransform)transform, background != null ? background.color : new Color(0.08f, 0.08f, 0.09f, 1f));
     }
 
     private void OnRestart()

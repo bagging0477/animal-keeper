@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 /// <summary>TruckScene 안의 동물 납품 자리(직원 DeliveryClerk). 범위 안에서 E를 한 번 누르면 숫자키 선택과 상관없이
 /// 인벤토리의 동물(몬스터 시체 포함)을 모두 맡긴다(GameManager.DeliverAllAnimals). 지뢰·폭탄은 남는다.
 /// 범위 안 안내: 맡길 것이 있으면 "E를 눌러 모두 맡기기 (N마리)", 없으면 아무것도 띄우지 않는다.
-/// 맡기면 직원 그림(clerk)의 받기 동작을 한 번 재생한다(몇 마리를 맡겨도 한 번).</summary>
+/// 맡기면 직원 그림(clerk)의 받기 동작을 한 번 재생하고, 마지막 동물 종류의 대사 하나를 말풍선으로 띄운다(몇 마리를 맡겨도 한 번).</summary>
 public class AnimalDeliveryPoint : MonoBehaviour
 {
     [SerializeField] private float interactionRange = 2.3f;
@@ -54,6 +54,9 @@ public class AnimalDeliveryPoint : MonoBehaviour
         {
             Debug.Log($"동물 {delivered}마리를 납품했습니다");
             if (clerk != null) clerk.PlayTake();
+            // 밈: 마지막으로 넘긴 동물 종류의 한 줄 대사(ClerkLines) 하나만 말풍선으로.
+            SpriteRenderer speaker = clerk != null ? clerk.GetComponent<SpriteRenderer>() : GetComponentInChildren<SpriteRenderer>();
+            ClerkSpeechBubble.Show(speaker, ClerkLines.Pick(ClerkLines.SpeciesOf(GameManager.Instance.LastDeliveredAnimal)));
         }
     }
 }
