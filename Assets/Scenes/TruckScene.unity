@@ -1759,8 +1759,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
-  truckSceneName: TruckScene
   villageSceneName: VillageScene
+  gameOverPanelPrefab: {fileID: 1212748872284410443, guid: 9ef9af2d4653eba418506ca6b926a352, type: 3}
 --- !u!4 &430561412
 Transform:
   m_ObjectHideFlags: 0

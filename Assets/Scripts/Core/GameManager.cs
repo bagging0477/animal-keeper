@@ -15,8 +15,9 @@ public class GameManager : MonoBehaviour
     public static int MaxHealth => Instance != null ? Instance.ComputeMaxHealth() : FallbackMaxHealth;
 
     [SerializeField] private GameBalanceConfig config;
-    [SerializeField] private string truckSceneName = "TruckScene";
     [SerializeField] private string villageSceneName = "VillageScene";
+    [Tooltip("체력이 0이 되어 그 자리에서 게임 오버가 될 때, 지금 씬에 GameOverPanel이 없으면(마을) 새로 띄울 게임 오버 화면 프리팹.")]
+    [SerializeField] private GameOverPanel gameOverPanelPrefab;
 
     /// <summary>게임을 시작한 뒤로 "다음 날로"를 몇 번 완료했는지(=몇 번째 순찰인지)를 센다. 예전
     /// 3일 주기의 Day처럼 특정 값에서 흐름이 바뀌는 게이트로 쓰이지 않는다 - 순수하게 누적되는
@@ -286,19 +287,50 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>체력이 0이 되면 그 자리에서 바로 게임 패배다(예전에는 동물 칸을 비우고 트럭 씬으로 강제 복귀했다).
+    /// 목표 미달 게임 오버(FinishCycle)와 같은 IsGameOver를 켜고, 같은 실패음과 같은 게임 오버 화면(GameOverPanel.Show →
+    /// 밤 배경 트럭 장면 → 기존 화면)을 띄운다. 씬은 바꾸지 않고, 인벤토리·사이클도 건드리지 않는다(다시 시작 버튼의 ResetGame이 모두 초기화한다).</summary>
     private void HandlePlayerDown()
     {
-        // 부상으로 쓰러지면 그동안 주운 동물은 놓치고 돌아간다(지뢰/폭탄은 그대로 유지) -
-        // 예전에 IsHeld 동물을 전부 Drop하던 것과 같은 의도를, 이제는 인벤토리의 동물 칸만 비우는
-        // 것으로 구현한다.
-        for (int i = 0; i < inventorySlots.Count; i++)
-        {
-            if (inventorySlots[i].Type == InventoryItemType.Animal) inventorySlots[i] = InventorySlotData.Empty;
-        }
+        if (IsGameOver || IsGameWon) return;
+        IsGameOver = true;
+        Debug.Log("체력 0: 게임 오버");
+        AudioManager.Instance?.PlayDayFail();
+        GameOverPanel panel = FindOrCreateGameOverPanel();
+        if (panel != null) panel.Show();
+        else Debug.LogWarning("GameManager: 게임 오버 화면(GameOverPanel)을 띄울 수 없습니다 - gameOverPanelPrefab이 비어 있습니다.");
+    }
 
-        Debug.Log("부상으로 강제 복귀했습니다");
-        if (!SceneTransitionGuard.TryBeginTransition()) return;
-        SceneManager.LoadScene(truckSceneName);
+    /// <summary>지금 씬의 GameOverPanel(트럭·보호소에는 씬에 있다). 없으면(마을) 자기 오버레이 Canvas를 만들어 프리팹을 띄운다.
+    /// Canvas는 씬 UI와 같은 2240x1260 기준(Match 0.5)이고, 버튼을 누를 수 있게 EventSystem이 없으면 함께 만든다.</summary>
+    private GameOverPanel FindOrCreateGameOverPanel()
+    {
+        Scene active = SceneManager.GetActiveScene();
+        foreach (GameOverPanel p in FindObjectsByType<GameOverPanel>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (p.gameObject.scene == active) return p;
+        }
+        if (gameOverPanelPrefab == null) return null;
+
+        var canvasGo = new GameObject("GameOverCanvas", typeof(RectTransform));
+        SceneManager.MoveGameObjectToScene(canvasGo, active);
+        Canvas canvas = canvasGo.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 900; // HUD·말풍선·자막 위, 일시정지 메뉴(1000) 아래
+        UnityEngine.UI.CanvasScaler scaler = canvasGo.AddComponent<UnityEngine.UI.CanvasScaler>();
+        scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(2240f, 1260f);
+        scaler.screenMatchMode = UnityEngine.UI.CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.matchWidthOrHeight = 0.5f;
+        canvasGo.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+        if (UnityEngine.EventSystems.EventSystem.current == null && FindAnyObjectByType<UnityEngine.EventSystems.EventSystem>() == null)
+        {
+            var es = new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
+            SceneManager.MoveGameObjectToScene(es, active);
+        }
+        GameOverPanel panel = Instantiate(gameOverPanelPrefab, canvasGo.transform, false);
+        panel.name = gameOverPanelPrefab.name;
+        return panel;
     }
 
     public int Mileage { get; private set; }

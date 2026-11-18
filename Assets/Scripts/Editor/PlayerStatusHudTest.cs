@@ -15,7 +15,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Tools > UI > Run Player Status HUD Test. 체력·스태미나 바(AnimalKeeperHUD + PlayerStatusHUD)를 실제 씬 흐름으로 확인한다.
 /// 검사: TruckScene·VillageScene에만 있고 예전 HealthUI/StaminaUI가 없음, 씬 Canvas(2240x1260, Match 0.5) 안의 중첩 Canvas,
-/// 씬이 시작되는 첫 프레임부터 맞는 값(새 게임·체력 0 강제 복귀·씬 전환), 데미지 47·박쥐(최대 체력 80%)·0·최대, 클래스별 최대 체력,
+/// 씬이 시작되는 첫 프레임부터 맞는 값(새 게임·게임 오버 뒤 새 게임·씬 전환), 체력 0이면 마을에서 바로 게임 오버(트럭으로 가지 않음), 데미지 47·박쥐(최대 체력 80%)·0·최대, 클래스별 최대 체력,
 /// 스태미나 달리기(감소)·탈진(0)·쉬기(회복), 다른 HUD와 겹치지 않음(1920x1080, 1280x720), 화면 캡처.
 /// 프레임 시간은 1/30초로 고정한다(Time.captureDeltaTime). 마을 몬스터는 끈다(씬 파일은 바꾸지 않는다). 결과: Logs/PlayerStatusHudTest.txt
 /// batchmode: -executeMethod PlayerStatusHudTest.RunBatch  (끝나면 에디터가 종료된다, 통과면 0 아니면 1)
@@ -291,16 +291,31 @@ public static class PlayerStatusHudTest
         yield return Settle(hud);
         yield return CaptureScene("VillageScene", hud);
 
-        // --- 5. 체력 0 → 트럭 강제 복귀
-        sb.AppendLine("\n== 5. 체력 0: 트럭으로 강제 복귀, 첫 프레임부터 0%");
+        // --- 5. 체력 0 → 그 자리(마을)에서 바로 게임 오버 (예전: 트럭으로 강제 복귀)
+        sb.AppendLine("\n== 5. 체력 0: 트럭으로 가지 않고 마을에서 바로 게임 오버");
         gm.TakeDamage(1000, "테스트");
-        float until = Time.realtimeSinceStartup + 30f;
-        while (SceneManager.GetActiveScene().name != "TruckScene" && Time.realtimeSinceStartup < until) yield return null;
-        yield return CheckFirstFrame(gm, "체력 0 강제 복귀");
-        sb.AppendLine($"  (참고) 강제 복귀 직후 체력 {gm.Health}/{GameManager.MaxHealth}");
+        yield return WaitFrames(3);
+        GameOverPanel overPanel = Object.FindObjectsByType<GameOverPanel>(FindObjectsInactive.Include).FirstOrDefault(p => p.gameObject.activeInHierarchy);
+        Check(SceneManager.GetActiveScene().name == "VillageScene" && gm.IsGameOver && gm.Health == 0 && overPanel != null
+              && GameOverTruckScene.Current != null && Time.timeScale == 0f,
+            $"체력 {gm.Health}: 씬 {SceneManager.GetActiveScene().name}, 게임 오버 {gm.IsGameOver}, 게임 오버 화면 {overPanel != null}, 트럭 장면 {GameOverTruckScene.Current != null}, timeScale {Time.timeScale}");
 
-        // --- 6. 트럭 캡처
+        // --- 6. 트럭 캡처 (게임 오버 뒤 새 게임으로 트럭에 들어간다)
         sb.AppendLine("\n== 6. TruckScene: 다른 HUD와 겹치지 않음, 캡처");
+        // 마을에 띄운 게임 오버 화면의 [다시 시작] 버튼 → 새 게임(ClassSelectScene), 클래스를 고르고 트럭으로.
+        if (overPanel != null)
+        {
+            UnityEngine.EventSystems.ExecuteEvents.Execute(overPanel.GetComponentsInChildren<Button>(true).First().gameObject,
+                new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current), UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);
+            float until = Time.realtimeSinceStartup + 30f;
+            while (SceneManager.GetActiveScene().name != "ClassSelectScene" && Time.realtimeSinceStartup < until) yield return null;
+            Check(SceneManager.GetActiveScene().name == "ClassSelectScene" && !gm.IsGameOver && Time.timeScale == 1f && gm.Health == GameManager.MaxHealth,
+                $"마을 게임 오버 화면의 다시 시작: {SceneManager.GetActiveScene().name}, 게임 오버 {gm.IsGameOver}, timeScale {Time.timeScale}, 체력 {gm.Health}");
+        }
+        else gm.ResetGame();
+        Time.timeScale = 1f;
+        RestartClass(gm, PlayerClass.Scout);
+        yield return LoadAndCheckFirstFrame(gm, "TruckScene", "게임 오버 뒤 새 게임 트럭");
         hud = Object.FindAnyObjectByType<PlayerStatusHUD>().Hud;
         gm.SelectClass(PlayerClass.Scout);
         gm.TakeDamage(config.patrolMonsterDamage, "테스트");
