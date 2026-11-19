@@ -62,9 +62,9 @@ MonoBehaviour:
   sleepDelay: 0.6
   sleepDuration: 4.2
   playerMaxHealth: 100
-  ambientVisionRadius: 4
+  ambientVisionRadius: 4.8
   ambientVisionIgnoresShadows: 1
-  focusedVisionRadius: 11
+  focusedVisionRadius: 13.2
   focusedVisionAngle: 80
   focusedVisionShadowSoftness: 0.9
   visionLightIntensity: 1

@@ -280,7 +280,8 @@ public static class LightingTest
     {
         sb.AppendLine("\n== 2. 시야 밖 몬스터: 몸·눈 모두 안 보임 / 3. 시야 안 몬스터: 눈이 빛남 (Field, 플레이어는 오른쪽을 봄)");
         object field = RoomOf("Room_Field");
-        Vector2 back = new Vector2(-5.5f, 0f), front = new Vector2(3.4f, 0.3f);
+        // 거리는 원형 시야 반경 기준: 뒤 = 반경 + 1.5칸(시야 밖, 몸이 큰 코뿔소도 빛에 안 닿음), 앞 = 반경 x 0.85(시야 안). 반경 4일 때 5.5칸·3.4칸.
+        Vector2 back = new Vector2(-(config.ambientVisionRadius + 1.5f), 0f), front = new Vector2(config.ambientVisionRadius * 0.85f, 0.3f);
         Vector2 pp = PickSpot(field, new[] { back, front }, config.ambientVisionRadius + config.truckVisionRadius + 6f);
         yield return PlacePlayer(pp, Vector2.right);
         foreach (string path in MonsterPrefabs)
@@ -293,7 +294,7 @@ public static class LightingTest
             bool glowingOut = glow != null && glow.IsGlowing;
             int diff = DiffWithout(m);
             Check(glow != null && !glowingOut && !PlayerVision.IsVisibleToPlayer(glow.EyeWorldPosition) && diff <= InvisibleTolerance,
-                $"{prefab.name} 시야 밖(뒤 5.5칸, 눈 프레임 {glow?.HasEyeThisFrame}): 눈 꺼짐 {glow != null && !glowingOut}, 있을 때·없을 때 화면 차이 최대 {diff} (≤{InvisibleTolerance})");
+                $"{prefab.name} 시야 밖(뒤 {-back.x:0.##}칸, 눈 프레임 {glow?.HasEyeThisFrame}): 눈 꺼짐 {glow != null && !glowingOut}, 있을 때·없을 때 화면 차이 최대 {diff} (≤{InvisibleTolerance})");
             Object.Destroy(m);
             Time.timeScale = 1f;
             yield return Frames(2);
@@ -306,7 +307,7 @@ public static class LightingTest
             int eyeGain = glow != null && glow.HasEyeThisFrame ? EyeGain(glow) : -1;
             if (prefab.name == "PorcupineMonster") openEyeGain = eyeGain;
             Check(glow != null && glow.HasEyeThisFrame && glowingIn && eyeGain >= 40,
-                $"{prefab.name} 시야 안(앞 3.4칸, 그림 {spriteIn}): 눈 발광 {glowingIn}, 눈 자리가 발광을 끈 그림보다 밝음 +{eyeGain} (≥40)");
+                $"{prefab.name} 시야 안(앞 {front.x:0.##}칸, 그림 {spriteIn}): 눈 발광 {glowingIn}, 눈 자리가 발광을 끈 그림보다 밝음 +{eyeGain} (≥40)");
             Object.Destroy(m);
             Time.timeScale = 1f;
             yield return Frames(2);
