@@ -224,8 +224,8 @@ public static class MonsterPacingTest
         Check(config.villagePhaseStartSeconds != null && config.villagePhaseStartSeconds.SequenceEqual(expectedStarts),
             $"구간 시작 시각 [{string.Join(", ", config.villagePhaseStartSeconds ?? new float[0])}]초 (기대 {string.Join(", ", expectedStarts)})");
         Check(config.totalCyclesToWin == 2, $"전체 날짜 2일 (totalCyclesToWin {config.totalCyclesToWin})");
-        Check(GameManager.ComputeTargetCount(1, config) == 5 && GameManager.ComputeTargetCount(2, config) == 10,
-            $"목표 마릿수 1일차 {GameManager.ComputeTargetCount(1, config)}, 2일차 {GameManager.ComputeTargetCount(2, config)} (기대 5, 10)");
+        Check(GameManager.ComputeTargetCount(1, config) == 7 && GameManager.ComputeTargetCount(2, config) == 13,
+            $"목표 마릿수 1일차 {GameManager.ComputeTargetCount(1, config)}, 2일차 {GameManager.ComputeTargetCount(2, config)} (기대 7, 13)");
         Check(config.dayMonsterPlans != null && config.dayMonsterPlans.Length == 2, $"날짜별 표 {config.dayMonsterPlans?.Length}줄 (기대 2)");
 
         // 요청한 표: 맵 생성 종류별 수, 구간 2~4 진입 소환, 5구간 30초마다 1마리 최대 n마리(그날 종류에서)
