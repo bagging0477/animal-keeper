@@ -1,0 +1,4 @@
+Assets/Scenes/ClassSelectScene.unity:1364:  trapperScale: 0.5142857
+Assets/Scenes/ShelterScene.unity:2098:  trapperScale: 0.7907143
+Assets/Scenes/TruckScene.unity:4698:  trapperScale: 0.72
+Assets/Scenes/VillageScene.unity:1486:  trapperScale: 0.72

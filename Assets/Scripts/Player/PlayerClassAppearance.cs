@@ -18,7 +18,7 @@ using UnityEngine;
 /// 있었다. 그래서 지금은 캔버스가 아니라 실제 불투명 픽셀(캐릭터 몸통)의 높이를 기준으로 배율을
 /// 다시 계산했다 - 스카우트/거너(비무장)/트래퍼는 몸통이 전부 64x62px로 동일하고, 거너(무장)만
 /// 64x48px로 더 짧길래 그만큼 배율을 키워서 보정했다. 트래퍼는 그 기준 높이보다 약 12.5% 더
-/// 크도록 잡아뒀다. 배율 값은 인스펙터에서 자유롭게 다시 조정할 수 있다.</summary>
+/// 크도록 잡아뒀었는데, 지금은 트래퍼 그림이 스카우트와 같은 그림(색만 다름)·같은 PPU라 배율도 스카우트와 같다. 배율 값은 인스펙터에서 자유롭게 다시 조정할 수 있다.</summary>
 [RequireComponent(typeof(SpriteRenderer))]
 public class PlayerClassAppearance : MonoBehaviour
 {
@@ -29,7 +29,7 @@ public class PlayerClassAppearance : MonoBehaviour
 
     [Header("클래스별 체감 크기 보정 배율 (원본 이미지 픽셀 크기가 서로 달라서 필요함 - 원본 비율이 깨지지 않도록 항상 균일 배율로 Transform.localScale에 적용됨. 캔버스 전체가 아니라 실제 불투명 픽셀(캐릭터 몸통) 높이 기준으로 맞춰서, 이미지마다 여백이 달라도 체감 크기가 같아지도록 계산한 값)")]
     [SerializeField] private float scoutScale = 0.64f;
-    [SerializeField] private float trapperScale = 0.72f;
+    [SerializeField] private float trapperScale = 0.64f;
     [SerializeField] private float gunnerScale = 0.64f;
     [SerializeField] private float gunnerArmedScale = 0.826f;
 
