@@ -1,0 +1,73 @@
+TempTargetProbe 2026-11-19 12:15:07 grid 3x4, seeds 1..30, scout walk 3.65 m/s (trapper/gunner 3.75), inventory 5 slots, starting mines 2 bombs 1, phase starts 0,120,240,360,420
+
+== Day 1: target 7, map monsters 9, phase-spawn monsters 7
+  seed#1: animals 41 (unreachable 0), map monsters 9, truck (56.50, 75.50), dist avg 63.4 min 4.3 max 120.8, nearest 7 avg 17.8 | cap2: 4 trips 184m (50s walk) | cap5: 2 trips 160m (44s walk) [95,65]
+  seed#2: animals 41 (unreachable 4), map monsters 9, truck (53.50, 42.50), dist avg 64.7 min 1.9 max 123.8, nearest 7 avg 20.8 | cap2: 4 trips 222m (61s walk) | cap5: 2 trips 214m (59s walk) [143,71]
+  seed#3: animals 41 (unreachable 0), map monsters 9, truck (55.50, 43.50), dist avg 60.2 min 6.8 max 112.6, nearest 7 avg 19.2 | cap2: 4 trips 206m (56s walk) | cap5: 2 trips 173m (47s walk) [94,79]
+  seed#4: animals 41 (unreachable 2), map monsters 9, truck (56.50, 75.50), dist avg 62.6 min 6.9 max 136.1, nearest 7 avg 18.5 | cap2: 4 trips 183m (50s walk) | cap5: 2 trips 165m (45s walk) [90,75]
+  seed#5: animals 41 (unreachable 1), map monsters 9, truck (53.50, 42.50), dist avg 65.4 min 8.2 max 120.5, nearest 7 avg 21.3 | cap2: 4 trips 217m (59s walk) | cap5: 2 trips 170m (47s walk) [91,79]
+  seed#6: animals 41 (unreachable 4), map monsters 9, truck (53.50, 74.50), dist avg 63.2 min 4.8 max 131.9, nearest 7 avg 21.5 | cap2: 4 trips 227m (62s walk) | cap5: 2 trips 163m (45s walk) [88,75]
+  seed#7: animals 41 (unreachable 5), map monsters 9, truck (56.50, 43.50), dist avg 52.5 min 5.6 max 97.3, nearest 7 avg 18.2 | cap2: 4 trips 200m (55s walk) | cap5: 2 trips 167m (46s walk) [78,88]
+  seed#8: animals 41 (unreachable 5), map monsters 9, truck (53.50, 42.50), dist avg 65.1 min 10.0 max 126.6, nearest 7 avg 24.5 | cap2: 4 trips 225m (62s walk) | cap5: 2 trips 164m (45s walk) [100,64]
+  seed#9: animals 41 (unreachable 7), map monsters 9, truck (56.50, 43.50), dist avg 73.2 min 1.1 max 181.1, nearest 7 avg 19.9 | cap2: 4 trips 217m (59s walk) | cap5: 2 trips 194m (53s walk) [111,84]
+  seed#10: animals 41 (unreachable 3), map monsters 9, truck (56.50, 75.50), dist avg 54.9 min 11.5 max 101.9, nearest 7 avg 21.8 | cap2: 4 trips 195m (53s walk) | cap5: 2 trips 158m (43s walk) [87,71]
+  seed#11: animals 41 (unreachable 3), map monsters 9, truck (56.50, 43.50), dist avg 58.4 min 7.0 max 96.6, nearest 7 avg 24.4 | cap2: 4 trips 254m (70s walk) | cap5: 2 trips 185m (51s walk) [102,84]
+  seed#12: animals 41 (unreachable 6), map monsters 9, truck (55.50, 43.50), dist avg 55.5 min 6.8 max 105.0, nearest 7 avg 20.4 | cap2: 4 trips 222m (61s walk) | cap5: 2 trips 181m (49s walk) [115,66]
+  seed#13: animals 41 (unreachable 6), map monsters 9, truck (53.50, 42.50), dist avg 71.8 min 3.6 max 134.0, nearest 7 avg 20.6 | cap2: 4 trips 222m (61s walk) | cap5: 2 trips 174m (48s walk) [94,80]
+  seed#14: animals 41 (unreachable 4), map monsters 9, truck (55.50, 43.50), dist avg 80.8 min 5.9 max 177.6, nearest 7 avg 22.3 | cap2: 4 trips 207m (57s walk) | cap5: 2 trips 177m (48s walk) [95,81]
+  seed#15: animals 41 (unreachable 4), map monsters 9, truck (53.50, 74.50), dist avg 84.9 min 1.8 max 205.5, nearest 7 avg 19.9 | cap2: 4 trips 210m (58s walk) | cap5: 2 trips 171m (47s walk) [107,64]
+  seed#16: animals 41 (unreachable 5), map monsters 9, truck (56.50, 43.50), dist avg 56.3 min 7.5 max 102.8, nearest 7 avg 24.0 | cap2: 4 trips 261m (71s walk) | cap5: 2 trips 186m (51s walk) [116,69]
+  seed#17: animals 41 (unreachable 4), map monsters 9, truck (53.50, 74.50), dist avg 61.2 min 2.6 max 107.9, nearest 7 avg 21.9 | cap2: 4 trips 235m (64s walk) | cap5: 2 trips 173m (47s walk) [94,78]
+  seed#18: animals 41 (unreachable 3), map monsters 9, truck (56.50, 43.50), dist avg 52.2 min 6.8 max 102.9, nearest 7 avg 20.8 | cap2: 4 trips 206m (56s walk) | cap5: 2 trips 140m (38s walk) [84,57]
+  seed#19: animals 41 (unreachable 5), map monsters 9, truck (53.50, 42.50), dist avg 90.1 min 4.8 max 166.0, nearest 7 avg 37.7 | cap2: 4 trips 350m (96s walk) | cap5: 2 trips 277m (76s walk) [127,149]
+  seed#20: animals 41 (unreachable 2), map monsters 9, truck (56.50, 43.50), dist avg 66.2 min 5.6 max 143.9, nearest 7 avg 21.5 | cap2: 4 trips 208m (57s walk) | cap5: 2 trips 148m (40s walk) [81,67]
+  seed#21: animals 41 (unreachable 6), map monsters 9, truck (55.50, 75.50), dist avg 57.0 min 4.7 max 103.8, nearest 7 avg 16.3 | cap2: 4 trips 164m (45s walk) | cap5: 2 trips 162m (44s walk) [89,73]
+  seed#22: animals 41 (unreachable 3), map monsters 9, truck (56.50, 43.50), dist avg 57.1 min 0.8 max 97.0, nearest 7 avg 16.8 | cap2: 4 trips 180m (49s walk) | cap5: 2 trips 143m (39s walk) [72,71]
+  seed#23: animals 41 (unreachable 4), map monsters 9, truck (53.50, 42.50), dist avg 63.6 min 1.0 max 105.5, nearest 7 avg 22.8 | cap2: 4 trips 238m (65s walk) | cap5: 2 trips 170m (47s walk) [97,74]
+  seed#24: animals 41 (unreachable 5), map monsters 9, truck (53.50, 74.50), dist avg 60.4 min 4.8 max 136.4, nearest 7 avg 20.7 | cap2: 4 trips 240m (66s walk) | cap5: 2 trips 185m (51s walk) [120,65]
+  seed#25: animals 41 (unreachable 6), map monsters 9, truck (53.50, 42.50), dist avg 56.2 min 4.1 max 128.1, nearest 7 avg 17.5 | cap2: 4 trips 177m (48s walk) | cap5: 2 trips 153m (42s walk) [81,73]
+  seed#26: animals 41 (unreachable 4), map monsters 9, truck (55.50, 75.50), dist avg 52.3 min 4.1 max 112.2, nearest 7 avg 16.8 | cap2: 4 trips 180m (49s walk) | cap5: 2 trips 149m (41s walk) [68,80]
+  seed#27: animals 41 (unreachable 9), map monsters 9, truck (53.50, 42.50), dist avg 63.9 min 4.8 max 96.7, nearest 7 avg 22.9 | cap2: 4 trips 257m (70s walk) | cap5: 2 trips 221m (61s walk) [91,130]
+  seed#28: animals 41 (unreachable 5), map monsters 9, truck (55.50, 75.50), dist avg 63.2 min 5.9 max 106.0, nearest 7 avg 22.3 | cap2: 4 trips 287m (79s walk) | cap5: 2 trips 154m (42s walk) [77,77]
+  seed#29: animals 41 (unreachable 3), map monsters 9, truck (55.50, 75.50), dist avg 63.8 min 6.8 max 121.6, nearest 7 avg 19.3 | cap2: 4 trips 194m (53s walk) | cap5: 2 trips 179m (49s walk) [88,91]
+  seed#30: animals 41 (unreachable 4), map monsters 9, truck (55.50, 75.50), dist avg 54.0 min 4.1 max 96.1, nearest 7 avg 16.8 | cap2: 4 trips 179m (49s walk) | cap5: 2 trips 167m (46s walk) [90,76]
+  SUMMARY day 1: animals min 41.0 avg 41.0 max 41.0 | map monsters min 9.0 avg 9.0 max 9.0 | unreachable min 0.0 avg 4.1 max 9.0
+  SUMMARY day 1: truck->animal path avg min 52.2 avg 63.1 max 90.1 | nearest-7 avg min 16.3 avg 21.0 max 37.7
+  SUMMARY day 1: cap2 trips min 4.0 avg 4.0 max 4.0, length min 163.6 avg 218.2 max 350.4 m, walk min 44.8 avg 59.8 max 95.9 s
+  SUMMARY day 1: cap5 trips min 2.0 avg 2.0 max 2.0, length min 140.2 avg 174.1 max 276.8 m, walk min 38.4 avg 47.7 max 75.8 s
+
+== Day 2: target 13, map monsters 12, phase-spawn monsters 10
+  seed#1: animals 41 (unreachable 6), map monsters 12, truck (56.50, 75.50), dist avg 67.8 min 6.9 max 136.8, nearest 13 avg 34.1 | cap2: 7 trips 577m (158s walk) | cap5: 3 trips 389m (106s walk) [94,149,146]
+  seed#2: animals 41 (unreachable 4), map monsters 12, truck (53.50, 42.50), dist avg 62.3 min 7.1 max 103.3, nearest 13 avg 38.6 | cap2: 7 trips 642m (176s walk) | cap5: 3 trips 398m (109s walk) [112,155,131]
+  seed#3: animals 41 (unreachable 9), map monsters 12, truck (53.50, 74.50), dist avg 65.4 min 5.5 max 103.4, nearest 13 avg 39.3 | cap2: 7 trips 687m (188s walk) | cap5: 3 trips 406m (111s walk) [159,145,102]
+  seed#4: animals 41 (unreachable 5), map monsters 12, truck (55.50, 75.50), dist avg 57.7 min 4.1 max 119.1, nearest 13 avg 26.8 | cap2: 7 trips 422m (115s walk) | cap5: 3 trips 320m (88s walk) [97,145,78]
+  seed#5: animals 41 (unreachable 7), map monsters 12, truck (53.50, 42.50), dist avg 56.9 min 1.0 max 104.8, nearest 13 avg 34.3 | cap2: 7 trips 623m (170s walk) | cap5: 3 trips 349m (96s walk) [105,140,105]
+  seed#6: animals 41 (unreachable 6), map monsters 12, truck (56.50, 75.50), dist avg 60.2 min 10.1 max 125.4, nearest 13 avg 28.8 | cap2: 7 trips 453m (124s walk) | cap5: 3 trips 385m (106s walk) [95,160,131]
+  seed#7: animals 41 (unreachable 6), map monsters 12, truck (55.50, 43.50), dist avg 58.3 min 7.5 max 102.9, nearest 13 avg 28.7 | cap2: 7 trips 472m (129s walk) | cap5: 3 trips 348m (95s walk) [98,158,93]
+  seed#8: animals 41 (unreachable 8), map monsters 12, truck (53.50, 74.50), dist avg 62.4 min 2.0 max 122.8, nearest 13 avg 31.8 | cap2: 7 trips 553m (151s walk) | cap5: 3 trips 383m (105s walk) [151,141,90]
+  seed#9: animals 41 (unreachable 5), map monsters 12, truck (56.50, 43.50), dist avg 57.0 min 3.4 max 116.4, nearest 13 avg 28.3 | cap2: 7 trips 501m (137s walk) | cap5: 3 trips 349m (96s walk) [96,166,87]
+  seed#10: animals 41 (unreachable 9), map monsters 12, truck (53.50, 74.50), dist avg 69.7 min 2.7 max 118.2, nearest 13 avg 43.5 | cap2: 7 trips 686m (188s walk) | cap5: 3 trips 445m (122s walk) [164,152,129]
+  seed#11: animals 41 (unreachable 11), map monsters 12, truck (53.50, 42.50), dist avg 60.3 min 1.0 max 100.7, nearest 13 avg 32.3 | cap2: 7 trips 538m (147s walk) | cap5: 3 trips 372m (102s walk) [100,161,112]
+  seed#12: animals 41 (unreachable 3), map monsters 12, truck (56.50, 75.50), dist avg 62.1 min 5.5 max 105.0, nearest 13 avg 30.4 | cap2: 7 trips 523m (143s walk) | cap5: 3 trips 399m (109s walk) [106,161,132]
+  seed#13: animals 41 (unreachable 7), map monsters 12, truck (55.50, 43.50), dist avg 57.8 min 8.1 max 95.9, nearest 13 avg 31.8 | cap2: 7 trips 542m (148s walk) | cap5: 3 trips 383m (105s walk) [125,172,85]
+  seed#14: animals 41 (unreachable 7), map monsters 12, truck (55.50, 75.50), dist avg 60.6 min 4.6 max 96.0, nearest 13 avg 31.0 | cap2: 7 trips 521m (143s walk) | cap5: 3 trips 358m (98s walk) [75,147,136]
+  seed#15: animals 41 (unreachable 7), map monsters 12, truck (53.50, 74.50), dist avg 67.0 min 5.8 max 129.5, nearest 13 avg 36.5 | cap2: 7 trips 608m (167s walk) | cap5: 3 trips 398m (109s walk) [109,124,165]
+  seed#16: animals 41 (unreachable 9), map monsters 12, truck (53.50, 74.50), dist avg 117.8 min 2.7 max 186.3, nearest 13 avg 70.3 | cap2: 7 trips 1135m (311s walk) | cap5: 3 trips 629m (172s walk) [182,226,222]
+  seed#17: animals 41 (unreachable 6), map monsters 12, truck (53.50, 42.50), dist avg 59.5 min 7.0 max 133.4, nearest 13 avg 29.9 | cap2: 7 trips 502m (137s walk) | cap5: 3 trips 350m (96s walk) [118,140,92]
+  seed#18: animals 41 (unreachable 9), map monsters 12, truck (56.50, 75.50), dist avg 68.5 min 6.9 max 125.8, nearest 13 avg 35.0 | cap2: 7 trips 572m (157s walk) | cap5: 3 trips 383m (105s walk) [94,134,156]
+  seed#19: animals 41 (unreachable 6), map monsters 12, truck (56.50, 43.50), dist avg 68.5 min 5.3 max 171.5, nearest 13 avg 29.1 | cap2: 7 trips 554m (152s walk) | cap5: 3 trips 345m (94s walk) [84,141,120]
+  seed#20: animals 41 (unreachable 2), map monsters 12, truck (56.50, 43.50), dist avg 62.3 min 7.2 max 120.0, nearest 13 avg 28.4 | cap2: 7 trips 457m (125s walk) | cap5: 3 trips 372m (102s walk) [115,166,91]
+  seed#21: animals 41 (unreachable 6), map monsters 12, truck (55.50, 75.50), dist avg 77.0 min 4.6 max 172.1, nearest 13 avg 34.0 | cap2: 7 trips 594m (163s walk) | cap5: 3 trips 367m (100s walk) [102,155,110]
+  seed#22: animals 41 (unreachable 6), map monsters 12, truck (55.50, 75.50), dist avg 69.2 min 8.8 max 129.6, nearest 13 avg 35.4 | cap2: 7 trips 598m (164s walk) | cap5: 3 trips 417m (114s walk) [115,219,83]
+  seed#23: animals 41 (unreachable 7), map monsters 12, truck (56.50, 43.50), dist avg 66.1 min 7.3 max 102.3, nearest 13 avg 42.1 | cap2: 7 trips 712m (195s walk) | cap5: 3 trips 412m (113s walk) [113,153,146]
+  seed#24: animals 41 (unreachable 5), map monsters 12, truck (53.50, 42.50), dist avg 65.2 min 3.7 max 145.7, nearest 13 avg 28.6 | cap2: 7 trips 518m (142s walk) | cap5: 3 trips 337m (92s walk) [77,165,95]
+  seed#25: animals 41 (unreachable 6), map monsters 12, truck (56.50, 75.50), dist avg 58.1 min 7.3 max 103.3, nearest 13 avg 32.0 | cap2: 7 trips 587m (161s walk) | cap5: 3 trips 340m (93s walk) [111,137,92]
+  seed#26: animals 41 (unreachable 8), map monsters 12, truck (55.50, 43.50), dist avg 67.0 min 5.5 max 123.9, nearest 13 avg 32.5 | cap2: 7 trips 578m (158s walk) | cap5: 3 trips 431m (118s walk) [102,163,166]
+  seed#27: animals 41 (unreachable 8), map monsters 12, truck (55.50, 75.50), dist avg 88.7 min 4.9 max 182.5, nearest 13 avg 34.0 | cap2: 7 trips 597m (163s walk) | cap5: 3 trips 324m (89s walk) [71,144,108]
+  seed#28: animals 41 (unreachable 5), map monsters 12, truck (55.50, 43.50), dist avg 64.5 min 6.3 max 136.8, nearest 13 avg 30.8 | cap2: 7 trips 531m (145s walk) | cap5: 3 trips 338m (93s walk) [92,146,101]
+  seed#29: animals 41 (unreachable 8), map monsters 12, truck (56.50, 75.50), dist avg 57.9 min 5.4 max 116.2, nearest 13 avg 32.8 | cap2: 7 trips 603m (165s walk) | cap5: 3 trips 431m (118s walk) [96,141,195]
+  seed#30: animals 41 (unreachable 3), map monsters 12, truck (53.50, 42.50), dist avg 88.1 min 6.2 max 204.7, nearest 13 avg 40.5 | cap2: 7 trips 670m (184s walk) | cap5: 3 trips 392m (107s walk) [108,162,122]
+  SUMMARY day 2: animals min 41.0 avg 41.0 max 41.0 | map monsters min 12.0 avg 12.0 max 12.0 | unreachable min 2.0 avg 6.5 max 11.0
+  SUMMARY day 2: truck->animal path avg min 56.9 avg 66.8 max 117.8 | nearest-13 avg min 26.8 avg 34.4 max 70.3
+  SUMMARY day 2: cap2 trips min 7.0 avg 7.0 max 7.0, length min 421.7 avg 585.2 max 1135.2 m, walk min 115.5 avg 160.2 max 310.8 s
+  SUMMARY day 2: cap5 trips min 3.0 avg 3.0 max 3.0, length min 320.0 avg 385.1 max 629.2 m, walk min 87.6 avg 105.4 max 172.3 s

@@ -239,7 +239,11 @@ public class GameManager : MonoBehaviour
         HasSettledCargo = false;
         LastSettlementResult = default;
         NeedsStartingClassSelection = true;
+        // 지금 마을에 있다면 씬을 떠나며 옛 맵 자리가 다시 저장되므로, 다음 씬을 불러온 뒤 한 번 더 비운다(ClearFieldRecordsAfterNewGameSceneLoad).
+        clearFieldRecordsOnNextSceneLoad = true;
     }
+
+    private bool clearFieldRecordsOnNextSceneLoad;
 
     /// <summary>이번 판에 산 패시브. ResetDay()("다음 날로")와 씬 전환에서는 유지되고 ResetGame()에서만 비워진다.
     /// 효과는 PassiveEffects로 조회한다.</summary>
@@ -744,5 +748,23 @@ public class GameManager : MonoBehaviour
         gameObject.AddComponent<VillagePhaseNotice>();
         // 구간별 추가 몬스터 소환. 마을에서만 동작하고 목록이 비어 있으면 아무것도 하지 않는다.
         gameObject.AddComponent<VillageMonsterSpawner>();
+        SceneManager.sceneLoaded += ClearFieldRecordsAfterNewGameSceneLoad;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) SceneManager.sceneLoaded -= ClearFieldRecordsAfterNewGameSceneLoad;
+    }
+
+    // 새 게임(ResetGame) 뒤 첫 씬이 다 불러와진 때. 마을에서 바로 새 게임을 시작하면(체력 0 → [다시 시작]) ResetGame이 기록을 비운 "다음"에
+    // 마을이 내려가며 동물(AnimalRescue.OnDestroy)과 줍지 않은 시체(MonsterCorpsePickup.OnDestroy)가 옛 맵 자리를 다시 저장한다 - 그대로 두면
+    // 새 게임 첫 맵에서 같은 Id의 동물·몬스터가 옛 좌표(새 맵에선 바닥 밖일 수 있음)로 복원된다. 그래서 언로드가 끝난 이 시점에 한 번 더 비운다.
+    // 날이 바뀌거나(ResetDay) 마을과 트럭을 오가는 평소 진행은 이 표시를 켜지 않으므로 저장·복원이 그대로다.
+    private void ClearFieldRecordsAfterNewGameSceneLoad(Scene scene, LoadSceneMode mode)
+    {
+        if (!clearFieldRecordsOnNextSceneLoad) return;
+        clearFieldRecordsOnNextSceneLoad = false;
+        animalFieldStates.Clear();
+        monsterCorpsePositions.Clear();
     }
 }

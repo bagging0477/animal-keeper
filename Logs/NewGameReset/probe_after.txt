@@ -1,0 +1,100 @@
+TempNewGameProbe [after] 2026-11-19 12:36:37, 30 runs per path
+
+== A. 마을에서 체력 0 -> [다시 시작] -> 새 게임 첫 맵
+  run 1: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 2: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 3: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 4: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 5: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 6: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 7: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 8: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 9: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 10: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 11: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 12: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 13: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 14: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 15: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 16: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 17: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 18: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 19: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 20: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 21: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 22: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 23: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 24: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 25: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 26: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 27: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 28: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 29: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 30: saved records after restart (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  TOTAL A: saved records left 0, off-floor animals 0, dead monsters at start 0, off-floor corpses 0
+
+== B. 마을 -> 트럭 -> 보호소 클리어 화면 -> [새 게임] -> 새 게임 첫 맵
+  run 1: records saved on truck trip 75 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 2: records saved on truck trip 70 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 3: records saved on truck trip 78 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 4: records saved on truck trip 73 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 5: records saved on truck trip 74 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 6: records saved on truck trip 75 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 7: records saved on truck trip 77 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 8: records saved on truck trip 77 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 9: records saved on truck trip 77 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 10: records saved on truck trip 72 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 11: records saved on truck trip 73 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 12: records saved on truck trip 73 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 13: records saved on truck trip 76 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 14: records saved on truck trip 76 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 15: records saved on truck trip 79 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 16: records saved on truck trip 72 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 17: records saved on truck trip 78 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 18: records saved on truck trip 75 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 19: records saved on truck trip 76 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 20: records saved on truck trip 78 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 21: records saved on truck trip 80 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 22: records saved on truck trip 76 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 23: records saved on truck trip 72 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 24: records saved on truck trip 77 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 25: records saved on truck trip 79 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 26: records saved on truck trip 74 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 27: records saved on truck trip 73 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 28: records saved on truck trip 76 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 29: records saved on truck trip 75 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  run 30: records saved on truck trip 77 -> after new game (animals 0, corpses 0) | new map animals 41, off-floor 0, dead monsters at start 0 (off-floor 0)
+  TOTAL B: saved records left 0, off-floor animals 0, dead monsters at start 0, off-floor corpses 0
+
+== C. 평소 진행: 마을 -> 트럭 -> 마을(같은 날) 복원
+  run 1: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 2: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 3: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 4: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 5: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 6: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 7: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 8: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 9: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 10: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 11: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 12: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 13: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 14: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 15: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 16: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 17: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 18: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 19: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 20: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 21: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 22: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 23: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 24: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 25: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 26: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 27: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 28: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 29: animals 41, restored at same place 41 | corpses 2, restored 2
+  run 30: animals 41, restored at same place 41 | corpses 2, restored 2
+  TOTAL C: animals restored 1230/1230, corpses restored 60/60

@@ -1,0 +1,26 @@
+TempUnreachableProbe 2026-11-19 12:27:05 same maps as feasibility probe (seed*7919+day). player-reach = flood fill of player-size box over room floor cells from player spawn, step 0.25; pickable = some reachable point within 1.8 (AnimalRescue.interactionRange, no line-of-sight)
+
+== Day 1
+  [d1 s1] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 88764, player box (0.64, 0.64)
+  [d1 s2] UNREACHABLE AnimalSleep AnimalWander_0 at (3.09, 78.53) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.58 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+    player moved to nearest reachable point (5.50, 78.50) (2.41 from animal) for capture
+    -> captured shot1 (center = animal, ortho 3.5, 960px)
+  [d1 s2] UNREACHABLE AnimalSleep AnimalTurtle_1 at (66.48, 80.56) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.23 | 8-neigh obstacle 0, non-floor 0 | colliders MapBoundary | nearest player-reachable 2.06
+    player moved to nearest reachable point (66.50, 78.50) (2.06 from animal) for capture
+    -> captured shot2 (center = animal, ortho 3.5, 960px)
+  [d1 s2] UNREACHABLE AnimalSleep AnimalFlee_0 at (59.49, 70.25) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.42 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+    player moved to nearest reachable point (59.50, 72.50) (2.25 from animal) for capture
+    -> captured shot3 (center = animal, ortho 3.5, 960px)
+  [d1 s2] UNREACHABLE AnimalSleep AnimalTurtle_1 at (30.49, 84.53) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 4.16 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+    player moved to nearest reachable point (26.50, 84.50) (3.99 from animal) for capture
+    -> captured shot4 (center = animal, ortho 3.5, 960px)
+  [d1 s2] summary: corridor maps 1, animals 41, nav-fail 4, player-cannot 4, nav-ok-but-player-cannot 0, reach cells 82923, player box (0.64, 0.64)
+  [d1 s3] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 87524, player box (0.64, 0.64)
+  [d1 s4] UNREACHABLE AnimalSleep AnimalWander_0 at (98.14, 66.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.81 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+    player moved to nearest reachable point (95.50, 66.50) (2.64 from animal) for capture
+    -> captured shot5 (center = animal, ortho 3.5, 960px)
+  [d1 s4] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 87373, player box (0.64, 0.64)
+
+== TOTALS (cause / player result: count over 30 maps x 2 days)
+  no-navmesh-within-1.5 / player-cannot: 5
+  day 1: nav-fail avg 0.17, player-cannot avg 0.17

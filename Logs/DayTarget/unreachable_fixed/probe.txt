@@ -1,0 +1,148 @@
+TempUnreachableProbe 2026-11-19 12:22:25 same maps as feasibility probe (seed*7919+day). player-reach = flood fill of player-size box over room floor cells from player spawn, step 0.25; pickable = some reachable point within 1.8 (AnimalRescue.interactionRange, no line-of-sight)
+
+== Day 1
+  [d1 s1] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 88764, player box (0.64, 0.64)
+  [d1 s2] UNREACHABLE AnimalSleep AnimalTurtle_1 at (30.49, 84.55) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 4.16 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+    -> captured shot1 (center = animal, ortho 3.5, 960px)
+  [d1 s2] UNREACHABLE AnimalSleep AnimalTurtle_1 at (66.46, 80.56) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.23 | 8-neigh obstacle 0, non-floor 0 | colliders MapBoundary | nearest player-reachable 2.06
+    -> captured shot2 (center = animal, ortho 3.5, 960px)
+  [d1 s2] UNREACHABLE AnimalSleep AnimalWander_0 at (3.09, 78.54) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.58 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+    -> captured shot3 (center = animal, ortho 3.5, 960px)
+  [d1 s2] UNREACHABLE AnimalSleep AnimalFlee_0 at (59.48, 70.25) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.42 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+    -> captured shot4 (center = animal, ortho 3.5, 960px)
+  [d1 s2] summary: corridor maps 1, animals 41, nav-fail 4, player-cannot 4, nav-ok-but-player-cannot 0, reach cells 82923, player box (0.64, 0.64)
+  [d1 s3] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 87524, player box (0.64, 0.64)
+  [d1 s4] UNREACHABLE AnimalSleep AnimalWander_0 at (98.09, 66.51) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.75 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+    -> captured shot5 (center = animal, ortho 3.5, 960px)
+  [d1 s4] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 87373, player box (0.64, 0.64)
+  [d1 s5] UNREACHABLE AnimalSleep AnimalWander_1 at (109.51, 75.52) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 4.18 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+    -> captured shot6 (center = animal, ortho 3.5, 960px)
+  [d1 s5] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 86565, player box (0.64, 0.64)
+  [d1 s6] UNREACHABLE AnimalSleep AnimalFlee_1 at (8.25, 68.48) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.42 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+    -> captured shot7 (center = animal, ortho 3.5, 960px)
+  [d1 s6] UNREACHABLE AnimalSleep AnimalWander_0 at (15.09, 12.34) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.90 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+    -> captured shot8 (center = animal, ortho 3.5, 960px)
+  [d1 s6] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 88325, player box (0.64, 0.64)
+  [d1 s7] UNREACHABLE AnimalSleep AnimalGoose_3 at (82.56, 67.51) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.11 | 8-neigh obstacle 0, non-floor 0 | colliders MapBoundary | nearest player-reachable 1.94
+  [d1 s7] UNREACHABLE AnimalSleep AnimalWander_2 at (90.52, 114.52) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 4.19 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s7] UNREACHABLE AnimalSleep AnimalWander_2 at (95.09, 13.78) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.41 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s7] summary: corridor maps 1, animals 41, nav-fail 3, player-cannot 3, nav-ok-but-player-cannot 0, reach cells 81805, player box (0.64, 0.64)
+  [d1 s8] UNREACHABLE AnimalSleep AnimalWander_1 at (14.50, 116.49) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 6.15 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s8] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 79776, player box (0.64, 0.64)
+  [d1 s9] UNREACHABLE AnimalSleep AnimalFlee_0 at (41.52, 78.51) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.19 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s9] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 86366, player box (0.64, 0.64)
+  [d1 s10] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 82058, player box (0.64, 0.64)
+  [d1 s11] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 87838, player box (0.64, 0.64)
+  [d1 s12] UNREACHABLE AnimalSleep AnimalTurtle_0 at (108.57, 9.51) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.23 | 8-neigh obstacle 0, non-floor 0 | colliders MapBoundary | nearest player-reachable 2.07
+  [d1 s12] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 84687, player box (0.64, 0.64)
+  [d1 s13] UNREACHABLE AnimalSleep AnimalFlee_0 at (14.46, 19.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.20 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s13] UNREACHABLE AnimalSleep AnimalTurtle_2 at (90.49, 43.56) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.22 | 8-neigh obstacle 0, non-floor 0 | colliders MapBoundary | nearest player-reachable 2.06
+  [d1 s13] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 88415, player box (0.64, 0.64)
+  [d1 s14] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 87736, player box (0.64, 0.64)
+  [d1 s15] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 86979, player box (0.64, 0.64)
+  [d1 s16] UNREACHABLE AnimalSleep AnimalWander_2 at (98.37, 102.12) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.38 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s16] UNREACHABLE AnimalSleep AnimalFlee_0 at (87.51, 116.51) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 6.18 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s16] UNREACHABLE AnimalSleep AnimalFlee_1 at (28.49, 69.25) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.42 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s16] summary: corridor maps 1, animals 41, nav-fail 3, player-cannot 3, nav-ok-but-player-cannot 0, reach cells 87628, player box (0.64, 0.64)
+  [d1 s17] UNREACHABLE AnimalSleep AnimalGoose_2 at (95.56, 20.51) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 1.94 | 8-neigh obstacle 0, non-floor 0 | colliders MapBoundary | nearest player-reachable 1.94
+  [d1 s17] UNREACHABLE AnimalSleep AnimalWander_0 at (94.28, 14.17) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.22 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s17] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 77947, player box (0.64, 0.64)
+  [d1 s18] UNREACHABLE AnimalSleep AnimalGoose_0 at (19.50, 67.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 4.17 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s18] UNREACHABLE AnimalSleep AnimalWander_0 at (94.27, 14.19) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.23 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s18] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 88260, player box (0.64, 0.64)
+  [d1 s19] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 85830, player box (0.64, 0.64)
+  [d1 s20] UNREACHABLE AnimalSleep AnimalWander_1 at (17.89, 99.52) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.56 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s20] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 86533, player box (0.64, 0.64)
+  [d1 s21] UNREACHABLE AnimalSleep AnimalWander_0 at (49.50, 46.48) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 5.15 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s21] UNREACHABLE AnimalSleep AnimalWander_1 at (55.10, 52.47) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.40 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s21] UNREACHABLE AnimalSleep AnimalWander_0 at (94.28, 14.20) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.22 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s21] summary: corridor maps 1, animals 41, nav-fail 3, player-cannot 3, nav-ok-but-player-cannot 0, reach cells 87064, player box (0.64, 0.64)
+  [d1 s22] UNREACHABLE AnimalSleep AnimalSoundFlee_0 at (23.51, 6.26) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.41 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s22] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 86410, player box (0.64, 0.64)
+  [d1 s23] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 81327, player box (0.64, 0.64)
+  [d1 s24] UNREACHABLE AnimalSleep AnimalFlee_2 at (97.75, 68.49) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.41 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s24] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 86418, player box (0.64, 0.64)
+  [d1 s25] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 85156, player box (0.64, 0.64)
+  [d1 s26] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 85781, player box (0.64, 0.64)
+  [d1 s27] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 86502, player box (0.64, 0.64)
+  [d1 s28] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 88489, player box (0.64, 0.64)
+  [d1 s29] UNREACHABLE AnimalSleep AnimalWander_0 at (23.51, 118.49) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 7.27 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s29] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 85798, player box (0.64, 0.64)
+  [d1 s30] UNREACHABLE AnimalSleep AnimalGoose_0 at (107.44, 36.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.10 | 8-neigh obstacle 0, non-floor 0 | colliders MapBoundary | nearest player-reachable 1.94
+  [d1 s30] UNREACHABLE AnimalSleep AnimalWander_2 at (16.51, 4.49) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 4.29 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d1 s30] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 86554, player box (0.64, 0.64)
+
+== Day 2
+  [d2 s1] UNREACHABLE AnimalSleep AnimalWander_1 at (3.50, 77.52) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.17 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s1] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 87379, player box (0.64, 0.64)
+  [d2 s2] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 88958, player box (0.64, 0.64)
+  [d2 s3] UNREACHABLE AnimalSleep AnimalWander_2 at (6.49, 18.46) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 8.87 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s3] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 84101, player box (0.64, 0.64)
+  [d2 s4] UNREACHABLE AnimalSleep AnimalWander_0 at (10.53, 109.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 4.17 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s4] UNREACHABLE AnimalSleep AnimalSoundFlee_1 at (62.11, 16.74) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.41 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s4] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 86426, player box (0.64, 0.64)
+  [d2 s5] UNREACHABLE AnimalSleep AnimalFlee_1 at (65.33, 87.74) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.41 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s5] UNREACHABLE AnimalSleep AnimalWander_2 at (45.49, 83.49) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 8.50 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s5] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 90683, player box (0.64, 0.64)
+  [d2 s6] UNREACHABLE AnimalSleep AnimalWander_2 at (94.51, 108.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.16 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s6] UNREACHABLE AnimalSleep AnimalFlee_1 at (65.32, 87.78) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.44 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s6] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 88344, player box (0.64, 0.64)
+  [d2 s7] UNREACHABLE AnimalSleep AnimalSoundFlee_3 at (64.50, 17.47) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 5.13 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s7] UNREACHABLE AnimalSleep AnimalWander_2 at (45.51, 83.49) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 8.49 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s7] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 83970, player box (0.64, 0.64)
+  [d2 s8] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 88073, player box (0.64, 0.64)
+  [d2 s9] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 86746, player box (0.64, 0.64)
+  [d2 s10] UNREACHABLE AnimalSleep AnimalGoose_0 at (101.49, 47.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.17 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s10] UNREACHABLE AnimalSleep AnimalWander_1 at (67.90, 66.53) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.57 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s10] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 81876, player box (0.64, 0.64)
+  [d2 s11] UNREACHABLE AnimalSleep AnimalWander_1 at (7.49, 11.90) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.57 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s11] UNREACHABLE AnimalSleep AnimalWander_0 at (6.48, 13.49) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 4.15 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s11] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 78787, player box (0.64, 0.64)
+  [d2 s12] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 87586, player box (0.64, 0.64)
+  [d2 s13] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 88618, player box (0.64, 0.64)
+  [d2 s14] UNREACHABLE AnimalSleep AnimalGoose_0 at (20.50, 17.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.15 | 8-neigh obstacle 0, non-floor 0 | colliders MapBoundary | nearest player-reachable 2.00
+  [d2 s14] UNREACHABLE AnimalSleep AnimalGoose_2 at (85.51, 76.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.17 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s14] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 86930, player box (0.64, 0.64)
+  [d2 s15] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 80868, player box (0.64, 0.64)
+  [d2 s16] UNREACHABLE AnimalSleep AnimalWander_2 at (2.48, 75.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.86 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s16] UNREACHABLE AnimalSleep AnimalWander_0 at (1.49, 101.52) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.17 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s16] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 83851, player box (0.64, 0.64)
+  [d2 s17] UNREACHABLE AnimalSleep AnimalFlee_1 at (67.77, 34.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.44 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s17] UNREACHABLE AnimalSleep AnimalWander_2 at (2.46, 75.48) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.86 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s17] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 82673, player box (0.64, 0.64)
+  [d2 s18] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 87206, player box (0.64, 0.64)
+  [d2 s19] UNREACHABLE AnimalSleep AnimalWander_2 at (51.85, 111.51) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 5.65 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s19] UNREACHABLE AnimalSleep AnimalFlee_1 at (26.46, 115.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 7.16 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s19] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 81173, player box (0.64, 0.64)
+  [d2 s20] UNREACHABLE AnimalSleep AnimalSoundFlee_0 at (60.47, 115.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 4.13 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s20] UNREACHABLE AnimalSleep AnimalGoose_2 at (11.49, 79.49) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 6.15 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s20] UNREACHABLE AnimalSleep AnimalWander_1 at (9.48, 78.51) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 5.18 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s20] summary: corridor maps 1, animals 41, nav-fail 3, player-cannot 3, nav-ok-but-player-cannot 0, reach cells 81847, player box (0.64, 0.64)
+  [d2 s21] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 87434, player box (0.64, 0.64)
+  [d2 s22] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 84306, player box (0.64, 0.64)
+  [d2 s23] UNREACHABLE AnimalSleep AnimalGoose_1 at (15.50, 102.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.00 | 8-neigh obstacle 0, non-floor 0 | colliders MapBoundary | nearest player-reachable 2.00
+  [d2 s23] UNREACHABLE AnimalSleep AnimalTurtle_1 at (95.45, 46.52) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.05 | 8-neigh obstacle 0, non-floor 0 | colliders MapBoundary | nearest player-reachable 2.05
+  [d2 s23] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 87672, player box (0.64, 0.64)
+  [d2 s24] UNREACHABLE AnimalSleep AnimalWander_2 at (18.80, 38.10) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.57 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s24] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 85408, player box (0.64, 0.64)
+  [d2 s25] UNREACHABLE AnimalSleep AnimalWander_0 at (11.53, 108.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.17 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s25] summary: corridor maps 1, animals 41, nav-fail 1, player-cannot 1, nav-ok-but-player-cannot 0, reach cells 82433, player box (0.64, 0.64)
+  [d2 s26] summary: corridor maps 1, animals 41, nav-fail 0, player-cannot 0, nav-ok-but-player-cannot 0, reach cells 86033, player box (0.64, 0.64)
+  [d2 s27] UNREACHABLE AnimalSleep AnimalFlee_1 at (64.47, 113.53) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 5.19 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s27] UNREACHABLE AnimalSleep AnimalWander_1 at (19.50, 51.49) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 3.16 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s27] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 84771, player box (0.64, 0.64)
+  [d2 s28] UNREACHABLE AnimalSleep AnimalFlee_1 at (69.76, 84.49) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.69 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s28] UNREACHABLE AnimalSleep AnimalGoose_2 at (100.50, 38.51) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.16 | 8-neigh obstacle 0, non-floor 0 | colliders MapBoundary | nearest player-reachable 1.99
+  [d2 s28] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 87357, player box (0.64, 0.64)
+  [d2 s29] UNREACHABLE AnimalSleep AnimalTurtle_0 at (64.51, 3.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 5.26 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s29] UNREACHABLE AnimalSleep AnimalWander_2 at (82.51, 84.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.99 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s29] summary: corridor maps 1, animals 41, nav-fail 2, player-cannot 2, nav-ok-but-player-cannot 0, reach cells 80708, player box (0.64, 0.64)
+  [d2 s30] UNREACHABLE AnimalSleep AnimalWander_2 at (44.50, 11.91) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.58 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s30] UNREACHABLE AnimalSleep AnimalGoose_0 at (82.57, 36.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 2.10 | 8-neigh obstacle 0, non-floor 0 | colliders MapBoundary | nearest player-reachable 1.93
+  [d2 s30] UNREACHABLE AnimalSleep AnimalWander_2 at (82.49, 84.50) room () cell (0, 0) | no-navmesh-within-1.5 nearest navmesh 7.44 | 8-neigh obstacle 0, non-floor 0 | colliders  | nearest player-reachable 340282300000000000000000000000000000000.00
+  [d2 s30] summary: corridor maps 1, animals 41, nav-fail 3, player-cannot 3, nav-ok-but-player-cannot 0, reach cells 82925, player box (0.64, 0.64)
+
+== TOTALS (cause / player result: count over 30 maps x 2 days)
+  no-navmesh-within-1.5 / player-cannot: 70
+  day 1: nav-fail avg 1.07, player-cannot avg 1.07
+  day 2: nav-fail avg 1.27, player-cannot avg 1.27
