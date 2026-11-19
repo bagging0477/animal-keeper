@@ -1,0 +1,6 @@
+ForestPathCapture [after] 2026-11-19 11:29:44 seed 2, forest spot (95.50, 11.50), graveyard Room_0_0 spot (6.50, 9.50)
+path sprite OutdoorFloorStoneVariantSprite_0 32x32 PPU 32 filter Point format RGB24
+shot forest_day at (95.50, 11.50) t=0: ambient/path (116,96,76) [1 cells] | ambient/grass - | flash/path (132,111,87) [8 cells] | flash/grass (111,100,54) [2 cells]
+shot forest_night at (95.50, 11.50) t=300: ambient/path (72,71,63) [1 cells] | ambient/grass - | flash/path (71,63,47) [8 cells] | flash/grass (27,27,17) [2 cells]
+shot graveyard_day at (6.50, 9.50) t=0: ambient/path (109,89,70) [19 cells] | ambient/grass (99,87,47) [10 cells] | flash/path (113,94,74) [2 cells] | flash/grass (121,110,59) [8 cells]
+shot graveyard_night at (6.50, 9.50) t=300: ambient/path (51,50,46) [19 cells] | ambient/grass (54,57,36) [10 cells] | flash/path (27,25,21) [2 cells] | flash/grass (53,52,28) [8 cells]

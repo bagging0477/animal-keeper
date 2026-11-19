@@ -1,0 +1,23 @@
+ForestSquareProbe seed 2, spot (95.50, 11.50), room Room_2_0 at (86.00, 3.00, 0.00), ortho 5.6
+  tilemap Path: layer Floor order 1 material Sprite-Lit-Default shader Universal Render Pipeline/2D/Sprite-Lit-Default color RGBA(1.000, 1.000, 1.000, 1.000)
+  tilemap Ground: layer Floor order 0 material Sprite-Lit-Default shader Universal Render Pipeline/2D/Sprite-Lit-Default color RGBA(1.000, 1.000, 1.000, 1.000)
+cell map around player (x -10..+10 left->right, y +6 top .. -6 bottom). P = path tile, lowercase = ground tile kind, # = ground under obstacle sprite, % = path under obstacle sprite, @ = player
+  y  17.5 a###PP%%%%%%%%PP#####
+  y  16.5 a###PP########PP#####
+  y  15.5 a###PP########PP####a
+  y  14.5 a###PP###aaaaaPP####a
+  y  13.5 a###PPb#bPP%%%PPa###a
+  y  12.5 a###PPb#bPP%%%PPaaaaa
+  y  11.5 a###PPb#bP@###PPPPPPa
+  y  10.5 a###PP###PP###PPPPPPa
+  y   9.5 a###PP%%%PP###PPaaPPa
+  y   8.5 aa#aPP%%%PP###PPaaPPa
+  y   7.5 ba#aPP###PP###PPaaPPa
+  y   6.5 bb##%PaabPP###PPaaPPa
+  y   5.5 PP%%%PPPPP%###%%%%PPP
+  a = ground tile OutdoorFloorGrassTile
+  b = ground tile OutdoorFloorFlowerVariantTile
+  path tile OutdoorFloorStoneVariantTile, sprite OutdoorFloorStoneVariantSprite_0, texture OutdoorFloorStoneVariantSprite 32x32
+shot day_000s: path renderer enabled True
+shot night_300s: path renderer enabled True
+shot night_300s_nopath: path renderer enabled False
