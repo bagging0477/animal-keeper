@@ -30,16 +30,16 @@ public class TutorialGuide : MonoBehaviour
     public const string DoneChipText = "완료!";
     public const string StartPromptText = "[Space] 또는 클릭으로 시작";
 
-    private static readonly Vector2 ReferenceResolution = new Vector2(2240f, 1260f); // 씬 UI Canvas와 같은 기준
+    internal static readonly Vector2 ReferenceResolution = new Vector2(2240f, 1260f); // 씬 UI Canvas와 같은 기준
     private const int CanvasSortingOrder = 600;  // HUD(0)·자막(500) 위(멈춤 화면 어둠이 자막도 덮는다), 일시정지 메뉴(1000) 아래
     private const float PixelUnits = 4.67f;      // 도트 1칸 = 1080p 4px
     // 멈춤 화면 카드: 박람회 화면에서 멀리서도 읽히게 본문 글씨·키 칸(시작 안내 줄 포함)은 처음 크기(50·42·32·28)의 1.5배
-    private const float CardTextSize = 75f, CardKeySize = 63f, CardChipSize = 30f, CardPromptSize = 48f, CardPromptKeySize = 42f;
-    private const int CardKeyPadY = 6;           // 카드 키 칸 위아래 여백(작은 알림은 4 그대로)
-    private const float CardLineSpacing = 15f;   // 카드 본문 조각 사이 간격(작은 알림은 6 그대로)
-    private const float CardScreenMargin = 40f;  // 카드 본문이 너무 길면 화면 가장자리에서 이만큼 안쪽에서 줄을 바꾼다
+    public const float CardTextSize = 75f, CardKeySize = 63f, CardChipSize = 30f, CardPromptSize = 48f, CardPromptKeySize = 42f;
+    internal const int CardKeyPadY = 6;           // 카드 키 칸 위아래 여백(작은 알림은 4 그대로)
+    internal const float CardLineSpacing = 15f;   // 카드 본문 조각 사이 간격(작은 알림은 6 그대로)
+    internal const float CardScreenMargin = 40f;  // 카드 본문이 너무 길면 화면 가장자리에서 이만큼 안쪽에서 줄을 바꾼다
     private const float CardClearance = 24f;     // 카드와 다른 화면 UI·강조(외곽선·화살표·이름표) 사이 최소 간격
-    private static readonly RectOffset CardPadding = new RectOffset(56, 56, 26, 30);
+    internal static readonly RectOffset CardPadding = new RectOffset(56, 56, 26, 30);
     // 카드 본문 폭 후보(화면 폭 기준 최대 폭의 비율): 넓은 것부터 - 빈자리에 안 들어가면 더 좁게(줄을 더 나눠) 다시 찾는다
     private static readonly float[] CardWidthSteps = { 1f, 0.85f, 0.7f, 0.58f, 0.48f, 0.4f };
     private const float NoticeTextSize = 28f, NoticeKeySize = 24f, NoticeChipSize = 22f;
@@ -57,11 +57,11 @@ public class TutorialGuide : MonoBehaviour
     private const float Step3TimeoutSeconds = 8f;
     private const float Step5TimeoutSeconds = 10f;
 
-    private static readonly Color Cream = new Color32(0xED, 0xE3, 0xD3, 0xFF);
+    internal static readonly Color Cream = new Color32(0xED, 0xE3, 0xD3, 0xFF);
     private static readonly Color Outline = new Color32(0x2F, 0x2F, 0x2E, 0xFF);
     /// <summary>강조 외곽선 색 - 눈에 확 띄는 밝은 노랑.</summary>
     public static readonly Color HighlightYellow = new Color32(0xFF, 0xE0, 0x2E, 0xFF);
-    private static readonly Color DimColor = new Color(0.035f, 0.035f, 0.05f, 0.92f); // 선형 색공간이라 0.92여야 눈에 밝기 약 1/3로 보인다
+    internal static readonly Color DimColor = new Color(0.035f, 0.035f, 0.05f, 0.92f); // 선형 색공간이라 0.92여야 눈에 밝기 약 1/3로 보인다
     // 키 칸 글자: 공용 글꼴 머티리얼(검은 외곽선)을 그대로 쓰므로 인벤토리 칸 번호처럼 흰 글자로 둔다
     private static readonly Color KeyText = Color.white;
 
@@ -129,6 +129,9 @@ public class TutorialGuide : MonoBehaviour
     /// <summary>단계 시작 멈춤(어둠 + 가운데 카드 + 노란 외곽선) 중인지.</summary>
     public bool IsIntroActive => introActive;
 
+    /// <summary>지금 단계의 멈춤 화면이 아직 안 떴고 곧 뜰 차례인지(다른 화면이 멈춰 둔 동안 기다리는 중 포함). 첫 만남 카드(MonsterEncounterCard)가 튜토리얼 뒤로 미룰 때 본다.</summary>
+    public bool HasPendingIntro => !IntrosSuppressed && !introActive && CurrentStep > 0 && !done[CurrentStep] && !introShown[CurrentStep];
+
     /// <summary>멈춤 화면이 보이는지.</summary>
     public bool IsIntroShowing => introRoot != null && introRoot.activeSelf;
 
@@ -151,7 +154,8 @@ public class TutorialGuide : MonoBehaviour
 
     // ---------------- 화면 ----------------
     private RectTransform canvasRect;
-    private Sprite panelSprite, stepSprite, keySprite, arrowSprite;
+    private Sprite keySprite, arrowSprite;
+    internal Sprite panelSprite, stepSprite;
     // 멈춤 화면: 모든 대상 모양 표시(스텐실) → 어둠(표시 밖만) → 표시 지우기 → 대상마다 [그 대상 모양 표시 → 노란 외곽선(그 표시 밖만) → 표시 지우기]
     //  → 화살표·이름표 → 카드. 외곽선은 대상마다 따로 그려, 붙어 있는 다른 대상(예: 문 바로 위 "오늘 목표")의 모양에 묻혀 한쪽이 사라지지 않는다.
     private GameObject introRoot;
@@ -317,27 +321,27 @@ public class TutorialGuide : MonoBehaviour
         return m;
     }
 
-    private static RectTransform StretchChild(string name, Transform parent)
+    internal static RectTransform StretchChild(string name, Transform parent)
     {
         RectTransform rt = (RectTransform)Child(name, parent).transform;
         Stretch(rt);
         return rt;
     }
 
-    private static GameObject Child(string name, Transform parent)
+    internal static GameObject Child(string name, Transform parent)
     {
         GameObject go = new GameObject(name, typeof(RectTransform));
         go.transform.SetParent(parent, false);
         return go;
     }
 
-    private static void Stretch(RectTransform rt)
+    internal static void Stretch(RectTransform rt)
     {
         rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
         rt.offsetMin = rt.offsetMax = Vector2.zero;
     }
 
-    private static void FitToContent(GameObject go)
+    internal static void FitToContent(GameObject go)
     {
         ContentSizeFitter f = go.AddComponent<ContentSizeFitter>();
         f.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -354,7 +358,7 @@ public class TutorialGuide : MonoBehaviour
         return img;
     }
 
-    private GameObject Box(string name, Transform parent, Sprite sprite, RectOffset padding, float spacing, bool vertical)
+    internal GameObject Box(string name, Transform parent, Sprite sprite, RectOffset padding, float spacing, bool vertical)
     {
         GameObject go = Child(name, parent);
         if (sprite != null) SlicedImage(go, sprite);
@@ -367,7 +371,7 @@ public class TutorialGuide : MonoBehaviour
         return go;
     }
 
-    private static TMP_Text Label(Transform parent, string text, float size, Color color)
+    internal static TMP_Text Label(Transform parent, string text, float size, Color color)
     {
         GameObject go = Child("Text", parent);
         TextMeshProUGUI t = go.AddComponent<TextMeshProUGUI>();
@@ -394,7 +398,7 @@ public class TutorialGuide : MonoBehaviour
     private static readonly Regex LinePieces = new Regex(@"\[([^\]]+)\]|[^\[]+");
 
     // 카드 본문 줄 나누기: 한 줄로 maxWidth 안에 들어가면 한 줄, 넘으면 띄어쓰기 자리(키 칸 [..] 안은 나누지 않음)에서 줄을 바꾼다.
-    private List<string> WrapRows(string text, float textSize, float keySize, float spacing, float maxWidth)
+    internal List<string> WrapRows(string text, float textSize, float keySize, float spacing, float maxWidth)
     {
         var words = new List<string>();
         var cur = new System.Text.StringBuilder();
@@ -421,7 +425,7 @@ public class TutorialGuide : MonoBehaviour
     }
 
     // 나눈 줄마다 Row(가로 줄)를 만들어 세로로 쌓는다.
-    private void BuildRows(RectTransform line, List<string> rows, float textSize, float keySize, Color color, int keyPadY, float spacing)
+    internal void BuildRows(RectTransform line, List<string> rows, float textSize, float keySize, Color color, int keyPadY, float spacing)
     {
         ClearChildren(line);
         foreach (string r in rows)
@@ -455,7 +459,7 @@ public class TutorialGuide : MonoBehaviour
     }
 
     // "[WASD] 걷기 · [Shift] 달리기" → 키 칸과 글자 조각으로 다시 만든다.
-    private void BuildLine(RectTransform line, string text, float textSize, float keySize, Color color, int keyPadY = 4)
+    internal void BuildLine(RectTransform line, string text, float textSize, float keySize, Color color, int keyPadY = 4)
     {
         ClearChildren(line);
         foreach (Match m in LinePieces.Matches(text))
