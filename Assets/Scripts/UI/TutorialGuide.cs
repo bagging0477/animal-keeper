@@ -872,6 +872,7 @@ public class TutorialGuide : MonoBehaviour
         Vector2 size = CanvasSize;
         Rect screen = Rect.MinMaxRect(-size.x * 0.5f, -size.y * 0.5f, size.x * 0.5f, size.y * 0.5f);
         holeBuffer.Clear();
+        pendingLabels.Clear();
         activeViews = usedMask = usedClear = 0;
         foreach (Target t in targetBuffer)
         {
@@ -904,7 +905,15 @@ public class TutorialGuide : MonoBehaviour
             else if (hv.Arrow != null) hv.Arrow.gameObject.SetActive(false);
 
             Rect outer = hv.Bounds;
-            if (!string.IsNullOrEmpty(t.label))
+            if (!string.IsNullOrEmpty(t.label) && introStep == 5)
+            {
+                // 5단계(몬스터 + 인벤토리 칸): 이름표는 모든 대상의 자리를 안 뒤에 빈 자리를 찾아 놓는다(PlaceFreeLabels).
+                if (hv.labelText.text != t.label) hv.labelText.text = t.label;
+                hv.labelGo.SetActive(true);
+                pendingLabels.Add((hv, outer));
+                holeBuffer.Add(outer);
+            }
+            else if (!string.IsNullOrEmpty(t.label))
             {
                 if (hv.labelText.text != t.label) hv.labelText.text = t.label;
                 hv.labelGo.SetActive(true);
@@ -925,6 +934,7 @@ public class TutorialGuide : MonoBehaviour
                 holeBuffer.Add(outer);
             }
         }
+        if (pendingLabels.Count > 0) PlaceFreeLabels(screen, cam);
         for (int i = 0; i < views.Count; i++)
         {
             HighlightView v = views[i];
@@ -970,6 +980,63 @@ public class TutorialGuide : MonoBehaviour
             LayoutRebuilder.ForceRebuildLayoutImmediate(crt);
         }
         crt.anchoredPosition = pos;
+    }
+
+    // ---- 5단계 이름표 빈 자리 (작은 알림 자리 고르기와 같은 방식: 후보를 정해진 순서로 보고, 다른 UI와 안 겹치는 첫 자리) ----
+    private readonly List<(HighlightView hv, Rect outer)> pendingLabels = new List<(HighlightView, Rect)>();
+    private const float LabelGap = 8f, LabelStep = 12f, LabelMaxShift = 240f, LabelClearance = 6f;
+
+    // 대상 바로 아래 → 위 → 오른쪽 → 왼쪽 순으로, 대상에서 LabelStep씩 멀어지며 처음으로 빈 자리. 피하는 것: 다른 화면 UI(HUD·인벤토리·하단 자막 줄 포함),
+    // 모든 강조 대상, 먼저 놓은 이름표, 플레이어 그림, 화면 가장자리. 끝내 없으면 예전 자리(아래, 모자라면 위).
+    private void PlaceFreeLabels(Rect screen, Camera cam)
+    {
+        var blocked = OtherUiViewportRects().Select(ToLocal).ToList();
+        for (int i = 0; i < activeViews; i++) blocked.Add(views[i].Bounds);
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        SpriteRenderer psr = player != null ? player.GetComponent<SpriteRenderer>() : null;
+        if (psr != null && cam != null)
+        {
+            Vector2 a = WorldToLocal(cam, psr.bounds.min), b = WorldToLocal(cam, psr.bounds.max);
+            blocked.Add(Rect.MinMaxRect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y)));
+        }
+        foreach (var (hv, outer) in pendingLabels)
+        {
+            RectTransform lrt = hv.LabelRect;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(lrt);
+            Vector2 ls = lrt.rect.size;
+            Vector2? pick = null;
+            for (float k = 0f; k <= LabelMaxShift && pick == null; k += LabelStep)
+            {
+                float cx = outer.center.x - ls.x * 0.5f, cy = outer.center.y - ls.y * 0.5f;
+                Vector2[] candidates =
+                {
+                    new Vector2(cx, outer.yMin - LabelGap - k - ls.y), // 아래
+                    new Vector2(cx, outer.yMax + LabelGap + k),        // 위
+                    new Vector2(outer.xMax + LabelGap + k, cy),        // 오른쪽
+                    new Vector2(outer.xMin - LabelGap - k - ls.x, cy), // 왼쪽
+                };
+                foreach (Vector2 c in candidates)
+                {
+                    Rect r = new Rect(c, ls);
+                    if (r.xMin < screen.xMin + 8f || r.xMax > screen.xMax - 8f || r.yMin < screen.yMin + 8f || r.yMax > screen.yMax - 8f) continue;
+                    Rect padded = Expand(r, LabelClearance);
+                    if (blocked.Any(bl => bl.Overlaps(padded))) continue;
+                    pick = c;
+                    break;
+                }
+            }
+            if (pick == null)
+            {
+                bool below = outer.yMin - ls.y - LabelGap > screen.yMin + 8f;
+                pick = new Vector2(Mathf.Clamp(outer.center.x - ls.x * 0.5f, screen.xMin + 8f, screen.xMax - 8f - ls.x), below ? outer.yMin - LabelGap - ls.y : outer.yMax + LabelGap);
+            }
+            lrt.anchorMin = lrt.anchorMax = new Vector2(0.5f, 0.5f);
+            lrt.pivot = Vector2.zero;
+            lrt.anchoredPosition = pick.Value;
+            Rect placed = new Rect(pick.Value, ls);
+            blocked.Add(placed);
+            holeBuffer.Add(placed);
+        }
     }
 
     private const float CardStepX = 40f, CardStepY = 20f, CardEdge = 10f;
