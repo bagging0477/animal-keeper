@@ -229,7 +229,8 @@ public static class MonsterPacingTest
         Check(config.dayMonsterPlans != null && config.dayMonsterPlans.Length == 2, $"날짜별 표 {config.dayMonsterPlans?.Length}줄 (기대 2)");
 
         // 요청한 표: 맵 생성 종류별 수, 구간 2~4 진입 소환, 5구간 30초마다 1마리 최대 n마리(그날 종류에서)
-        var expectedMap = new Dictionary<int, int[]> { { 1, new[] { 4, 2, 2, 1, 0 } }, { 2, new[] { 4, 2, 2, 2, 2 } } };
+        // 맵 생성 수는 박쥐 비율 적용 뒤 값: 맵 생성(0초)은 박쥐가 나오는 시각(batEarliestVillageSeconds 60초) 전이라 표의 박쥐 2마리를 다른 종류가 표 비율대로 대신한다.
+        var expectedMap = new Dictionary<int, int[]> { { 1, new[] { 5, 3, 0, 1, 0 } }, { 2, new[] { 5, 3, 0, 2, 2 } } };
         var expectedPhase = new Dictionary<int, GameObject[][]>
         {
             { 1, new[] { new GameObject[0], new[] { wolf }, new[] { sound, bat }, new[] { porcupine } } },
@@ -290,7 +291,8 @@ public static class MonsterPacingTest
             yield return WaitFrames(6);
             Check(gm.VillagePhase == phase - 1 && KindCounts(TimedMonsters()).SequenceEqual(before),
                 $"{tag}: {start - 0.5f:F1}초({phase - 1}구간)에는 {phase}구간 소환 전 ({Fmt(KindCounts(TimedMonsters()))})");
-            int[] want = Add(before, KindCounts(config.GetVillagePhaseSpawns(day, phase).SelectMany(e => Enumerable.Repeat(e.monsterPrefab, e.initialCount))));
+            // 종류는 실제 소환과 같은 함수(PrefabFor - 박쥐 항목은 박쥐 비율에 따라 다른 종류로 바뀔 수 있다)로 정한다.
+            int[] want = Add(before, KindCounts(config.GetVillagePhaseSpawns(day, phase).SelectMany((e, i) => Enumerable.Range(0, e.initialCount).Select(o => VillageMonsterSpawner.PrefabFor(config, e, phase, i, o)))));
             yield return WaitUntil(() => KindCounts(TimedMonsters()).SequenceEqual(want), 300);
             Check(gm.VillagePhase == phase && KindCounts(TimedMonsters()).SequenceEqual(want),
                 $"{tag}: {gm.VillageTime:F1}초({phase}구간) 추가 소환 누적 {Fmt(KindCounts(TimedMonsters()))} (기대 {Fmt(want)})");

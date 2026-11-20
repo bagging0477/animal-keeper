@@ -20,7 +20,7 @@ using UnityEngine.Tilemaps;
 /// 부채꼴 방향: 실제 마우스는 테스트 동안 끄고 가상 마우스를 그 방향 화면 위치에 둔다 - 마우스 커서가 어디 있든 결과가 같다.
 /// 검사: 프리팹·그림·설정, 원형 주변 시야에서는 멈추지 않고 다가옴, 정면 부채꼴 시야에 들어오면 멈춤(굳음)·웅크림 3프레임 재생 후 마지막 프레임 유지,
 /// 웅크리는 동안 몸이 바닥(그림자 윗줄)까지 내려앉고 풀리는 동안 날던 높이로 떠오름(다트 맞힘 원도 따라감, Logs/Bat/bat_crouch_landing.png),
-/// 시야에서 벗어나면 웅크림을 거꾸로 재생한 뒤 다시 비행, 벽 뒤는 시야 밖, 15칸 안 추격·밖 배회, 배회 중에도 정면 시야 안이면 멈춤,
+/// 시야에서 벗어나면 웅크림을 거꾸로 재생한 뒤 다시 비행, 벽 뒤는 시야 밖, 추격 거리(batChaseRange = 늑대 발견 거리) 안 추격·밖 배회, 배회 중에도 정면 시야 안이면 멈춤,
 /// 접촉 데미지(최대 체력 x 0.8, 굳은 동안 없음), 무기 데미지 = 늑대와 같은 값(기절·마취 없음), 맞으면 도망(거리 = 거위 x 0.5, 속도 = 거위),
 /// 피격 모션(hurt-01 + 늑대와 같은 빨간 깜빡임, 비행·굳음·도망 중 모두, 피격 중에도 바로 도망, 연속 피격 → Logs/Bat/hurt_compare.png),
 /// 도망 중 쳐다봐도 안 멈춤, 도망 중 또 맞으면 그 자리에서 다시 도망, 무적 없음, 도망 뒤 다시 다가옴, 체력 0이면 쓰러지고 E로 회수,
@@ -126,11 +126,26 @@ public static class BatMonsterTest
 
     private static readonly FieldInfo GmConfigField = typeof(GameManager).GetField("config", BindingFlags.NonPublic | BindingFlags.Instance);
     private static GameBalanceConfig originalConfig;
+    private static float savedBatRate = -1f;
+
+    // 시간 소환 검사(12~14) 동안만 박쥐 비율(batSpawnRateMultiplier)을 1로 둔다 - 박쥐 항목이 항상 박쥐로 나와야 소환 동작을 볼 수 있다. 에셋 값은 메모리에서만 바꾸고 되돌린다.
+    private static void ForceBatRate()
+    {
+        if (savedBatRate < 0f) savedBatRate = config.batSpawnRateMultiplier;
+        config.batSpawnRateMultiplier = 1f;
+    }
+
+    private static void RestoreBatRate()
+    {
+        if (savedBatRate >= 0f && config != null) config.batSpawnRateMultiplier = savedBatRate;
+        savedBatRate = -1f;
+    }
 
     private static void TearDown()
     {
         Application.logMessageReceived -= OnLog;
         EditorTestState.RestoreVillageDusk();
+        RestoreBatRate();
         if (gm != null && originalConfig != null) GmConfigField.SetValue(gm, originalConfig);
         originalConfig = null;
         Time.captureDeltaTime = 0f;
@@ -316,7 +331,10 @@ public static class BatMonsterTest
 
         // --- 2. 정면 부채꼴 시야: 들어온 순간 멈추고, 웅크림 3프레임 재생 뒤 마지막 프레임으로 굳는다
         sb.AppendLine("\n== 2. 놀람 전 돌진 → 정면 시야에 들어온 자리에서 바로 멈춤, 웅크림 wrap-01~03 재생 후 wrap-03 유지");
-        a = SpawnBat(laneCenter + dir * front);
+        // 놀람 후 추격·굳음·풀림 동작은 부채꼴 반경({focusedR:F1}칸)에서 멈춘 박쥐가 추격하는 경우를 보므로, 추격 거리만 예전 15칸으로 늘린 설정 복제본을 쓴다(실제 추격 거리는 5절).
+        GameBalanceConfig chaseTest = Object.Instantiate(config);
+        chaseTest.batChaseRange = 15f;
+        a = SpawnBat(laneCenter + dir * front, chaseTest);
         bool flyShot = false;
         int flyGap = int.MinValue;
         ClearLandPanels();
@@ -455,6 +473,7 @@ public static class BatMonsterTest
         // --- 4. 벽에 가려지면 시야 밖
         sb.AppendLine("\n== 4. 부채꼴 안이어도 벽 뒤는 시야 밖 → 계속 움직임");
         Object.Destroy(a.gameObject);
+        Object.Destroy(chaseTest);
         lookDirection = dir;
         MovePlayer(laneCenter);
         yield return WaitFrames(3);
@@ -471,9 +490,9 @@ public static class BatMonsterTest
         Object.Destroy(wall);
         yield return WaitFrames(2);
 
-        // --- 5. 15칸 밖 배회 ↔ 15칸 안 추격
-        sb.AppendLine("\n== 5. 15칸 밖이면 배회, 안으로 들어오면 추격, 다시 나가면 배회");
-        MovePlayer(laneCenter + new Vector2(0f, 500f)); // 맵 밖 먼 곳 - 15칸 밖이고 시야도 닿지 않는다
+        // --- 5. 추격 거리 밖 배회 ↔ 안 추격
+        sb.AppendLine($"\n== 5. {config.batChaseRange:F2}칸(늑대 발견 거리) 밖이면 배회, 안으로 들어오면 추격, 다시 나가면 배회");
+        MovePlayer(laneCenter + new Vector2(0f, 500f)); // 맵 밖 먼 곳 - 추격 거리 밖이고 시야도 닿지 않는다
         int warnBefore = a.WarningCount;
         float maxSpeed = 0f, path = 0f;
         Vector2 prev = Pos(a);
@@ -485,7 +504,7 @@ public static class BatMonsterTest
             path += step;
             prev = Pos(a);
         }
-        Check(a.CurrentPhase == BatMonsterAI.Phase.Wander && !a.IsFrozen, $"15칸 밖: 배회 (단계 {a.CurrentPhase})");
+        Check(a.CurrentPhase == BatMonsterAI.Phase.Wander && !a.IsFrozen, $"{config.batChaseRange:F2}칸 밖: 배회 (단계 {a.CurrentPhase})");
         Check(path > 0.3f && maxSpeed <= config.batWanderSpeed + 0.1f, $"제자리에 멈추지 않고 느리게 움직인다 (4초 {path:F2}칸, 최고 {maxSpeed:F2}/초, 배회 속도 {config.batWanderSpeed})");
         Check(a.WarningCount == warnBefore, $"배회 중에는 경고음 없음 ({warnBefore} → {a.WarningCount})");
 
@@ -494,20 +513,21 @@ public static class BatMonsterTest
         {
             Vector2 q = laneCenter + dir * t;
             float dq = Vector2.Distance(q, Pos(a));
-            if (dq >= 5f && dq <= 13f) { standAt = q; break; }
+            if (dq >= config.batChaseRange * 0.35f && dq <= config.batChaseRange * 0.85f) { standAt = q; break; }
         }
         lookDirection = (standAt - Pos(a)).normalized;
         MovePlayer(standAt);
         yield return WaitFrames(2);
         float d5 = Dist(a);
-        Check(!vision.IsPointVisible(Pos(a)) && d5 <= config.batChaseRange, $"플레이어를 박쥐와 {d5:F2}칸 떨어진 길 위로(등지고) 옮겼다");
+        // 추격 거리가 원형 시야 반경보다 짧아 원형 시야 안이다 - 박쥐가 멈추는 정면 부채꼴 시야 밖인지만 본다.
+        Check(!PlayerVision.IsInFocusedVision(Pos(a)) && d5 <= config.batChaseRange, $"플레이어를 박쥐와 {d5:F2}칸 떨어진 길 위로(등지고) 옮겼다");
         frames = 0;
         float minD = d5;
         while (frames < 60) { yield return WaitFrames(1); frames++; minD = Mathf.Min(minD, Dist(a)); }
-        Check(a.CurrentPhase == BatMonsterAI.Phase.Chase && minD < d5 - 1f, $"15칸 안으로 들어오면 바로 추격 ({d5:F2} → {minD:F2}칸, 단계 {a.CurrentPhase})");
+        Check(a.CurrentPhase == BatMonsterAI.Phase.Chase && minD < d5 - 1f, $"{config.batChaseRange:F2}칸 안으로 들어오면 바로 추격 ({d5:F2} → {minD:F2}칸, 단계 {a.CurrentPhase})");
         MovePlayer(laneCenter + new Vector2(0f, 500f));
         yield return WaitFrames(5);
-        Check(a.CurrentPhase == BatMonsterAI.Phase.Wander, $"다시 15칸 밖으로 나가면 배회로 돌아온다 (단계 {a.CurrentPhase})");
+        Check(a.CurrentPhase == BatMonsterAI.Phase.Wander, $"다시 {config.batChaseRange:F2}칸 밖으로 나가면 배회로 돌아온다 (단계 {a.CurrentPhase})");
         lookDirection = dir;
 
         // --- 6. 배회 중에도 시야 안이면 멈춘다 (추격 거리를 0.5로 줄인 복제 설정)
@@ -582,6 +602,7 @@ public static class BatMonsterTest
         // --- 12. 시간 소환: 날짜별 표의 박쥐 항목(그날 박쥐를 직접 소환하는 첫 구간 진입 때 1마리)
         forceLook = false;
         holdTime = false;
+        ForceBatRate();
         yield return Load("TruckScene");
         gm.ResetDay();
         (int batPhase, int batIndex) = FindTimedBatEntry(gm.CycleCount);
@@ -639,6 +660,7 @@ public static class BatMonsterTest
         yield return Load("VillageScene");
         yield return WaitFrames(30);
         Check(Bats().Count == 0, "새 게임 마을 0초: 박쥐 없음");
+        RestoreBatRate();
 
         sb.AppendLine($"\n== 콘솔 에러/예외 (Log·Warning 제외): {logs.Count}건");
         foreach (string l in logs.Take(20)) sb.AppendLine("  " + l);
@@ -709,10 +731,10 @@ public static class BatMonsterTest
               wrap.GetArrayElementAtIndex(1).objectReferenceValue == BatMonsterAssetBuilder.Frame("wrap-02") &&
               wrap.GetArrayElementAtIndex(2).objectReferenceValue == BatMonsterAssetBuilder.Frame("wrap-03") && wrapFps >= 6f && wrapFps <= 8f,
             $"웅크림 연결: wrap-01~03, {wrapFps} fps (사용방법.txt 6~8 fps)");
-        Check(Mathf.Approximately(config.batSpeed, 8.4f) && Mathf.Approximately(config.batCatchDamageRatio, 0.8f) && Mathf.Approximately(config.batChaseRange, 15f) &&
+        Check(Mathf.Approximately(config.batSpeed, 8.4f) && Mathf.Approximately(config.batCatchDamageRatio, 0.8f) && Mathf.Approximately(config.batChaseRange, config.patrolMonsterDetectRange) &&
               Mathf.Approximately(config.batWanderSpeed, 1.5f) && Mathf.Approximately(config.batWanderRadius, 5f) &&
               Mathf.Approximately(config.batWanderWaitMin, 1f) && Mathf.Approximately(config.batWanderWaitMax, 3f) && Mathf.Approximately(config.batWarningInterval, 1.5f),
-            "설정(예전 우는천사 값 그대로 읽힘): 속도 8.4, 데미지 비율 0.8, 추격 거리 15, 배회 속도 1.5·반경 5·대기 1~3초, 경고음 1.5초");
+            $"설정(예전 우는천사 값 그대로 읽힘): 속도 8.4, 데미지 비율 0.8, 추격 거리 {config.batChaseRange} = 늑대 발견 거리 {config.patrolMonsterDetectRange}, 배회 속도 1.5·반경 5·대기 1~3초, 경고음 1.5초");
         Check(Mathf.Approximately(ai.FleeSpeed, config.gooseFleeSpeed) && Mathf.Approximately(ai.FleeDistance, config.gooseFleeDistance * 0.5f),
             $"도망 속도 {ai.FleeSpeed} = 거위 {config.gooseFleeSpeed}, 도망 거리 {ai.FleeDistance} = 거위 {config.gooseFleeDistance} x 0.5");
     }

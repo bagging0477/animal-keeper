@@ -7,7 +7,7 @@ using UnityEngine.Rendering.Universal;
 /// 두 라이트가 겹쳐서 밝히는 범위 밖은 VillageScene의 Global Light 2D를 어둡게 낮춰둔 덕분에
 /// 자연스럽게 어두워진다(별도의 검은 오버레이 스프라이트 불필요).
 /// 해질녘: 마을 시간 0초에는 원형 기본 시야가 화면을 다 덮을 만큼 크고(GameBalanceConfig.duskStartAmbientVisionRadius) 주황 노을빛(→ 120초 분홍 보라 황혼 → 밤 색)이며,
-/// duskDurationSeconds(240초)까지 밤 반경(ambientVisionRadius x 클래스 배율)으로 줄어든다. Global Light는 계속 0이라 밝은 곳은 늘 이 라이트들 안뿐이고,
+/// duskDurationSeconds(120초)까지 밤 반경(ambientVisionRadius x 클래스 배율)으로 줄어든다. Global Light는 계속 0이라 밝은 곳은 늘 이 라이트들 안뿐이고,
 /// 시야 판정이 라이트의 실제 반경을 읽으므로 화면과 판정이 시간 내내 같다. 손전등·트럭 시야는 시간과 무관하다.
 /// 트럭 주변 시야: 맵에 트럭(TruckPoint)이 있으면 원형 기본 시야 라이트를 복제해 트럭 가운데에 두고(반경 GameBalanceConfig.truckVisionRadius,
 /// 그림자 없음) 시야 판정(IsPointVisible)에 넣는다. 정면 손전등 판정(IsPointInFocusedVision - 박쥐 굳음)에는 넣지 않는다.
@@ -42,7 +42,7 @@ public class PlayerVision : MonoBehaviour
     private Color lastAmbientColor;
     private Color lastFocusedColor;
 
-    // 해질녘. 진행도는 GameBalanceConfig.DuskProgressSteps(600) 단위로 끊어서 반경이 바뀌는 프레임만 라이트 모양을 다시 계산한다(240초면 0.4초에 한 번, 반경 약 0.017칸씩).
+    // 해질녘. 진행도는 GameBalanceConfig.DuskProgressSteps(600) 단위로 끊어서 반경이 바뀌는 프레임만 라이트 모양을 다시 계산한다(120초면 0.2초에 한 번, 반경 약 0.017칸씩).
     private float lastDuskProgress = -1f;
     private float sceneAmbientInnerRadius;
     private bool sceneAmbientInnerRadiusRead;

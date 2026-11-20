@@ -71,12 +71,22 @@ public class GameManager : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetVillagePhaseListeners() => OnVillagePhaseChanged = null;
 
+    private static float[] VillagePhaseStarts(GameBalanceConfig balance) =>
+        balance != null && balance.villagePhaseStartSeconds != null && balance.villagePhaseStartSeconds.Length == VillagePhaseCount
+            ? balance.villagePhaseStartSeconds
+            : FallbackVillagePhaseStartSeconds;
+
+    /// <summary>phase(1~5) 구간이 시작하는 마을 시각(초). ComputeVillagePhase와 같은 값(설정이 없거나 개수가 다르면 기본값)을 쓴다.</summary>
+    public static float GetVillagePhaseStartSeconds(int phase, GameBalanceConfig balance)
+    {
+        float[] starts = VillagePhaseStarts(balance);
+        return starts[Mathf.Clamp(phase - 1, 0, starts.Length - 1)];
+    }
+
     /// <summary>누적 시각(초)이 몇 번째 구간인지. 사이클과 무관하다.</summary>
     public static int ComputeVillagePhase(float seconds, GameBalanceConfig balance)
     {
-        float[] starts = balance != null && balance.villagePhaseStartSeconds != null && balance.villagePhaseStartSeconds.Length == VillagePhaseCount
-            ? balance.villagePhaseStartSeconds
-            : FallbackVillagePhaseStartSeconds;
+        float[] starts = VillagePhaseStarts(balance);
         int phase = 1;
         for (int i = 1; i < starts.Length; i++)
         {

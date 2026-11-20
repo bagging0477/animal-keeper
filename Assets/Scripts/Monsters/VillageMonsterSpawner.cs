@@ -188,15 +188,24 @@ public class VillageMonsterSpawner : MonoBehaviour
     }
 
     /// <summary>항목의 ordinal번째 개체 프리팹. 보통은 monsterPrefab이고, pickFromDayTypes면 그날 종류 중 하나를
-    /// (맵 시드, 구간, 항목, 번호)로 정한다 - 같은 Day에는 항상 같은 값이다.</summary>
+    /// (맵 시드, 구간, 항목, 번호)로 정한다 - 같은 Day에는 항상 같은 값이다.
+    /// 고른 종류가 박쥐면 박쥐 비율(GameBalanceConfig.batSpawnRateMultiplier, batEarliestVillageSeconds)을 적용해 다른 종류로 바뀔 수 있다
+    /// (GameBalanceConfig.LimitTimedBat - 같은 값으로 정한 별도 난수라 같은 Day에는 항상 같은 결과).</summary>
     public static GameObject PrefabFor(GameBalanceConfig config, GameBalanceConfig.VillageSpawnEntry entry, int phase, int index, int ordinal)
     {
-        if (!entry.pickFromDayTypes) return entry.monsterPrefab;
-        List<GameObject> types = config.GetDayMonsterTypes(Today);
-        if (types.Count == 0) return null;
         int seed = GameManager.Instance != null ? GameManager.Instance.GetVillageMapSeedForToday() : 0;
-        System.Random pick = new System.Random(unchecked(((seed * 31 + phase) * 31 + index) * 31 + ordinal));
-        return types[pick.Next(types.Count)];
+        GameObject prefab;
+        if (!entry.pickFromDayTypes) prefab = entry.monsterPrefab;
+        else
+        {
+            List<GameObject> types = config.GetDayMonsterTypes(Today);
+            if (types.Count == 0) return null;
+            System.Random pick = new System.Random(unchecked(((seed * 31 + phase) * 31 + index) * 31 + ordinal));
+            prefab = types[pick.Next(types.Count)];
+        }
+        if (!GameBalanceConfig.IsBatPrefab(prefab)) return prefab;
+        System.Random batRoll = new System.Random(unchecked((((seed * 31 + phase) * 31 + index) * 31 + ordinal) * 17 + 0x5BA7));
+        return config.LimitTimedBat(Today, entry, phase, ordinal, prefab, batRoll);
     }
 
     private static int Remaining(GameBalanceConfig.VillageSpawnEntry entry, VillageSpawnRecord.EntryState state) =>

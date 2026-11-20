@@ -74,11 +74,11 @@ MonoBehaviour:
   ambientVisionLightColor: {r: 0.86, g: 0.92, b: 1, a: 1}
   focusedVisionLightColor: {r: 1, g: 0.87, b: 0.66, a: 1}
   truckVisionRadius: 5
-  duskDurationSeconds: 240
+  duskDurationSeconds: 120
   duskStartAmbientVisionRadius: 14
   duskStartLightIntensity: 1
   duskStartInnerRadiusRatio: 0.7
-  duskTwilightSeconds: 120
+  duskTwilightSeconds: 60
   duskSunsetLightColor: {r: 1, g: 0.55, b: 0.38, a: 1}
   duskTwilightLightColor: {r: 0.88, g: 0.46, b: 0.86, a: 1}
   duskSunsetTintColor: {r: 0.28, g: 0.1, b: 0, a: 1}
@@ -167,10 +167,12 @@ MonoBehaviour:
     \uB2F9\uC7A5 \uB5A0\uB098\uC57C \uD55C\uB2E4!"
   batPrefab: {fileID: 6555077884092434632, guid: 1d6367ff8fdf9d04d8ad7d0591760909, type: 3}
   batSpawnChance: 0.15
+  batSpawnRateMultiplier: 0.25
+  batEarliestVillageSeconds: 60
   batSpawnInLinearMode: 0
   batSpeed: 8.4
   batWanderSpeed: 1.5
-  batChaseRange: 15
+  batChaseRange: 3.4425004
   batCatchDamageRatio: 0.8
   batCatchRange: 0.7
   batWanderRadius: 5

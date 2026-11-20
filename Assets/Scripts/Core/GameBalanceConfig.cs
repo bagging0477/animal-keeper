@@ -267,7 +267,7 @@ public class GameBalanceConfig : ScriptableObject
     [Header("마을 해질녘 (VillageScene - 마을 시간에 따라 점점 어두워짐, PlayerVision)")]
     [Tooltip("마을 시간 0초부터 이 시간(초)까지 원형 기본 시야가 해질녘 값에서 밤 값(ambientVisionRadius x 클래스 배율)으로 줄어든다. " +
         "이 시간 뒤로는 지금 밤 그대로다. 0이면 해질녘 없이 처음부터 밤.")]
-    [Min(0f)] public float duskDurationSeconds = 240f;
+    [Min(0f)] public float duskDurationSeconds = 120f;
 
     [Tooltip("마을 시간 0초의 원형 기본 시야 반경(칸). 화면(세로 반 5.6칸, 16:9 대각 반 약 11.4칸)을 다 덮을 만큼 크게 잡는다. " +
         "전체 조명(Global Light)은 계속 0이라 밝은 곳은 이 원 안뿐이다 - 그래서 시야 판정(IsVisibleToPlayer)이 화면과 그대로 같다. " +
@@ -283,7 +283,7 @@ public class GameBalanceConfig : ScriptableObject
 
     [Header("마을 해질녘 색 (노을 → 황혼 → 밤 - 원형 시야 빛 색 x 화면 전체에 더하는 색)")]
     [Tooltip("황혼 색이 가장 진한 시각(초). 0초 노을 → 이 시각 황혼 → duskDurationSeconds 밤 색. duskDurationSeconds보다 작아야 한다.")]
-    [Min(0f)] public float duskTwilightSeconds = 120f;
+    [Min(0f)] public float duskTwilightSeconds = 60f;
 
     [Tooltip("0초 원형 기본 시야 빛 색(세기 '강' 기준) - 따뜻한 주황 노을. 빛 색은 바닥·동물·몬스터·플레이어 그림에 곱해지므로 빛이 닿은 곳만 물든다. " +
         "실제 색 = 밤 빛 색(ambientVisionLightColor)에서 이 색 쪽으로 세기만큼 간 색. 트럭·손전등 빛 색은 바뀌지 않는다.")]
@@ -319,7 +319,7 @@ public class GameBalanceConfig : ScriptableObject
         _ => duskColorStrengthMedium,
     };
 
-    /// <summary>진행도를 몇 단계로 끊는지. 원형 시야 라이트와 화면 어둠 색이 같은 단계로 바뀐다(240초면 0.4초에 한 번).</summary>
+    /// <summary>진행도를 몇 단계로 끊는지. 원형 시야 라이트와 화면 어둠 색이 같은 단계로 바뀐다(120초면 0.2초에 한 번).</summary>
     public const int DuskProgressSteps = 600;
 
     /// <summary>해질녘 진행도: 마을 시간 0초 = 0(해질녘 시작), duskDurationSeconds 이상 = 1(밤). 해질녘을 껐으면(0초) 항상 1.</summary>
@@ -609,9 +609,25 @@ public class GameBalanceConfig : ScriptableObject
     [Header("몬스터 - 박쥐 (BatMonsterAI, 예전 우는천사 자리. 나오는 날·수는 날짜별 표 dayMonsterPlans)")]
     [Tooltip("박쥐 프리팹. 날짜별 표가 비어 있을 때 맵 생성 스폰 풀(MonsterSpawnPool)에 더한다.")]
     public GameObject batPrefab;
-    [Tooltip("맵 생성 몬스터 한 마리가 박쥐일 확률 (0~1). 총 마리 수는 그대로다. 격자 배치는 날짜별 표(dayMonsterPlans)가 비어 있을 때만 쓴다.")]
+    [Tooltip("맵 생성 몬스터 한 마리가 박쥐일 확률 (0~1). 총 마리 수는 그대로다. 격자 배치는 날짜별 표(dayMonsterPlans)가 비어 있을 때만 쓴다. " +
+        "실제 확률은 이 값 x batSpawnRateMultiplier이고, 맵 생성은 마을 시간 0초라 batEarliestVillageSeconds가 0보다 크면 박쥐가 나오지 않는다(MonsterSpawnPool).")]
     [Range(0f, 1f)]
     public float batSpawnChance = 0.15f;
+    [Tooltip("박쥐 등장 비율 배율(0~1). 날짜별 표의 박쥐 자리(맵 생성 mapMonsters, 구간 소환 항목, 그날 종류에서 고르는 항목이 박쥐를 고른 경우)가 " +
+        "박쥐로 남는 비율이다. 나머지는 그날 다른 몬스터가 지금 비율대로 대신한다(총 마리 수는 그대로). " +
+        "맵 생성은 종류별 수를 비율대로 나눠 정수로 맞추고(큰 나머지 순), 시간 소환은 한 마리마다 맵 시드·구간·항목·번호로 정한 난수로 고른다(같은 Day 재진입에서 같은 결과).")]
+    [Range(0f, 1f)]
+    public float batSpawnRateMultiplier = 0.25f;
+    [Tooltip("박쥐가 나올 수 있는 가장 이른 마을 시간(초). 이보다 이른 박쥐 자리(맵 생성 = 0초, 시간 소환은 예정 시각 = 구간 시작 + 간격 x 차례)는 " +
+        "그날 다른 몬스터가 지금 비율대로 대신한다. 0이면 제한 없음.")]
+    [Min(0f)]
+    public float batEarliestVillageSeconds = 60f;
+
+    /// <summary>프리팹이 박쥐(BatMonsterAI)인지.</summary>
+    public static bool IsBatPrefab(GameObject prefab) => prefab != null && prefab.GetComponent<BatMonsterAI>() != null;
+
+    /// <summary>마을 시간 seconds에 나오는 박쥐 자리가 박쥐로 남는 비율: batEarliestVillageSeconds 전이면 0, 그 뒤면 batSpawnRateMultiplier.</summary>
+    public float GetBatSpawnRate(float villageSeconds) => villageSeconds < batEarliestVillageSeconds ? 0f : Mathf.Clamp01(batSpawnRateMultiplier);
     [Tooltip("체크하면 한 줄 배치에서도 박쥐가 맵 생성으로 나온다. 끄면 격자 배치에서만 나오고, 한 줄 배치는 예전과 같은 결과가 나온다.")]
     public bool batSpawnInLinearMode = false;
     [Tooltip("놀람 전 돌진과 놀람 후 추격 속도. 플레이어 스프린트 최고 속도(러닝화 없이, 스카우트 5.12325)의 약 1.64배.")]
@@ -620,8 +636,9 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("놀람 후 배회 속도(추격보다 훨씬 느리게)")]
     [FormerlySerializedAs("weepingAngelWanderSpeed")] public float batWanderSpeed = 1.5f;
 
-    [Tooltip("놀람 후 플레이어가 이 거리(칸) 안이면 추격하고, 밖이면 배회한다")]
-    [FormerlySerializedAs("weepingAngelChaseRange")] public float batChaseRange = 15f;
+    [Tooltip("놀람 후 플레이어가 이 거리(칸) 안이면 추격하고, 밖이면 배회한다. 늑대가 플레이어를 발견하는 거리(patrolMonsterDetectRange)와 같은 값으로 맞춰 둔다. " +
+        "놀람 전(스폰 직후)에는 거리 제한 없이 플레이어에게 날아온다.")]
+    [FormerlySerializedAs("weepingAngelChaseRange")] public float batChaseRange = 4.05f;
 
     [Tooltip("접촉 데미지 = 맞는 순간 플레이어 최대 체력(GameManager.MaxHealth) x 이 비율(반올림). 0.8이면 스카우트 100→80, 트래퍼 130→104, 거너 50→40")]
     [Range(0f, 1f)]
@@ -826,19 +843,117 @@ public class GameBalanceConfig : ScriptableObject
         return dayMonsterPlans[Mathf.Clamp(day - 1, 0, dayMonsterPlans.Length - 1)];
     }
 
-    /// <summary>그 날 맵 생성 몬스터를 종류별 수만큼 펼친 목록(표 순서). 표가 비어 있으면 null - 호출하는 쪽이 예전 방식(gridMonsterTotal + 비율 추첨)을 쓴다.</summary>
+    /// <summary>그 날 맵 생성 몬스터를 종류별 수만큼 펼친 목록(표 순서). 표가 비어 있으면 null - 호출하는 쪽이 예전 방식(gridMonsterTotal + 비율 추첨)을 쓴다.
+    /// 박쥐 자리는 맵 생성 시각(마을 시간 0초)의 박쥐 비율(GetBatSpawnRate)만 박쥐로 남기고, 나머지는 다른 종류가 표의 비율대로 대신한다
+    /// (종류별 기대 수를 큰 나머지 순으로 정수로 맞춘다 - 난수 없음, 총 마리 수는 그대로).</summary>
     public List<GameObject> GetMapMonsterList(int day)
     {
         DayMonsterPlan plan = GetDayMonsterPlan(day);
         if (plan == null) return null;
         List<GameObject> list = new List<GameObject>();
         if (plan.mapMonsters == null) return list;
+
+        // 종류별 수(표 순서, 같은 프리팹이 여러 줄이면 합친다).
+        List<GameObject> kinds = new List<GameObject>();
+        List<int> counts = new List<int>();
         foreach (MonsterCount m in plan.mapMonsters)
         {
-            if (m == null || m.monsterPrefab == null) continue;
-            for (int i = 0; i < m.count; i++) list.Add(m.monsterPrefab);
+            if (m == null || m.monsterPrefab == null || m.count <= 0) continue;
+            int k = kinds.IndexOf(m.monsterPrefab);
+            if (k < 0) { kinds.Add(m.monsterPrefab); counts.Add(m.count); }
+            else counts[k] += m.count;
         }
+
+        int bats = 0, others = 0;
+        for (int k = 0; k < kinds.Count; k++)
+        {
+            if (IsBatPrefab(kinds[k])) bats += counts[k];
+            else others += counts[k];
+        }
+        if (bats > 0 && others > 0)
+        {
+            float batRate = GetBatSpawnRate(0f);
+            float freed = bats * (1f - batRate);
+            int total = bats + others;
+            float[] want = new float[kinds.Count];
+            int[] final = new int[kinds.Count];
+            int assigned = 0;
+            for (int k = 0; k < kinds.Count; k++)
+            {
+                want[k] = IsBatPrefab(kinds[k]) ? counts[k] * batRate : counts[k] + freed * counts[k] / others;
+                final[k] = Mathf.FloorToInt(want[k] + 1e-4f);
+                assigned += final[k];
+            }
+            // 남은 자리는 나머지가 큰 종류부터 하나씩(같으면 표 앞쪽 먼저).
+            List<int> order = new List<int>();
+            for (int k = 0; k < kinds.Count; k++) order.Add(k);
+            order.Sort((a, b) =>
+            {
+                int c = (want[b] - final[b]).CompareTo(want[a] - final[a]);
+                return c != 0 ? c : a.CompareTo(b);
+            });
+            for (int i = 0; assigned < total; i = (i + 1) % order.Count, assigned++) final[order[i]]++;
+            for (int k = 0; k < kinds.Count; k++) counts[k] = final[k];
+        }
+
+        for (int k = 0; k < kinds.Count; k++)
+            for (int i = 0; i < counts[k]; i++) list.Add(kinds[k]);
         return list;
+    }
+
+    /// <summary>시간 소환 항목의 ordinal번째 개체가 나올 예정 마을 시각(초): 처음 소환분(initialCount)은 구간 시작, 간격 소환분은 구간 시작 + 간격 x 차례.
+    /// 자리를 못 찾거나 상한에 걸려 늦게 나올 수는 있어도 이보다 일찍 나오지는 않는다.</summary>
+    public float GetScheduledSpawnSeconds(VillageSpawnEntry entry, int phase, int ordinal)
+    {
+        float start = GameManager.GetVillagePhaseStartSeconds(phase, this);
+        if (entry == null) return start;
+        int initial = Mathf.Clamp(entry.initialCount, 0, entry.count);
+        if (ordinal < initial || entry.intervalCount <= 0 || entry.intervalSeconds <= 0f) return start;
+        return start + ((ordinal - initial) / entry.intervalCount + 1) * entry.intervalSeconds;
+    }
+
+    /// <summary>시간 소환 한 마리의 박쥐 비율 적용. prefab이 박쥐가 아니면 그대로 돌려준다. 박쥐면 예정 시각의 박쥐 비율(GetBatSpawnRate)로 박쥐로 남기고,
+    /// 아니면 그날 다른 몬스터가 지금 비율대로 대신한다: 그날 종류에서 고르는 항목은 박쥐를 뺀 그날 종류에서 고르게(원래도 고르게 뽑는다),
+    /// 박쥐가 적힌 항목은 그날 맵 생성 표의 박쥐 아닌 종류별 수 비율로(표에 없으면 박쥐를 뺀 그날 종류에서 고르게). 대신할 종류가 없으면 박쥐 그대로.
+    /// rng는 호출하는 쪽이 개체마다 정해진 시드로 만든다(같은 Day 재진입에서 같은 결과).</summary>
+    public GameObject LimitTimedBat(int day, VillageSpawnEntry entry, int phase, int ordinal, GameObject prefab, System.Random rng)
+    {
+        if (!IsBatPrefab(prefab) || entry == null || rng == null) return prefab;
+        if (rng.NextDouble() < GetBatSpawnRate(GetScheduledSpawnSeconds(entry, phase, ordinal))) return prefab;
+
+        List<GameObject> kinds = new List<GameObject>();
+        List<float> weights = new List<float>();
+        DayMonsterPlan plan = GetDayMonsterPlan(day);
+        if (!entry.pickFromDayTypes && plan?.mapMonsters != null)
+        {
+            foreach (MonsterCount m in plan.mapMonsters)
+            {
+                if (m == null || m.monsterPrefab == null || m.count <= 0 || IsBatPrefab(m.monsterPrefab)) continue;
+                int k = kinds.IndexOf(m.monsterPrefab);
+                if (k < 0) { kinds.Add(m.monsterPrefab); weights.Add(m.count); }
+                else weights[k] += m.count;
+            }
+        }
+        if (kinds.Count == 0)
+        {
+            foreach (GameObject t in GetDayMonsterTypes(day))
+            {
+                if (IsBatPrefab(t)) continue;
+                kinds.Add(t);
+                weights.Add(1f);
+            }
+        }
+        if (kinds.Count == 0) return prefab;
+
+        float total = 0f;
+        foreach (float w in weights) total += w;
+        double pick = rng.NextDouble() * total;
+        for (int k = 0; k < kinds.Count; k++)
+        {
+            pick -= weights[k];
+            if (pick < 0) return kinds[k];
+        }
+        return kinds[kinds.Count - 1];
     }
 
     /// <summary>그 날, 그 구간(1~5)의 추가 소환 항목. 없으면 빈 배열.</summary>

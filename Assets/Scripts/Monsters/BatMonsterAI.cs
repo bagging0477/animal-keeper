@@ -99,7 +99,7 @@ public class BatMonsterAI : MonsterBrain
 
     private float Speed => config != null ? config.batSpeed : 8.4f;
     private float WanderSpeed => config != null ? config.batWanderSpeed : 1.5f;
-    private float ChaseRange => config != null ? config.batChaseRange : 15f;
+    private float ChaseRange => config != null ? config.batChaseRange : 4.05f;
     private float WanderRadius => config != null ? config.batWanderRadius : 5f;
     private float WanderWaitMin => config != null ? config.batWanderWaitMin : 1f;
     private float WanderWaitMax => config != null ? config.batWanderWaitMax : 3f;

@@ -6,7 +6,8 @@ using UnityEngine;
 /// - 총 마리 수는 그대로다. 새 종류가 하나도 허용되지 않으면(새 종류가 없거나 확률이 0이거나, 한 줄 배치에서 꺼져 있으면)
 /// 확률을 굴리지 않고 기존 풀에서 균등하게 뽑아서 Random 호출 순서와 결과가 예전과 완전히 같다.
 /// - 새 종류가 허용되면 한 번 굴린 값으로 새 종류와 기존 풀을 함께 고른다. 새 종류 확률을 뺀 나머지는 늑대·소리반응형이
-/// GameBalanceConfig.patrolMonsterSpawnShare : soundReactiveMonsterSpawnShare 비로 나눈다(지금 35% : 20%, 호저 20%, 코뿔소 10%, 박쥐 15%).
+/// GameBalanceConfig.patrolMonsterSpawnShare : soundReactiveMonsterSpawnShare 비로 나눈다(설정값 35% : 20%, 호저 20%, 코뿔소 10%, 박쥐 15%).
+/// 박쥐는 batSpawnChance x 맵 생성 시각(0초)의 박쥐 비율(GetBatSpawnRate)만 나오고(지금 batEarliestVillageSeconds 60초라 0), 줄어든 몫은 다른 종류에 비율대로 돌아간다.
 ///
 /// 새 몬스터를 넣을 때: GameBalanceConfig에 "프리팹, 스폰 확률, 한 줄 배치 허용(기본 꺼짐)" 세 값을 추가하고,
 /// 아래 NewTypeCount와 NewType에 한 줄씩 넣는다. 확률은 [0, 첫 종류) → 첫 종류, [첫 종류, 첫 종류 + 둘째) → 둘째 … 순서로 한 번 굴린 값으로 고른다.</summary>
@@ -22,7 +23,8 @@ public static class MonsterSpawnPool
         {
             case 0: return (config.porcupinePrefab, config.porcupineSpawnChance, config.porcupineSpawnInLinearMode);
             case 1: return (config.rhinoPrefab, config.rhinoSpawnChance, config.rhinoSpawnInLinearMode);
-            case 2: return (config.batPrefab, config.batSpawnChance, config.batSpawnInLinearMode);
+            // 박쥐는 맵 생성 시각(마을 시간 0초)의 박쥐 비율(GameBalanceConfig.GetBatSpawnRate)만큼만 나온다.
+            case 2: return (config.batPrefab, config.batSpawnChance * config.GetBatSpawnRate(0f), config.batSpawnInLinearMode);
             default: return (null, 0f, false);
         }
     }
@@ -31,7 +33,10 @@ public static class MonsterSpawnPool
     {
         if (config != null && AnyNewTypeAllowed(config, gridLayout))
         {
-            float roll = Random.value;
+            // 박쥐 비율로 줄어든 확률만큼 전체 구간을 줄여서, 줄어든 몫이 다른 종류(새 종류·기존 풀)에 지금 비율대로 돌아가게 한다.
+            // 줄어든 몫이 없으면(scale 1) 예전과 같은 값·같은 결과다. Random 호출은 그대로 한 번.
+            float scale = 1f - BatChanceRemoved(config, gridLayout);
+            float roll = Random.value * scale;
             float cumulative = 0f;
             for (int i = 0; i < NewTypeCount; i++)
             {
@@ -41,7 +46,7 @@ public static class MonsterSpawnPool
                 if (roll < cumulative) return prefab;
             }
             // 새 종류에 걸리지 않았으면 같은 값의 남은 구간으로 기존 풀을 고른다(Random을 더 쓰지 않는다).
-            float rest = cumulative < 1f ? (roll - cumulative) / (1f - cumulative) : 0f;
+            float rest = cumulative < scale ? (roll - cumulative) / (scale - cumulative) : 0f;
             return PickBase(basePool, config, rest);
         }
         return basePool[Random.Range(0, basePool.Length)];
@@ -84,6 +89,13 @@ public static class MonsterSpawnPool
             if (Allowed(prefab, chance, inLinearMode, gridLayout)) return true;
         }
         return false;
+    }
+
+    // 박쥐 비율 때문에 줄어든 박쥐 확률(원래 batSpawnChance - 실제 확률). 이 배치에서 박쥐가 원래 허용되지 않으면 0.
+    private static float BatChanceRemoved(GameBalanceConfig config, bool gridLayout)
+    {
+        if (!Allowed(config.batPrefab, config.batSpawnChance, config.batSpawnInLinearMode, gridLayout)) return 0f;
+        return Mathf.Clamp01(config.batSpawnChance - NewType(config, 2).chance);
     }
 
     private static bool Allowed(GameObject prefab, float chance, bool inLinearMode, bool gridLayout) =>
