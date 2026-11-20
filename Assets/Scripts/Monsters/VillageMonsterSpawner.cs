@@ -50,6 +50,8 @@ public class VillageSpawnRecord
 ///
 /// - 구간에 들어가면 그 구간 항목마다 initialCount를, 이후 intervalSeconds마다 intervalCount를 소환 대기 수에 더한다(총 count까지).
 ///   한 프레임에 구간을 여러 개 건너뛰면 건너뛴 구간들까지 모두 처리한다. 타이머는 Time.deltaTime이라 일시정지(timeScale 0) 중에는 멈춘다.
+/// - 트럭(TruckScene)에서도 마을 시간이 흐르는 동안(GameManager.VillageEnteredToday 뒤)에는 구간 진입과 간격 타이머가 그대로 진행되어 소환 대기 수가 쌓이고
+///   (GameManager가 AdvanceWhileAway로 그 프레임에 흐른 마을 시간을 넘긴다), 실제 소환은 마을에 돌아왔을 때 BeginVillage 뒤에 한다.
 /// - 마을 전체에 살아 있는 몬스터(맵 생성 몬스터 포함)가 villageMonsterCap 이상이면 소환을 멈추고, 처치해서 줄면 이어서 소환한다.
 /// - 위치: 트럭 방이 아닌 방 바닥, 플레이어에게서 villageSpawnMinPlayerDistance 이상, 플레이어 시야 밖(PlayerVision.IsVisibleToPlayer),
 ///   막는 충돌체·다른 몬스터와 겹치지 않음, NavMesh 위. MaxPositionAttempts번 안에 못 찾으면 이번 소환은 건너뛰고 RetryDelaySeconds 뒤 다시 시도한다.
@@ -64,6 +66,7 @@ public class VillageMonsterSpawner : MonoBehaviour
     public const string ParentName = "TimedMonsters";
     private const string MapRootName = "GeneratedMap"; // VillageMapGenerator.MapRootName과 같아야 한다
     private const string VillageSceneName = "VillageScene";
+    private const string TruckSceneName = "TruckScene";
     private const string OutsideFloorBandName = "OutsideFloorBand"; // 맵 바깥 장식 바닥(VillageMapGenerator.BuildOutsideFloorBand) - 들어갈 수 없다
     private const int MaxPositionAttempts = 40;
     private const float RetryDelaySeconds = 0.5f;
@@ -125,8 +128,26 @@ public class VillageMonsterSpawner : MonoBehaviour
     private void OnVillagePhaseChanged(int phase)
     {
         GameBalanceConfig config = ActiveConfig();
+        if (config == null) config = AwayConfig();
         if (config == null || needsBegin) return; // 시작 처리(BeginVillage)가 현재 구간까지 한꺼번에 처리한다
         EnterPhasesUpTo(GameManager.Instance.VillageSpawns, config, Today, phase);
+    }
+
+    // 트럭에 있는 동안(마을 시간이 흐를 때) 소환 기록을 진행시킬 설정. 마을 밖 다른 씬이거나 오늘 목록이 비어 있으면 null.
+    private static GameBalanceConfig AwayConfig()
+    {
+        GameManager gm = GameManager.Instance;
+        if (gm == null || gm.Config == null || !gm.VillageEnteredToday || !gm.Config.HasAnyVillagePhaseSpawns(gm.CycleCount)) return null;
+        return SceneManager.GetActiveScene().name == TruckSceneName ? gm.Config : null;
+    }
+
+    /// <summary>트럭에 있는 동안 흐른 마을 시간 dt만큼 간격 소환 타이머를 진행한다(소환 대기 수만 쌓고, 소환은 마을에 돌아와서 한다).
+    /// GameManager가 마을 시간을 더한 프레임마다 부른다.</summary>
+    public void AdvanceWhileAway(float dt)
+    {
+        GameBalanceConfig config = AwayConfig();
+        if (config == null || dt <= 0f) return;
+        TickIntervals(GameManager.Instance.VillageSpawns, config, Today, dt);
     }
 
     private static int Today => GameManager.Instance != null ? GameManager.Instance.CycleCount : 1;

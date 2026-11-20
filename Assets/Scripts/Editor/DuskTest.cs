@@ -22,7 +22,7 @@ using UnityEngine.SceneManagement;
 ///    반경 밖은 화면에 안 보이고(있을 때·없을 때 같은 그림) 판정도 안 보임(눈 꺼짐).
 /// 3. 120초·300초·400초: 해질녘을 끈(지금 밤) 그림과 픽셀까지 같고 라이트 값이 밤 값과 같다. 2와 같은 화면·판정 검사도 한다.
 /// 4. 밝을 때(0초) 박쥐: 원형 시야 안(판정 보임)이어도 손전등 밖이면 멈추지 않고, 손전등 정면이면 멈춘다.
-/// 5. 트럭에 다녀와도 시간이 이어지고 밝기가 그 시간을 따른다. 다음 날(ResetDay, 2일차)은 0초 해질녘부터 같은 연출.
+/// 5. 트럭에 다녀와도 시간이 이어지고(트럭에 있는 동안에도 흐른다) 밝기가 그 시간을 따른다. 다음 날(ResetDay, 2일차)은 0초 해질녘부터 같은 연출.
 /// 6. 시간별 색(약·중·강): 원형 시야 빛 색과 화면에 더하는 색이 0초 주황 노을 → 60초 분홍 보라 황혼 → 120초 밤 색(구간 색)으로 바뀐다.
 /// 7. 노을빛 속 색 구분(프로젝트 세기, 지금 '약'): 0·30·60·90·120초에 늑대·동물·플레이어의 화면 평균 색 사이 거리가,
 ///    같은 시각 노을 색을 뺀 빛(세기 0 = 밤 빛 색·해질녘 끝 어둠 색, 반경·밝기는 같음)에서의 거리의 70% 이상이다(노을빛이 구분을 크게 해치지 않는다).
@@ -679,8 +679,9 @@ public static class DuskTest
         while (PlayerVision.Current == null || PlayerVision.Current.AppliedDuskProgress < 0f) yield return null;
         float tFirst = gm.VillageTime;
         float rFirst = Ambient().pointLightOuterRadius;
-        Check(Mathf.Abs(inTruck - before) < 0.001f && tFirst >= before - 0.001f && tFirst < before + 1f,
-            $"트럭에 있는 동안 마을 시간 그대로({before:F2} → {inTruck:F2}), 다시 들어와 이어짐({tFirst:F2})");
+        // 오늘 마을에 다녀온 뒤라 트럭에 있는 동안에도 마을 시간이 흐른다(30프레임).
+        Check(inTruck > before + 0.01f && inTruck < before + 2f && tFirst >= inTruck - 0.001f && tFirst < inTruck + 1f,
+            $"트럭에 있는 동안 마을 시간이 흐름({before:F2} → {inTruck:F2}), 다시 들어와 이어짐({tFirst:F2})");
         Check(Mathf.Abs(rFirst - ExpectedRadius(tFirst)) <= RadiusTolerance,
             $"다시 들어온 첫 프레임 원형 시야 반경 {rFirst:F3} = 시각 {tFirst:F2}초의 값 {ExpectedRadius(tFirst):F3} (처음 들어올 때 {config.duskStartAmbientVisionRadius}칸 아님)");
         while (GameObject.Find("GeneratedMap") == null) yield return null;

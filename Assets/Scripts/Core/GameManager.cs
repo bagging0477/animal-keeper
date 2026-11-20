@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameBalanceConfig config;
     [SerializeField] private string villageSceneName = "VillageScene";
+    [SerializeField] private string truckSceneName = "TruckScene";
     [Tooltip("체력이 0이 되어 그 자리에서 게임 오버가 될 때, 지금 씬에 GameOverPanel이 없으면(마을) 새로 띄울 게임 오버 화면 프리팹.")]
     [SerializeField] private GameOverPanel gameOverPanelPrefab;
 
@@ -56,14 +57,16 @@ public class GameManager : MonoBehaviour
     /// <summary>config가 없거나 값 개수가 5개가 아닐 때 쓰는 구간 시작 시각(초).</summary>
     private static readonly float[] FallbackVillagePhaseStartSeconds = { 0f, 180f, 360f, 540f, 600f };
 
-    /// <summary>오늘 마을에 머문 누적 시간(초). VillageScene에 있는 동안만 흐르고(일시정지 timeScale 0이면 멈춤), 같은 Day 안에서는
-    /// 트럭에 갔다 다시 들어와도 이어진다. ResetDay/ResetGame에서만 0이 된다. 시간 때문에 생기는 패배 규칙은 없다.</summary>
+    /// <summary>오늘 마을 시간(초). VillageScene에 있는 동안 흐르고(일시정지 timeScale 0이면 멈춤), 오늘 마을에 한 번 들어간 뒤로는
+    /// TruckScene에 있는 동안에도 계속 흐른다(TruckVillageTimeDelta - 일시정지·튜토리얼 멈춤 화면·첫 만남 카드 동안만 멈추고, 상점·소파 메뉴가
+    /// timeScale 0으로 멈춰 둔 동안에도 실제 시간으로 흐른다). 날이 시작된 뒤 처음 마을에 들어가기 전 트럭, 타이틀·클래스 선택·보호소에서는 흐르지 않는다.
+    /// ResetDay/ResetGame에서만 0이 된다. 시간 때문에 생기는 패배 규칙은 없다.</summary>
     public float VillageTime { get; private set; }
 
     /// <summary>지금 몇 번째 구간인지(1~5). VillageTime으로만 정해지고, 5구간(마지막 시작 시각 이후)은 계속 유지된다.</summary>
     public int VillagePhase { get; private set; } = 1;
 
-    /// <summary>마을에서 시간이 흘러 구간이 바뀐 순간에 새 구간 번호(2~5)로 한 번 난다. 한 프레임에 여러 구간을 건너뛰면 마지막 구간으로
+    /// <summary>마을(또는 마을에 다녀온 뒤의 트럭)에서 시간이 흘러 구간이 바뀐 순간에 새 구간 번호(2~5)로 한 번 난다. 한 프레임에 여러 구간을 건너뛰면 마지막 구간으로
     /// 한 번만 난다. 재진입·ResetDay·ResetGame에서는 나지 않는다. 구독하는 곳은 OnDisable에서 해제해야 한다.</summary>
     public static event System.Action<int> OnVillagePhaseChanged;
 
@@ -95,22 +98,60 @@ public class GameManager : MonoBehaviour
         return phase;
     }
 
+    /// <summary>오늘 마을에 한 번이라도 들어갔는지. 들어간 뒤로는 트럭에서도 마을 시간이 흐른다. ResetDay/ResetGame에서 false.</summary>
+    public bool VillageEnteredToday { get; private set; }
+
+    /// <summary>트럭에서 한 프레임에 더할 마을 시간의 최대값(초) - 상점 메뉴 중 실제 시간으로 셀 때 프레임이 멈췄다 풀려도 크게 건너뛰지 않게.</summary>
+    private const float MaxTruckUnscaledDelta = 0.1f;
+
     private void Update()
     {
-        if (SceneManager.GetActiveScene().name != villageSceneName) return;
+        string scene = SceneManager.GetActiveScene().name;
+        float dt;
+        if (scene == villageSceneName)
+        {
+            VillageEnteredToday = true;
+            dt = Time.deltaTime;
+        }
+        else if (scene == truckSceneName && VillageEnteredToday)
+        {
+            dt = TruckVillageTimeDelta();
+            if (dt <= 0f) return;
+        }
+        else return;
 
-        VillageTime += Time.deltaTime;
+        VillageTime += dt;
         int phase = ComputeVillagePhase(VillageTime, config);
-        if (phase == VillagePhase) return;
+        if (phase != VillagePhase)
+        {
+            VillagePhase = phase;
+            OnVillagePhaseChanged?.Invoke(phase);
+        }
+        // 트럭에 있는 동안에도 시간 소환 간격 타이머가 마을 시간과 같이 흐른다(소환은 마을에 돌아왔을 때 한다).
+        if (scene == truckSceneName && villageSpawner != null) villageSpawner.AdvanceWhileAway(dt);
+    }
 
-        VillagePhase = phase;
-        OnVillagePhaseChanged?.Invoke(phase);
+    /// <summary>트럭에서 이번 프레임에 흐를 마을 시간. ESC 일시정지·튜토리얼 멈춤 화면·첫 만남 카드 동안은 0.
+    /// 상점·소파 메뉴가 timeScale 0으로 멈춰 둔 동안은 실제 시간(unscaled)으로 흐르고, 그 밖에 timeScale 0(게임 오버·클리어 패널 등)이면 0.</summary>
+    public static float TruckVillageTimeDelta()
+    {
+        if (PauseMenu.IsPaused || TutorialGuide.BlocksInput || MonsterEncounterCard.BlocksInput) return 0f;
+        if (Time.timeScale > 0f) return Time.deltaTime;
+        if (ShopMenuUI.IsOpen || TruckHubMenuOpen()) return Mathf.Min(Time.unscaledDeltaTime, MaxTruckUnscaledDelta);
+        return 0f;
+    }
+
+    private static bool TruckHubMenuOpen()
+    {
+        TruckHubPoint hub = Object.FindAnyObjectByType<TruckHubPoint>();
+        return hub != null && (hub.IsMenuOpen || hub.IsConfirmOpen);
     }
 
     private void ResetVillageTime()
     {
         VillageTime = 0f;
         VillagePhase = 1;
+        VillageEnteredToday = false;
     }
 
     /// <summary>오늘의 구간별 추가 몬스터 소환 기록(VillageMonsterSpawner). 같은 Day 재진입에서는 유지되고 ResetDay/ResetGame에서 비워진다.</summary>
@@ -254,6 +295,7 @@ public class GameManager : MonoBehaviour
     }
 
     private bool clearFieldRecordsOnNextSceneLoad;
+    private VillageMonsterSpawner villageSpawner;
 
     /// <summary>이번 판에 산 패시브. ResetDay()("다음 날로")와 씬 전환에서는 유지되고 ResetGame()에서만 비워진다.
     /// 효과는 PassiveEffects로 조회한다.</summary>
@@ -757,7 +799,9 @@ public class GameManager : MonoBehaviour
         // 구간 알림 자막. 씬 파일을 바꾸지 않으려고 살아남는 GameManager 오브젝트에 붙인다.
         gameObject.AddComponent<VillagePhaseNotice>();
         // 구간별 추가 몬스터 소환. 마을에서만 동작하고 목록이 비어 있으면 아무것도 하지 않는다.
-        gameObject.AddComponent<VillageMonsterSpawner>();
+        villageSpawner = gameObject.AddComponent<VillageMonsterSpawner>();
+        // 트럭 씬 조명을 마을 시간(해질녘 진행도)에 맞춰 어둡게 한다. 트럭 씬에서만 동작한다.
+        gameObject.AddComponent<TruckNightLighting>();
         SceneManager.sceneLoaded += ClearFieldRecordsAfterNewGameSceneLoad;
     }
 

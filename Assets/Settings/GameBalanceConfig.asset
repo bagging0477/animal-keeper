@@ -74,6 +74,10 @@ MonoBehaviour:
   ambientVisionLightColor: {r: 0.86, g: 0.92, b: 1, a: 1}
   focusedVisionLightColor: {r: 1, g: 0.87, b: 0.66, a: 1}
   truckVisionRadius: 5
+  truckNightLightingEnabled: 1
+  truckNightGlobalIntensity: 0.5
+  truckNightGlobalColor: {r: 0.66, g: 0.72, b: 1, a: 1}
+  truckNightCeilingIntensity: 0.7
   duskDurationSeconds: 120
   duskStartAmbientVisionRadius: 14
   duskStartLightIntensity: 1

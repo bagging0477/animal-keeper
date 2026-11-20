@@ -11,7 +11,8 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Tools > Village Time > Run Village Time Test. 마을 시간(GameManager.VillageTime/VillagePhase/OnVillagePhaseChanged)을 실제 씬 흐름으로 확인한다.
-/// 검사: 마을에서만 흐름(타이틀·클래스 선택·트럭·보호소에서는 그대로), ESC 일시정지 중 멈춤, 같은 Day 재진입에서 이어짐, ResetDay/ResetGame에서 0,
+/// 검사: 마을에서 흐름(타이틀·클래스 선택·보호소와 오늘 마을에 들어가기 전 트럭에서는 그대로, 마을에 다녀온 뒤 트럭에서는 계속 흐름), ESC 일시정지 중 멈춤,
+/// 같은 Day 재진입에서 이어짐, ResetDay/ResetGame에서 0,
 /// 설정(villagePhaseStartSeconds)의 구간 시작 시각에서 구간이 바뀌고 이벤트가 한 번씩만 남, 5구간 유지, 큰 시간 점프에도 구간이 맞고 이벤트·자막이 마지막 구간 하나만,
 /// 검사에 쓰는 시각은 모두 설정의 시작 시각에서 계산한다(시작 시각 값 자체는 MonsterPacingTest가 박람회 설정으로 본다).
 /// 알림은 구간이 바뀔 때만(1구간 시작·재진입·초기화에는 없음), 패배가 일어나지 않음.
@@ -230,8 +231,8 @@ public static class VillageTimeTest
         Check(notice != null && notice.isActiveAndEnabled, "GameManager에 알림 컴포넌트(VillagePhaseNotice)가 켜져 있다");
         Check(ListenerCount() == 3, $"구간 이벤트 구독 {ListenerCount()}개 (알림 + 몬스터 소환기 + 이 테스트)");
 
-        // --- 1. 마을 밖에서는 흐르지 않는다
-        sb.AppendLine("\n== 1. 마을 밖에서는 시간이 흐르지 않는다");
+        // --- 1. 마을 밖(오늘 마을에 들어가기 전)에서는 흐르지 않는다
+        sb.AppendLine("\n== 1. 마을 밖(오늘 마을에 들어가기 전 트럭 포함)에서는 시간이 흐르지 않는다");
         SetTime(gm, 50f);
         yield return HoldOutside(gm, "TitleScene");
         Object.FindAnyObjectByType<TitleMenu>().OnPlay();
@@ -286,13 +287,17 @@ public static class VillageTimeTest
         int cycle = gm.CycleCount;
         yield return Load("TruckScene");
         float atTruck = gm.VillageTime;
-        yield return HoldOutside(gm, "TruckScene");
+        yield return WaitFrames(60);
+        float truckFlowed = gm.VillageTime - atTruck;
+        // 오늘 마을에 다녀온 뒤에는 트럭에서도 마을 시간이 흐른다(60프레임 = 약 2초).
+        Check(SceneManager.GetActiveScene().name == "TruckScene" && truckFlowed > 58.5f * FrameTime && truckFlowed < 61.5f * FrameTime && gm.VillagePhase == 5,
+            $"마을에 다녀온 뒤 트럭 60프레임: 시간 {atTruck:F3} → {gm.VillageTime:F3} ({truckFlowed:F4}초 흐름, 기대 약 {60 * FrameTime:F4}), 구간 {gm.VillagePhase}");
         ClearObserved();
         yield return LoadVillage();
         yield return WaitFrames(30);
         float back = gm.VillageTime;
         Check(gm.CycleCount == cycle, $"같은 Day (사이클 {gm.CycleCount})");
-        Check(back >= atTruck && back - atTruck < 2f, $"트럭에서 {atTruck:F3}초 → 재진입 후 {back:F3}초 (0으로 돌아가지 않고 이어짐)");
+        Check(back >= atTruck + truckFlowed && back - atTruck < 4f, $"트럭에서 {atTruck:F3}초 → 재진입 후 {back:F3}초 (0으로 돌아가지 않고 트럭에서 흐른 시간까지 이어짐)");
         Check(gm.VillagePhase == 5, $"재진입 후 구간 {gm.VillagePhase} (기대 5)");
         Check(events.Count == 0 && noticesSeen.Count == 0, $"재진입에서 이벤트/알림 없음 (이벤트 {events.Count}, 알림 {noticesSeen.Count})");
 

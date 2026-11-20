@@ -264,6 +264,17 @@ public class GameBalanceConfig : ScriptableObject
         "시야 판정(PlayerVision.IsVisibleToPlayer - 몬스터 눈 발광, 시간 소환 위치)에 들어가지만, 박쥐가 멈추는 정면 손전등 시야(IsInFocusedVision)에는 들어가지 않는다.")]
     [Min(0f)] public float truckVisionRadius = 5f;
 
+    [Header("트럭 씬 밤 조명 (TruckScene - 마을 시간에 따라 점점 어두워짐, TruckNightLighting)")]
+    [Tooltip("체크하면 트럭 씬 조명이 마을 해질녘 진행도(GetSteppedDuskProgress, 0초 → duskDurationSeconds)를 따라 씬에 저장된 낮 값에서 아래 밤 값으로 바뀐다. " +
+        "끄면 씬에 저장된 조명 그대로다.")]
+    public bool truckNightLightingEnabled = true;
+    [Tooltip("밤(해질녘 끝)일 때 트럭 전체 조명(RVGlobalLight) 세기. 씬 값은 0.85. 실내 물건·수의사가 잘 보이게 너무 낮추지 않는다.")]
+    [Range(0f, 2f)] public float truckNightGlobalIntensity = 0.5f;
+    [Tooltip("밤일 때 트럭 전체 조명 색 - 푸른 밤빛. 씬 값은 따뜻한 낮빛(1, 0.94, 0.84).")]
+    public Color truckNightGlobalColor = new Color(0.66f, 0.72f, 1f, 1f);
+    [Tooltip("밤일 때 천장 등(CeilingLight) 세기. 씬 값은 0.3 - 밤에는 실내등이 더 밝게 보이도록 올린다(색은 씬 값 그대로).")]
+    [Range(0f, 2f)] public float truckNightCeilingIntensity = 0.7f;
+
     [Header("마을 해질녘 (VillageScene - 마을 시간에 따라 점점 어두워짐, PlayerVision)")]
     [Tooltip("마을 시간 0초부터 이 시간(초)까지 원형 기본 시야가 해질녘 값에서 밤 값(ambientVisionRadius x 클래스 배율)으로 줄어든다. " +
         "이 시간 뒤로는 지금 밤 그대로다. 0이면 해질녘 없이 처음부터 밤.")]
