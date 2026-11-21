@@ -61,7 +61,7 @@ public static class MonsterBestiary
                 {
                     Kind = kind, Name = "박쥐",
                     Traits = new[] { "어둠 속에서 곧장 날아와요.", "손전등 빛에 비치면 얼어붙어요." },
-                    Tip = $"마우스로 비춰 세워요! 닿으면 체력 {Pct(c != null ? c.batCatchDamageRatio : 0.8f)}%가 깎여요.",
+                    Tip = $"마우스로 비춰 세워요! 닿으면 최대 체력의 {Pct(c != null ? c.batCatchDamageRatio : 0.8f)}%가 깎여요.",
                 };
             case MonsterKind.Porcupine:
                 return new Entry

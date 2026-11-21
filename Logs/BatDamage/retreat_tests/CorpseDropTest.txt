@@ -1,0 +1,64 @@
+CorpseDropTest 2026-11-21 14:25:16
+
+== 1. 원래 프리팹 기억 (스폰하는 쪽이 MonsterCorpsePickup.SourcePrefab을 넣는다)
+  [OK] 맵 생성 늑대 Room_0_2/PatrolMonster_0: 원래 프리팹 PatrolMonster
+  (참고) 시작할 때 시간 소환 박쥐가 없어 스폰하는 쪽과 같은 방식(RememberSource)으로 만든다
+  [OK] 소리반응형: 시체 회수 컴포넌트 없음(주울 수 없는 그대로)
+
+시험 자리: Field 방 (49.50, 83.50)부터 오른쪽 14칸 (몬스터를 3.5칸 간격으로 둔다)
+
+== WOLF: 줍기 → 내려놓기 3번 (기대 무게 15)
+  [OK] 처치한 WOLF 시체(전): MonsterAI, 그림 Wolf Cub Sprite Sheet_29, 색 RGBA(0.350, 0.350, 0.350, 1.000), 그림자 Shadow_14x4 @몸(0.00, -0.56), 그림 묶음이 땅 위치에 있음
+  [OK] 1회차 E로 줍기: 3번 칸, 무게 15, 다시 만들 프리팹 PatrolMonster, 필드에서 치워짐 True
+  [OK] 1회차 G로 내려놓기: 칸이 비고 시체가 생김 (PatrolMonster(Clone))
+  [OK] 1회차 내려놓은 시체(후): MonsterAI, 그림 Wolf Cub Sprite Sheet_29, 색 RGBA(0.350, 0.350, 0.350, 1.000), 그림자 Shadow_14x4 @몸(0.00, -0.56), 그림 묶음이 땅 위치에 있음
+  [OK] 1회차 내려놓은 시체의 무게 15, 원래 프리팹 PatrolMonster
+  [OK] 2회차 E로 줍기: 3번 칸, 무게 15, 다시 만들 프리팹 PatrolMonster, 필드에서 치워짐 True
+  [OK] 2회차 G로 내려놓기: 칸이 비고 시체가 생김 (PatrolMonster(Clone))
+  [OK] 2회차 내려놓은 시체(후): MonsterAI, 그림 Wolf Cub Sprite Sheet_29, 색 RGBA(0.350, 0.350, 0.350, 1.000), 그림자 Shadow_14x4 @몸(0.00, -0.56), 그림 묶음이 땅 위치에 있음
+  [OK] 2회차 내려놓은 시체의 무게 15, 원래 프리팹 PatrolMonster
+  [OK] 3회차 E로 줍기: 3번 칸, 무게 15, 다시 만들 프리팹 PatrolMonster, 필드에서 치워짐 True
+  [OK] 3회차 G로 내려놓기: 칸이 비고 시체가 생김 (PatrolMonster(Clone))
+  [OK] 3회차 내려놓은 시체(후): MonsterAI, 그림 Wolf Cub Sprite Sheet_29, 색 RGBA(0.350, 0.350, 0.350, 1.000), 그림자 Shadow_14x4 @몸(0.00, -0.56), 그림 묶음이 땅 위치에 있음
+  [OK] 3회차 내려놓은 시체의 무게 15, 원래 프리팹 PatrolMonster
+  [OK] 3번 내려놓은 뒤 다시 주운 무게 15 (원래 15)
+
+== BAT: 줍기 → 내려놓기 3번 (기대 무게 15)
+  [OK] 처치한 BAT 시체(전): BatMonsterAI, 그림 fallen-01, 색 RGBA(0.350, 0.350, 0.350, 1.000), 그림자 Shadow_10x3 @몸(0.00, -0.88), 그림 묶음이 땅 위치에 있음
+  [OK] 1회차 E로 줍기: 3번 칸, 무게 15, 다시 만들 프리팹 BatMonster, 필드에서 치워짐 True
+  [OK] 1회차 G로 내려놓기: 칸이 비고 시체가 생김 (BatMonster(Clone))
+  [OK] 1회차 내려놓은 시체(후): BatMonsterAI, 그림 fallen-01, 색 RGBA(0.350, 0.350, 0.350, 1.000), 그림자 Shadow_10x3 @몸(0.00, -0.88), 그림 묶음이 땅 위치에 있음
+  [OK] 1회차 내려놓은 시체의 무게 15, 원래 프리팹 BatMonster
+  [OK] 2회차 E로 줍기: 3번 칸, 무게 15, 다시 만들 프리팹 BatMonster, 필드에서 치워짐 True
+  [OK] 2회차 G로 내려놓기: 칸이 비고 시체가 생김 (BatMonster(Clone))
+  [OK] 2회차 내려놓은 시체(후): BatMonsterAI, 그림 fallen-01, 색 RGBA(0.350, 0.350, 0.350, 1.000), 그림자 Shadow_10x3 @몸(0.00, -0.88), 그림 묶음이 땅 위치에 있음
+  [OK] 2회차 내려놓은 시체의 무게 15, 원래 프리팹 BatMonster
+  [OK] 3회차 E로 줍기: 3번 칸, 무게 15, 다시 만들 프리팹 BatMonster, 필드에서 치워짐 True
+  [OK] 3회차 G로 내려놓기: 칸이 비고 시체가 생김 (BatMonster(Clone))
+  [OK] 3회차 내려놓은 시체(후): BatMonsterAI, 그림 fallen-01, 색 RGBA(0.350, 0.350, 0.350, 1.000), 그림자 Shadow_10x3 @몸(0.00, -0.88), 그림 묶음이 땅 위치에 있음
+  [OK] 3회차 내려놓은 시체의 무게 15, 원래 프리팹 BatMonster
+  [OK] 3번 내려놓은 뒤 다시 주운 무게 15 (원래 15)
+
+== PORCUPINE: 줍기 → 내려놓기 3번 (기대 무게 12)
+  [OK] 처치한 PORCUPINE 시체(전): PorcupineMonsterAI, 그림 fallen-01, 색 RGBA(0.350, 0.350, 0.350, 1.000), 그림자 Shadow_15x4 @몸(0.06, -0.88), 그림 묶음이 땅 위치에 있음
+  [OK] 1회차 E로 줍기: 3번 칸, 무게 12, 다시 만들 프리팹 PorcupineMonster, 필드에서 치워짐 True
+  [OK] 1회차 G로 내려놓기: 칸이 비고 시체가 생김 (PorcupineMonster(Clone))
+  [OK] 1회차 내려놓은 시체(후): PorcupineMonsterAI, 그림 fallen-01, 색 RGBA(0.350, 0.350, 0.350, 1.000), 그림자 Shadow_15x4 @몸(0.06, -0.88), 그림 묶음이 땅 위치에 있음
+  [OK] 1회차 내려놓은 시체의 무게 12, 원래 프리팹 PorcupineMonster
+  [OK] 2회차 E로 줍기: 3번 칸, 무게 12, 다시 만들 프리팹 PorcupineMonster, 필드에서 치워짐 True
+  [OK] 2회차 G로 내려놓기: 칸이 비고 시체가 생김 (PorcupineMonster(Clone))
+  [OK] 2회차 내려놓은 시체(후): PorcupineMonsterAI, 그림 fallen-01, 색 RGBA(0.350, 0.350, 0.350, 1.000), 그림자 Shadow_15x4 @몸(0.06, -0.88), 그림 묶음이 땅 위치에 있음
+  [OK] 2회차 내려놓은 시체의 무게 12, 원래 프리팹 PorcupineMonster
+  [OK] 3회차 E로 줍기: 3번 칸, 무게 12, 다시 만들 프리팹 PorcupineMonster, 필드에서 치워짐 True
+  [OK] 3회차 G로 내려놓기: 칸이 비고 시체가 생김 (PorcupineMonster(Clone))
+  [OK] 3회차 내려놓은 시체(후): PorcupineMonsterAI, 그림 fallen-01, 색 RGBA(0.350, 0.350, 0.350, 1.000), 그림자 Shadow_15x4 @몸(0.06, -0.88), 그림 묶음이 땅 위치에 있음
+  [OK] 3회차 내려놓은 시체의 무게 12, 원래 프리팹 PorcupineMonster
+  [OK] 3번 내려놓은 뒤 다시 주운 무게 12 (원래 12)
+
+== 5. 소리반응형: 시체를 주울 수 없는 그대로
+  [OK] 쓰러진 소리반응형 1칸 앞에서 E: 인벤토리 그대로, 시체도 필드에 그대로
+  [OK] 실제 렌더 7/7칸: C:\Users\Main\Documents\A_Game\animal-keeper\Logs\Corpse\corpse_drop_sheet.png
+
+== 콘솔 에러/예외 (Log·Warning 제외): 0건
+
+결과: 통과

@@ -1,0 +1,1519 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.5/staging' branch; Version is '6000.5.3f1 (c2eb47b3a2a9) revision 12774215'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 32607 MB
+[Licensing::IpcConnector] Channel LicenseClient-Main doesn't exist
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-11-21T05:27:17Z
+[Licensing::Module] Successfully launched the LicensingClient (PId: 3552)
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.5.3f1\Editor\Unity.exe
+-batchmode
+-projectPath
+C:/Users/Main/Documents/A_Game/animal-keeper
+-executeMethod
+PlayerVisionQueryTest.RunBatch
+-logFile
+C:/Users/Main/Documents/A_Game/animal-keeper/Logs/BatDamage/retreat_tests/PlayerVisionQueryTest.log
+Successfully changed project path to: C:/Users/Main/Documents/A_Game/animal-keeper
+C:/Users/Main/Documents/A_Game/animal-keeper
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-main-allocator-mimalloc-enabled=0"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+Logging is directed to a specific file, skipping project log.Player connection [7008]  Target information:
+
+Player connection [7008]  * "[IP] 211.200.34.5 [Port] 55504 [Flags] 2 [Guid] 94645427 [EditorId] 94645427 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-E5L8R6H) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [7008] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [7008] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-15812" after 0.2 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+Starting IPC server.
+Waiting for clients to connect on \\.\pipe\Unity-LicenseClient-Main, press Ctrl-C to exit.
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-Main" at "2026-11-21T05:27:17.788549Z"
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 3552, path: "C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
+[Licensing::Module] LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.18.1+9fbee8e
+  Session Id:              e7084091b5d241eabfec1ace67672c1d
+  Correlation Id:          3703f45395bd54fc6af7d855ffee71af
+  External correlation Id: 4551756599490673959
+  Machine Id:              HaaoqbpycdhNYZPCFxacTLqJbiw=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-Main" (connect: 0.37s, validation: 0.03s, handshake: 0.04s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-Main-notifications" at "2026-11-21T05:27:17.8608604Z"
+[Licensing::Module] Connected to LicensingClient (PId: 3552, launch time: 0.00, total connection time: 0.45s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 14569773598581-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.01
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 0.47s
+[Licensing::Module] Licensing is initialized (took 0.19s).
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Initialize engine version: 6000.5.3f1 (c2eb47b3a2a9)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/Main/Documents/A_Game/animal-keeper/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 4060 (ID=0x2882)
+    Vendor:          NVIDIA
+    VRAM:            7957 MB
+    App VRAM Budget: 7189 MB
+    Driver:          32.0.15.7216
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/BCLExtensions/runtime/netstandard2.1'
+Mono path[2] = 'C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56812
+CodeReloadManager initialized
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.001244 seconds.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Package Manager log level set to [2]
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.304 seconds
+Domain Reload Profiling: 686ms
+	BeginReloadAssembly (103ms)
+		CreateAndSetChildDomain (9ms)
+	RebuildCommonClasses (4ms)
+	RebuildNativeTypeToScriptingClass (12ms)
+	initialDomainReloadingComplete (44ms)
+	LoadAllAssembliesAndSetupDomain (216ms)
+		LoadAssemblies (93ms)
+		AnalyzeDomain (158ms)
+			TypeCache.Refresh (157ms)
+				TypeCache.ScanAssembly (145ms)
+	FinalizeReload (307ms)
+		SetupLoadedEditorAssemblies (0ms)
+			BeforeProcessingInitializeOnLoad (70ms)
+			ProcessInitializeOnLoadAttributes (74ms)
+			ProcessInitializeOnLoadMethodAttributes (97ms)
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 70 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.2d.animation@15.1.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.animation@6d5a363ae647)
+    com.unity.2d.aseprite@5.0.3 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.aseprite@d13865913efa)
+    com.unity.2d.psdimporter@14.0.3 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.psdimporter@5d82044f9e43)
+    com.unity.2d.spriteshape@15.0.3 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.spriteshape@fcb7ec61a58b)
+    com.unity.2d.tilemap.extras@8.0.3 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.tilemap.extras@a80140457adc)
+    com.unity.2d.tooling@3.0.1 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.tooling@6f06ffb033c0)
+    com.unity.ai.assistant@2.18.0-pre.2 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ai.assistant@c0127625258e)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.ai.navigation@2.0.14 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ai.navigation@134dd6a3b97b)
+    com.unity.collab-proxy@2.12.4 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.collab-proxy@0b1559bcd34e)
+    com.unity.ide.rider@3.0.38 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ide.rider@1f60b3138684)
+    com.unity.ide.visualstudio@2.0.26 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ide.visualstudio@a99d56dec63f)
+    com.unity.inputsystem@1.19.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.inputsystem@21a28c3a6c83)
+    com.unity.timeline@1.8.12 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.timeline@8cd8509afae5)
+    com.unity.visualscripting@1.9.11 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.visualscripting@8bed5ad90189)
+    com.unity.burst@1.8.29 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.burst@6bb9aca3ef38)
+    com.unity.dt.app-ui@2.1.7 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.dt.app-ui@b097002a00c2)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.2d.common@14.0.1 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.common@73badf92ba8b)
+    com.unity.searcher@4.9.4 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.test-framework.performance@3.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.test-framework.performance@8b56083ec0f0)
+  Built-in packages:
+    com.unity.2d.sprite@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.sprite@053a968eab56)
+    com.unity.2d.tilemap@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.tilemap@592c6ccaefe1)
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.multiplayer.center@b860850997d0)
+    com.unity.render-pipelines.universal@17.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.render-pipelines.universal@276396f56b3f)
+    com.unity.test-framework@1.7.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.test-framework@1405238725ab)
+    com.unity.ugui@2.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ugui@377fd60ad87b)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.physics2d)
+    com.unity.modules.physicscore2d@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.physicscore2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.video)
+    com.unity.modules.wind@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.1.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ext.nunit@44f7d31723bd)
+    com.unity.render-pipelines.core@17.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.render-pipelines.core@0733e3164aa3)
+    com.unity.shadergraph@17.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.shadergraph@8aa9acb51790)
+    com.unity.render-pipelines.universal-config@17.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.render-pipelines.universal-config@fdda01c80fe3)
+    com.unity.collections@6.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.collections@a43cabe808ca)
+    com.unity.mathematics@1.4.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.mathematics@981956d94fb6)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.01 seconds
+The GUID inside 'Assets/Scripts/UI/EndScreenButtons.cs.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:80
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\Main\Documents\A_Game\animal-keeper
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping - application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping - 200 - application/grpc 35.7622ms
+Starting: C:\Program Files\Unity\Hub\Editor\6000.5.3f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/Main/Documents/A_Game/animal-keeper
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/ConfigurePostProcessors - application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/ConfigurePostProcessors'
+warn: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Assembly system.runtime.interopservices.windowsruntime has duplicate hint path. Ignoring "C:\Program Files\Unity\Hub\Editor\6000.5.3f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\Facades\System.Runtime.InteropServices.WindowsRuntime.dll" in favor of "C:\Program Files\Unity\Hub\Editor\6000.5.3f1\Editor\Data\NetStandard\Extensions\2.0.0\System.Runtime.InteropServices.WindowsRuntime.dll"
+warn: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Assembly system.componentmodel.composition has duplicate hint path. Ignoring "C:\Program Files\Unity\Hub\Editor\6000.5.3f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\System.ComponentModel.Composition.dll" in favor of "C:\Program Files\Unity\Hub\Editor\6000.5.3f1\Editor\Data\NetStandard\compat\2.1.0\shims\netfx\System.ComponentModel.Composition.dll"
+info: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Resolved Unity.Burst.Cecil, Version=0.11.6.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e with Library\PackageCache\com.unity.burst@6bb9aca3ef38\Unity.Burst.CodeGen\Unity.Burst.Cecil.dll
+info: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Resolved Mono.Cecil, Version=0.11.5.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e with Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff\Mono.Cecil.dll
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/ConfigurePostProcessors'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/ConfigurePostProcessors - 200 - application/grpc 52.1886ms
+DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 0s284ms
+[1343/1770  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+*** Tundra build success (0.26 seconds), 1 items updated, 1770 evaluated
+AssetDatabase: script compilation time: 0.718073s
+Begin MonoManager ReloadAssembly
+Total cache size 245740624
+Total cache size after purge 245740624, took 00:00:00.1288307
+Symbol file LoadedFromMemory is not a mono symbol file
+Symbol file LoadedFromMemory is not a mono symbol file
+Refreshing native plugins compatible for Editor in 2.12 ms, found 6 plugins.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Refreshing native plugins compatible for Editor in 2.18 ms, found 6 plugins.
+Refreshing native plugins compatible for Editor in 2.07 ms, found 6 plugins.
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  3.924 seconds
+Domain Reload Profiling: 4969ms
+	BeginReloadAssembly (184ms)
+		DisableScriptedObjects (18ms)
+		CreateAndSetChildDomain (36ms)
+	RebuildCommonClasses (7ms)
+	RebuildNativeTypeToScriptingClass (12ms)
+	initialDomainReloadingComplete (64ms)
+	LoadAllAssembliesAndSetupDomain (776ms)
+		LoadAssemblies (361ms)
+		AnalyzeDomain (383ms)
+			TypeCache.Refresh (289ms)
+				TypeCache.ScanAssembly (271ms)
+			BuildScriptInfoCaches (86ms)
+			ResolveRequiredComponents (6ms)
+	FinalizeReload (3925ms)
+		SetupLoadedEditorAssemblies (0ms)
+			BeforeProcessingInitializeOnLoad (103ms)
+			ProcessInitializeOnLoadAttributes (3196ms)
+			ProcessInitializeOnLoadMethodAttributes (441ms)
+			AfterProcessingInitializeOnLoad (4ms)
+		AwakeInstancesAfterBackupRestoration (21ms)
+Starting new worker id: 0 with log in C:/Users/Main/Documents/A_Game/animal-keeper/Logs/AssetImportWorkerHW0.log
+
+Asset Pipeline Refresh (id=f67a2016dd778754eb78d6933e80a4ff): Total: 6.479 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	(Values over 0.05ms)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=4544 ms
+		Asset DB Callback time: managed=33 ms, native=13 ms
+		Scripting: domain reloads=1, domain reload time=1098 ms, compile time=719 ms, other=69 ms
+		Project Asset Count: scripts=2444, non-scripts=6709
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokePackagesCallback: 14.351ms
+	ApplyChangesToAssetFolders: 0.543ms
+	Scan: 138.300ms
+	Collect global state as custom dependencies: 3.208ms
+	CategorizeScriptCompilationAssets: 54.524ms
+	ProcessAssetsWithTransientArtifactChanges: 102.760ms
+	CategorizeAssets: 82.342ms
+	CompileScripts: 719.146ms
+	ImportOutOfDateAssets: 4029.079ms (3950.395ms without children)
+		UnloadImportedAssets: 0.578ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 1.135ms
+		ImportSchedulerStart: 76.931ms
+	PostProcessAllAssets: 33.889ms
+		MonoPostProcessAllAssets: 33.843ms
+			UniversalRenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 10.605ms
+			SyncVS.PostprocessSyncProject 2.852ms
+			SpeedTree9Postprocessor.OnPostprocessAllAssets 1.973ms
+			GraphRefreshPostprocessor.OnPostprocessAllAssets 1.806ms
+			WindowAssetPostprocessingWatcher.OnPostprocessAllAssets 1.656ms
+			EditModeScopePostprocessor.OnPostprocessAllAssets 0.871ms
+			AssetChangeDetector.OnPostprocessAllAssets 0.806ms
+			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 0.666ms
+			ShaderReflectionAssetPostProcessor.OnPostprocessAllAssets 0.352ms
+			InputActionAssetPostprocessor.OnPostprocessAllAssets 0.266ms
+			ReferencedClipsPostProcessor.OnPostprocessAllAssets 0.241ms
+			TerrainToolbarOverlayPostProcessor.OnPostprocessAllAssets 0.198ms
+			ProjectSettingsPostprocessor.OnPostprocessAllAssets 0.191ms
+			AssetDatabaseCallbacks.OnPostprocessAllAssets 0.160ms
+	UnloadStreamsBegin: 3.334ms
+	PersistCurrentRevisions: 0.394ms
+	GenerateScriptTypeHashes: 2.622ms
+	GenerateScriptTypeSerializationHashes: 4.370ms
+	Untracked: 1292.837ms
+
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+Scanning for USB devices : 3.346ms
+Initializing Unity extensions:
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-animal keeper
+Unloading 68 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 10963 unused Assets / (21.5 MB). Loaded Objects now: 11908.
+Memory consumption went from 0.59 GB to 0.56 GB.
+Total: 25.252800 ms (FindLiveObjects: 0.771100 ms CreateObjectMapping: 3.593100 ms MarkObjects: 13.325100 ms  DeleteObjects: 7.560700 ms)
+
+Opening scene 'Assets/Scenes/VillageScene.unity'
+Unloading 135 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Assets/Scenes/VillageScene.unity'
+	Deserialize:            260.267 ms
+	Integration:            311.362 ms
+	Integration of assets:  34.356 ms
+	Thread Wait Time:       0.500 ms
+	Total Operation Time:   606.484 ms
+Unloading 206 unused Assets / (148.4 KB). Loaded Objects now: 13535.
+Memory consumption went from 0.58 GB to 0.58 GB.
+Total: 15.134400 ms (FindLiveObjects: 0.526200 ms CreateObjectMapping: 1.451500 ms MarkObjects: 12.848000 ms  DeleteObjects: 0.308000 ms)
+
+[Project] Loading completed in 9.993 seconds
+	Project init time: 				8.781 seconds
+		Template init time: 		0.000 seconds
+		Package Manager init time: 		0.381 seconds
+		Asset Database init time: 		0.333 seconds
+		Global illumination init time: 	0.002 seconds
+		Assemblies load time: 			0.716 seconds
+		Unity extensions init time: 	0.062 seconds
+		Asset Database refresh time: 	6.479 seconds
+	Scene opening time: 			1.110 seconds
+##utp:{"type":"ProjectInfo","version":2,"phase":"Immediate","time":1795238847396,"processId":15812,"projectLoad":9.9927031,"projectInit":8.780638,"templateInit":0.0,"packageManagerInit":0.3808662,"assetDatabaseInit":0.3331994,"globalIlluminationInit":0.001855,"assembliesLoad":0.7156978,"unityExtensionsInit":0.0623326,"assetDatabaseRefresh":6.4791146,"sceneOpening":1.1099109}
+##utp:{"type":"EditorInfo","version":2,"phase":"Immediate","time":1795238847396,"processId":15812,"editorVersion":"6000.5.3f1 (c2eb47b3a2a9)","branch":"6000.5/staging","buildType":"Release","platform":"Windows"}
+SpriteAtlasPacking completed in 0.012472 sec
+Entering Playmode with Reload Domain disabled.
+If you experience any issues, please disable "Enter Play Mode Options" in Editor Settings
+Worker ready: AssetImportWorkerHW0 0
+[FieldState] 조회: GeneratedMap/Room_0_0/AnimalWander_0, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_0_0/AnimalGoose_1, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_0_0/AnimalFlee_2, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_0/AnimalFlee_0, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_0/AnimalWander_1, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_0/AnimalGoose_2, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_0/AnimalWander_3, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_0/AnimalWander_0, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_0/AnimalFlee_1, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_0/AnimalGoose_2, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_0/AnimalTurtle_3, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_0_1/AnimalWander_0, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_0_1/AnimalFlee_1, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_0_1/AnimalFlee_2, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_1/AnimalWander_0, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_1/AnimalWander_1, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_1/AnimalWander_2, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_1/AnimalWander_0, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_1/AnimalWander_1, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_1/AnimalSoundFlee_2, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_1/AnimalFlee_3, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_0_2/AnimalWander_0, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_0_2/AnimalWander_1, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_0_2/AnimalGoose_2, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_2/AnimalSoundFlee_0, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_2/AnimalWander_1, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_2/AnimalGoose_2, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_2/AnimalWander_3, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_2/AnimalSoundFlee_0, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_2/AnimalTurtle_1, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_2/AnimalWander_2, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_0_3/AnimalSoundFlee_0, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_0_3/AnimalWander_1, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_0_3/AnimalSoundFlee_2, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_3/AnimalFlee_0, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_3/AnimalWander_1, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_3/AnimalGoose_2, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_1_3/AnimalWander_3, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_3/AnimalWander_0, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_3/AnimalFlee_1, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+[FieldState] 조회: GeneratedMap/Room_2_3/AnimalWander_2, found=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+VillageMapGenerator:SpawnGridAnimals (VillageMapGenerator/RoomInstance,int,System.Collections.Generic.HashSet`1<UnityEngine.Vector2Int>,System.Collections.Generic.List`1<VillageMapGenerator/SpawnBody>) (at Assets/Scripts/Map/VillageMapGenerator.cs:654)
+VillageMapGenerator:BuildGridMap () (at Assets/Scripts/Map/VillageMapGenerator.cs:541)
+VillageMapGenerator:Awake () (at Assets/Scripts/Map/VillageMapGenerator.cs:184)
+
+(Filename: Assets/Scripts/Map/VillageMapGenerator.cs Line: 654)
+
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            11.573 ms
+	Integration:            1088.087 ms
+	Integration of assets:  1.940 ms
+	Thread Wait Time:       0.001 ms
+	Total Operation Time:   1101.601 ms
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+[Licensing::Client] Successfully resolved entitlement details
+Start Indexing on Editor startup
+[Indexing] Starting Initial Indexing for Assets
+Created GICache directory at C:/Users/Main/AppData/LocalLow/Unity/Caches/GiCache. Took: 0.006s, timestamps: [11.261 - 11.267]
+[Licensing::Client] Successfully resolved entitlement details
+[VisionQueryTest] 통과 - C:\Users\Main\Documents\A_Game\animal-keeper\Logs\PlayerVisionQueryTest.txt
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+PlayerVisionQueryTest:Step () (at Assets/Scripts/Editor/PlayerVisionQueryTest.cs:106)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: Assets/Scripts/Editor/PlayerVisionQueryTest.cs Line: 106)
+
+[INFO ] [relay] relay.startup port=9001 mcpClientPort=9002 editorPid=15812
+[INFO ] [relay] log === RELAY SERVER STARTED === (unity-ai-relay v1.0.12-build.97)
+[INFO ] [relay] log Starting relay server...
+[INFO ] [relay] log Command line arguments: ["bun","B:/~BUN/root/relay_win.exe","--relay","--port","9001","--mcp-client-port","9002","--editor-pid","15812","--shutdown-delay","180","--log-dir","C:\\Users\\Main\\Documents\\A_Game\\animal-keeper\\Logs"]
+[INFO ] [relay] log Parsed config: {"port":9001,"mcpClientPort":9002,"editorPid":"15812","shutdownDelaySeconds":180}
+[INFO ] [relay] log Initializing relay components...
+[INFO ] [relay] log Creating RelayEditor...
+[FieldState] 저장: GeneratedMap/Room_0_0/AnimalWander_0 @ (18.67, 3.60, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_0_0/AnimalGoose_1 @ (16.55, 12.44, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_0_0/AnimalFlee_2 @ (14.40, 12.73, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_0/AnimalFlee_0 @ (60.74, 10.44, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_0/AnimalWander_1 @ (53.39, 5.34, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_0/AnimalGoose_2 @ (59.43, 15.54, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_0/AnimalWander_3 @ (51.70, 7.52, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_0/AnimalWander_0 @ (98.62, 7.66, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_0/AnimalFlee_1 @ (92.58, 7.74, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_0/AnimalGoose_2 @ (96.46, 6.43, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_0/AnimalTurtle_3 @ (106.48, 12.50, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_0_1/AnimalWander_0 @ (15.40, 36.67, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_0_1/AnimalFlee_1 @ (7.56, 50.74, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_0_1/AnimalFlee_2 @ (15.54, 42.26, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_1/AnimalWander_0 @ (56.40, 51.67, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_1/AnimalWander_1 @ (58.32, 39.57, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_1/AnimalWander_2 @ (55.67, 43.39, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_1/AnimalWander_0 @ (92.59, 35.53, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_1/AnimalWander_1 @ (106.69, 42.56, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_1/AnimalSoundFlee_2 @ (100.33, 51.32, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_1/AnimalFlee_3 @ (98.50, 36.50, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_0_2/AnimalWander_0 @ (20.59, 78.32, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_0_2/AnimalWander_1 @ (19.69, 72.43, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_0_2/AnimalGoose_2 @ (15.47, 71.43, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_2/AnimalSoundFlee_0 @ (42.43, 67.26, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_2/AnimalWander_1 @ (59.55, 72.69, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_2/AnimalGoose_2 @ (48.56, 69.55, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_2/AnimalWander_3 @ (41.54, 69.69, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_2/AnimalSoundFlee_0 @ (92.50, 69.50, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_2/AnimalTurtle_1 @ (99.49, 74.30, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_2/AnimalWander_2 @ (91.69, 79.54, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_0_3/AnimalSoundFlee_0 @ (23.35, 101.31, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_0_3/AnimalWander_1 @ (7.58, 99.68, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_0_3/AnimalSoundFlee_2 @ (8.42, 111.27, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_3/AnimalFlee_0 @ (43.27, 105.59, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_3/AnimalWander_1 @ (67.56, 107.31, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_3/AnimalGoose_2 @ (56.42, 106.50, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_1_3/AnimalWander_3 @ (69.52, 107.70, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_3/AnimalWander_0 @ (86.59, 108.68, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_3/AnimalFlee_1 @ (103.57, 105.74, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[FieldState] 저장: GeneratedMap/Room_2_3/AnimalWander_2 @ (81.64, 101.64, 0.00), fleeing=False
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AnimalRescue:OnDestroy () (at Assets/Scripts/Animals/AnimalRescue.cs:257)
+
+(Filename: Assets/Scripts/Animals/AnimalRescue.cs Line: 257)
+
+[INFO ] [relay] log WebSocket server started
+[INFO ] [relay] log Relay server initialization completed
+[INFO ] [relay] log MCP Client initialized at port: 9002
+Unloading 110 Unused Serialized files (Serialized files now loaded: 0)
+[INFO ] [relay] log [shell-env] PATH augmented with shell environment (29 entries)
+[INFO ] [relay] log Unity MCP Relay server started | Port: 9002 | Endpoints: /mcp/start-server, /mcp/stop-server, /mcp/server-status, /mcp/call-tool
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            2.741 ms
+	Integration:            238.685 ms
+	Integration of assets:  0.022 ms
+	Thread Wait Time:       0.011 ms
+	Total Operation Time:   241.459 ms
+Unloading 86 unused Assets / (111.9 KB). Loaded Objects now: 13545.
+Memory consumption went from 0.64 GB to 0.64 GB.
+Total: 17.889300 ms (FindLiveObjects: 0.541900 ms CreateObjectMapping: 1.444600 ms MarkObjects: 15.733700 ms  DeleteObjects: 0.168200 ms)
+
+MonoPathRemapper: Attempts to remap: 77739; Successful remaps: 17246
+Serialized file version minimum: 23, current 23
+����: PID 4148�� ���μ���(PID 21460�� �ڽ� ���μ���)�� ����Ǿ����ϴ�.
+����: PID 21460�� ���μ���(PID 15812�� �ڽ� ���μ���)�� ����Ǿ����ϴ�.
+Importing 'GUID: 0000000000000000b000000000000000 - Path: ProjectSettings/EditorBuildSettings.asset' with importer (LibraryAssetImporter)
+Imported 'GUID: 0000000000000000b000000000000000' -> (Import Result ID: '5f5920679b15de4944570281b8dbcbf9') in 0.012 seconds [static dependencies only]. Details - ImportResultOutputID=4647dd083cfc32cebcd7526e8846440c DependenciesID=08f9acc0b6a104892d649c7ace13c103 StaticDependenciesID=75a29855be8bf9f40de1b5c0809359ac 
+Refreshing native plugins compatible for Editor in 2.06 ms, found 6 plugins.
+
+Asset Pipeline Refresh (id=fd4680ef1243b134f8198bd89b67a95c): Total: 0.452 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+	(Values over 0.05ms)
+	Summary:
+		Imports: total=1 (actual=1, local cache=0, cache server=0)
+		Asset DB Process Time: managed=6 ms, native=170 ms
+		Asset DB Callback time: managed=269 ms, native=6 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=2444, non-scripts=6709
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 1
+	ApplyChangesToAssetFolders: 0.111ms
+	Scan: 14.041ms
+	ProcessAssetsWithTransientArtifactChanges: 0.062ms
+	CategorizeAssets: 64.266ms
+	ImportOutOfDateAssets: 91.046ms (15.392ms without children)
+		ImportManagerImport: 14.103ms (1.438ms without children)
+		ReloadNativeAssets: 0.094ms
+		UnloadImportedAssets: 0.178ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 1.787ms
+		ImportSchedulerStart: 59.483ms
+	PostProcessAllAssets: 273.611ms
+		XRBuildSystem.XRAssetImported 3.675ms
+		MonoPostProcessAllAssets: 269.501ms
+			AssetPostprocessor.OnPostprocessAllAssets 82.704ms
+			AssetReferenceReimportMonitor.OnPostprocessAllAssets 20.746ms
+			StyleCatalogPostProcessor.OnPostprocessAllAssets 16.475ms
+			BuilderAssetPostprocessor.OnPostprocessAllAssets 4.263ms
+			ShaderGraphAssetPostProcessor.OnPostprocessAllAssets 1.235ms
+			RetainedModeAssetPostprocessor.OnPostprocessAllAssets 0.987ms
+			MaterialPostprocessor.OnPostprocessAllAssets 0.527ms
+			SyncVS.PostprocessSyncProject 0.490ms
+			AssetProcessor.OnPostprocessAllAssets 0.460ms
+			SpriteEditorTexturePostprocessor.OnPostprocessAllAssets 0.450ms
+			ArtifactBrowserPostProcessor.OnPostprocessAllAssets 0.386ms
+			SampleDependencyImporterPostProcessor.OnPostprocessAllAssets 0.359ms
+			SpriteSlicePostprocessor.OnPostprocessAllAssets 0.320ms
+			UVCSAssetPostprocessor.OnPostprocessAllAssets 0.307ms
+			ModelAssetProcessor.OnPostprocessAllAssets 0.305ms
+			TextAssetPostProcessor.OnPostprocessAllAssets 0.278ms
+			SkillsProjectAssetPostprocessor.OnPostprocessAllAssets 0.277ms
+			TMPro_TexturePostProcessor.OnPostprocessAllAssets 0.264ms
+			SpriteShapeAssetPostProcessor.OnPostprocessAllAssets 0.259ms
+			AssetChangedListener.OnPostprocessAllAssets 0.248ms
+			InputActionJsonNameModifierAssetProcessor.OnPostprocessAllAssets 0.232ms
+			AudioMixerPostprocessor.OnPostprocessAllAssets 0.224ms
+			AssetEvents.OnPostprocessAllAssets 0.215ms
+			SamplePostprocessor.OnPostprocessAllAssets 0.200ms
+			SpriteLibraryAssetPostprocessor.OnPostprocessAllAssets 0.189ms
+			PostProcessor.OnPostprocessAllAssets 0.179ms
+			SpeedTreePostProcessor.OnPostprocessAllAssets 0.128ms
+			PSDImportPostProcessor.OnPostprocessAllAssets 0.119ms
+			ConfigAssetsTracker.OnPostprocessAllAssets 0.115ms
+			ScenarioDriftAssetsTracker.OnPostprocessAllAssets 0.115ms
+			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 0.102ms
+			AudioContainerPostProcessor.OnPostprocessAllAssets 0.082ms
+			InputActionAssetPostprocessor.OnPostprocessAllAssets 0.078ms
+			PSDImporterAssetPostProcessor.OnPostprocessAllAssets 0.074ms
+			GraphRefreshPostprocessor.OnPostprocessAllAssets 0.073ms
+			TrackSelectedAssetsProcessor.OnPostprocessAllAssets 0.050ms
+	PostAssetChangesProfiler: 2.331ms
+	GatherAllCurrentPrimaryImportResultRevisions: 0.349ms
+	PersistCurrentRevisions: 0.281ms
+	Untracked: 6.226ms
+
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-Main-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-Main channel disconnected successfully.
+Shut down.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+CodeReloadManager destroyed
+abort_threads: Failed aborting id: 0000000000001E90, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 0000000000004FDC, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 0000000000001E90, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 0000000000004FDC, mono_thread_manage will ignore it
+
+debugger-agent: Unable to listen on 4300
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1795238854442,"processId":15812,"allocatedMemory":21971521,"memoryLabels":[{"Default":234364},{"Permanent":15516},{"NewDelete":67363},{"Thread":4205176},{"Manager":37701},{"VertexData":8},{"Geometry":816},{"Texture":24},{"Shader":855513},{"Material":24},{"GfxDevice":57368},{"Animation":952},{"Audio":1544},{"FreeType":8},{"FontEngine":736},{"Physics":2146},{"Physics2D":16},{"Serialization":920},{"Input":42840},{"JobScheduler":256},{"TextLib":280},{"Mono":48},{"MonoCode":960},{"ScriptingNativeRuntime":1684500},{"BaseObject":1660936},{"Resource":1208},{"Renderer":3080},{"Transform":4685},{"File":4005},{"WebCam":616},{"Culling":32},{"Terrain":11442},{"Wind":24},{"STL":40},{"String":30080},{"StaticString":3808},{"Utility":2673782},{"Curl":2676},{"PoolAlloc":2888},{"AI":80},{"TypeTree":17165},{"CodeReload":448},{"RuntimeInitializeOnLoadManager":64},{"Sprites":102},{"SpriteAtlas":120},{"GI":7816},{"Director":8296},{"CloudService":11416},{"WebRequest":552},{"VR":47114},{"SceneManager":608},{"Video":208},{"LazyScriptCache":32},{"Camera":17},{"Secure":2377},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":552},{"Hierarchy":1176},{"UIElements":72},{"CoreStats":13688},{"Identifiers":6768},{"Gui":128},{"EditorUtility":124594},{"VersionControl":8},{"Undo":931},{"AssetDatabase":9713693},{"AssetImporter":40},{"EditorGi":328},{"UnityConnect":38929},{"Upm":1912},{"UpmDiagnostics":8},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":210},{"ProfilerEditor":9778},{"CoreBusinessMetrics":3478},{"Windowing":456},{"Licensing":1232},{"AssetReference":32},{"IPCStream":32}]}

@@ -1,0 +1,41 @@
+CreditsTest 2026-11-21 14:25:33
+
+== 1. 버튼 네 개: 같은 모양·같은 간격
+  [OK] 왼쪽부터 [PLAY, SETTING, CREDITS, EXIT], x [-450, -150, 150, 450], 간격 [300, 300, 300], 같은 그림·크기·글씨 True
+
+== 2. 버튼 연결
+  [OK] PLAY → [TitleMenu.OnPlay] (기대 TitleMenu.OnPlay)
+  [OK] SETTING → [TitleMenu.OnSetting] (기대 TitleMenu.OnSetting)
+  [OK] EXIT → [TitleMenu.OnExit] (기대 TitleMenu.OnExit)
+  [OK] 설정 창 CLOSE → [TitleMenu.OnCloseSetting] (기대 TitleMenu.OnCloseSetting)
+  [OK] CREDITS → [TitleMenu.OnCredits] (기대 TitleMenu.OnCredits)
+  [OK] 크레딧 창 CLOSE → [TitleMenu.OnCloseCredits] (기대 TitleMenu.OnCloseCredits)
+
+== 3. 크레딧 창 열기·내용
+  [OK] 처음에는 크레딧 창·설정 창 닫힘 (크레딧 False, 설정 False)
+  [OK] CREDITS를 누르면 크레딧 창이 열림 (True)
+  [OK] 게임이 읽는 Assets/Resources/Credits/Credits.md이 CREDITS.md와 같음 (CREDITS.md 1926자, Resources 1926자)
+  [OK] 크레딧 글에 필요한 항목이 모두 있음 (빠진 것 []), "출처 확인 필요" 4곳
+  [OK] 주석(유력 후보 메모)과 마크다운 기호는 화면에 안 보임
+  [OK] 크레딧 글자 190종 중 글꼴에 없는 글자: []
+
+== 4. 1080p·16:10 화면 배치
+  [OK] 1920x1080: 버튼 줄 x 470~1450, 위에서 y 594~650 화면 안 True, 크레딧 창 x 360~1560, 위에서 y 137~943 (1200x806px) 화면 안 True, 글 2236 / 보이는 칸 650, 맨 위에서 시작
+  [OK] 1920x1080: 글이 보이는 칸보다 길면 끝까지 스크롤됨 (내려간 거리 1586 / 1586), 스크롤바 보임
+  [OK] 1920x1200: 버튼 줄 x 444~1476, 위에서 y 661~720 화면 안 True, 크레딧 창 x 328~1592, 위에서 y 175~1025 (1265x849px) 화면 안 True, 글 2236 / 보이는 칸 650, 맨 위에서 시작
+  [OK] 1920x1200: 글이 보이는 칸보다 길면 끝까지 스크롤됨 (내려간 거리 1586 / 1586), 스크롤바 보임
+
+== 5. 닫기
+  [OK] ESC로 크레딧 창이 닫힘 (열림 False), 일시정지 메뉴는 안 열림 (False)
+  [OK] 다시 열고(열림 True) 닫기 버튼으로 닫힘 (열림 False)
+  [OK] 닫힌 뒤 ESC는 아무 일도 안 함
+
+== 6. 다른 버튼
+  [OK] SETTING은 그대로 설정 창을 열고(열림 True) CLOSE로 닫음 (열림 False)
+  [OK] PLAY는 그대로 클래스 선택 씬으로 (ClassSelectScene)
+
+== 그림 C:\Users\Main\Documents\A_Game\animal-keeper\Logs\Credits\credits_title.png (왼쪽 타이틀, 오른쪽 크레딧 창 / 위 1920x1080, 아래 1920x1200 - 반으로 줄임)
+
+== 콘솔 에러/예외 (Log·Warning 제외): 0건
+
+결과: 통과 (23/23)

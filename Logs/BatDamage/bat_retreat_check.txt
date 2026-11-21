@@ -1,0 +1,333 @@
+박쥐 물러남 수정(방법 A) 뒤 확인 - 조사 때와 같은 방식(실제 마을·격자 3x4·시드 1, 박쥐 1마리를 플레이어 뒤 2.5칸, 60초) + 손전등 경우
+요약:
+- 가만히: 세 직업 모두 2번 닿고 6.77초에 쓰러짐(1번째 2.13초, 물러남 약 2.6초 뒤 다시 다가와 2번째)
+- 제자리 좌우: 2번 닿고 Scout 9.70초, Trapper 7.67초, Gunner 10.07초에 쓰러짐
+- 처음부터 손전등으로 계속 비춤: 박쥐가 굳어 다가오지 못함, 60초 동안 0번
+- 닿은 뒤부터 손전등으로 비춤: 물러나는 동안 손전등 안(65~75/80프레임)이어도 굳지 않음, 물러남이 끝난 뒤(약 12.4칸)부터는 비추는 동안 굳음 → 1번 닿고 60초 동안 안 쓰러짐
+
+박쥐 물러남 수정 뒤 확인 2026-11-21 14:22:41 - 마을(격자 3x4, 시드 1), 다른 몬스터·시간 스폰 끔, 박쥐 1마리를 플레이어 뒤 2.5칸에 놓음, 프레임 1/30초, 최대 60초
+
+== Scout (가만히) 최대 체력 100, 박쥐 피해 80
+    0.03초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 3.40, 물러난 횟수 0, 이미 닿음 False
+    2.00초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 1.81, 물러난 횟수 0, 이미 닿음 False
+  2.13초: 1번째 닿음 → 체력 100 → 20 (거리 0.69)
+    2.13초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.69, 물러난 횟수 1, 이미 닿음 True
+    2.63초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 1.74, 물러난 횟수 1, 이미 닿음 True
+    3.13초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 1.51, 물러난 횟수 1, 이미 닿음 True
+    3.63초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 4.27, 물러난 횟수 1, 이미 닿음 True
+    4.13초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 7.74, 물러난 횟수 1, 이미 닿음 True
+    4.63초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 11.29, 물러난 횟수 1, 이미 닿음 True
+    4.77초 물러남 끝 → Return (거리 12.43)
+    5.13초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 12.61, 물러난 횟수 1, 이미 닿음 False
+  6.77초: 2번째 닿음 → 체력 20 → 0 (거리 0.68)
+    6.77초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.68, 물러난 횟수 2, 이미 닿음 True
+  결과: 닿은 횟수 2, 마지막 체력 0/100, 게임오버 True (6.77초), 물러난 횟수 2, 물러나는 동안 굳은 프레임 0/81, 물러난 뒤 손전등에 굳은 프레임 0
+
+== Trapper (가만히) 최대 체력 130, 박쥐 피해 104
+    0.03초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 3.40, 물러난 횟수 0, 이미 닿음 False
+    2.00초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 1.81, 물러난 횟수 0, 이미 닿음 False
+  2.13초: 1번째 닿음 → 체력 130 → 26 (거리 0.69)
+    2.13초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.69, 물러난 횟수 1, 이미 닿음 True
+    2.63초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 1.74, 물러난 횟수 1, 이미 닿음 True
+    3.13초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 1.51, 물러난 횟수 1, 이미 닿음 True
+    3.63초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 4.27, 물러난 횟수 1, 이미 닿음 True
+    4.13초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 7.74, 물러난 횟수 1, 이미 닿음 True
+    4.63초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 11.29, 물러난 횟수 1, 이미 닿음 True
+    4.77초 물러남 끝 → Return (거리 12.43)
+    5.13초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 12.61, 물러난 횟수 1, 이미 닿음 False
+  6.77초: 2번째 닿음 → 체력 26 → 0 (거리 0.68)
+    6.77초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.68, 물러난 횟수 2, 이미 닿음 True
+  결과: 닿은 횟수 2, 마지막 체력 0/130, 게임오버 True (6.77초), 물러난 횟수 2, 물러나는 동안 굳은 프레임 0/81, 물러난 뒤 손전등에 굳은 프레임 0
+
+== Gunner (가만히) 최대 체력 50, 박쥐 피해 40
+    0.03초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 3.40, 물러난 횟수 0, 이미 닿음 False
+    2.00초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 1.81, 물러난 횟수 0, 이미 닿음 False
+  2.13초: 1번째 닿음 → 체력 50 → 10 (거리 0.69)
+    2.13초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.69, 물러난 횟수 1, 이미 닿음 True
+    2.63초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 1.74, 물러난 횟수 1, 이미 닿음 True
+    3.13초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 1.51, 물러난 횟수 1, 이미 닿음 True
+    3.63초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 4.27, 물러난 횟수 1, 이미 닿음 True
+    4.13초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 7.74, 물러난 횟수 1, 이미 닿음 True
+    4.63초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 11.29, 물러난 횟수 1, 이미 닿음 True
+    4.77초 물러남 끝 → Return (거리 12.43)
+    5.13초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 12.61, 물러난 횟수 1, 이미 닿음 False
+  6.77초: 2번째 닿음 → 체력 10 → 0 (거리 0.68)
+    6.77초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.68, 물러난 횟수 2, 이미 닿음 True
+  결과: 닿은 횟수 2, 마지막 체력 0/50, 게임오버 True (6.77초), 물러난 횟수 2, 물러나는 동안 굳은 프레임 0/81, 물러난 뒤 손전등에 굳은 프레임 0
+
+== Scout (제자리 좌우) 최대 체력 100, 박쥐 피해 80
+    0.03초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 3.40, 물러난 횟수 0, 이미 닿음 False
+    2.00초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 1.84, 물러난 횟수 0, 이미 닿음 False
+  3.47초: 1번째 닿음 → 체력 100 → 20 (거리 0.58)
+    3.47초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.58, 물러난 횟수 1, 이미 닿음 True
+    3.97초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 1.48, 물러난 횟수 1, 이미 닿음 True
+    4.47초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 5.86, 물러난 횟수 1, 이미 닿음 True
+    4.97초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 8.19, 물러난 횟수 1, 이미 닿음 True
+    5.43초 물러남 끝 → Return (거리 12.54)
+    5.47초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 12.54, 물러난 횟수 1, 이미 닿음 False
+    5.97초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 12.71, 물러난 횟수 1, 이미 닿음 False
+    6.47초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 8.96, 물러난 횟수 1, 이미 닿음 False
+    8.47초 박쥐 Chase, 굳음 False, 손전등 안 False, 거리 0.92, 물러난 횟수 1, 이미 닿음 False
+  9.70초: 2번째 닿음 → 체력 20 → 0 (거리 0.61)
+    9.70초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.61, 물러난 횟수 2, 이미 닿음 True
+  결과: 닿은 횟수 2, 마지막 체력 0/100, 게임오버 True (9.70초), 물러난 횟수 2, 물러나는 동안 굳은 프레임 0/61, 물러난 뒤 손전등에 굳은 프레임 1
+
+== Trapper (제자리 좌우) 최대 체력 130, 박쥐 피해 104
+    0.03초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 3.40, 물러난 횟수 0, 이미 닿음 False
+    2.00초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 1.83, 물러난 횟수 0, 이미 닿음 False
+  3.40초: 1번째 닿음 → 체력 130 → 26 (거리 0.46)
+    3.40초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.46, 물러난 횟수 1, 이미 닿음 True
+    3.90초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 1.61, 물러난 횟수 1, 이미 닿음 True
+    4.40초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 6.60, 물러난 횟수 1, 이미 닿음 True
+    4.90초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 8.70, 물러난 횟수 1, 이미 닿음 True
+    5.27초 물러남 끝 → Return (거리 11.88)
+    5.40초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 12.55, 물러난 횟수 1, 이미 닿음 False
+    5.90초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 12.06, 물러난 횟수 1, 이미 닿음 False
+    6.40초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 7.38, 물러난 횟수 1, 이미 닿음 False
+  7.67초: 2번째 닿음 → 체력 26 → 0 (거리 0.56)
+    7.67초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.56, 물러난 횟수 2, 이미 닿음 True
+  결과: 닿은 횟수 2, 마지막 체력 0/130, 게임오버 True (7.67초), 물러난 횟수 2, 물러나는 동안 굳은 프레임 0/58, 물러난 뒤 손전등에 굳은 프레임 5
+
+== Gunner (제자리 좌우) 최대 체력 50, 박쥐 피해 40
+    0.03초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 3.40, 물러난 횟수 0, 이미 닿음 False
+    2.00초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 1.82, 물러난 횟수 0, 이미 닿음 False
+  3.33초: 1번째 닿음 → 체력 50 → 10 (거리 0.46)
+    3.33초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.46, 물러난 횟수 1, 이미 닿음 True
+    3.83초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 1.38, 물러난 횟수 1, 이미 닿음 True
+    4.33초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 3.17, 물러난 횟수 1, 이미 닿음 True
+    4.83초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 5.17, 물러난 횟수 1, 이미 닿음 True
+    5.33초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 9.20, 물러난 횟수 1, 이미 닿음 True
+    5.70초 물러남 끝 → Return (거리 12.57)
+    5.83초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 12.59, 물러난 횟수 1, 이미 닿음 False
+    6.33초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 10.89, 물러난 횟수 1, 이미 닿음 False
+    8.33초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 3.61, 물러난 횟수 1, 이미 닿음 False
+  10.07초: 2번째 닿음 → 체력 10 → 0 (거리 0.66)
+    10.07초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.66, 물러난 횟수 2, 이미 닿음 True
+  결과: 닿은 횟수 2, 마지막 체력 0/50, 게임오버 True (10.07초), 물러난 횟수 2, 물러나는 동안 굳은 프레임 0/73, 물러난 뒤 손전등에 굳은 프레임 52
+
+== Scout (손전등으로 비춤) 최대 체력 100, 박쥐 피해 80
+    0.03초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 3.40, 물러난 횟수 0, 이미 닿음 False
+    2.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    4.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    6.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    8.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    10.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    12.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    14.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    16.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    18.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    20.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    22.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    24.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    26.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    28.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    30.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    32.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    34.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    36.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    38.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    40.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    42.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    44.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    46.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    48.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    50.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    52.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    54.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    56.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    58.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    60.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+  결과: 닿은 횟수 0, 마지막 체력 100/100, 게임오버 False (60초 동안 쓰러지지 않음), 물러난 횟수 0, 물러나는 동안 굳은 프레임 0/0, 물러난 뒤 손전등에 굳은 프레임 0
+
+== Trapper (손전등으로 비춤) 최대 체력 130, 박쥐 피해 104
+    0.03초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 3.40, 물러난 횟수 0, 이미 닿음 False
+    2.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    4.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    6.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    8.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    10.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    12.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    14.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    16.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    18.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    20.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    22.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    24.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    26.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    28.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    30.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    32.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    34.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    36.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    38.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    40.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    42.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    44.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    46.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    48.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    50.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    52.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    54.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    56.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    58.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    60.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+  결과: 닿은 횟수 0, 마지막 체력 130/130, 게임오버 False (60초 동안 쓰러지지 않음), 물러난 횟수 0, 물러나는 동안 굳은 프레임 0/0, 물러난 뒤 손전등에 굳은 프레임 0
+
+== Gunner (손전등으로 비춤) 최대 체력 50, 박쥐 피해 40
+    0.03초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 3.40, 물러난 횟수 0, 이미 닿음 False
+    2.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    4.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    6.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    8.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    10.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    12.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    14.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    16.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    18.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    20.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    22.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    24.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    26.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    28.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    30.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    32.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    34.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    36.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    38.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    40.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    42.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    44.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    46.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    48.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    50.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    52.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    54.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    56.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    58.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+    60.00초 박쥐 Wander, 굳음 True, 손전등 안 True, 거리 6.10, 물러난 횟수 0, 이미 닿음 False
+  결과: 닿은 횟수 0, 마지막 체력 50/50, 게임오버 False (60초 동안 쓰러지지 않음), 물러난 횟수 0, 물러나는 동안 굳은 프레임 0/0, 물러난 뒤 손전등에 굳은 프레임 0
+
+박쥐 물러남 수정 뒤 확인 2026-11-21 14:23:23 - 마을(격자 3x4, 시드 1), 다른 몬스터·시간 스폰 끔, 박쥐 1마리를 플레이어 뒤 2.5칸에 놓음, 프레임 1/30초, 최대 60초
+
+== Scout (닿은 뒤 손전등으로 비춤) 최대 체력 100, 박쥐 피해 80
+    0.03초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 3.40, 물러난 횟수 0, 이미 닿음 False
+    2.00초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 1.81, 물러난 횟수 0, 이미 닿음 False
+  2.13초: 1번째 닿음 → 체력 100 → 20 (거리 0.69)
+    2.13초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.69, 물러난 횟수 1, 이미 닿음 True
+    2.63초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 1.74, 물러난 횟수 1, 이미 닿음 True
+    3.13초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 1.51, 물러난 횟수 1, 이미 닿음 True
+    3.63초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 4.27, 물러난 횟수 1, 이미 닿음 True
+    4.13초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 7.74, 물러난 횟수 1, 이미 닿음 True
+    4.63초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 11.29, 물러난 횟수 1, 이미 닿음 True
+    4.77초 물러남 끝 → Return (거리 12.43)
+    5.13초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 12.61, 물러난 횟수 1, 이미 닿음 False
+    7.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    9.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    11.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    13.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    15.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    17.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    19.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    21.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    23.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    25.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    27.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    29.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    31.17초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    33.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    35.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    37.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    39.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    41.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    43.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    45.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    47.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    49.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    51.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    53.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    55.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    57.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    59.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+  결과: 닿은 횟수 1, 마지막 체력 20/100, 게임오버 False (60초 동안 쓰러지지 않음), 물러난 횟수 1, 물러나는 동안 손전등 안 65/80·굳은 프레임 0/80, 물러난 뒤 손전등에 굳은 프레임 1628
+
+== Trapper (닿은 뒤 손전등으로 비춤) 최대 체력 130, 박쥐 피해 104
+    0.03초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 3.40, 물러난 횟수 0, 이미 닿음 False
+    2.00초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 1.80, 물러난 횟수 0, 이미 닿음 False
+  2.13초: 1번째 닿음 → 체력 130 → 26 (거리 0.68)
+    2.13초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.68, 물러난 횟수 1, 이미 닿음 True
+    2.63초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 1.74, 물러난 횟수 1, 이미 닿음 True
+    3.13초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 1.51, 물러난 횟수 1, 이미 닿음 True
+    3.63초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 4.27, 물러난 횟수 1, 이미 닿음 True
+    4.13초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 7.74, 물러난 횟수 1, 이미 닿음 True
+    4.63초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 11.28, 물러난 횟수 1, 이미 닿음 True
+    4.77초 물러남 끝 → Return (거리 12.42)
+    5.13초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 12.61, 물러난 횟수 1, 이미 닿음 False
+    7.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    9.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    11.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    13.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    15.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    17.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    19.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    21.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    23.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    25.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    27.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    29.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    31.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    33.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    35.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    37.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    39.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    41.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    43.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    45.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    47.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    49.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    51.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    53.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    55.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    57.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+    59.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 9.08, 물러난 횟수 1, 이미 닿음 False
+  결과: 닿은 횟수 1, 마지막 체력 26/130, 게임오버 False (60초 동안 쓰러지지 않음), 물러난 횟수 1, 물러나는 동안 손전등 안 65/80·굳은 프레임 0/80, 물러난 뒤 손전등에 굳은 프레임 1628
+
+== Gunner (닿은 뒤 손전등으로 비춤) 최대 체력 50, 박쥐 피해 40
+    0.03초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 3.40, 물러난 횟수 0, 이미 닿음 False
+    2.00초 박쥐 Ambush, 굳음 False, 손전등 안 False, 거리 1.81, 물러난 횟수 0, 이미 닿음 False
+  2.13초: 1번째 닿음 → 체력 50 → 10 (거리 0.69)
+    2.13초 박쥐 Flee, 굳음 False, 손전등 안 False, 거리 0.69, 물러난 횟수 1, 이미 닿음 True
+    2.63초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 1.74, 물러난 횟수 1, 이미 닿음 True
+    3.13초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 1.51, 물러난 횟수 1, 이미 닿음 True
+    3.63초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 4.27, 물러난 횟수 1, 이미 닿음 True
+    4.13초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 7.74, 물러난 횟수 1, 이미 닿음 True
+    4.63초 박쥐 Flee, 굳음 False, 손전등 안 True, 거리 11.29, 물러난 횟수 1, 이미 닿음 True
+    4.77초 물러남 끝 → Return (거리 12.43)
+    5.13초 박쥐 Return, 굳음 False, 손전등 안 False, 거리 12.61, 물러난 횟수 1, 이미 닿음 False
+    7.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    9.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    11.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    13.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    15.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    17.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    19.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    21.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    23.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    25.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    27.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    29.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    31.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    33.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    35.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    37.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    39.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    41.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    43.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    45.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    47.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    49.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    51.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    53.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    55.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    57.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+    59.13초 박쥐 Return, 굳음 True, 손전등 안 True, 거리 11.45, 물러난 횟수 1, 이미 닿음 False
+  결과: 닿은 횟수 1, 마지막 체력 10/50, 게임오버 False (60초 동안 쓰러지지 않음), 물러난 횟수 1, 물러나는 동안 손전등 안 75/80·굳은 프레임 0/80, 물러난 뒤 손전등에 굳은 프레임 1637

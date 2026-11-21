@@ -1,0 +1,556 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+[Licensing::IpcConnector] Channel LicenseClient-Main doesn't exist
+Built from '6000.5/staging' branch; Version is '6000.5.3f1 (c2eb47b3a2a9) revision 12774215'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'ko' Physical Memory: 32607 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-11-21T04:57:05Z
+[Licensing::Module] Successfully launched the LicensingClient (PId: 8676)
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.5.3f1\Editor\Unity.exe
+-batchmode
+-projectPath
+C:/Users/Main/Documents/A_Game/animal-keeper
+-executeMethod
+CreditsTest.RunBatch
+-logFile
+C:/Users/Main/Documents/A_Game/animal-keeper/Logs/BatDamage/tests/CreditsTest.log
+Successfully changed project path to: C:/Users/Main/Documents/A_Game/animal-keeper
+C:/Users/Main/Documents/A_Game/animal-keeper
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-main-allocator-mimalloc-enabled=0"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+Logging is directed to a specific file, skipping project log.Player connection [5680]  Target information:
+
+Player connection [5680]  * "[IP] 211.200.34.5 [Port] 55504 [Flags] 2 [Guid] 188441952 [EditorId] 188441952 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-E5L8R6H) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [5680] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [5680] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-19580" after 0.2 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+Starting IPC server.
+Waiting for clients to connect on \\.\pipe\Unity-LicenseClient-Main, press Ctrl-C to exit.
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-Main" at "2026-11-21T04:57:05.439289Z"
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 8676, path: "C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
+[Licensing::Module] LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.18.1+9fbee8e
+  Session Id:              acef8869fc544c42bdfe1de28b8da60c
+  Correlation Id:          fc432c3b50cf519c1f002efafe290976
+  External correlation Id: 6823450726390442897
+  Machine Id:              HaaoqbpycdhNYZPCFxacTLqJbiw=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-Main" (connect: 0.38s, validation: 0.03s, handshake: 0.04s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-Main-notifications" at "2026-11-21T04:57:05.5122532Z"
+[Licensing::Module] Connected to LicensingClient (PId: 8676, launch time: 0.00, total connection time: 0.45s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 14569773598581-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.01
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 0.47s
+[Licensing::Module] Licensing is initialized (took 0.21s).
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Initialize engine version: 6000.5.3f1 (c2eb47b3a2a9)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/Main/Documents/A_Game/animal-keeper/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 4060 (ID=0x2882)
+    Vendor:          NVIDIA
+    VRAM:            7957 MB
+    App VRAM Budget: 7189 MB
+    Driver:          32.0.15.7216
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/BCLExtensions/runtime/netstandard2.1'
+Mono path[2] = 'C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56580
+CodeReloadManager initialized
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.5.3f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.001265 seconds.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Package Manager log level set to [2]
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.310 seconds
+Domain Reload Profiling: 685ms
+	BeginReloadAssembly (96ms)
+	RebuildCommonClasses (4ms)
+	RebuildNativeTypeToScriptingClass (12ms)
+	initialDomainReloadingComplete (45ms)
+	LoadAllAssembliesAndSetupDomain (215ms)
+		LoadAssemblies (92ms)
+		AnalyzeDomain (157ms)
+			TypeCache.Refresh (156ms)
+				TypeCache.ScanAssembly (144ms)
+	FinalizeReload (313ms)
+		SetupLoadedEditorAssemblies (0ms)
+			BeforeProcessingInitializeOnLoad (73ms)
+			ProcessInitializeOnLoadAttributes (76ms)
+			ProcessInitializeOnLoadMethodAttributes (99ms)
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 70 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.2d.animation@15.1.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.animation@6d5a363ae647)
+    com.unity.2d.aseprite@5.0.3 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.aseprite@d13865913efa)
+    com.unity.2d.psdimporter@14.0.3 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.psdimporter@5d82044f9e43)
+    com.unity.2d.spriteshape@15.0.3 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.spriteshape@fcb7ec61a58b)
+    com.unity.2d.tilemap.extras@8.0.3 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.tilemap.extras@a80140457adc)
+    com.unity.2d.tooling@3.0.1 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.tooling@6f06ffb033c0)
+    com.unity.ai.assistant@2.18.0-pre.2 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ai.assistant@c0127625258e)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.ai.navigation@2.0.14 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ai.navigation@134dd6a3b97b)
+    com.unity.collab-proxy@2.12.4 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.collab-proxy@0b1559bcd34e)
+    com.unity.ide.rider@3.0.38 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ide.rider@1f60b3138684)
+    com.unity.ide.visualstudio@2.0.26 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ide.visualstudio@a99d56dec63f)
+    com.unity.inputsystem@1.19.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.inputsystem@21a28c3a6c83)
+    com.unity.timeline@1.8.12 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.timeline@8cd8509afae5)
+    com.unity.visualscripting@1.9.11 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.visualscripting@8bed5ad90189)
+    com.unity.burst@1.8.29 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.burst@6bb9aca3ef38)
+    com.unity.dt.app-ui@2.1.7 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.dt.app-ui@b097002a00c2)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.2d.common@14.0.1 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.common@73badf92ba8b)
+    com.unity.searcher@4.9.4 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.test-framework.performance@3.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.test-framework.performance@8b56083ec0f0)
+  Built-in packages:
+    com.unity.2d.sprite@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.sprite@053a968eab56)
+    com.unity.2d.tilemap@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.2d.tilemap@592c6ccaefe1)
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.multiplayer.center@b860850997d0)
+    com.unity.render-pipelines.universal@17.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.render-pipelines.universal@276396f56b3f)
+    com.unity.test-framework@1.7.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.test-framework@1405238725ab)
+    com.unity.ugui@2.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ugui@377fd60ad87b)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.physics2d)
+    com.unity.modules.physicscore2d@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.physicscore2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.video)
+    com.unity.modules.wind@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.1.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.ext.nunit@44f7d31723bd)
+    com.unity.render-pipelines.core@17.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.render-pipelines.core@0733e3164aa3)
+    com.unity.shadergraph@17.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.shadergraph@8aa9acb51790)
+    com.unity.render-pipelines.universal-config@17.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.render-pipelines.universal-config@fdda01c80fe3)
+    com.unity.collections@6.5.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.collections@a43cabe808ca)
+    com.unity.mathematics@1.4.0 (location: C:\Users\Main\Documents\A_Game\animal-keeper\Library\PackageCache\com.unity.mathematics@981956d94fb6)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.01 seconds
+The GUID inside 'Assets/Scripts/UI/EndScreenButtons.cs.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:80
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\Main\Documents\A_Game\animal-keeper
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping - application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping - 200 - application/grpc 35.4265ms
+Starting: C:\Program Files\Unity\Hub\Editor\6000.5.3f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/Main/Documents/A_Game/animal-keeper
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/ConfigurePostProcessors - application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/ConfigurePostProcessors'
+warn: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Assembly system.runtime.interopservices.windowsruntime has duplicate hint path. Ignoring "C:\Program Files\Unity\Hub\Editor\6000.5.3f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\Facades\System.Runtime.InteropServices.WindowsRuntime.dll" in favor of "C:\Program Files\Unity\Hub\Editor\6000.5.3f1\Editor\Data\NetStandard\Extensions\2.0.0\System.Runtime.InteropServices.WindowsRuntime.dll"
+warn: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Assembly system.componentmodel.composition has duplicate hint path. Ignoring "C:\Program Files\Unity\Hub\Editor\6000.5.3f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\System.ComponentModel.Composition.dll" in favor of "C:\Program Files\Unity\Hub\Editor\6000.5.3f1\Editor\Data\NetStandard\compat\2.1.0\shims\netfx\System.ComponentModel.Composition.dll"
+info: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Resolved Unity.Burst.Cecil, Version=0.11.6.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e with Library\PackageCache\com.unity.burst@6bb9aca3ef38\Unity.Burst.CodeGen\Unity.Burst.Cecil.dll
+info: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Resolved Mono.Cecil, Version=0.11.5.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e with Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff\Mono.Cecil.dll
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/ConfigurePostProcessors'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/ConfigurePostProcessors - 200 - application/grpc 53.6805ms
+DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 0s277ms
+[1343/1770  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+*** Tundra build success (0.25 seconds), 1 items updated, 1770 evaluated
+AssetDatabase: script compilation time: 0.719767s
+Begin MonoManager ReloadAssembly
+Total cache size 245740624
+Total cache size after purge 245740624, took 00:00:00.1342738
+Symbol file LoadedFromMemory is not a mono symbol file
+Symbol file LoadedFromMemory is not a mono symbol file
+Refreshing native plugins compatible for Editor in 2.11 ms, found 6 plugins.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Refreshing native plugins compatible for Editor in 2.37 ms, found 6 plugins.
+Refreshing native plugins compatible for Editor in 2.11 ms, found 6 plugins.
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  3.941 seconds
+Domain Reload Profiling: 4966ms
+	BeginReloadAssembly (175ms)
+		DisableScriptedObjects (18ms)
+		CreateAndSetChildDomain (27ms)
+	RebuildCommonClasses (7ms)
+	RebuildNativeTypeToScriptingClass (12ms)
+	initialDomainReloadingComplete (63ms)
+	LoadAllAssembliesAndSetupDomain (768ms)
+		LoadAssemblies (347ms)
+		AnalyzeDomain (378ms)
+			TypeCache.Refresh (286ms)
+				TypeCache.ScanAssembly (267ms)
+			BuildScriptInfoCaches (85ms)
+			ResolveRequiredComponents (6ms)
+	FinalizeReload (3942ms)
+		SetupLoadedEditorAssemblies (0ms)
+			BeforeProcessingInitializeOnLoad (108ms)
+			ProcessInitializeOnLoadAttributes (3123ms)
+			ProcessInitializeOnLoadMethodAttributes (531ms)
+			AfterProcessingInitializeOnLoad (4ms)
+		AwakeInstancesAfterBackupRestoration (24ms)
+Starting new worker id: 0 with log in C:/Users/Main/Documents/A_Game/animal-keeper/Logs/AssetImportWorkerHW0.log
+
+Asset Pipeline Refresh (id=ca1314405647c7b4ab67a47c0a5a1b67): Total: 6.507 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	(Values over 0.05ms)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=4587 ms
+		Asset DB Callback time: managed=33 ms, native=12 ms
+		Scripting: domain reloads=1, domain reload time=1082 ms, compile time=721 ms, other=70 ms
+		Project Asset Count: scripts=2444, non-scripts=6709
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokePackagesCallback: 14.213ms
+	ApplyChangesToAssetFolders: 0.589ms
+	Scan: 145.823ms
+	Collect global state as custom dependencies: 3.139ms
+	CategorizeScriptCompilationAssets: 51.694ms
+	ProcessAssetsWithTransientArtifactChanges: 101.549ms
+	CategorizeAssets: 94.082ms
+	CompileScripts: 720.859ms
+	ImportOutOfDateAssets: 4054.659ms (3967.334ms without children)
+		UnloadImportedAssets: 0.581ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 1.104ms
+		ImportSchedulerStart: 85.603ms
+	PostProcessAllAssets: 33.332ms
+		MonoPostProcessAllAssets: 33.268ms
+			UniversalRenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 10.349ms
+			SyncVS.PostprocessSyncProject 2.660ms
+			GraphRefreshPostprocessor.OnPostprocessAllAssets 2.190ms
+			SpeedTree9Postprocessor.OnPostprocessAllAssets 1.722ms
+			WindowAssetPostprocessingWatcher.OnPostprocessAllAssets 1.517ms
+			EditModeScopePostprocessor.OnPostprocessAllAssets 0.864ms
+			AssetChangeDetector.OnPostprocessAllAssets 0.784ms
+			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 0.667ms
+			ShaderReflectionAssetPostProcessor.OnPostprocessAllAssets 0.337ms
+			InputActionAssetPostprocessor.OnPostprocessAllAssets 0.256ms
+			ReferencedClipsPostProcessor.OnPostprocessAllAssets 0.226ms
+			TerrainToolbarOverlayPostProcessor.OnPostprocessAllAssets 0.182ms
+			ProjectSettingsPostprocessor.OnPostprocessAllAssets 0.178ms
+			AssetDatabaseCallbacks.OnPostprocessAllAssets 0.159ms
+	UnloadStreamsBegin: 4.583ms
+	PersistCurrentRevisions: 0.289ms
+	GenerateScriptTypeHashes: 3.046ms
+	GenerateScriptTypeSerializationHashes: 5.466ms
+	Untracked: 1278.273ms
+
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+Scanning for USB devices : 3.407ms
+Initializing Unity extensions:
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-animal keeper
+Unloading 68 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 10963 unused Assets / (25.6 MB). Loaded Objects now: 11908.
+Memory consumption went from 0.58 GB to 0.56 GB.
+Total: 24.992600 ms (FindLiveObjects: 0.801500 ms CreateObjectMapping: 3.615600 ms MarkObjects: 13.644600 ms  DeleteObjects: 6.922600 ms)
+
+Opening scene 'Assets/Scenes/TitleScene.unity'
+Unloading 113 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Assets/Scenes/TitleScene.unity'
+	Deserialize:            286.371 ms
+	Integration:            260.436 ms
+	Integration of assets:  20.625 ms
+	Thread Wait Time:       0.363 ms
+	Total Operation Time:   567.795 ms
+Unloading 63 unused Assets / (47.5 KB). Loaded Objects now: 12419.
+Memory consumption went from 0.57 GB to 0.57 GB.
+Total: 14.649400 ms (FindLiveObjects: 0.486300 ms CreateObjectMapping: 1.301800 ms MarkObjects: 12.741300 ms  DeleteObjects: 0.119500 ms)
+
+[Project] Loading completed in 10.157 seconds
+	Project init time: 				8.975 seconds
+		Template init time: 		0.000 seconds
+		Package Manager init time: 		0.387 seconds
+		Asset Database init time: 		0.331 seconds
+		Global illumination init time: 	0.002 seconds
+		Assemblies load time: 			0.714 seconds
+		Unity extensions init time: 	0.053 seconds
+		Asset Database refresh time: 	6.508 seconds
+	Scene opening time: 			1.088 seconds
+##utp:{"type":"ProjectInfo","version":2,"phase":"Immediate","time":1795237035211,"processId":19580,"projectLoad":10.1566091,"projectInit":8.9752399,"templateInit":0.0,"packageManagerInit":0.3870633,"assetDatabaseInit":0.3306272,"globalIlluminationInit":0.0022705,"assembliesLoad":0.7141753,"unityExtensionsInit":0.0525468,"assetDatabaseRefresh":6.5075916,"sceneOpening":1.0883764}
+##utp:{"type":"EditorInfo","version":2,"phase":"Immediate","time":1795237035211,"processId":19580,"editorVersion":"6000.5.3f1 (c2eb47b3a2a9)","branch":"6000.5/staging","buildType":"Release","platform":"Windows"}
+SpriteAtlasPacking completed in 0.011231 sec
+Entering Playmode with Reload Domain disabled.
+If you experience any issues, please disable "Enter Play Mode Options" in Editor Settings
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            5.149 ms
+	Integration:            445.310 ms
+	Integration of assets:  0.657 ms
+	Thread Wait Time:       0.001 ms
+	Total Operation Time:   451.117 ms
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Refreshing native plugins compatible for Editor in 2.41 ms, found 6 plugins.
+Worker ready: AssetImportWorkerHW0 0
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+[Licensing::Client] Successfully resolved entitlement details
+Start Indexing on Editor startup
+[Indexing] Starting Initial Indexing for Assets
+Created GICache directory at C:/Users/Main/AppData/LocalLow/Unity/Caches/GiCache. Took: 0.008s, timestamps: [10.874 - 10.882]
+[Licensing::Client] Successfully resolved entitlement details
+[INFO ] [relay] relay.startup port=9001 mcpClientPort=9002 editorPid=19580
+[INFO ] [relay] log === RELAY SERVER STARTED === (unity-ai-relay v1.0.12-build.97)
+[INFO ] [relay] log Starting relay server...
+[INFO ] [relay] log Command line arguments: ["bun","B:/~BUN/root/relay_win.exe","--relay","--port","9001","--mcp-client-port","9002","--editor-pid","19580","--shutdown-delay","180","--log-dir","C:\\Users\\Main\\Documents\\A_Game\\animal-keeper\\Logs"]
+[INFO ] [relay] log Parsed config: {"port":9001,"mcpClientPort":9002,"editorPid":"19580","shutdownDelaySeconds":180}
+[INFO ] [relay] log Initializing relay components...
+[INFO ] [relay] log Creating RelayEditor...
+[INFO ] [relay] log WebSocket server started
+[INFO ] [relay] log Relay server initialization completed
+[INFO ] [relay] log MCP Client initialized at port: 9002
+[INFO ] [relay] log [shell-env] PATH augmented with shell environment (29 entries)
+[INFO ] [relay] log Unity MCP Relay server started | Port: 9002 | Endpoints: /mcp/start-server, /mcp/stop-server, /mcp/server-status, /mcp/call-tool
+[INFO ] [relay] log Unity client connected with ID: editor-19580-61jx1b (relay 1.0.12-build.97)
+[INFO ] [relay] connection.established clientId=editor-19580-61jx1b port=9001
+Unloading 111 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 4.581100 ms
+Loaded scene 'Assets/Scenes/ClassSelectScene.unity'
+	Deserialize:            10.351 ms
+	Integration:            231.716 ms
+	Integration of assets:  2.657 ms
+	Thread Wait Time:       0.005 ms
+	Total Operation Time:   244.729 ms
+Unloading 230 unused Assets / (117.2 KB). Loaded Objects now: 13065.
+Memory consumption went from 0.64 GB to 0.64 GB.
+Total: 22.483600 ms (FindLiveObjects: 0.634600 ms CreateObjectMapping: 1.335400 ms MarkObjects: 20.219200 ms  DeleteObjects: 0.293200 ms)
+
+[CreditsTest] í†µê³¼ - C:\Users\Main\Documents\A_Game\animal-keeper\Logs\CreditsTest.txt
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+CreditsTest:Finish () (at Assets/Scripts/Editor/CreditsTest.cs:165)
+CreditsTest:Step () (at Assets/Scripts/Editor/CreditsTest.cs:137)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: Assets/Scripts/Editor/CreditsTest.cs Line: 165)
+
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            2.128 ms
+	Integration:            231.510 ms
+	Integration of assets:  0.113 ms
+	Thread Wait Time:       0.004 ms
+	Total Operation Time:   233.755 ms
+Unloading 110 unused Assets / (100.9 KB). Loaded Objects now: 12399.
+Memory consumption went from 0.62 GB to 0.62 GB.
+Total: 18.554900 ms (FindLiveObjects: 0.477500 ms CreateObjectMapping: 1.364000 ms MarkObjects: 16.514200 ms  DeleteObjects: 0.198500 ms)
+
+MonoPathRemapper: Attempts to remap: 119377; Successful remaps: 41032
+Serialized file version minimum: 23, current 23
+[INFO ] [relay] log Shutdown request received from client editor-19580-61jx1b
+[INFO ] [relay] log Unity client requested immediate shutdown - shutting down now, reason: Shutdown requested by client
+[INFO ] [relay] log Shutdown: Initiating graceful shutdown: Shutdown requested by client
+¼º°ø: PID 17716ÀÎ ÇÁ·Î¼¼½º(PID 2300ÀÎ ÀÚ½Ä ÇÁ·Î¼¼½º)°¡ Á¾·áµÇ¾ú½À´Ï´Ù.
+¼º°ø: PID 2300ÀÎ ÇÁ·Î¼¼½º(PID 19580ÀÎ ÀÚ½Ä ÇÁ·Î¼¼½º)°¡ Á¾·áµÇ¾ú½À´Ï´Ù.
+Importing 'GUID: 0000000000000000b000000000000000 - Path: ProjectSettings/EditorBuildSettings.asset' with importer (LibraryAssetImporter)
+Imported 'GUID: 0000000000000000b000000000000000' -> (Import Result ID: '5f5920679b15de4944570281b8dbcbf9') in 0.010 seconds [static dependencies only]. Details - ImportResultOutputID=4647dd083cfc32cebcd7526e8846440c DependenciesID=08f9acc0b6a104892d649c7ace13c103 StaticDependenciesID=75a29855be8bf9f40de1b5c0809359ac 
+Refreshing native plugins compatible for Editor in 2.03 ms, found 6 plugins.
+
+Asset Pipeline Refresh (id=4efe49e1c8ec37d4caccb5af59cdfa87): Total: 0.446 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+	(Values over 0.05ms)
+	Summary:
+		Imports: total=1 (actual=1, local cache=0, cache server=0)
+		Asset DB Process Time: managed=5 ms, native=161 ms
+		Asset DB Callback time: managed=272 ms, native=6 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=2444, non-scripts=6709
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 1
+	ApplyChangesToAssetFolders: 0.109ms
+	Scan: 14.750ms
+	Collect global state as custom dependencies: 0.052ms
+	ProcessAssetsWithTransientArtifactChanges: 0.069ms
+	CategorizeAssets: 57.331ms
+	ImportOutOfDateAssets: 87.709ms (15.152ms without children)
+		ImportManagerImport: 11.664ms (1.260ms without children)
+		ReloadNativeAssets: 0.055ms
+		UnloadImportedAssets: 0.284ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 1.289ms
+		ImportSchedulerStart: 59.259ms
+	PostProcessAllAssets: 277.205ms
+		XRBuildSystem.XRAssetImported 4.095ms
+		MonoPostProcessAllAssets: 272.678ms
+			AssetPostprocessor.OnPostprocessAllAssets 80.522ms
+			AssetReferenceReimportMonitor.OnPostprocessAllAssets 22.178ms
+			StyleCatalogPostProcessor.OnPostprocessAllAssets 16.696ms
+			BuilderAssetPostprocessor.OnPostprocessAllAssets 4.506ms
+			ShaderGraphAssetPostProcessor.OnPostprocessAllAssets 1.053ms
+			RetainedModeAssetPostprocessor.OnPostprocessAllAssets 0.997ms
+			InputActionJsonNameModifierAssetProcessor.OnPostprocessAllAssets 0.503ms
+			SyncVS.PostprocessSyncProject 0.457ms
+			SpriteEditorTexturePostprocessor.OnPostprocessAllAssets 0.442ms
+			AssetProcessor.OnPostprocessAllAssets 0.429ms
+			ArtifactBrowserPostProcessor.OnPostprocessAllAssets 0.421ms
+			MaterialPostprocessor.OnPostprocessAllAssets 0.416ms
+			UVCSAssetPostprocessor.OnPostprocessAllAssets 0.352ms
+			SampleDependencyImporterPostProcessor.OnPostprocessAllAssets 0.343ms
+			ModelAssetProcessor.OnPostprocessAllAssets 0.342ms
+			SpriteSlicePostprocessor.OnPostprocessAllAssets 0.311ms
+			SpriteShapeAssetPostProcessor.OnPostprocessAllAssets 0.308ms
+			TextAssetPostProcessor.OnPostprocessAllAssets 0.287ms
+			AudioMixerPostprocessor.OnPostprocessAllAssets 0.266ms
+			SkillsProjectAssetPostprocessor.OnPostprocessAllAssets 0.262ms
+			TMPro_TexturePostProcessor.OnPostprocessAllAssets 0.251ms
+			AssetChangedListener.OnPostprocessAllAssets 0.228ms
+			AssetEvents.OnPostprocessAllAssets 0.201ms
+			PostProcessor.OnPostprocessAllAssets 0.170ms
+			SpriteLibraryAssetPostprocessor.OnPostprocessAllAssets 0.170ms
+			ConfigAssetsTracker.OnPostprocessAllAssets 0.128ms
+			ScenarioDriftAssetsTracker.OnPostprocessAllAssets 0.123ms
+			SamplePostprocessor.OnPostprocessAllAssets 0.122ms
+			SpeedTreePostProcessor.OnPostprocessAllAssets 0.118ms
+			PSDImportPostProcessor.OnPostprocessAllAssets 0.111ms
+			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 0.110ms
+			InputActionAssetPostprocessor.OnPostprocessAllAssets 0.077ms
+			GraphRefreshPostprocessor.OnPostprocessAllAssets 0.073ms
+			PSDImporterAssetPostProcessor.OnPostprocessAllAssets 0.069ms
+			AudioContainerPostProcessor.OnPostprocessAllAssets 0.068ms
+			TrackSelectedAssetsProcessor.OnPostprocessAllAssets 0.052ms
+	PostAssetChangesProfiler: 2.276ms
+	GatherAllCurrentPrimaryImportResultRevisions: 0.355ms
+	PersistCurrentRevisions: 0.281ms
+	Untracked: 6.017ms
+
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-Main-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-Main channel disconnected successfully.
+Shut down.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+CodeReloadManager destroyed
+abort_threads: Failed aborting id: 0000000000003930, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 0000000000004F7C, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 0000000000003930, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 0000000000004F7C, mono_thread_manage will ignore it
+
+debugger-agent: Unable to listen on 4300
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1795237041809,"processId":19580,"allocatedMemory":22733100,"memoryLabels":[{"Default":235260},{"Permanent":15516},{"NewDelete":67363},{"Thread":4205176},{"Manager":824389},{"VertexData":8},{"Geometry":816},{"Texture":24},{"Shader":855513},{"Material":24},{"GfxDevice":57608},{"Animation":952},{"FreeType":8},{"FontEngine":736},{"Physics":2146},{"Physics2D":16},{"Serialization":664},{"Input":42840},{"JobScheduler":256},{"TextLib":280},{"Mono":48},{"MonoCode":640},{"ScriptingNativeRuntime":1693276},{"BaseObject":1628520},{"Resource":1208},{"Renderer":3080},{"Transform":4685},{"File":6982},{"WebCam":616},{"Culling":32},{"Terrain":11442},{"Wind":24},{"STL":40},{"String":29943},{"StaticString":3808},{"Utility":2673782},{"Curl":2559},{"PoolAlloc":2984},{"AI":80},{"TypeTree":17165},{"CodeReload":448},{"RuntimeInitializeOnLoadManager":64},{"Sprites":102},{"SpriteAtlas":120},{"GI":7816},{"Director":8296},{"CloudService":11272},{"WebRequest":552},{"VR":47114},{"SceneManager":608},{"Video":208},{"LazyScriptCache":32},{"Camera":17},{"Secure":2377},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":552},{"Hierarchy":1176},{"UIElements":72},{"CoreStats":13688},{"Identifiers":6768},{"Gui":128},{"EditorUtility":124594},{"VersionControl":8},{"Undo":931},{"AssetDatabase":9713693},{"AssetImporter":40},{"EditorGi":328},{"UnityConnect":38929},{"Upm":1912},{"UpmDiagnostics":8},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":210},{"ProfilerEditor":9778},{"CoreBusinessMetrics":3478},{"Windowing":456},{"Licensing":1232},{"AssetReference":32},{"IPCStream":32}]}

@@ -1,0 +1,29 @@
+BestiaryTest rc=0 17s | 결과: 통과
+FirstEncounterTest rc=0 27s | 결과: 통과
+BatMonsterTest rc=0 22s | 결과: 통과
+CorpseDropTest rc=0 17s | 결과: 통과
+CreditsTest rc=0 17s | 결과: 통과 (23/23)
+DeliveryClerkTest rc=0 19s | 결과: 통과
+DuskTest rc=0 22s | 결과: 통과 (105/105)
+LightingTest rc=0 17s | 결과: 통과
+NetSwingTest rc=0 17s | 결과: 통과
+PlayerStatusHudTest rc=0 23s | 결과: 통과
+PlayerVisionQueryTest rc=0 17s | 결과: 통과
+PorcupineTest rc=0 17s | 결과: 통과
+RhinoTest rc=0 21s | 결과: 통과
+TranquilizerDartWallTest rc=0 17s | 결과: 통과
+TurtleTest rc=0 127s | 결과: 통과
+TutorialGuideTest rc=0 34s | 결과: 통과 (206/206)
+MonsterPacingTest rc=0 32s | 결과: 통과
+VillageSpawnTest rc=0 21s | 결과: 통과
+VillageTimeTest rc=0 19s | 결과: 통과
+WolfCorpseTest rc=0 25s | 결과: 통과
+MonsterTraceTest rc=0 26s | 
+LinearRegressionDump rc=0 18s | 
+VillageMapGenerationTest rc=0 192s | == 검사 실패: 0회 / 30회
+InventorySlotTest rc=0 22s | 결과: 통과
+PassiveShopTest rc=0 20s | 결과: 통과
+GridDayCycleTest rc=0 23s | 결과: 통과
+GridReentryTest rc=0 17s | 결과: 통과
+VisionSizeTest rc=0 20s | 결과: 통과
+DONE

@@ -23,7 +23,7 @@ using UnityEngine.Tilemaps;
 /// 시야에서 벗어나면 웅크림을 거꾸로 재생한 뒤 다시 비행, 벽 뒤는 시야 밖, 추격 거리(batChaseRange = 늑대 발견 거리) 안 추격·밖 배회, 배회 중에도 정면 시야 안이면 멈춤,
 /// 접촉 데미지(최대 체력 x 0.8, 굳은 동안 없음), 무기 데미지 = 늑대와 같은 값(기절·마취 없음), 맞으면 도망(거리 = 거위 x 0.5, 속도 = 거위),
 /// 피격 모션(hurt-01 + 늑대와 같은 빨간 깜빡임, 비행·굳음·도망 중 모두, 피격 중에도 바로 도망, 연속 피격 → Logs/Bat/hurt_compare.png),
-/// 도망 중 쳐다봐도 안 멈춤, 도망 중 또 맞으면 그 자리에서 다시 도망, 무적 없음, 도망 뒤 다시 다가옴, 체력 0이면 쓰러지고 E로 회수,
+/// 도망 중 쳐다봐도 안 멈춤, 도망 중 또 맞으면 그 자리에서 다시 도망, 무적 없음, 도망 뒤 다시 다가옴, 닿아 피해를 준 뒤에도 같은 도망으로 물러났다가 다시 다가와 또 피해(7-2), 체력 0이면 쓰러지고 E로 회수,
 /// 시간 소환(날짜별 표에서 박쥐를 직접 소환하는 첫 항목 - 구간과 시각은 설정에서 찾는다), 재진입, ResetDay/ResetGame. 프레임 시간 1/30초 고정. 다른 몬스터는 기절시켜 둔다(박쥐는 기절하지 않는다).
 /// 실제 게임 카메라 렌더: Logs/Bat/render/crouch_*.png, view_*.png + manifest.txt(비행 → 웅크림 → 굳음 → 풀림, 주변/정면 시야 장면).
 /// 결과: Logs/BatMonsterTest.txt / batchmode: -executeMethod BatMonsterTest.RunBatch (통과면 0 아니면 1)
@@ -513,7 +513,8 @@ public static class BatMonsterTest
         {
             Vector2 q = laneCenter + dir * t;
             float dq = Vector2.Distance(q, Pos(a));
-            if (dq >= config.batChaseRange * 0.35f && dq <= config.batChaseRange * 0.85f) { standAt = q; break; }
+            // 추격을 1칸 넘게 확인한 뒤 접촉(닿으면 물러난다 - 7-2) 전에 멈출 수 있게 접촉 거리 + 1.5칸보다 먼 곳에 선다
+            if (dq >= Mathf.Max(config.batChaseRange * 0.35f, config.batCatchRange + 1.5f) && dq <= config.batChaseRange * 0.85f) { standAt = q; break; }
         }
         lookDirection = (standAt - Pos(a)).normalized;
         MovePlayer(standAt);
@@ -523,7 +524,8 @@ public static class BatMonsterTest
         Check(!PlayerVision.IsInFocusedVision(Pos(a)) && d5 <= config.batChaseRange, $"플레이어를 박쥐와 {d5:F2}칸 떨어진 길 위로(등지고) 옮겼다");
         frames = 0;
         float minD = d5;
-        while (frames < 60) { yield return WaitFrames(1); frames++; minD = Mathf.Min(minD, Dist(a)); }
+        // 접촉 거리 바로 앞(한 프레임 이동 약 0.28칸 여유)에서 멈춘다 - 닿으면 물러나(Flee) 추격 단계가 아니게 된다(7-2에서 따로 본다)
+        while (frames < 60 && Dist(a) > config.batCatchRange + 0.6f) { yield return WaitFrames(1); frames++; minD = Mathf.Min(minD, Dist(a)); }
         Check(a.CurrentPhase == BatMonsterAI.Phase.Chase && minD < d5 - 1f, $"{config.batChaseRange:F2}칸 안으로 들어오면 바로 추격 ({d5:F2} → {minD:F2}칸, 단계 {a.CurrentPhase})");
         MovePlayer(laneCenter + new Vector2(0f, 500f));
         yield return WaitFrames(5);
@@ -574,6 +576,10 @@ public static class BatMonsterTest
         }
         gm.SelectClass(PlayerClass.Scout);
         yield return WaitFrames(3);
+
+        // --- 7-2. 닿은 뒤 물러났다가 다시 다가와 또 피해를 준다(가만히 있는 플레이어)
+        sb.AppendLine("\n== 7-2.닿아 피해를 준 직후 맞았을 때와 같은 도망으로 물러났다가, 다시 다가와 또 피해를 준다 (플레이어는 가만히, 체력은 그때마다 채움)");
+        yield return CatchRetreatChecks(laneCenter, dir);
 
         // --- 8. 무기: 늑대와 같은 데미지, 기절·마취 없음, 맞으면 도망
         sb.AppendLine("\n== 8. 무기 데미지는 늑대와 같고(같은 MonsterHealth 경로), 박쥐는 기절·마취에 걸리지 않고 도망간다");
@@ -737,6 +743,46 @@ public static class BatMonsterTest
             $"설정(예전 우는천사 값 그대로 읽힘): 속도 8.4, 데미지 비율 0.8, 추격 거리 {config.batChaseRange} = 늑대 발견 거리 {config.patrolMonsterDetectRange}, 배회 속도 1.5·반경 5·대기 1~3초, 경고음 1.5초");
         Check(Mathf.Approximately(ai.FleeSpeed, config.gooseFleeSpeed) && Mathf.Approximately(ai.FleeDistance, config.gooseFleeDistance * 0.5f),
             $"도망 속도 {ai.FleeSpeed} = 거위 {config.gooseFleeSpeed}, 도망 거리 {ai.FleeDistance} = 거위 {config.gooseFleeDistance} x 0.5");
+    }
+
+    // 예전에는 닿은 뒤 박쥐가 플레이어 위에 겹쳐(거리 0은 손전등 안으로 판정) 굳은 채 접촉 범위를 벗어나지 않아, 가만히 있는 플레이어에게 다시 피해를 주지 못했다.
+    private static IEnumerator CatchRetreatChecks(Vector2 laneCenter, Vector2 dir)
+    {
+        PropertyInfo healthProp = typeof(GameManager).GetProperty("Health");
+        void Refill() => healthProp.GetSetMethod(true).Invoke(gm, new object[] { GameManager.MaxHealth });
+        MovePlayer(laneCenter);
+        vision.enabled = false; // 손전등 없이(굳지 않게) 접촉·물러남·재접촉만 본다
+        Refill();
+        yield return WaitFrames(2);
+        int full = gm.Health, expected = Mathf.RoundToInt(GameManager.MaxHealth * config.batCatchDamageRatio);
+        BatMonsterAI a = SpawnBat(laneCenter - dir * 2.5f);
+        int flees0 = a.FleeCount;
+        int frames = 0;
+        while (frames < 120 && gm.Health == full) { yield return WaitFrames(1); frames++; }
+        Check(full - gm.Health == expected && a.CatchRetreatCount == 1 && a.IsFleeing && a.FleeCount == flees0,
+            $"첫 접촉({frames / 30f:F2}초): 피해 {full - gm.Health}(기대 {expected}), 바로 물러남 {a.IsFleeing}, 물러난 횟수 {a.CatchRetreatCount}, 맞아서 도망 횟수 그대로 {a.FleeCount == flees0}");
+        yield return WaitFrames(2);
+        float agentSpeed = a.GetComponent<NavMeshAgent>().speed;
+        Check(a.IsFleeing && Mathf.Approximately(agentSpeed, a.FleeSpeed), $"물러나는 속도 {agentSpeed:F2} = 맞았을 때 도망 속도 {a.FleeSpeed:F2}");
+        Refill();
+        int topped = gm.Health;
+        float maxAway = 0f;
+        bool hitWhileFleeing = false;
+        frames = 0;
+        while (frames < 600 && gm.Health == topped)
+        {
+            maxAway = Mathf.Max(maxAway, (Pos(a) - laneCenter).magnitude);
+            if (a.IsFleeing && gm.Health != topped) hitWhileFleeing = true;
+            yield return WaitFrames(1);
+            frames++;
+        }
+        Check(!hitWhileFleeing && maxAway >= a.FleeDistance * 0.5f, $"물러나는 동안 피해 없음, 가장 멀리 {maxAway:F1}칸 (도망 거리 {a.FleeDistance:F1})");
+        Check(topped - gm.Health == expected && a.CatchRetreatCount == 2,
+            $"다시 다가와 두 번째 접촉({frames / 30f:F2}초 뒤): 피해 {topped - gm.Health}(기대 {expected}), 물러난 횟수 {a.CatchRetreatCount}");
+        Object.Destroy(a.gameObject);
+        vision.enabled = true;
+        Refill();
+        yield return WaitFrames(3);
     }
 
     private static IEnumerator WeaponChecks(Vector2 laneCenter, Vector2 dir)

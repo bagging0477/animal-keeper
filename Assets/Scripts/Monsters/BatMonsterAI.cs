@@ -19,6 +19,9 @@ using UnityEngine.AI;
 /// - 체력: MonsterHealth(늑대와 같은 공통 최대 체력 - 1, 프리팹 maxHealthOffset -1). 무기 데미지는 늑대와 같다. 기절·마취에는 걸리지 않는다(맞으면 도망가야 하므로).
 ///   체력 0이면 늑대처럼 쓰러진 시체가 되고 MonsterCorpsePickup으로 회수한다. 쓰러지면 몸이 바닥(그림자 위)으로 내려앉는다.
 /// - 접촉: MonsterBrain.UpdateCatch를 그대로 쓴다. 굳은 동안·도망 중에는 접촉하지 않는다. 데미지 = 그 순간 플레이어 최대 체력 x batCatchDamageRatio.
+///   닿아 피해를 준 직후에는 맞았을 때와 같은 도망(속도·거리 같음)으로 물러났다가 Return으로 다시 다가온다 - 물러나지 않으면 플레이어 위에 겹쳐
+///   (거리 0은 손전등 안으로 판정되어) 굳은 채 접촉 범위를 벗어나지 않아, 가만히 있는 플레이어에게 다시 피해를 주지 못했다.
+///   도망이 끝나면 "이미 닿음" 표시(caughtLogged)를 풀어, 다시 접촉 범위에 들어오면 피해를 준다. 다른 몬스터의 접촉 방식(MonsterBrain)은 그대로다.
 /// - 경고음: 놀람 후 추격하며 움직이는 동안 batWarningInterval마다(클립이 비어 있으면 조용히 건너뜀).
 /// - 그림: Visual(땅 위치, 배율 2) 아래 Body(날아다니는 몸, SimpleFrameAnimator·AnimalFacingFlipper)와 Shadow(바닥 그림자)가 따로 있다.
 ///   비행 = walk/flee 프레임, 굳음 = wrapFrames 재생 후 마지막 프레임 정지, 물기 = attack 프레임, 피격·쓰러짐 = hurt/death 프레임.
@@ -91,6 +94,8 @@ public class BatMonsterAI : MonsterBrain
     public bool IsFleeing => phase == Phase.Flee;
     /// <summary>도망을 시작한 횟수(맞을 때마다 1). 테스트가 읽는다.</summary>
     public int FleeCount { get; private set; }
+    /// <summary>플레이어에게 닿아 피해를 준 뒤 물러난 횟수(맞아서 도망친 횟수 FleeCount와 따로 센다).</summary>
+    public int CatchRetreatCount { get; private set; }
     /// <summary>마지막 도망을 시작한 자리(2D).</summary>
     public Vector2 FleeStart => fleeStart;
     /// <summary>경고음을 낸 횟수(클립이 비어 있어도 낼 차례가 오면 센다). 테스트가 읽는다.</summary>
@@ -171,7 +176,11 @@ public class BatMonsterAI : MonsterBrain
             if (phase == Phase.Flee)
             {
                 if (fleeNeedsStart) BeginFlee();
-                if (ShouldStopFleeing()) EnterReturn();
+                if (ShouldStopFleeing())
+                {
+                    caughtLogged = false; // 물러난 뒤 다시 다가와 닿으면 다시 피해를 준다
+                    EnterReturn();
+                }
             }
 
             if (phase == Phase.Ambush)
@@ -199,7 +208,14 @@ public class BatMonsterAI : MonsterBrain
             UpdateBodyHeight();
 
             // 굳은 동안·도망 중에는 접촉하지 않는다(풀리는 그림이 재생되는 동안은 움직이고 접촉한다).
+            bool caughtBefore = caughtLogged;
             if (!IsHolding && phase != Phase.Flee && UpdateCatch(distanceToPlayer)) return;
+            if (!caughtBefore && caughtLogged && !health.IsDead)
+            {
+                // 이번 프레임에 닿아 피해를 줬다: 맞았을 때와 같은 도망으로 물러난다
+                CatchRetreatCount++;
+                StartFlee();
+            }
 
             if (!IsHolding && agent.isOnNavMesh) Move();
 
@@ -312,9 +328,15 @@ public class BatMonsterAI : MonsterBrain
     {
         if (health.IsDead) return;
         // 이번 프레임 Update에서 맞은 자리 기준으로 새로 도망을 시작한다(도망 중에 또 맞아도 같다).
+        FleeCount++;
+        StartFlee();
+    }
+
+    // 지금 자리에서 플레이어 반대쪽으로 도망을 시작한다(맞았을 때·플레이어에게 닿은 직후 공통).
+    private void StartFlee()
+    {
         phase = Phase.Flee;
         fleeNeedsStart = true;
-        FleeCount++;
         fleeStart = GamePosition;
         if (agent.isOnNavMesh) BeginFlee();
     }

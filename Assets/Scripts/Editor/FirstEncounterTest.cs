@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using TMPro;
 using UnityEditor;
@@ -331,6 +332,17 @@ public static class FirstEncounterTest
             // 박쥐는 기절하지 않고 곧장 날아오므로 바라보는 쪽(정면 손전등 시야 안 - 그 자리에서 굳는다)에 놓는다
             Vector2 look = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>().LookDirection;
             GameObject m = Spawn(k, k == MonsterKind.Bat ? look.normalized * 3f : new Vector2(2.5f, 0f));
+            if (k == MonsterKind.Bat)
+            {
+                // 박쥐는 닿으면 물러났다가 다시 와서 또 피해를 준다 - 카드를 기다리는 동안 체력을 채워 게임오버로 카드가 막히지 않게 한다
+                PropertyInfo healthProp = typeof(GameManager).GetProperty("Health");
+                float batUntil = Time.realtimeSinceStartup + 3f;
+                while (!card.IsShowing && Time.realtimeSinceStartup < batUntil)
+                {
+                    healthProp.GetSetMethod(true).Invoke(gm, new object[] { GameManager.MaxHealth });
+                    yield return null;
+                }
+            }
             yield return WaitCard(3f);
             CheckCardOpen(k, $"{k} 처음 보임");
             CaptureCard(MonsterBestiary.Get(k, gm.Config).Name);

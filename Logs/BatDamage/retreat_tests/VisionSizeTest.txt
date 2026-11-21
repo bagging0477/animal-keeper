@@ -1,0 +1,48 @@
+VisionSizeTest [branch] 2026-11-21 14:38:15 - 격자 3x4 시드 1, 플레이어 스폰 위치, 마우스 화면 중앙 +(300, 120)px
+  [OK] 새 게임: 플래시라이트 없음
+
+== 측정 [before]
+  before Scout   부채꼴 켜짐 True 반경 5.0820/9.2400 각도 14.0000/56.0000 회전 291.80 밝기 1.00 감쇠 0.50 그림자부드러움 0.90
+  before Scout   원형 켜짐 True 반경 9.8000/14.0000 밝기 1.00 감쇠 0.50 그림자 False | 위치 57.500,75.500
+  캡처 Logs/VisionSize_before_Scout.png (640x480)
+  before Trapper 부채꼴 켜짐 True 반경 5.0820/9.2400 각도 14.0000/56.0000 회전 291.80 밝기 1.00 감쇠 0.50 그림자부드러움 0.90
+  before Trapper 원형 켜짐 True 반경 9.8000/14.0000 밝기 1.00 감쇠 0.50 그림자 False | 위치 57.500,75.500
+  캡처 Logs/VisionSize_before_Trapper.png (640x480)
+  before Gunner  부채꼴 켜짐 True 반경 6.3525/11.5500 각도 28.0000/70.0000 회전 291.80 밝기 1.00 감쇠 0.50 그림자부드러움 0.90
+  before Gunner  원형 켜짐 True 반경 9.8000/14.0000 밝기 1.00 감쇠 0.50 그림자 False | 위치 57.500,75.500
+  캡처 Logs/VisionSize_before_Gunner.png (640x480)
+
+== 구매 즉시 적용 (마을 안, 스카우트)
+  [OK] 구매: 성공 True (-), 마일리지 100 → 0
+  [OK] 2프레임 뒤 부채꼴 반경 9.24 → 13.2
+  [OK] 두 번째 구매는 막힘 ("이미 구매했습니다")
+
+== 측정 [after]
+  after Scout   부채꼴 켜짐 True 반경 7.2600/13.2000 각도 20.0000/80.0000 회전 291.80 밝기 1.00 감쇠 0.50 그림자부드러움 0.90
+  after Scout   원형 켜짐 True 반경 9.8000/14.0000 밝기 1.00 감쇠 0.50 그림자 False | 위치 57.500,75.500
+  캡처 Logs/VisionSize_after_Scout.png (640x480)
+  after Trapper 부채꼴 켜짐 True 반경 7.2600/13.2000 각도 20.0000/80.0000 회전 291.80 밝기 1.00 감쇠 0.50 그림자부드러움 0.90
+  after Trapper 원형 켜짐 True 반경 9.8000/14.0000 밝기 1.00 감쇠 0.50 그림자 False | 위치 57.500,75.500
+  캡처 Logs/VisionSize_after_Trapper.png (640x480)
+  after Gunner  부채꼴 켜짐 True 반경 9.0750/16.5000 각도 40.0000/100.0000 회전 291.80 밝기 1.00 감쇠 0.50 그림자부드러움 0.90
+  after Gunner  원형 켜짐 True 반경 9.8000/14.0000 밝기 1.00 감쇠 0.50 그림자 False | 위치 57.500,75.500
+  캡처 Logs/VisionSize_after_Gunner.png (640x480)
+
+== Day 넘김과 씬 왕복
+  [OK] TruckScene: 플래시라이트 True
+  [OK] VillageScene: 플래시라이트 True, 부채꼴 반경 13.2
+  [OK] ShelterScene: 플래시라이트 True
+  [OK] VillageScene: 플래시라이트 True, 부채꼴 반경 13.2
+
+== 게임 오버 뒤 새 게임
+  [OK] 목표 미달로 게임 오버
+  [OK] 재시작 뒤 플래시라이트 False
+  [OK] 새 게임 마을: 부채꼴 반경 9.24 (= 13.2 x 0.7)
+
+== 사기 전 배율 0
+  [OK] 반경 배율 0 → 꺼짐 True, 각도 배율 0 → 꺼짐 True
+  [OK] 0.7로 되돌린 뒤 다시 켜짐 True, 반경 9.24 (설정 값 0.7/0.7로 복원)
+
+== 콘솔 경고/에러 (Log 제외): 0건
+
+결과: 통과

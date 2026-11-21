@@ -1,0 +1,1040 @@
+== 시드 1
+  방 Room_Forest(Clone) @ (0.000, 0.000, 0.000)
+  방 RoomA_Corridor(Clone) @ (22.000, 0.000, 0.000)
+  방 Room_Graveyard(Clone) @ (52.000, 0.000, 0.000)
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 MapBoundary
+  구성 WallShadows
+  구성 OutsideMapMask
+  구성 TruckNavCarver
+  동물 GeneratedMap/RoomA_Corridor(Clone)/AnimalSoundFlee_0 @ (39.500, 0.500, 0.000)
+  동물 GeneratedMap/RoomA_Corridor(Clone)/AnimalWander_1 @ (26.500, 4.500, 0.000)
+  동물 GeneratedMap/Room_Forest(Clone)/AnimalSoundFlee_0 @ (15.500, 14.500, 0.000)
+  동물 GeneratedMap/Room_Forest(Clone)/AnimalSoundFlee_1 @ (13.500, 9.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalSoundFlee_1 @ (54.500, 4.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalWander_0 @ (63.500, 6.500, 0.000)
+  몬스터 GeneratedMap/RoomA_Corridor(Clone)/SoundReactiveMonster_0 @ (27.500, 0.083, 3.500)
+  몬스터 GeneratedMap/Room_Forest(Clone)/SoundReactiveMonster_0 @ (9.500, 0.083, 14.500)
+  몬스터 GeneratedMap/Room_Graveyard(Clone)/PatrolMonster_0 @ (61.500, 0.083, 12.500)
+  플레이어 @ (36.500, 2.500, 0.000)
+  트럭 @ (34.500, 2.500, 0.000)
+  바깥 마스크 해시 f4d6e85912f84b71
+  생성 후 Random 다음 값 0.987848
+== 시드 2
+  방 RoomD_Connected(Clone) @ (0.000, 0.000, 0.000)
+  방 Room_Forest(Clone) @ (22.000, 0.000, 0.000)
+  방 Room_Graveyard(Clone) @ (44.000, 0.000, 0.000)
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 MapBoundary
+  구성 WallShadows
+  구성 OutsideMapMask
+  구성 TruckNavCarver
+  동물 GeneratedMap/RoomD_Connected(Clone)/AnimalWander_0 @ (16.500, 18.500, 0.000)
+  동물 GeneratedMap/RoomD_Connected(Clone)/AnimalWander_1 @ (14.500, 0.500, 0.000)
+  동물 GeneratedMap/Room_Forest(Clone)/AnimalFlee_1 @ (39.500, 2.500, 0.000)
+  동물 GeneratedMap/Room_Forest(Clone)/AnimalSoundFlee_0 @ (31.500, 0.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalWander_0 @ (47.500, 10.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalWander_1 @ (61.500, 14.500, 0.000)
+  몬스터 GeneratedMap/RoomD_Connected(Clone)/SoundReactiveMonster_0 @ (14.333, 0.083, 15.500)
+  몬스터 GeneratedMap/Room_Forest(Clone)/SoundReactiveMonster_0 @ (41.500, 0.083, 14.500)
+  몬스터 GeneratedMap/Room_Graveyard(Clone)/PatrolMonster_0 @ (47.500, 0.083, 7.500)
+  플레이어 @ (30.500, 8.500, 0.000)
+  트럭 @ (32.500, 8.500, 0.000)
+  바깥 마스크 해시 3ab2ed8186bdf6fa
+  생성 후 Random 다음 값 0.902200
+== 시드 3
+  방 Room_Forest(Clone) @ (0.000, 0.000, 0.000)
+  방 Room_Graveyard(Clone) @ (22.000, 0.000, 0.000)
+  방 Room_Field(Clone) @ (46.000, 0.000, 0.000)
+  방 RoomA_Corridor(Clone) @ (78.000, 0.000, 0.000)
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 MapBoundary
+  구성 WallShadows
+  구성 OutsideMapMask
+  구성 TruckNavCarver
+  동물 GeneratedMap/RoomA_Corridor(Clone)/AnimalFlee_0 @ (103.500, 1.500, 0.000)
+  동물 GeneratedMap/RoomA_Corridor(Clone)/AnimalSoundFlee_1 @ (84.500, 3.500, 0.000)
+  동물 GeneratedMap/Room_Field(Clone)/AnimalFlee_1 @ (70.500, 14.500, 0.000)
+  동물 GeneratedMap/Room_Field(Clone)/AnimalSoundFlee_0 @ (48.500, 15.500, 0.000)
+  동물 GeneratedMap/Room_Forest(Clone)/AnimalFlee_0 @ (5.500, 1.500, 0.000)
+  동물 GeneratedMap/Room_Forest(Clone)/AnimalFlee_1 @ (4.500, 1.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalFlee_1 @ (35.500, 13.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalSoundFlee_0 @ (40.500, 2.500, 0.000)
+  몬스터 GeneratedMap/RoomA_Corridor(Clone)/PatrolMonster_0 @ (90.500, 0.083, 2.500)
+  몬스터 GeneratedMap/Room_Field(Clone)/PatrolMonster_0 @ (47.500, 0.083, 4.500)
+  몬스터 GeneratedMap/Room_Forest(Clone)/PatrolMonster_0 @ (14.500, 0.083, 3.500)
+  몬스터 GeneratedMap/Room_Graveyard(Clone)/PatrolMonster_0 @ (36.500, 0.083, 11.333)
+  플레이어 @ (62.500, 10.500, 0.000)
+  트럭 @ (60.500, 10.500, 0.000)
+  바깥 마스크 해시 a55bb656583568a0
+  생성 후 Random 다음 값 0.339007
+== 시드 4
+  방 RoomA_Corridor(Clone) @ (0.000, 0.000, 0.000)
+  방 Room_Forest(Clone) @ (30.000, 0.000, 0.000)
+  방 RoomC_LShape(Clone) @ (52.000, 0.000, 0.000)
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 MapBoundary
+  구성 WallShadows
+  구성 OutsideMapMask
+  구성 TruckNavCarver
+  동물 GeneratedMap/RoomA_Corridor(Clone)/AnimalWander_0 @ (12.500, 4.500, 0.000)
+  동물 GeneratedMap/RoomA_Corridor(Clone)/AnimalWander_1 @ (25.500, 2.500, 0.000)
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalFlee_1 @ (68.500, 7.500, 0.000)
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalWander_0 @ (63.500, 5.500, 0.000)
+  동물 GeneratedMap/Room_Forest(Clone)/AnimalFlee_0 @ (32.500, 6.500, 0.000)
+  동물 GeneratedMap/Room_Forest(Clone)/AnimalFlee_1 @ (35.500, 7.500, 0.000)
+  몬스터 GeneratedMap/RoomA_Corridor(Clone)/PatrolMonster_0 @ (22.500, 0.083, 4.500)
+  몬스터 GeneratedMap/RoomC_LShape(Clone)/PatrolMonster_0 @ (68.500, 0.083, 6.500)
+  몬스터 GeneratedMap/Room_Forest(Clone)/PatrolMonster_0 @ (30.500, 0.083, 7.500)
+  플레이어 @ (38.500, 8.500, 0.000)
+  트럭 @ (40.500, 8.500, 0.000)
+  바깥 마스크 해시 19e51e6e83a75c2a
+  생성 후 Random 다음 값 0.948463
+== 시드 5
+  방 Room_Forest(Clone) @ (0.000, 0.000, 0.000)
+  방 Room_Field(Clone) @ (22.000, 0.000, 0.000)
+  방 RoomA_Corridor(Clone) @ (54.000, 0.000, 0.000)
+  방 RoomC_LShape(Clone) @ (84.000, 0.000, 0.000)
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 MapBoundary
+  구성 WallShadows
+  구성 OutsideMapMask
+  구성 TruckNavCarver
+  동물 GeneratedMap/RoomA_Corridor(Clone)/AnimalFlee_1 @ (58.500, 0.500, 0.000)
+  동물 GeneratedMap/RoomA_Corridor(Clone)/AnimalWander_0 @ (58.500, 1.500, 0.000)
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalFlee_0 @ (92.500, 1.500, 0.000)
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalWander_1 @ (91.500, 12.500, 0.000)
+  동물 GeneratedMap/Room_Field(Clone)/AnimalWander_0 @ (34.500, 5.500, 0.000)
+  동물 GeneratedMap/Room_Field(Clone)/AnimalWander_1 @ (35.500, 4.500, 0.000)
+  동물 GeneratedMap/Room_Forest(Clone)/AnimalWander_0 @ (7.500, 7.500, 0.000)
+  동물 GeneratedMap/Room_Forest(Clone)/AnimalWander_1 @ (3.500, 16.500, 0.000)
+  몬스터 GeneratedMap/RoomA_Corridor(Clone)/SoundReactiveMonster_0 @ (69.667, 0.083, 0.500)
+  몬스터 GeneratedMap/RoomC_LShape(Clone)/SoundReactiveMonster_0 @ (98.500, 0.083, 2.500)
+  몬스터 GeneratedMap/Room_Field(Clone)/SoundReactiveMonster_0 @ (24.500, 0.083, 20.500)
+  몬스터 GeneratedMap/Room_Forest(Clone)/PatrolMonster_0 @ (14.500, 0.083, 12.500)
+  플레이어 @ (38.500, 10.500, 0.000)
+  트럭 @ (36.500, 10.500, 0.000)
+  바깥 마스크 해시 c8be424021bc012c
+  생성 후 Random 다음 값 0.866653
+== 시드 6
+  방 RoomD_Connected(Clone) @ (0.000, 0.000, 0.000)
+  방 RoomC_LShape(Clone) @ (22.000, 0.000, 0.000)
+  방 RoomB_Square(Clone) @ (42.000, 0.000, 0.000)
+  방 Room_Graveyard(Clone) @ (66.000, 0.000, 0.000)
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 MapBoundary
+  구성 WallShadows
+  구성 OutsideMapMask
+  구성 TruckNavCarver
+  동물 GeneratedMap/RoomB_Square(Clone)/AnimalFlee_0 @ (57.500, 10.500, 0.000)
+  동물 GeneratedMap/RoomB_Square(Clone)/AnimalWander_1 @ (54.500, 3.500, 0.000)
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalFlee_0 @ (30.500, 9.500, 0.000)
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalFlee_1 @ (37.500, 4.500, 0.000)
+  동물 GeneratedMap/RoomD_Connected(Clone)/AnimalSoundFlee_0 @ (12.500, 17.500, 0.000)
+  동물 GeneratedMap/RoomD_Connected(Clone)/AnimalWander_1 @ (17.500, 0.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalFlee_0 @ (71.500, 0.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalWander_1 @ (78.500, 4.500, 0.000)
+  몬스터 GeneratedMap/RoomB_Square(Clone)/PatrolMonster_0 @ (60.500, 0.083, 14.500)
+  몬스터 GeneratedMap/RoomC_LShape(Clone)/PatrolMonster_0 @ (32.500, 0.083, 6.500)
+  몬스터 GeneratedMap/RoomD_Connected(Clone)/SoundReactiveMonster_0 @ (15.500, 0.083, 13.500)
+  몬스터 GeneratedMap/Room_Graveyard(Clone)/SoundReactiveMonster_0 @ (77.500, 0.083, 10.500)
+  플레이어 @ (51.500, 8.500, 0.000)
+  트럭 @ (53.500, 8.500, 0.000)
+  바깥 마스크 해시 fbc8aada88dd7c6a
+  생성 후 Random 다음 값 0.741561
+== 시드 7
+  방 RoomD_Connected(Clone) @ (0.000, 0.000, 0.000)
+  방 RoomC_LShape(Clone) @ (22.000, 0.000, 0.000)
+  방 Room_Graveyard(Clone) @ (42.000, 0.000, 0.000)
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 MapBoundary
+  구성 WallShadows
+  구성 OutsideMapMask
+  구성 TruckNavCarver
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalSoundFlee_0 @ (33.500, 1.500, 0.000)
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalSoundFlee_1 @ (30.500, 15.500, 0.000)
+  동물 GeneratedMap/RoomD_Connected(Clone)/AnimalSoundFlee_0 @ (1.500, 1.500, 0.000)
+  동물 GeneratedMap/RoomD_Connected(Clone)/AnimalWander_1 @ (12.500, 5.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalFlee_1 @ (44.500, 6.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalWander_0 @ (55.500, 3.500, 0.000)
+  몬스터 GeneratedMap/RoomC_LShape(Clone)/PatrolMonster_0 @ (27.500, 0.083, 17.500)
+  몬스터 GeneratedMap/RoomD_Connected(Clone)/SoundReactiveMonster_0 @ (12.500, 0.083, 12.500)
+  몬스터 GeneratedMap/Room_Graveyard(Clone)/PatrolMonster_0 @ (53.500, 0.083, 1.500)
+  플레이어 @ (30.500, 7.500, 0.000)
+  트럭 @ (28.500, 7.500, 0.000)
+  바깥 마스크 해시 46cf833536fa8094
+  생성 후 Random 다음 값 0.755301
+== 시드 8
+  방 Room_Field(Clone) @ (0.000, 0.000, 0.000)
+  방 Room_Graveyard(Clone) @ (32.000, 0.000, 0.000)
+  방 RoomC_LShape(Clone) @ (56.000, 0.000, 0.000)
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 MapBoundary
+  구성 WallShadows
+  구성 OutsideMapMask
+  구성 TruckNavCarver
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalWander_0 @ (72.500, 8.500, 0.000)
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalWander_1 @ (59.500, 6.500, 0.000)
+  동물 GeneratedMap/Room_Field(Clone)/AnimalWander_0 @ (3.500, 14.500, 0.000)
+  동물 GeneratedMap/Room_Field(Clone)/AnimalWander_1 @ (9.500, 1.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalFlee_0 @ (45.500, 15.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalWander_1 @ (33.500, 2.500, 0.000)
+  몬스터 GeneratedMap/RoomC_LShape(Clone)/PatrolMonster_0 @ (63.500, 0.083, 0.500)
+  몬스터 GeneratedMap/Room_Field(Clone)/SoundReactiveMonster_0 @ (26.500, 0.083, 17.500)
+  몬스터 GeneratedMap/Room_Graveyard(Clone)/PatrolMonster_0 @ (52.500, 0.083, 6.500)
+  플레이어 @ (44.500, 7.500, 0.000)
+  트럭 @ (42.500, 8.500, 0.000)
+  바깥 마스크 해시 7640e2c02985a754
+  생성 후 Random 다음 값 0.710749
+== 시드 9
+  방 RoomB_Square(Clone) @ (0.000, 0.000, 0.000)
+  방 RoomC_LShape(Clone) @ (24.000, 0.000, 0.000)
+  방 Room_Graveyard(Clone) @ (44.000, 0.000, 0.000)
+  방 RoomA_Corridor(Clone) @ (68.000, 0.000, 0.000)
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 MapBoundary
+  구성 WallShadows
+  구성 OutsideMapMask
+  구성 TruckNavCarver
+  동물 GeneratedMap/RoomA_Corridor(Clone)/AnimalWander_0 @ (80.500, 1.500, 0.000)
+  동물 GeneratedMap/RoomA_Corridor(Clone)/AnimalWander_1 @ (91.500, 1.500, 0.000)
+  동물 GeneratedMap/RoomB_Square(Clone)/AnimalSoundFlee_0 @ (1.500, 7.500, 0.000)
+  동물 GeneratedMap/RoomB_Square(Clone)/AnimalSoundFlee_1 @ (13.500, 12.500, 0.000)
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalWander_0 @ (27.500, 9.500, 0.000)
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalWander_1 @ (29.500, 5.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalFlee_1 @ (63.500, 1.500, 0.000)
+  동물 GeneratedMap/Room_Graveyard(Clone)/AnimalWander_0 @ (57.500, 7.500, 0.000)
+  몬스터 GeneratedMap/RoomA_Corridor(Clone)/SoundReactiveMonster_0 @ (79.500, 0.083, 0.500)
+  몬스터 GeneratedMap/RoomB_Square(Clone)/SoundReactiveMonster_0 @ (0.500, 0.083, 13.500)
+  몬스터 GeneratedMap/RoomC_LShape(Clone)/SoundReactiveMonster_0 @ (37.500, 0.083, 1.500)
+  몬스터 GeneratedMap/Room_Graveyard(Clone)/SoundReactiveMonster_0 @ (55.500, 0.083, 14.500)
+  플레이어 @ (56.500, 7.500, 0.000)
+  트럭 @ (54.500, 8.500, 0.000)
+  바깥 마스크 해시 6b4c94394844f71b
+  생성 후 Random 다음 값 0.581980
+== 시드 10
+  방 Room_Field(Clone) @ (0.000, 0.000, 0.000)
+  방 RoomA_Corridor(Clone) @ (32.000, 0.000, 0.000)
+  방 Room_Forest(Clone) @ (62.000, 0.000, 0.000)
+  방 RoomC_LShape(Clone) @ (84.000, 0.000, 0.000)
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 ObstacleNavCarver
+  구성 MapBoundary
+  구성 WallShadows
+  구성 OutsideMapMask
+  구성 TruckNavCarver
+  동물 GeneratedMap/RoomA_Corridor(Clone)/AnimalWander_0 @ (56.500, 3.500, 0.000)
+  동물 GeneratedMap/RoomA_Corridor(Clone)/AnimalWander_1 @ (53.500, 4.500, 0.000)
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalWander_0 @ (91.500, 13.500, 0.000)
+  동물 GeneratedMap/RoomC_LShape(Clone)/AnimalWander_1 @ (94.500, 1.500, 0.000)
+  동물 GeneratedMap/Room_Field(Clone)/AnimalSoundFlee_0 @ (7.500, 12.500, 0.000)
+  동물 GeneratedMap/Room_Field(Clone)/AnimalWander_1 @ (26.500, 3.500, 0.000)
+  동물 GeneratedMap/Room_Forest(Clone)/AnimalFlee_0 @ (79.500, 4.500, 0.000)
+  동물 GeneratedMap/Room_Forest(Clone)/AnimalSoundFlee_1 @ (81.500, 3.500, 0.000)
+  몬스터 GeneratedMap/RoomA_Corridor(Clone)/SoundReactiveMonster_0 @ (58.500, 0.083, 0.500)
+  몬스터 GeneratedMap/RoomC_LShape(Clone)/PatrolMonster_0 @ (89.500, 0.083, 5.500)
+  몬스터 GeneratedMap/Room_Field(Clone)/SoundReactiveMonster_0 @ (17.500, 0.083, 20.500)
+  몬스터 GeneratedMap/Room_Forest(Clone)/SoundReactiveMonster_0 @ (62.333, 0.083, 10.500)
+  플레이어 @ (46.500, 2.500, 0.000)
+  트럭 @ (44.500, 2.500, 0.000)
+  바깥 마스크 해시 639fe631a88b71d7
+  생성 후 Random 다음 값 0.579803

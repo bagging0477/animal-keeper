@@ -1,0 +1,12 @@
+GridDayCycleTest 2026-11-21 14:09:20 - 4일, 씬 설정 그대로(EditorLayoutOverride 없음)
+Day 1: 3x4, 계획 시드 1486449812, 방 12, 경로 12/12, 동물 41(활성 41) 몬스터 9, Id 중복 0, 방당 상한 초과 0, 트럭 방 RoomC_LShape
+  재진입: 같은 계획 O, 납품한 동물(GeneratedMap/Room_0_0/AnimalWander_0) 재등장 아니오, 검증 문제 0
+Day 2: 3x4, 계획 시드 2115252655, 방 12, 경로 12/12, 동물 41(활성 41) 몬스터 12, Id 중복 0, 방당 상한 초과 0, 트럭 방 RoomB_Square
+  재진입: 같은 계획 O, 납품한 동물(GeneratedMap/Room_0_0/AnimalGoose_0) 재등장 아니오, 검증 문제 0
+Day 3: 3x4, 계획 시드 -318265254, 방 12, 경로 12/12, 동물 41(활성 41) 몬스터 12, Id 중복 0, 방당 상한 초과 0, 트럭 방 RoomC_LShape
+  재진입: 같은 계획 O, 납품한 동물(GeneratedMap/Room_0_0/AnimalSoundFlee_0) 재등장 아니오, 검증 문제 0
+Day 4: 3x4, 계획 시드 1899131577, 방 12, 경로 12/12, 동물 41(활성 41) 몬스터 12, Id 중복 0, 방당 상한 초과 0, 트럭 방 Room_Field
+  재진입: 같은 계획 O, 납품한 동물(GeneratedMap/Room_0_0/AnimalWander_0) 재등장 아니오, 검증 문제 0
+테스트 중 경고/에러 로그: 0건
+
+결과: 통과
