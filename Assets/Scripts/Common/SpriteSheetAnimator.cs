@@ -49,6 +49,15 @@ public class SpriteSheetAnimator : MonoBehaviour
     /// <summary>프레임을 잘라내는 원본 시트. 인벤토리 아이콘으로 쓸 시트 첫 프레임을 에디터에서 찾을 때 쓴다.</summary>
     public Texture2D Sheet => sheet;
 
+    /// <summary>Idle 첫 프레임을 새로 잘라 만든다 - Awake 전(프리팹)에도 쓸 수 있다. 도감 그림용.</summary>
+    public Sprite CreateIdleFirstFrame()
+    {
+        if (sheet == null) return null;
+        Sprite s = SliceRow(idleRow, idleStartColumn, 1)[0];
+        s.name = sheet.name + "_idle0";
+        return s;
+    }
+
     /// <summary>Idle/Alert/Moving 중 하나로 전환한다. Alert나 Movement 프레임이 설정되지 않은
     /// 상태로 전환을 요청하면 Idle로 대체된다. 상태가 실제로 바뀔 때만 프레임 인덱스를 리셋해서,
     /// 매 프레임 같은 값으로 호출해도 애니메이션이 끊기지 않는다.</summary>

@@ -74,6 +74,13 @@ public class AnimalRescue : MonoBehaviour
     // 인벤토리가 가득 찼다는 안내를 이번에 범위에 들어와 이미 띄웠는지(InventoryFullNotice).
     private bool fullNoticeShown;
 
+    /// <summary>이 동물(프리팹도 됨)의 무게 범위 - Awake에서 굴리는 범위와 같다(도감 표시용).</summary>
+    public void GetWeightRange(out int min, out int max)
+    {
+        min = minWeight; max = maxWeight;
+        if (GetComponent<IAnimalWeightRange>() is IAnimalWeightRange range && range.TryGetWeightRange(out int rangeMin, out int rangeMax)) { min = rangeMin; max = rangeMax; }
+    }
+
     // Weight/BehaviorKind는 GameObject 이름에 의존하지 않으므로 원래대로 Awake에서 굴린다 - 특히
     // Weight를 Start로 옮기면, PlayerItemDropper가 Instantiate 직후 동기적으로 호출하는 SetWeight()가
     // 먼저 실행된 뒤 나중에 실행되는 Start()의 무작위 굴림이 그 값을 덮어써 버리는 회귀가 생긴다.
