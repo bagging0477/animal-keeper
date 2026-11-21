@@ -1,0 +1,33 @@
+WalkShot 2026-11-21 12:57:30
+시드 1002 @ 49.4,84.3: 동물 0마리 표시
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 50.0~52.0, y 88.0~89.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 52.0~53.0, y 80.0~89.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 40.0~53.0, y 79.0~80.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 32.0~41.0, y 78.0~79.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 50.0~51.0, y 89.0~98.0
+시드 1003 @ 11.6,14: 동물 1마리 표시
+  동물 GeneratedMap/Room_0_0/AnimalTurtle_2 @ (13.94, 11.57, 0.00) 방 Room_0_0(Ground/Obstacles/Exits/NavGround/AnimalWander_0/AnimalGoose_1/AnimalTurtle_2/AnimalTurtle_3)
+  충돌체 GeneratedMap/Room_0_0/Obstacles/Obstacle [BoxCollider2D] 범위 x 16.1~17.0, y 6.1~7.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 16.0~18.0, y 12.0~13.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 16.0~19.0, y 10.0~11.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 18.0~19.0, y 11.0~13.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 14.0~17.0, y 9.0~10.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 5.0~15.0, y 10.0~11.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 4.0~5.0, y 1.0~11.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 16.0~17.0, y 13.0~25.0
+시드 1004 @ 60.5,112.8: 동물 1마리 표시
+  동물 GeneratedMap/Room_1_3/AnimalWander_3 @ (53.33, 105.31, 0.00) 방 Room_1_3(Ground/Obstacles/Exits/NavGround/AnimalSoundFlee_0/AnimalGoose_1/AnimalFlee_2/AnimalWander_3)
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 56.0~57.0, y 96.0~104.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 57.0~72.0, y 103.0~104.0
+  충돌체 GeneratedMap/Room_1_3/Obstacles/Obstacle [BoxCollider2D] 범위 x 60.1~61.0, y 109.1~110.0
+  충돌체 GeneratedMap/Room_1_3/Obstacles/Obstacle [BoxCollider2D] 범위 x 67.1~68.0, y 109.1~110.0
+  충돌체 GeneratedMap/Room_1_3/Obstacles/Obstacle [BoxCollider2D] 범위 x 64.1~65.0, y 105.1~106.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 41.0~71.0, y 111.0~112.0
+  충돌체 GeneratedMap/Room_1_3/Obstacles/Obstacle [BoxCollider2D] 범위 x 56.1~57.0, y 105.1~106.0
+시드 1008 @ 2,114: 동물 1마리 표시
+  동물 GeneratedMap/Room_0_3/AnimalWander_2 @ (3.78, 116.44, 0.00) 방 Room_0_3(Ground/Obstacles/Exits/NavGround/AnimalGoose_0/AnimalFlee_1/AnimalWander_2/AnimalWander_3)
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 0.0~1.0, y 104.0~112.0
+  충돌체 GeneratedMap/MapBoundary [BoxCollider2D] 범위 x 1.0~31.0, y 111.0~112.0
+  충돌체 GeneratedMap/Room_0_3/Obstacles/Obstacle [BoxCollider2D] 범위 x 7.1~8.0, y 105.1~106.0
+
+== 콘솔 경고·오류·예외 0건 (종류별)

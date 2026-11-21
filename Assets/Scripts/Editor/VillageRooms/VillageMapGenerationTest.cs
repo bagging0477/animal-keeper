@@ -16,7 +16,8 @@ using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// Play 모드에서 VillageScene을 여러 번 다시 불러와 VillageMapGenerator가 만든 맵을 검사한다(생성기 코드는 건드리지 않고 결과만 읽는다).
-/// 매 회(끝나면 Play 중 프레임 시간도 잰다): 등장한 방, 이웃 방 연결부의 열린 줄 수와 NavMesh 경로, 동물/몬스터 스폰 수와 위치, 플레이어 위치, 콘솔 경고/에러,
+/// 매 회(끝나면 Play 중 프레임 시간도 잰다): 등장한 방, 이웃 방 연결부의 열린 줄 수와 NavMesh 경로, 동물/몬스터 스폰 수와 위치, 플레이어 위치,
+/// 동물마다 플레이어 몸으로 실제로 걸어서 줍는 거리까지 닿는지(격자, InspectAnimalsWalkable), 콘솔 경고/에러,
 /// NavMesh 빌드 시간(생성기와 같은 소스로 NavMeshBuilder를 다시 돌려 잰다)을 기록하고 Logs/VillageMapGenerationTest_{label}.txt에 쓴다.
 /// 메뉴: Tools > Village Rooms > Run Map Generation Test (30x)
 /// batchmode: -executeMethod VillageMapGenerationTest.RunBatch -mapGenRuns 30 -mapGenLabel baseline  (끝나면 에디터가 종료된다)
@@ -179,6 +180,7 @@ public static class VillageMapGenerationTest
 
         // 격자 배치일 때: 생성기의 개발용 검증 결과(VillageMapGenerator.LastGridValidation).
         public bool IsGrid;
+        public int UnreachableAnimals; // 걸어서 닿지 못하는 동물 수(InspectAnimalsWalkable)
         public int CorridorCells;
         public int CorridorWidth, CorridorGap;           // 이 맵을 만든 실제 길 폭/틈(GridLayoutPlan)
         public int MapWidth, MapHeight;                  // 바닥(방 + 길) 외곽 사각형 크기(칸)
@@ -469,10 +471,74 @@ public static class VillageMapGenerationTest
             }
 
             InspectTruck(r, generator, player, mapFloor);
+            if (r.IsGrid) InspectAnimalsWalkable(r, player);
 
             r.NavBuildMs = TimeNavMeshBuild(rooms, corridors != null ? corridors.Find("CorridorNavGround") : null);
             MeasureSizes(r, generator, mapRoot);
             CaptureIfNew(r, mapFloor);
+        }
+
+        // 동물에 실제로 걸어서 닿는지(격자): 플레이어 몸(충돌체 반지름)으로 시작 자리에서 0.25칸 간격으로 넓혀 나가며, 벽·장애물·맵 경계(움직이지 않는
+        // 충돌체)에 막히지 않는 자리를 모은다. 동물마다 그런 자리 중 하나가 줍는 거리(AnimalRescue.interactionRange) 안에 있어야 한다 -
+        // 맵 경계벽 바깥으로 잘린 바닥 조각이나 장애물로 막힌 곳에 놓인 동물은 잡을 수 없다.
+        private const float WalkStep = 0.25f;
+        private static void InspectAnimalsWalkable(RunResult r, GameObject player)
+        {
+            GameObject mapRoot = GameObject.Find("GeneratedMap");
+            if (player == null || mapRoot == null) { r.Failures.Add("걸어서 닿는지 검사: 플레이어나 맵이 없다"); return; }
+            Collider2D body = player.GetComponent<Collider2D>();
+            float radius = body != null ? Mathf.Min(body.bounds.extents.x, body.bounds.extents.y) * 0.95f : 0.3f;
+            Bounds area = new Bounds(player.transform.position, Vector3.zero);
+            foreach (Renderer rr in mapRoot.GetComponentsInChildren<Renderer>()) area.Encapsulate(rr.bounds);
+            int w = Mathf.CeilToInt(area.size.x / WalkStep) + 3, h = Mathf.CeilToInt(area.size.y / WalkStep) + 3;
+            Vector2 origin = (Vector2)area.min - Vector2.one * WalkStep;
+            bool[,] seen = new bool[w, h], reach = new bool[w, h];
+            Vector2Int start = new Vector2Int(Mathf.RoundToInt((player.transform.position.x - origin.x) / WalkStep), Mathf.RoundToInt((player.transform.position.y - origin.y) / WalkStep));
+            Queue<Vector2Int> queue = new Queue<Vector2Int>();
+            seen[start.x, start.y] = reach[start.x, start.y] = true;
+            queue.Enqueue(start);
+            Vector2Int[] dirs = { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
+            while (queue.Count > 0)
+            {
+                Vector2Int c = queue.Dequeue();
+                foreach (Vector2Int d in dirs)
+                {
+                    Vector2Int n = c + d;
+                    if (n.x < 0 || n.y < 0 || n.x >= w || n.y >= h || seen[n.x, n.y]) continue;
+                    seen[n.x, n.y] = true;
+                    if (WalkBlocked(origin + (Vector2)n * WalkStep, radius)) continue;
+                    reach[n.x, n.y] = true;
+                    queue.Enqueue(n);
+                }
+            }
+            int unreachable = 0;
+            foreach (AnimalRescue animal in mapRoot.GetComponentsInChildren<AnimalRescue>(true))
+            {
+                FieldInfo rangeField = typeof(AnimalRescue).GetField("interactionRange", BindingFlags.NonPublic | BindingFlags.Instance);
+                float range = rangeField != null ? (float)rangeField.GetValue(animal) - 0.1f : 1.7f;
+                Vector2 p = animal.transform.position;
+                int k = Mathf.CeilToInt(range / WalkStep);
+                int cx = Mathf.RoundToInt((p.x - origin.x) / WalkStep), cy = Mathf.RoundToInt((p.y - origin.y) / WalkStep);
+                bool ok = false;
+                for (int dx = -k; dx <= k && !ok; dx++)
+                    for (int dy = -k; dy <= k && !ok; dy++)
+                    {
+                        int x = cx + dx, y = cy + dy;
+                        if (x < 0 || y < 0 || x >= w || y >= h || !reach[x, y]) continue;
+                        ok = ((origin + new Vector2(x, y) * WalkStep) - p).sqrMagnitude <= range * range;
+                    }
+                if (ok) continue;
+                unreachable++;
+                r.Failures.Add($"동물 {animal.transform.parent?.name}/{animal.name} @ ({p.x:F1}, {p.y:F1})에 걸어서 닿지 못한다 (줍는 거리 {range + 0.1f:F1})");
+            }
+            r.UnreachableAnimals = unreachable;
+        }
+
+        private static bool WalkBlocked(Vector2 p, float radius)
+        {
+            foreach (Collider2D c in Physics2D.OverlapCircleAll(p, radius))
+                if (!c.isTrigger && (c.attachedRigidbody == null || c.attachedRigidbody.bodyType == RigidbodyType2D.Static)) return true;
+            return false;
         }
 
         // 넓어진 길 점검(격자): 마스크 밝기, NavMesh, 경계 충돌체, 벽 그림자(시야 차단).
@@ -864,6 +930,7 @@ public static class VillageMapGenerationTest
             int failedRuns = results.Count(x => x.Failures.Count > 0);
             sb.AppendLine();
             sb.AppendLine($"== 검사 실패: {failedRuns}회 / {results.Count}회");
+            sb.AppendLine($"== 걸어서 닿지 못하는 동물(격자): 합계 {results.Where(x => x.IsGrid).Sum(x => x.UnreachableAnimals)}마리 / {results.Count(x => x.IsGrid)}회");
             foreach (var g in results.SelectMany(x => x.Failures).GroupBy(f => f).OrderByDescending(g => g.Count())) sb.AppendLine($"  ({g.Count()}) {g.Key}");
 
             sb.AppendLine();

@@ -207,7 +207,7 @@ MonoBehaviour:
   rhinoChargeDuration: 1
   rhinoDashSpeed: 9
   rhinoDashDistance: 8
-  rhinoDashDamage: 60
+  rhinoDashDamage: 45
   rhinoDashHitRadius: 1.5
   rhinoRecoverDuration: 1.5
   rhinoWallStunDuration: 2

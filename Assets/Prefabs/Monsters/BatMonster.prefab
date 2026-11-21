@@ -381,7 +381,7 @@ MonoBehaviour:
   bodyTexelsPerUnit: 32
   monsterTypeName: "\uBC15\uC950"
   config: {fileID: 11400000, guid: 92e5014070439584e9ef742df58f0b4f, type: 2}
-  warningClip: {fileID: 0}
+  warningClip: {fileID: 8300000, guid: e0c7b26e3be0479d90e5276839b19d53, type: 3}
   warningVolume: 1
   sightBlockingMask:
     serializedVersion: 2

@@ -17,7 +17,7 @@ using UnityEngine.Tilemaps;
 /// <summary>
 /// Tools > Monsters > Run Rhino Test. 코뿔소(RhinoMonsterAI, 돌진형)를 실제 마을(격자 3x4, 시드 1)의 가장 큰 방(Field)에 테스트로만 놓고 확인한다.
 /// 스폰 목록에는 없으므로 다른 몬스터·동물과 시간 소환은 끄고, 스폰하는 쪽과 같은 방식(MonsterCorpsePickup.RememberSource)으로 만든다. 프레임 시간 1/30초 고정.
-/// 1) 가져오기·프리팹 2) 6칸 밖·벽 뒤면 차징 안 함(배회: idle·walk) 3) 차징 1초(제자리, 플레이어를 봄) → 끝나는 순간의 방향으로 고정 돌진(속도 9, 8칸), 피해 60, 멈칫 1.5초
+/// 1) 가져오기·프리팹 2) 6칸 밖·벽 뒤면 차징 안 함(배회: idle·walk) 3) 차징 1초(제자리, 플레이어를 봄) → 끝나는 순간의 방향으로 고정 돌진(속도 9, 8칸), 피해 45, 멈칫 1.5초
 /// 4) 돌진 중 플레이어가 비켜도 방향 안 바뀜 5) 벽에 부딪히면 멈추고 2초 기절 6) 기절·마취가 차징·돌진을 멈춤 7) 무기별 피해 = 늑대
 /// 8) 체력 7: 포획망 12번에 쓰러짐, E로 회수(무게 25), G로 내려놓으면 코뿔소 시체로 다시 생김
 /// 실제 렌더: Logs/Rhino/rhino_sheet.png / 결과: Logs/RhinoTest.txt / batchmode: -executeMethod RhinoTest.RunBatch (그림 때문에 -nographics 없이)
@@ -441,7 +441,7 @@ public static class RhinoTest
 
     private static IEnumerator CheckChargeAndDash(RhinoMonsterAI r)
     {
-        sb.AppendLine("\n== 3. 차징 1초(제자리, 플레이어를 봄) → 고정 방향 돌진(속도·거리·피해 60) → 멈칫 1.5초 → 걷기");
+        sb.AppendLine("\n== 3. 차징 1초(제자리, 플레이어를 봄) → 고정 방향 돌진(속도·거리·피해 45) → 멈칫 1.5초 → 걷기");
         yield return ResetAt(r, laneStart);
         ResetPlayerHealth();
         PlacePlayer(Ground(r) + dir * 5f, Deg(-dir));

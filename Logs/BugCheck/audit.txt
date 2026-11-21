@@ -1,0 +1,48 @@
+Audit 2026-11-21 12:01:19
+
+== 빠진 스크립트 0
+
+== 끊긴 참조(Missing) 4
+  Assets/Settings/Lit2DSceneTemplate.scenetemplate [dependencies.Array.data[0].dependency] 끊긴 참조(Missing)
+  Assets/Settings/Renderer2D.asset [probeVolumeResources.probeVolumeDebugShader] 끊긴 참조(Missing)
+  Assets/Settings/Renderer2D.asset [probeVolumeResources.probeVolumeSamplingDebugShader] 끊긴 참조(Missing)
+  Assets/Settings/Renderer2D.asset [probeVolumeResources.probeSamplingDebugMesh] 끊긴 참조(Missing)
+
+== 그림 없는 SpriteRenderer(애니메이터 없음) 1
+  VillageScene.unity:NetSwingEffect (SpriteRenderer 그림 없음)
+
+== clip 없는 AudioSource(playOnAwake) 0
+
+== 비어 있는 참조 필드(스크립트.필드: 개수, 예) 32종
+  AnimalRescue.inventoryIcon: 5 예) Assets/Prefabs/Animals/AnimalFlee.prefab:AnimalFlee | Assets/Prefabs/Animals/AnimalGoose.prefab:AnimalGoose | Assets/Prefabs/Animals/AnimalSoundFlee.prefab:AnimalSoundFlee
+  AnimalRescue.pickupSound: 1 예) Assets/Prefabs/Animals/AnimalGoose.prefab:AnimalGoose
+  AudioManager.pickupClip: 2 예) TitleScene.unity:AudioManager | TruckScene.unity:AudioManager
+  BatMonsterAI.warningClip: 1 예) Assets/Prefabs/Monsters/BatMonster.prefab:BatMonster
+  FootSortOrder.shadow: 10 예) Assets/Prefabs/Animals/AnimalFlee.prefab:AnimalFlee | Assets/Prefabs/Animals/AnimalGoose.prefab:AnimalGoose | Assets/Prefabs/Animals/AnimalSoundFlee.prefab:AnimalSoundFlee
+  GadgetPickup.icon: 2 예) Assets/Prefabs/DroppedBombPickup.prefab:DroppedBombPickup | Assets/Prefabs/DroppedMinePickup.prefab:DroppedMinePickup
+  GameBalanceConfig.dayMonsterPlans.Array.data[0].phaseSpawns.Array.data[4].entries.Array.data[0].monsterPrefab: 1 예) Assets/Settings/GameBalanceConfig.asset
+  GameBalanceConfig.dayMonsterPlans.Array.data[1].phaseSpawns.Array.data[4].entries.Array.data[0].monsterPrefab: 1 예) Assets/Settings/GameBalanceConfig.asset
+  InventoryUI.slots.Array.data[0].icon: 2 예) TruckScene.unity:Canvas/InventoryBar | VillageScene.unity:PromptCanvas/InventoryBar
+  InventoryUI.slots.Array.data[1].icon: 2 예) TruckScene.unity:Canvas/InventoryBar | VillageScene.unity:PromptCanvas/InventoryBar
+  InventoryUI.slots.Array.data[2].icon: 2 예) TruckScene.unity:Canvas/InventoryBar | VillageScene.unity:PromptCanvas/InventoryBar
+  InventoryUI.slots.Array.data[3].icon: 2 예) TruckScene.unity:Canvas/InventoryBar | VillageScene.unity:PromptCanvas/InventoryBar
+  InventoryUI.slots.Array.data[4].icon: 2 예) TruckScene.unity:Canvas/InventoryBar | VillageScene.unity:PromptCanvas/InventoryBar
+  InventoryUI.weaponSlot.fill: 1 예) TruckScene.unity:Canvas/InventoryBar
+  InventoryUI.weaponSlot.frame: 1 예) TruckScene.unity:Canvas/InventoryBar
+  InventoryUI.weaponSlot.icon: 2 예) TruckScene.unity:Canvas/InventoryBar | VillageScene.unity:PromptCanvas/InventoryBar
+  InventoryUI.weaponSlot.label: 1 예) TruckScene.unity:Canvas/InventoryBar
+  InventoryUI.weaponSlotRoot: 1 예) TruckScene.unity:Canvas/InventoryBar
+  MonsterAI.chaseClip: 1 예) Assets/Prefabs/Monsters/PatrolMonster.prefab:PatrolMonster
+  MonsterCorpsePickup.inventoryIcon: 1 예) Assets/Prefabs/Monsters/PatrolMonster.prefab:PatrolMonster
+  MonsterCorpsePickup.pickupSound: 4 예) Assets/Prefabs/Monsters/BatMonster.prefab:BatMonster | Assets/Prefabs/Monsters/PatrolMonster.prefab:PatrolMonster | Assets/Prefabs/Monsters/PorcupineMonster.prefab:PorcupineMonster
+  PlayerMovement.aimCamera: 4 예) ClassSelectScene.unity:Player | ShelterScene.unity:Player | TruckScene.unity:Player
+  Renderer2DData.probeVolumeResources.probeSamplingDebugTexture: 1 예) Assets/Settings/Renderer2D.asset
+  Renderer2DData.probeVolumeResources.probeVolumeBlendStatesCS: 1 예) Assets/Settings/Renderer2D.asset
+  Renderer2DData.probeVolumeResources.probeVolumeFragmentationDebugShader: 1 예) Assets/Settings/Renderer2D.asset
+  Renderer2DData.probeVolumeResources.probeVolumeOffsetDebugShader: 1 예) Assets/Settings/Renderer2D.asset
+  SceneTemplateAsset.badge: 1 예) Assets/Settings/Lit2DSceneTemplate.scenetemplate
+  SceneTemplateAsset.templatePipeline: 1 예) Assets/Settings/Lit2DSceneTemplate.scenetemplate
+  SimpleFrameAnimator.knockedOutSprite: 4 예) Assets/Prefabs/Animals/AnimalFlee.prefab:AnimalFlee | Assets/Prefabs/Animals/AnimalWander.prefab:AnimalWander | Assets/Prefabs/Monsters/BatMonster.prefab:BatMonster/Visual/Body
+  SoundReactiveMonsterAI.chaseClip: 1 예) Assets/Prefabs/SoundReactiveMonster.prefab:SoundReactiveMonster
+  TruckSceneUI.mileageText: 1 예) TruckScene.unity:Canvas
+  VillageMapGenerator.corridorFloorTile: 1 예) VillageScene.unity:MapGenerator

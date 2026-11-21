@@ -726,7 +726,7 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("돌진 거리(칸). 일직선, 도중에 방향을 바꾸지 않는다.")]
     public float rhinoDashDistance = 8f;
     [Tooltip("돌진 중 플레이어에게 닿으면 주는 피해(%). 돌진 한 번에 한 번만.")]
-    public int rhinoDashDamage = 60;
+    public int rhinoDashDamage = 45;
     [Tooltip("돌진 중 몸 가운데에서 이 거리(칸) 안에 플레이어가 들어오면 닿은 것으로 본다.")]
     public float rhinoDashHitRadius = 1.5f;
     [Tooltip("돌진이 끝난 뒤 멈칫(recover)하는 시간(초). 그 뒤 다시 걷는다.")]

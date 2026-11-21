@@ -1,0 +1,107 @@
+Flow 2026-11-21 12:06:54
+
+== A. Scout: 타이틀 → 클래스 선택 → 트럭 → 마을 → 트럭 → 2일차 → 승리 → 타이틀
+  [OK] 석상에서 E: 현재 클래스 Scout
+  [OK] 시작 지점 E → 씬 TruckScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 2), 카드 False, 도감 False
+  날 1 진행 후: 씬 TruckScene, 날 1, 목표 7/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 8), 카드 False, 도감 False (왕복 4번)
+  [OK] 소파 E → 메뉴 열림 True
+  [OK] [다음 날로] → 씬 ShelterScene, 날 1, 목표 7/7, 체력 100, 마일리지 540, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 9), 카드 False, 도감 False
+  [OK] 1일차 클리어 패널: True - 씬 ShelterScene, 날 2, 목표 0/13, 체력 100, 마일리지 590, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+    버튼 누름: Day 클리어 확인 (Canvas/DayClearPanel/ConfirmButton)
+  [OK] 2일차 시작: 씬 TruckScene, 날 2, 목표 0/13, 체력 100, 마일리지 590, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+  날 2 진행 후: 씬 TruckScene, 날 2, 목표 13/13, 체력 100, 마일리지 590, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False (왕복 7번)
+  [OK] 소파 E → 메뉴 열림 True
+  [OK] [다음 날로] → 씬 ShelterScene, 날 2, 목표 13/13, 체력 100, 마일리지 1270, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+  [OK] 승리 화면: True - 씬 ShelterScene, 날 2, 목표 13/13, 체력 100, 마일리지 1320, 들고 있음 0, 게임오버 False, 승리 True, timeScale 0, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+    승리 화면에서 ESC: 일시정지 False, timeScale 0
+    버튼 누름: 승리 화면 다시 시작 (Canvas/GameClearPanel/RestartButton)
+    다시 시작 후: 씬 ClassSelectScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 1), 카드 False, 도감 False
+  [OK] 타이틀로 돌아옴: 씬 TitleScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+
+== A. Trapper: 타이틀 → 클래스 선택 → 트럭 → 마을 → 트럭 → 2일차 → 승리 → 타이틀
+  [OK] 석상에서 E: 현재 클래스 Trapper
+  [OK] 시작 지점 E → 씬 TruckScene, 날 1, 목표 0/7, 체력 130, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 2), 카드 False, 도감 False
+  날 1 진행 후: 씬 TruckScene, 날 1, 목표 7/7, 체력 130, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 8), 카드 False, 도감 False (왕복 4번)
+  [OK] 소파 E → 메뉴 열림 True
+  [OK] [다음 날로] → 씬 ShelterScene, 날 1, 목표 7/7, 체력 130, 마일리지 470, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 9), 카드 False, 도감 False
+  [OK] 1일차 클리어 패널: True - 씬 ShelterScene, 날 2, 목표 0/13, 체력 130, 마일리지 520, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+    버튼 누름: Day 클리어 확인 (Canvas/DayClearPanel/ConfirmButton)
+  [OK] 2일차 시작: 씬 TruckScene, 날 2, 목표 0/13, 체력 130, 마일리지 520, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+  날 2 진행 후: 씬 TruckScene, 날 2, 목표 13/13, 체력 130, 마일리지 520, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False (왕복 7번)
+  [OK] 소파 E → 메뉴 열림 True
+  [OK] [다음 날로] → 씬 ShelterScene, 날 2, 목표 13/13, 체력 130, 마일리지 1340, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+  [OK] 승리 화면: True - 씬 ShelterScene, 날 2, 목표 13/13, 체력 130, 마일리지 1390, 들고 있음 0, 게임오버 False, 승리 True, timeScale 0, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+    승리 화면에서 ESC: 일시정지 False, timeScale 0
+    버튼 누름: 승리 화면 다시 시작 (Canvas/GameClearPanel/RestartButton)
+    다시 시작 후: 씬 ClassSelectScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 1), 카드 False, 도감 False
+  [OK] 타이틀로 돌아옴: 씬 TitleScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+
+== A. Gunner: 타이틀 → 클래스 선택 → 트럭 → 마을 → 트럭 → 2일차 → 승리 → 타이틀
+  [OK] 석상에서 E: 현재 클래스 Gunner
+  [OK] 시작 지점 E → 씬 TruckScene, 날 1, 목표 0/7, 체력 50, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 2), 카드 False, 도감 False
+  날 1 진행 후: 씬 TruckScene, 날 1, 목표 7/7, 체력 50, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 8), 카드 False, 도감 False (왕복 4번)
+  [OK] 소파 E → 메뉴 열림 True
+  [OK] [다음 날로] → 씬 ShelterScene, 날 1, 목표 7/7, 체력 50, 마일리지 450, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 9), 카드 False, 도감 False
+  [OK] 1일차 클리어 패널: True - 씬 ShelterScene, 날 2, 목표 0/13, 체력 50, 마일리지 500, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+    버튼 누름: Day 클리어 확인 (Canvas/DayClearPanel/ConfirmButton)
+  [OK] 2일차 시작: 씬 TruckScene, 날 2, 목표 0/13, 체력 50, 마일리지 500, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+  날 2 진행 후: 씬 TruckScene, 날 2, 목표 13/13, 체력 50, 마일리지 500, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False (왕복 7번)
+  [OK] 소파 E → 메뉴 열림 True
+  [OK] [다음 날로] → 씬 ShelterScene, 날 2, 목표 13/13, 체력 50, 마일리지 1410, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+  [OK] 승리 화면: True - 씬 ShelterScene, 날 2, 목표 13/13, 체력 50, 마일리지 1460, 들고 있음 0, 게임오버 False, 승리 True, timeScale 0, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+    승리 화면에서 ESC: 일시정지 False, timeScale 0
+    버튼 누름: 승리 화면 다시 시작 (Canvas/GameClearPanel/RestartButton)
+    다시 시작 후: 씬 ClassSelectScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 1), 카드 False, 도감 False
+  [OK] 타이틀로 돌아옴: 씬 TitleScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+
+== B. 마을에서 체력 0 → 게임오버 → 다시 시작
+  [OK] 석상에서 E: 현재 클래스 Scout
+  [OK] 시작 지점 E → 씬 TruckScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 2), 카드 False, 도감 False
+  [OK] 체력 0 → 게임오버 True, 패널 True - 씬 VillageScene, 날 1, 목표 0/7, 체력 0, 마일리지 0, 들고 있음 1, 게임오버 True, 승리 False, timeScale 0, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+  [OK] 게임오버 패널 뜸: True
+    게임오버 화면에서 ESC: 일시정지 False, timeScale 0
+    버튼 누름: 다시 시작 (GameOverCanvas/GameOverPanel/RestartButton)
+    다시 시작 직후: 씬 ClassSelectScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 1), 카드 False, 도감 False
+  [OK] 석상에서 E: 현재 클래스 Scout
+  [OK] 시작 지점 E → 씬 TruckScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 2), 카드 False, 도감 False
+  [OK] 다시 시작 → 새 게임: 씬 TruckScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 2), 카드 False, 도감 False, 시작 클래스 선택 필요 False
+  [OK] 새 게임에서 마을 진입: 씬 VillageScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 3), 카드 False, 도감 False
+
+== C. 목표 미달로 날이 끝나는 경우
+  [OK] [다음 날로] → 확인 창 True
+  [OK] 확인 창에서 E = 취소: 씬 TruckScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+  [OK] 확인 → 게임오버: 씬 TruckScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 True, 승리 False, timeScale 0, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False, 패널 True
+  [OK] 게임오버 화면에서 Tab: 도감 안 열림
+    버튼 누름: 다시 시작 (Canvas/GameOverPanel/RestartButton)
+  [OK] 석상에서 E: 현재 클래스 Gunner
+  [OK] 시작 지점 E → 씬 TruckScene, 날 1, 목표 0/7, 체력 50, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 2), 카드 False, 도감 False
+  [OK] 다시 시작: 씬 TruckScene, 날 1, 목표 0/7, 체력 50, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 2), 카드 False, 도감 False
+
+== D. 일시정지·튜토리얼 멈춤·첫 만남 카드·도감 겹침
+  [OK] 일시정지 중 Tab: 도감 안 열림 (일시정지 True, 도감 False)
+  [OK] ESC로 일시정지 닫힘: 씬 TruckScene, 날 1, 목표 0/7, 체력 50, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 2), 카드 False, 도감 False
+  [OK] 도감 열고 ESC: 도감만 닫힘 씬 TruckScene, 날 1, 목표 0/7, 체력 50, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 2), 카드 False, 도감 False
+  [OK] 소파 메뉴 중 Tab: 도감 안 열림 (False)
+  [OK] 소파 메뉴 ESC로 닫힘: 씬 TruckScene, 날 1, 목표 0/7, 체력 50, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 2), 카드 False, 도감 False
+  [문제] 도감 열린 채 씬 이동: 도감 False, timeScale 0
+    도감 씬 이동 뒤 상태: 씬 VillageScene, 날 1, 목표 0/7, 체력 50, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 3), 카드 False, 도감 False
+    멈춤 화면 닫은 뒤: 씬 VillageScene, 날 1, 목표 0/7, 체력 50, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 3), 카드 False, 도감 False
+  [OK] 석상에서 E: 현재 클래스 Trapper
+  [OK] 시작 지점 E → 씬 TruckScene, 날 1, 목표 0/7, 체력 130, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 2), 카드 False, 도감 False
+    마을 진입: 튜토리얼 멈춤 True(단계 3), 카드 False
+  [OK] 튜토리얼 멈춤 중 ESC: 일시정지 False (멈춤 화면 위에 겹치지 않음)
+    튜토리얼 닫은 뒤: 카드 True(Wolf), 튜토리얼 False, 씬 VillageScene, 날 1, 목표 0/7, 체력 130, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 False(단계 3), 카드 True, 도감 False
+  [OK] 첫 만남 카드 중 ESC: 일시정지 False
+  [OK] 모두 닫은 뒤: 씬 VillageScene, 날 1, 목표 0/7, 체력 130, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 3), 카드 False, 도감 False
+  [OK] 일시정지 중 새 몬스터: 카드 기다림 (카드 False, 대기 1)
+    일시정지 푼 뒤: 카드 True(Porcupine), 튜토리얼 False(단계 3)
+  [OK] 끝: 씬 VillageScene, 날 1, 목표 0/7, 체력 130, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 3), 카드 False, 도감 False
+    박쥐 카드: True
+    카드 중 체력 0: 카드 False, 게임오버 True, timeScale 1
+  [OK] 카드 뒤 게임오버 패널: True, 카드 False, 씬 VillageScene, 날 1, 목표 0/7, 체력 0, 마일리지 0, 들고 있음 0, 게임오버 True, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 0), 카드 False, 도감 False
+    버튼 누름: 다시 시작 (GameOverCanvas/GameOverPanel/RestartButton)
+  [OK] 석상에서 E: 현재 클래스 Scout
+  [OK] 시작 지점 E → 씬 TruckScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 0, 일시정지 False, 입력막힘 True, 튜토리얼멈춤 True(단계 2), 카드 False, 도감 False
+  [OK] 다시 시작 뒤(튜토리얼 닫은 뒤): 씬 TruckScene, 날 1, 목표 0/7, 체력 100, 마일리지 0, 들고 있음 0, 게임오버 False, 승리 False, timeScale 1, 일시정지 False, 입력막힘 False, 튜토리얼멈춤 False(단계 2), 카드 False, 도감 False
+
+== 콘솔 경고·오류·예외 0건 (종류별)

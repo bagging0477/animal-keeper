@@ -1,0 +1,51 @@
+Resolutions 2026-11-21 12:10:07
+== 타이틀
+  01_title 1920x1080: 화면 밖 그래픽 20 - AnimalKeeper Canvas/Title Surface/Title Surface/far-trees x 0~1920, 위에서 y -60~1140, AnimalKeeper Canvas/Title Surface/Title Surface/flowers x 0~1920, 위에서 y -60~1140, AnimalKeeper Canvas/Title Surface/Title Surface/near-trees x 0~1920, 위에서 y -60~1140, AnimalKeeper Canvas/Title Surface/Title Surface/ground x 0~1920, 위에서 y -60~1140, AnimalKeeper Canvas/Title Surface/Title Surface/clouds x -1928~-8, 위에서 y -60~1140, AnimalKeeper Canvas/Title Surface/Title Surface/hills x -1920~0, 위에서 y -60~1140, 판 겹침 0
+  01_title 1600x900: 화면 밖 그래픽 20 - AnimalKeeper Canvas/Title Surface/Title Surface/far-trees x 0~1600, 위에서 y -50~950, AnimalKeeper Canvas/Title Surface/Title Surface/flowers x 0~1600, 위에서 y -50~950, AnimalKeeper Canvas/Title Surface/Title Surface/near-trees x 0~1600, 위에서 y -50~950, AnimalKeeper Canvas/Title Surface/Title Surface/ground x 0~1600, 위에서 y -50~950, AnimalKeeper Canvas/Title Surface/Title Surface/clouds x -1610~-10, 위에서 y -50~950, AnimalKeeper Canvas/Title Surface/Title Surface/hills x -1600~0, 위에서 y -50~950, 판 겹침 0
+  01_title 1366x768: 화면 밖 그래픽 20 - AnimalKeeper Canvas/Title Surface/Title Surface/far-trees x 0~1366, 위에서 y -43~811, AnimalKeeper Canvas/Title Surface/Title Surface/flowers x 0~1366, 위에서 y -43~811, AnimalKeeper Canvas/Title Surface/Title Surface/near-trees x 0~1366, 위에서 y -43~811, AnimalKeeper Canvas/Title Surface/Title Surface/ground x 0~1366, 위에서 y -43~811, AnimalKeeper Canvas/Title Surface/Title Surface/clouds x -1375~-9, 위에서 y -43~811, AnimalKeeper Canvas/Title Surface/Title Surface/hills x -1366~0, 위에서 y -43~811, 판 겹침 0
+  01_title 1920x1200: 화면 밖 그래픽 13 - AnimalKeeper Canvas/Title Surface/Title Surface/clouds x -1932~-12, 위에서 y 0~1200, AnimalKeeper Canvas/Title Surface/Title Surface/hills x -1920~0, 위에서 y 0~1200, AnimalKeeper Canvas/Title Surface/Title Surface/near-trees x 1920~3840, 위에서 y 0~1200, AnimalKeeper Canvas/Title Surface/Title Surface/flowers x -1920~0, 위에서 y 0~1200, AnimalKeeper Canvas/Title Surface/Title Surface/far-trees x 1920~3840, 위에서 y 0~1200, AnimalKeeper Canvas/Title Surface/Title Surface/markings x -1920~0, 위에서 y 0~1200, 판 겹침 0
+  01_title 2560x1080: 화면 밖 그래픽 12 - AnimalKeeper Canvas/Title Surface/Title Surface/clouds x -1323~405, 위에서 y 0~1080, AnimalKeeper Canvas/Title Surface/Title Surface/hills x -1312~416, 위에서 y 0~1080, AnimalKeeper Canvas/Title Surface/Title Surface/near-trees x 2144~3872, 위에서 y 0~1080, AnimalKeeper Canvas/Title Surface/Title Surface/flowers x -1312~416, 위에서 y 0~1080, AnimalKeeper Canvas/Title Surface/Title Surface/far-trees x 2144~3872, 위에서 y 0~1080, AnimalKeeper Canvas/Title Surface/Title Surface/markings x -1312~416, 위에서 y 0~1080, 판 겹침 0
+== 크레딧
+  08_credits 1920x1080: 화면 밖 그래픽 21 - AnimalKeeper Canvas/Title Surface/Title Surface/far-trees x 0~1920, 위에서 y -60~1140, AnimalKeeper Canvas/Title Surface/Title Surface/flowers x 0~1920, 위에서 y -60~1140, AnimalKeeper Canvas/Title Surface/Title Surface/near-trees x 0~1920, 위에서 y -60~1140, AnimalKeeper Canvas/Title Surface/Title Surface/ground x 0~1920, 위에서 y -60~1140, AnimalKeeper Canvas/Title Surface/Title Surface/clouds x -1932~-12, 위에서 y -60~1140, AnimalKeeper Canvas/Title Surface/Title Surface/hills x -1920~0, 위에서 y -60~1140, 판 겹침 0
+  08_credits 1600x900: 화면 밖 그래픽 21 - AnimalKeeper Canvas/Title Surface/Title Surface/far-trees x 0~1600, 위에서 y -50~950, AnimalKeeper Canvas/Title Surface/Title Surface/flowers x 0~1600, 위에서 y -50~950, AnimalKeeper Canvas/Title Surface/Title Surface/near-trees x 0~1600, 위에서 y -50~950, AnimalKeeper Canvas/Title Surface/Title Surface/ground x 0~1600, 위에서 y -50~950, AnimalKeeper Canvas/Title Surface/Title Surface/clouds x -1613~-13, 위에서 y -50~950, AnimalKeeper Canvas/Title Surface/Title Surface/hills x -1600~0, 위에서 y -50~950, 판 겹침 0
+  08_credits 1366x768: 화면 밖 그래픽 21 - AnimalKeeper Canvas/Title Surface/Title Surface/far-trees x 0~1366, 위에서 y -43~811, AnimalKeeper Canvas/Title Surface/Title Surface/flowers x 0~1366, 위에서 y -43~811, AnimalKeeper Canvas/Title Surface/Title Surface/near-trees x 0~1366, 위에서 y -43~811, AnimalKeeper Canvas/Title Surface/Title Surface/ground x 0~1366, 위에서 y -43~811, AnimalKeeper Canvas/Title Surface/Title Surface/clouds x -1377~-11, 위에서 y -43~811, AnimalKeeper Canvas/Title Surface/Title Surface/hills x -1366~0, 위에서 y -43~811, 판 겹침 0
+  08_credits 1920x1200: 화면 밖 그래픽 14 - AnimalKeeper Canvas/Title Surface/Title Surface/clouds x -1936~-16, 위에서 y 0~1200, AnimalKeeper Canvas/Title Surface/Title Surface/hills x -1920~0, 위에서 y 0~1200, AnimalKeeper Canvas/Title Surface/Title Surface/near-trees x 1920~3840, 위에서 y 0~1200, TitleCanvas/CreditsPanel/Viewport/Text x 389~1506, 위에서 y 302~2276, AnimalKeeper Canvas/Title Surface/Title Surface/flowers x -1920~0, 위에서 y 0~1200, AnimalKeeper Canvas/Title Surface/Title Surface/far-trees x 1920~3840, 위에서 y 0~1200, 판 겹침 0
+  08_credits 2560x1080: 화면 밖 그래픽 13 - AnimalKeeper Canvas/Title Surface/Title Surface/clouds x -1326~402, 위에서 y 0~1080, AnimalKeeper Canvas/Title Surface/Title Surface/hills x -1312~416, 위에서 y 0~1080, AnimalKeeper Canvas/Title Surface/Title Surface/near-trees x 2144~3872, 위에서 y 0~1080, TitleCanvas/CreditsPanel/Viewport/Text x 654~1878, 위에서 y 213~2375, AnimalKeeper Canvas/Title Surface/Title Surface/flowers x -1312~416, 위에서 y 0~1080, AnimalKeeper Canvas/Title Surface/Title Surface/far-trees x 2144~3872, 위에서 y 0~1080, 판 겹침 0
+== 트럭 HUD·인벤토리
+  02_truck_hud 1920x1080: 화면 밖 그래픽 0, 판 겹침 0
+  02_truck_hud 1600x900: 화면 밖 그래픽 0, 판 겹침 0
+  02_truck_hud 1366x768: 화면 밖 그래픽 0, 판 겹침 0
+  02_truck_hud 1920x1200: 화면 밖 그래픽 0, 판 겹침 0
+  02_truck_hud 2560x1080: 화면 밖 그래픽 0, 판 겹침 0
+== 도감
+  06_bestiary 1920x1080: 화면 밖 그래픽 0, 판 겹침 0
+  06_bestiary 1600x900: 화면 밖 그래픽 0, 판 겹침 0
+  06_bestiary 1366x768: 화면 밖 그래픽 0, 판 겹침 0
+  06_bestiary 1920x1200: 화면 밖 그래픽 0, 판 겹침 0
+  06_bestiary 2560x1080: 화면 밖 그래픽 1 - BestiaryUI/Bestiary/Bestiary/Panel x 350~2210, 위에서 y -14~1094, 판 겹침 0
+== 튜토리얼 멈춤 화면(단계 3, 떠 있음 True)
+  04_tutorial 1920x1080: 화면 밖 그래픽 0, 판 겹침 0
+  04_tutorial 1600x900: 화면 밖 그래픽 0, 판 겹침 0
+  04_tutorial 1366x768: 화면 밖 그래픽 0, 판 겹침 0
+  04_tutorial 1920x1200: 화면 밖 그래픽 0, 판 겹침 0
+  04_tutorial 2560x1080: 화면 밖 그래픽 0, 판 겹침 0
+== 마을 HUD·인벤토리·튜토리얼 안내 줄(알림 True)
+  03_village_hud 1920x1080: 화면 밖 그래픽 0, 판 겹침 0
+  03_village_hud 1600x900: 화면 밖 그래픽 0, 판 겹침 0
+  03_village_hud 1366x768: 화면 밖 그래픽 0, 판 겹침 0
+  03_village_hud 1920x1200: 화면 밖 그래픽 0, 판 겹침 0
+  03_village_hud 2560x1080: 화면 밖 그래픽 0, 판 겹침 0
+== 첫 만남 카드(Wolf)
+  05_encounter_card 1920x1080: 화면 밖 그래픽 0, 판 겹침 0
+  05_encounter_card 1600x900: 화면 밖 그래픽 0, 판 겹침 0
+  05_encounter_card 1366x768: 화면 밖 그래픽 0, 판 겹침 0
+  05_encounter_card 1920x1200: 화면 밖 그래픽 0, 판 겹침 0
+  05_encounter_card 2560x1080: 화면 밖 그래픽 0, 판 겹침 0
+== 게임오버 (패널 True)
+  07_gameover 1920x1080: 화면 밖 그래픽 8 - GameOverCanvas/GameOverPanel/NightTitleArt/ground x 0~1920, 위에서 y -60~1140, GameOverCanvas/GameOverPanel/NightTitleArt/sky x 0~1920, 위에서 y -60~1140, GameOverCanvas/GameOverPanel/NightTitleArt/flowers x 0~1920, 위에서 y -60~1140, GameOverCanvas/GameOverPanel/NightTitleArt/clouds x 0~1920, 위에서 y -60~1140, GameOverCanvas/GameOverPanel/NightTitleArt/hills x 0~1920, 위에서 y -60~1140, GameOverCanvas/GameOverPanel/NightTitleArt/far-trees x 0~1920, 위에서 y -60~1140, 판 겹침 0
+  07_gameover 1600x900: 화면 밖 그래픽 8 - GameOverCanvas/GameOverPanel/NightTitleArt/ground x 0~1600, 위에서 y -50~950, GameOverCanvas/GameOverPanel/NightTitleArt/sky x 0~1600, 위에서 y -50~950, GameOverCanvas/GameOverPanel/NightTitleArt/flowers x 0~1600, 위에서 y -50~950, GameOverCanvas/GameOverPanel/NightTitleArt/clouds x 0~1600, 위에서 y -50~950, GameOverCanvas/GameOverPanel/NightTitleArt/hills x 0~1600, 위에서 y -50~950, GameOverCanvas/GameOverPanel/NightTitleArt/far-trees x 0~1600, 위에서 y -50~950, 판 겹침 0
+  07_gameover 1366x768: 화면 밖 그래픽 8 - GameOverCanvas/GameOverPanel/NightTitleArt/ground x 0~1366, 위에서 y -43~811, GameOverCanvas/GameOverPanel/NightTitleArt/sky x 0~1366, 위에서 y -43~811, GameOverCanvas/GameOverPanel/NightTitleArt/flowers x 0~1366, 위에서 y -43~811, GameOverCanvas/GameOverPanel/NightTitleArt/clouds x 0~1366, 위에서 y -43~811, GameOverCanvas/GameOverPanel/NightTitleArt/hills x 0~1366, 위에서 y -43~811, GameOverCanvas/GameOverPanel/NightTitleArt/far-trees x 0~1366, 위에서 y -43~811, 판 겹침 0
+  07_gameover 1920x1200: 화면 밖 그래픽 0, 판 겹침 0
+  07_gameover 2560x1080: 화면 밖 그래픽 8 - GameOverCanvas/GameOverPanel/NightTitleArt/ground x 0~2560, 위에서 y -260~1340, GameOverCanvas/GameOverPanel/NightTitleArt/sky x 0~2560, 위에서 y -260~1340, GameOverCanvas/GameOverPanel/NightTitleArt/flowers x 0~2560, 위에서 y -260~1340, GameOverCanvas/GameOverPanel/NightTitleArt/clouds x 0~2560, 위에서 y -260~1340, GameOverCanvas/GameOverPanel/NightTitleArt/hills x 0~2560, 위에서 y -260~1340, GameOverCanvas/GameOverPanel/NightTitleArt/far-trees x 0~2560, 위에서 y -260~1340, 판 겹침 0
+
+== 콘솔 경고·오류·예외 0건 (종류별)

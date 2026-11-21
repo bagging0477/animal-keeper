@@ -1,0 +1,11 @@
+TexLeak 2026-11-21 12:53:53
+
+== 왕복 1 (2일차, 게임오버 True, 마을 14초) 텍스처 수: 트럭 258 → 마을 진입 290 → 마을 끝 337 → 트럭 복귀 299
+  마을에 있는 동안 늘어난 것: idle-03 +2, idle-04 +2, idle-03_emission +2, idle-04_emission +2, charge-01 +1, charge-02 +1, charge-03 +1, charge-04 +1, dash-01 +1, dash-02 +1, dash-03 +1, dash-04 +1, walk-01 +1, walk-02 +1, walk-03 +1
+  트럭 복귀 후 처음 트럭보다 남은 것: idle-02 +2, idle-03 +2, idle-04 +2, idle-01_emission +2, idle-03_emission +2, idle-04_emission +2, idle-02_emission +2, charge-01 +1, charge-02 +1, charge-03 +1, charge-04 +1, dash-01 +1, dash-02 +1, dash-03 +1, dash-04 +1
+
+== 왕복 2 (2일차, 게임오버 True, 마을 32초) 텍스처 수: 트럭 304 → 마을 진입 326 → 마을 끝 354 → 트럭 복귀 316
+  마을에 있는 동안 늘어난 것: HitFeelPixel +1, DizzyStar +1, raise-01 +1, raise-02 +1, raise-03 +1, shoot-01 +1, shoot-02 +1, shoot-03 +1, recover-01 +1, quill-02 +1, shoot-02_emission +1, raise-02_emission +1, shoot-03_emission +1, raise-03_emission +1, shoot-01_emission +1
+  트럭 복귀 후 처음 트럭보다 남은 것: HitFeelPixel +1, DizzyStar +1, raise-01 +1, raise-02 +1, raise-03 +1, shoot-01 +1, shoot-02 +1, shoot-03 +1, recover-01 +1, quill-02 +1, shoot-02_emission +1, raise-02_emission +1, shoot-03_emission +1, raise-03_emission +1, shoot-01_emission +1
+
+== 콘솔 경고·오류·예외 0건 (종류별)

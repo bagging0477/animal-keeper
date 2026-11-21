@@ -718,7 +718,7 @@ MonoBehaviour:
   uiGroup: {fileID: 7681382728416998684, guid: 975c066eab6b1184d90484b04dee0fe7, type: 2}
   musicGroup: {fileID: 8365513680750707986, guid: 975c066eab6b1184d90484b04dee0fe7, type: 2}
   chaseGroup: {fileID: -7755426217631057507, guid: 975c066eab6b1184d90484b04dee0fe7, type: 2}
-  pickupClip: {fileID: 0}
+  pickupClip: {fileID: 8300000, guid: 95627a54c9b1410f9bbdcedda9bd7441, type: 3}
   hitClip: {fileID: 8300000, guid: ed81729fe3464804aab12593feecf617, type: 3}
   netSwingClip: {fileID: 8300000, guid: e72d311dae0b2704384056cd85d3ca40, type: 3}
   tranquilizerShotClip: {fileID: 8300000, guid: ce00b0950c3b27d44a9d089f9dec37e1, type: 3}

@@ -150,7 +150,7 @@ public class RhinoMonsterAI : MonsterBrain, ICorpseWeight, ISpawnFootprint
     private float ChargeDuration => config != null ? config.rhinoChargeDuration : 1f;
     private float DashSpeed => config != null ? config.rhinoDashSpeed : 9f;
     private float DashDistance => config != null ? config.rhinoDashDistance : 8f;
-    private int DashDamage => config != null ? config.rhinoDashDamage : 60;
+    private int DashDamage => config != null ? config.rhinoDashDamage : 45;
     private float DashHitRadius => config != null ? config.rhinoDashHitRadius : 1f;
     private float RecoverDuration => config != null ? config.rhinoRecoverDuration : 1.5f;
     private float WallStunDuration => config != null ? config.rhinoWallStunDuration : 2f;

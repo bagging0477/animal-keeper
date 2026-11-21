@@ -10,6 +10,7 @@ public class GameOverPanel : MonoBehaviour
     private void Awake()
     {
         if (restartButton != null) restartButton.onClick.AddListener(OnRestart);
+        EndScreenButtons.AddTitleButton(restartButton); // [다시 시작] 옆 [타이틀로]
     }
 
     public void Show()

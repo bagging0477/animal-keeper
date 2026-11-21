@@ -103,7 +103,9 @@ public class PauseMenu : MonoBehaviour
     public void OnResume()
     {
         IsPaused = false;
-        Time.timeScale = 1f;
+        // 게임오버·승리 화면이 떠 있으면 그 화면이 멈춰 둔 시간을 그대로 둔다(일시정지를 닫아도 그 화면 뒤에서 게임이 다시 움직이지 않게).
+        GameManager gm = GameManager.Instance;
+        Time.timeScale = gm != null && (gm.IsGameOver || gm.IsGameWon) ? 0f : 1f;
         Hide();
     }
 

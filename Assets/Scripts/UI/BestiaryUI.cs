@@ -34,6 +34,7 @@ public class BestiaryUI : MonoBehaviour
     private const float CheckInterval = 0.25f;
     private static readonly Vector2 PanelSize = new Vector2(1880f, 1120f);
     private const float Margin = 60f;
+    private const float ScreenEdge = 16f;          // 판이 화면보다 클 때(21:9 등) 화면 가장자리에서 남길 여백(기준 단위)
     private static readonly Vector2 CellSize = new Vector2(200f, 180f);
     private const float CellGap = 16f;
     private const float DetailX = 740f, DetailTop = 140f;
@@ -433,8 +434,23 @@ public class BestiaryUI : MonoBehaviour
         return $"{AnimalHeader} · {min}~{max}kg";
     }
 
+    // 판이 화면(Canvas)보다 크면(21:9처럼 세로가 짧은 화면) 판 전체를 같은 비율로 줄여 위아래·좌우가 잘리지 않게 한다.
+    // 16:9·16:10에서는 화면이 판보다 커서 배율 1 그대로다.
+    private void FitPanel()
+    {
+        if (panel == null || canvasRect == null) return;
+        Vector2 screen = canvasRect.rect.size;
+        if (screen.x <= 0f || screen.y <= 0f) return;
+        float s = Mathf.Min(1f, (screen.y - 2f * ScreenEdge) / PanelSize.y, (screen.x - 2f * ScreenEdge) / PanelSize.x);
+        if (!Mathf.Approximately(panel.localScale.x, s)) panel.localScale = new Vector3(s, s, 1f);
+    }
+
+    /// <summary>판의 지금 배율(1이면 원래 크기). 테스트에서 본다.</summary>
+    public float PanelScale => panel != null ? panel.localScale.x : 1f;
+
     private void Refresh()
     {
+        FitPanel();
         TutorialGuide g = TutorialGuide.EnsureInstance();
         GameBalanceConfig c = GameManager.Instance != null ? GameManager.Instance.Config : null;
         countText.text = $"만난 대상 {DiscoveredCount}/{items.Count}";
@@ -516,6 +532,7 @@ public class BestiaryUI : MonoBehaviour
 
         if (open)
         {
+            FitPanel();
             if (!openScene) { Close(); }
             else if (kb != null && (kb.tabKey.wasPressedThisFrame || kb.eKey.wasPressedThisFrame || kb.escapeKey.wasPressedThisFrame)) Close();
             else
@@ -578,7 +595,10 @@ public class BestiaryUI : MonoBehaviour
         open = false;
         closedFrame = Time.frameCount;
         if (root != null) root.SetActive(false);
-        if (Time.timeScale <= 0f) Time.timeScale = savedTimeScale;
+        // 게임오버·승리 화면이 시간을 멈춰 둔 중이면 되돌리지 않는다(그 화면 뒤에서 게임이 다시 움직이지 않게).
+        GameManager gm = GameManager.Instance;
+        bool runEnded = gm != null && (gm.IsGameOver || gm.IsGameWon);
+        if (Time.timeScale <= 0f && !runEnded) Time.timeScale = savedTimeScale;
     }
 
     public void Select(int index)

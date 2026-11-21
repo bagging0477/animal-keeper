@@ -1,0 +1,4 @@
+MapReach rc=0 87s
+LongPlay rc=0 43s
+MapGen100 rc=0 596s
+ALLDONE

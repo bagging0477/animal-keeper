@@ -27,7 +27,7 @@
 
 - **Impact Sounds** by Kenney — 다트 명중(impactSoft_medium_000), 몬스터 쓰러짐(impactSoft_heavy_000), 코뿔소 벽 충돌(impactWood_heavy_000). CC0.
   - https://kenney.nl/assets/impact-sounds
-- **RPG Audio** by Kenney — 포획망 명중(dropLeather). CC0.
+- **RPG Audio** by Kenney — 포획망 명중(dropLeather), 기본 줍기 소리(handleSmallLeather), 박쥐 경고음(cloth4). CC0.
   - https://kenney.nl/assets/rpg-audio
 - **Sci-fi Sounds** by Kenney — 폭탄 폭발(lowFrequency_explosion_001). CC0.
   - https://kenney.nl/assets/sci-fi-sounds

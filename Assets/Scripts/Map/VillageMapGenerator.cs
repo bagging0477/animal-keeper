@@ -531,6 +531,8 @@ public class VillageMapGenerator : MonoBehaviour
         // 칸 기준으로는 이어져 있어도 NavMesh는 에이전트 반경만큼 깎여 그 틈이 끊기므로 작은 NavMesh 섬이 남는다. 그 섬에는 소환하지 않는다.
         gridSpawnNavReference = NavMesh.SamplePosition(new Vector3(playerSpawnWorldXY.x, 0f, playerSpawnWorldXY.y), out NavMeshHit referenceHit, 1.5f, NavMesh.AllAreas)
             ? referenceHit.position : (Vector3?)null;
+        // 동물은 플레이어가 트럭에서 걸어서 닿는 바닥에만 놓는다(새 자리·저장된 자리 모두) - 맵 경계벽(MapBoundary) 바깥으로 잘린 바닥 조각은 받지 않는다.
+        gridAnimalWalkableCells = WalkableCellsFrom(ToWorldCell(centerRoom, spawnCell), mapFloor, placedRooms);
         for (int i = 0; i < placedRooms.Count; i++)
         {
             RoomInstance room = placedRooms[i];
@@ -540,6 +542,7 @@ public class VillageMapGenerator : MonoBehaviour
             monsterShortfall += SpawnGridMonsters(room, monsterCounts[i], playerSpawnWorldXY, usedCells, placedBodies, monsterQueue, ref monsterCursor);
         }
         gridSpawnNavReference = null;
+        gridAnimalWalkableCells = null;
         LastGridSpawnCounts = (animalCounts.Sum() - animalShortfall, monsterCounts.Sum() - monsterShortfall);
         LastGridSpawnShortfall = (animalShortfall, monsterShortfall);
         LastGridMonsterWeights = placedRooms.Select(MonsterSpawnWeight).ToArray();
@@ -618,7 +621,7 @@ public class VillageMapGenerator : MonoBehaviour
         {
             GameObject prefab = AnimalSpawnPool.Pick(animalPrefabs, config, gridLayout: true);
             float radius = SpawnRadius(prefab);
-            Vector2Int? picked = PickGridSpawnCell(room, usedCells, SpawnShape.Circle(radius), placedBodies);
+            Vector2Int? picked = PickGridSpawnCell(room, usedCells, SpawnShape.Circle(radius), placedBodies, gridAnimalWalkableCells);
             if (!picked.HasValue)
             {
                 skipped++;
@@ -635,6 +638,13 @@ public class VillageMapGenerator : MonoBehaviour
             bool wasFleeing = false;
             bool hasFieldState = GameManager.Instance != null &&
                 GameManager.Instance.TryGetAnimalFieldState(predictedId, out savedPosition, out wasFleeing);
+            if (hasFieldState && !IsWalkableWorldPosition(savedPosition, gridAnimalWalkableCells))
+            {
+                // 저장된 자리가 이 맵에서 걸어서 닿지 않는 곳(다른 맵에서 저장된 같은 Id 등)이면 버리고 고른 칸에 둔다.
+                Debug.Log($"[FieldState] {predictedId}: 저장된 자리 {savedPosition}가 걸어서 닿는 바닥이 아니라 새 칸에 둔다");
+                hasFieldState = false;
+                wasFleeing = false;
+            }
 
             Vector3 spawnPosition = hasFieldState ? savedPosition : ToSpritePosition(room, cell);
             GameObject instance = Instantiate(prefab, spawnPosition, Quaternion.identity, room.Root.transform);
@@ -819,6 +829,40 @@ public class VillageMapGenerator : MonoBehaviour
     // 칸 가운데에서 NavMesh를 찾는 반경(벽·장애물 옆 칸은 가운데가 에이전트 반경만큼 깎인 가장자리에 살짝 걸릴 수 있다).
     private const float GridSpawnNavTolerance = 0.5f;
 
+    // 격자 스폰 중에만 쓰는, 플레이어가 걸어서 닿는 바닥 칸(월드 칸). 스폰이 끝나면 비운다 - 비어 있으면 검사하지 않는다.
+    private static HashSet<Vector2Int> gridAnimalWalkableCells;
+
+    // 시작 칸에서 상하좌우로 이어진, 장애물이 아닌 바닥 칸(맵 경계 충돌체 MapBoundary를 만드는 mapFloor와 같은 기준). 경계벽 바깥으로 잘린
+    // 바닥 조각과 장애물로 막힌 곳은 들어가지 않는다.
+    private static HashSet<Vector2Int> WalkableCellsFrom(Vector2Int start, HashSet<Vector2Int> mapFloor, List<RoomInstance> rooms)
+    {
+        HashSet<Vector2Int> blocked = new HashSet<Vector2Int>();
+        foreach (RoomInstance room in rooms)
+            if (room.ObstacleCells != null)
+                foreach (Vector2Int c in room.ObstacleCells) blocked.Add(ToWorldCell(room, c));
+        HashSet<Vector2Int> walkable = new HashSet<Vector2Int>();
+        if (!mapFloor.Contains(start)) return walkable;
+        Queue<Vector2Int> queue = new Queue<Vector2Int>();
+        walkable.Add(start);
+        queue.Enqueue(start);
+        Vector2Int[] dirs = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+        while (queue.Count > 0)
+        {
+            Vector2Int c = queue.Dequeue();
+            foreach (Vector2Int d in dirs)
+            {
+                Vector2Int n = c + d;
+                if (!mapFloor.Contains(n) || blocked.Contains(n) || !walkable.Add(n)) continue;
+                queue.Enqueue(n);
+            }
+        }
+        return walkable;
+    }
+
+    // 월드 위치(x, y)가 걸어서 닿는 바닥 칸 위인지. walkable이 없으면 늘 참.
+    private static bool IsWalkableWorldPosition(Vector3 position, HashSet<Vector2Int> walkable) =>
+        walkable == null || walkable.Contains(new Vector2Int(Mathf.FloorToInt(position.x), Mathf.FloorToInt(position.y)));
+
     // 이 자리가 맵의 큰 NavMesh(플레이어 시작 자리와 길로 이어진 곳) 위인지. 끊긴 작은 NavMesh 섬이나 NavMesh 밖이면 false.
     private static bool IsOnMainNavMesh(Vector3 navPosition, float tolerance)
     {
@@ -832,8 +876,10 @@ public class VillageMapGenerator : MonoBehaviour
     // 격자 경로의 스폰 칸 고르기. 후보는 PickInteriorCell과 같은 칸(장애물 아님, 상하좌우가 바닥, usedCells 아님)이고, 거기서 무작위로 뽑아
     // GridSpawnSpotFits와 IsOnMainNavMesh(큰 NavMesh 위)를 통과하는 칸을 고른다. 실패한 칸은 후보에서 빼므로 같은 칸을 다시 보지 않는다. GridSpawnRandomAttempts번 안에 못 찾으면
     // 남은 후보를 순서대로 한 번 훑는다(Random을 더 쓰지 않는다). 그래도 없으면 null - 무한히 돌지 않는다.
-    private static Vector2Int? PickGridSpawnCell(RoomInstance room, HashSet<Vector2Int> usedCells, SpawnShape shape, List<SpawnBody> placedBodies)
+    private static Vector2Int? PickGridSpawnCell(RoomInstance room, HashSet<Vector2Int> usedCells, SpawnShape shape, List<SpawnBody> placedBodies,
+        HashSet<Vector2Int> walkableWorldCells = null)
     {
+        bool Walkable(Vector2Int c) => walkableWorldCells == null || walkableWorldCells.Contains(ToWorldCell(room, c));
         HashSet<Vector2Int> floorSet = new HashSet<Vector2Int>(room.FloorCells);
         List<Vector2Int> candidates = new List<Vector2Int>();
         foreach (Vector2Int c in room.FloorCells)
@@ -848,12 +894,12 @@ public class VillageMapGenerator : MonoBehaviour
         {
             int index = Random.Range(0, candidates.Count);
             Vector2Int c = candidates[index];
-            if (GridSpawnSpotFits(ToWorldXY(room, c), shape, placedBodies) && IsOnMainNavMesh(ToNavPosition(room, c), GridSpawnNavTolerance)) return c;
+            if (Walkable(c) && GridSpawnSpotFits(ToWorldXY(room, c), shape, placedBodies) && IsOnMainNavMesh(ToNavPosition(room, c), GridSpawnNavTolerance)) return c;
             candidates[index] = candidates[candidates.Count - 1];
             candidates.RemoveAt(candidates.Count - 1);
         }
         foreach (Vector2Int c in candidates)
-            if (GridSpawnSpotFits(ToWorldXY(room, c), shape, placedBodies) && IsOnMainNavMesh(ToNavPosition(room, c), GridSpawnNavTolerance)) return c;
+            if (Walkable(c) && GridSpawnSpotFits(ToWorldXY(room, c), shape, placedBodies) && IsOnMainNavMesh(ToNavPosition(room, c), GridSpawnNavTolerance)) return c;
         return null;
     }
 

@@ -573,7 +573,10 @@ public class TutorialGuide : MonoBehaviour
         if (!introActive) return;
         introActive = false;
         introEndFrame = Time.frameCount;
-        if (Time.timeScale <= 0f) Time.timeScale = savedTimeScale;
+        // 게임오버·승리 화면이 시간을 멈춰 둔 중이면 되돌리지 않는다(그 화면 뒤에서 게임이 다시 움직이지 않게).
+        GameManager gm = GameManager.Instance;
+        bool runEnded = gm != null && (gm.IsGameOver || gm.IsGameWon);
+        if (Time.timeScale <= 0f && !runEnded) Time.timeScale = savedTimeScale;
     }
 
     private void OnSceneEntered(string scene, GameManager gm)

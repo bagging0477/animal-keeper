@@ -1,0 +1,308 @@
+VillageMapGenerationTest [bugfix30] 2026-11-21 13:35:15 - 30/30회
+roomPrefabs: RoomA_Corridor, RoomB_Square, RoomC_LShape, RoomD_Connected, Room_Field, Room_Forest, Room_Graveyard
+
+== 방 등장 횟수
+  Room_0_0:Room_Field: 2회
+  Room_0_0:Room_Forest: 4회
+  Room_0_0:Room_Graveyard: 4회
+  Room_0_0:RoomA_Corridor: 6회
+  Room_0_0:RoomB_Square: 4회
+  Room_0_0:RoomC_LShape: 2회
+  Room_0_0:RoomD_Connected: 8회
+  Room_0_1:Room_Field: 3회
+  Room_0_1:Room_Forest: 7회
+  Room_0_1:Room_Graveyard: 6회
+  Room_0_1:RoomA_Corridor: 7회
+  Room_0_1:RoomB_Square: 2회
+  Room_0_1:RoomC_LShape: 2회
+  Room_0_1:RoomD_Connected: 3회
+  Room_0_2:Room_Field: 5회
+  Room_0_2:Room_Forest: 2회
+  Room_0_2:Room_Graveyard: 3회
+  Room_0_2:RoomA_Corridor: 5회
+  Room_0_2:RoomB_Square: 4회
+  Room_0_2:RoomC_LShape: 4회
+  Room_0_2:RoomD_Connected: 7회
+  Room_0_3:Room_Field: 5회
+  Room_0_3:Room_Forest: 4회
+  Room_0_3:Room_Graveyard: 3회
+  Room_0_3:RoomA_Corridor: 5회
+  Room_0_3:RoomB_Square: 4회
+  Room_0_3:RoomC_LShape: 4회
+  Room_0_3:RoomD_Connected: 5회
+  Room_1_0:Room_Field: 4회
+  Room_1_0:Room_Forest: 2회
+  Room_1_0:Room_Graveyard: 8회
+  Room_1_0:RoomA_Corridor: 7회
+  Room_1_0:RoomB_Square: 3회
+  Room_1_0:RoomC_LShape: 4회
+  Room_1_0:RoomD_Connected: 2회
+  Room_1_1:Room_Field: 10회
+  Room_1_1:Room_Forest: 1회
+  Room_1_1:RoomA_Corridor: 2회
+  Room_1_1:RoomB_Square: 10회
+  Room_1_1:RoomC_LShape: 5회
+  Room_1_1:RoomD_Connected: 2회
+  Room_1_2:Room_Field: 8회
+  Room_1_2:Room_Forest: 4회
+  Room_1_2:Room_Graveyard: 5회
+  Room_1_2:RoomB_Square: 4회
+  Room_1_2:RoomC_LShape: 7회
+  Room_1_2:RoomD_Connected: 2회
+  Room_1_3:Room_Field: 3회
+  Room_1_3:Room_Forest: 8회
+  Room_1_3:Room_Graveyard: 6회
+  Room_1_3:RoomA_Corridor: 3회
+  Room_1_3:RoomB_Square: 4회
+  Room_1_3:RoomC_LShape: 3회
+  Room_1_3:RoomD_Connected: 3회
+  Room_2_0:Room_Field: 1회
+  Room_2_0:Room_Forest: 8회
+  Room_2_0:Room_Graveyard: 4회
+  Room_2_0:RoomA_Corridor: 4회
+  Room_2_0:RoomB_Square: 3회
+  Room_2_0:RoomC_LShape: 2회
+  Room_2_0:RoomD_Connected: 8회
+  Room_2_1:Room_Field: 2회
+  Room_2_1:Room_Forest: 2회
+  Room_2_1:Room_Graveyard: 4회
+  Room_2_1:RoomA_Corridor: 5회
+  Room_2_1:RoomB_Square: 6회
+  Room_2_1:RoomC_LShape: 7회
+  Room_2_1:RoomD_Connected: 4회
+  Room_2_2:Room_Field: 4회
+  Room_2_2:Room_Forest: 6회
+  Room_2_2:Room_Graveyard: 6회
+  Room_2_2:RoomA_Corridor: 5회
+  Room_2_2:RoomB_Square: 4회
+  Room_2_2:RoomC_LShape: 4회
+  Room_2_2:RoomD_Connected: 1회
+  Room_2_3:Room_Field: 5회
+  Room_2_3:Room_Forest: 3회
+  Room_2_3:Room_Graveyard: 3회
+  Room_2_3:RoomA_Corridor: 5회
+  Room_2_3:RoomB_Square: 2회
+  Room_2_3:RoomC_LShape: 6회
+  Room_2_3:RoomD_Connected: 6회
+
+== Perlin 바닥 변형 칸 (방별: 등장 횟수 중 변형이 1칸 이상 칠해진 횟수, 평균 칸 수)
+  Room_Field: 30/30회, 평균 150.4칸
+  Room_Forest: 30/30회, 평균 87.0칸
+  Room_Graveyard: 30/30회, 평균 83.4칸
+  RoomA_Corridor: 30/30회, 평균 40.5칸
+  RoomB_Square: 30/30회, 평균 93.9칸
+  RoomC_LShape: 30/30회, 평균 59.1칸
+  RoomD_Connected: 30/30회, 평균 55.9칸
+
+== 검사 실패: 0회 / 30회
+== 걸어서 닿지 못하는 동물(격자): 합계 0마리 / 30회
+
+== 콘솔 경고/에러 (Log 제외): 0건
+
+== NavMesh 빌드 시간 (생성기와 같은 입력, 5회 중앙값)
+  전체 (30회): 평균 7.88ms, 중앙값 8.01ms, 최대 9.15ms, 바닥 1000칸당 1.25ms, 평균 바닥 6300칸, 평균 씬 로드 701ms
+  새 방 포함 (30회): 평균 7.88ms, 중앙값 8.01ms, 최대 9.15ms, 바닥 1000칸당 1.25ms, 평균 바닥 6300칸, 평균 씬 로드 701ms
+  기존 방만: 해당 회차 없음
+
+== 격자 검증 (30회)
+  트럭→방 중심 NavMesh 경로: 360/360 성공
+  스폰 총량: 동물 41~41, 몬스터 9~9, 트럭 방 몬스터 합계 0, Id 중복 합계 0, 방당 상한 넘은 방 합계 0
+  방당 최대: 동물 4, 몬스터 1
+
+== 방 종류별 몬스터 분포 (트럭 방 제외)
+  방 종류 | 등장 | 몬스터 0 | 1 | 2+ | 2+ 비율 | 2+ 몰림 중 몫 | 평균 가중치(스폰 가능 칸) | 평균 동물
+  RoomA_Corridor | 54 | 18 | 36 | 0 | 0% | 0% | 135 | 3.26
+  RoomD_Connected | 51 | 13 | 38 | 0 | 0% | 0% | 204 | 3.35
+  RoomC_LShape | 40 | 5 | 35 | 0 | 0% | 0% | 241 | 3.20
+  Room_Graveyard | 52 | 8 | 44 | 0 | 0% | 0% | 292 | 3.44
+  Room_Forest | 51 | 11 | 40 | 0 | 0% | 0% | 314 | 3.39
+  RoomB_Square | 42 | 4 | 38 | 0 | 0% | 0% | 389 | 3.62
+  Room_Field | 40 | 1 | 39 | 0 | 0% | 0% | 628 | 3.60
+  합계 | 330 | 60 | 270 | 0 |
+
+== 몬스터 종류 (맵 생성 스폰, 시간 소환 제외)
+  종류 | 합계 | 전체 비율 | 회차별 비율 평균 | 회차별 수 최소~최대
+  늑대 | 150 | 55.6% | 55.6% | 5~5
+  소리반응형 | 90 | 33.3% | 33.3% | 3~3
+  호저 | 30 | 11.1% | 11.1% | 1~1
+  합계 | 270 | 회차 30개 | 몸 상자로 생성 자리 검사 0마리
+  트럭 방: Room_Field 12회, RoomB_Square 8회, RoomC_LShape 10회
+  바닥(방 + 길) 한 덩어리: 30/30회, 장애물 뺀 걸을 수 있는 바닥 한 덩어리: 30/30회
+  길 칸: 평균 1357, 바닥 칸(방 + 길): 평균 6300
+  길 폭/틈: 6/8, 맵 외곽 크기(칸): 평균 110 x 118, 최대 112 x 120
+
+== 넓어진 길 점검
+  길 가운데 칸(8방향 모두 바닥, 포트 입구 제외): 합계 20428, 마스크가 덮은 칸 0 (최대 알파 0.000 - 0이면 방 가운데와 같은 밝기), NavMesh 위 20428
+  포트 입구 가운데 칸(방 바닥에서 방 그라데이션 깊이 안): 합계 6720, 방 모서리 그라데이션이 이어져 어두워진 칸 378 (최대 알파 0.500)
+  길 옆 바깥 칸: 합계 13952, 경계 충돌체 없음 0
+  길-바깥 경계 변: 합계 13574, 벽 그림자 외곽선 위 13301, 소품 스프라이트가 덮어 외곽선이 바깥으로 밀린 변 273, 둘 다 아님 0
+
+== 생성 단계별 시간 (ms, VillageMapGenerator.Awake 안)
+  준비: 평균 0.21 / 중앙값 0.20 / 최대 0.41
+  격자 계획: 평균 2.73 / 중앙값 2.66 / 최대 3.09
+  방 배치: 평균 9.23 / 중앙값 9.03 / 최대 11.60
+  바닥 패치·NavGround·길: 평균 5.11 / 중앙값 5.04 / 최대 5.93
+  NavMesh 굽기: 평균 8.32 / 중앙값 8.21 / 최대 11.31
+  장애물 카버: 평균 1.94 / 중앙값 1.97 / 최대 3.26
+  경계 충돌체: 평균 3.41 / 중앙값 3.36 / 최대 5.00
+  벽 그림자: 평균 2.07 / 중앙값 2.00 / 최대 3.22
+  바깥 마스크: 평균 359.81 / 중앙값 344.29 / 최대 644.55
+  플레이어·트럭 배치: 평균 8.98 / 중앙값 12.37 / 최대 18.70
+  동물·몬스터 스폰: 평균 35.74 / 중앙값 35.09 / 최대 50.69
+  합계: 평균 437.5 / 중앙값 423.4 / 최대 723.4
+  합계 / 바닥 1000칸: 평균 69.5 / 중앙값 67.4 / 최대 112.2
+
+== 생성 결과 크기
+  바닥 칸: 평균 6300 / 중앙값 6321 / 최대 6619
+  NavMesh 카버(NavMeshObstacle): 평균 230 / 중앙값 214 / 최대 261
+  벽 그림자 캐스터: 평균 4 / 중앙값 4 / 최대 5, 꼭짓점 합: 평균 253 / 중앙값 256 / 최대 278
+  바깥 마스크 정점: 평균 85457 / 중앙값 85523 / 최대 87004
+  경계 충돌체 상자: 평균 167 / 중앙값 168 / 최대 178
+  로드 직후 5프레임 중 최대 프레임 시간(ms, 에디터 Play 기준): 평균 698.7 / 중앙값 680.4 / 최대 1069.7
+  로드 직후 첫 프레임 시간(ms): 평균 698.7 / 중앙값 680.4 / 최대 1069.7
+
+== Play 중 프레임 시간 (ms, 에디터 Play, vSync 끔, 회차마다 검사 뒤 5초, 플레이어 정지)
+  전체 290098프레임: 평균 0.52 / 중앙값 0.51 / 99% 0.71 / 최악 11.72
+  회차별 평균: 평균 0.52 / 중앙값 0.52 / 최대 0.60
+  회차별 최악: 평균 2.45 / 중앙값 1.82 / 최대 11.72
+
+== 회차별
+  #01 Room_0_0:Room_Graveyard > Room_0_1:RoomA_Corridor > Room_0_2:Room_Field > Room_0_3:Room_Graveyard > Room_1_0:RoomC_LShape > Room_1_1:Room_Field > Room_1_2:RoomB_Square > Room_1_3:Room_Forest > Room_2_0:Room_Forest > Room_2_1:RoomD_Connected > Room_2_2:RoomA_Corridor > Room_2_3:RoomC_LShape | 바닥 6445칸 | 씬 로드 1149ms | NavMesh 9.1ms | 마스크 86466정점 해시 922d0ba83f048ed2 | Play 프레임 평균 0.59ms 최악 11.72ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 Room_Field(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1440칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(55.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run01_map.png
+  #02 Room_0_0:Room_Graveyard > Room_0_1:Room_Forest > Room_0_2:Room_Graveyard > Room_0_3:Room_Forest > Room_1_0:RoomA_Corridor > Room_1_1:Room_Field > Room_1_2:RoomB_Square > Room_1_3:RoomD_Connected > Room_2_0:RoomD_Connected > Room_2_1:RoomC_LShape > Room_2_2:Room_Field > Room_2_3:RoomA_Corridor | 바닥 6345칸 | 씬 로드 666ms | NavMesh 7.5ms | 마스크 86639정점 해시 c6b00425fb4afa5a | Play 프레임 평균 0.54ms 최악 3.12ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 Room_Field(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1368칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(55.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run02_map.png
+  #03 Room_0_0:RoomD_Connected > Room_0_1:RoomB_Square > Room_0_2:RoomD_Connected > Room_0_3:RoomB_Square > Room_1_0:Room_Forest > Room_1_1:RoomA_Corridor > Room_1_2:Room_Field > Room_1_3:Room_Forest > Room_2_0:RoomA_Corridor > Room_2_1:RoomC_LShape > Room_2_2:Room_Graveyard > Room_2_3:Room_Field | 바닥 6391칸 | 씬 로드 657ms | NavMesh 8.9ms | 마스크 86205정점 해시 5368ac3e5630afca | Play 프레임 평균 0.49ms 최악 3.97ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 Room_Field(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1350칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(55.5,75.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run03_map.png
+  #04 Room_0_0:RoomA_Corridor > Room_0_1:RoomD_Connected > Room_0_2:RoomA_Corridor > Room_0_3:Room_Field > Room_1_0:Room_Graveyard > Room_1_1:Room_Field > Room_1_2:Room_Forest > Room_1_3:RoomB_Square > Room_2_0:RoomB_Square > Room_2_1:RoomC_LShape > Room_2_2:Room_Graveyard > Room_2_3:RoomD_Connected | 바닥 6327칸 | 씬 로드 674ms | NavMesh 8.0ms | 마스크 85194정점 해시 6f1d0ee094c35f36 | Play 프레임 평균 0.45ms 최악 1.43ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 Room_Field(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1302칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(55.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run04_map.png
+  #05 Room_0_0:RoomA_Corridor > Room_0_1:Room_Field > Room_0_2:Room_Graveyard > Room_0_3:RoomC_LShape > Room_1_0:Room_Graveyard > Room_1_1:RoomB_Square > Room_1_2:RoomC_LShape > Room_1_3:Room_Forest > Room_2_0:Room_Forest > Room_2_1:RoomA_Corridor > Room_2_2:Room_Field > Room_2_3:RoomD_Connected | 바닥 6283칸 | 씬 로드 705ms | NavMesh 7.6ms | 마스크 83957정점 해시 b00f88dca9cf2976 | Play 프레임 평균 0.57ms 최악 1.81ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomC_LShape(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1278칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(53.5,74.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run05_map.png
+  #06 Room_0_0:RoomB_Square > Room_0_1:Room_Field > Room_0_2:RoomD_Connected > Room_0_3:RoomA_Corridor > Room_1_0:Room_Graveyard > Room_1_1:RoomC_LShape > Room_1_2:Room_Field > Room_1_3:Room_Forest > Room_2_0:Room_Forest > Room_2_1:RoomB_Square > Room_2_2:Room_Graveyard > Room_2_3:RoomC_LShape | 바닥 6535칸 | 씬 로드 684ms | NavMesh 8.1ms | 마스크 84297정점 해시 3efaab2dd55a1a7c | Play 프레임 평균 0.53ms 최악 1.41ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomC_LShape(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1260칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(53.5,42.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run06_map.png
+  #07 Room_0_0:Room_Field > Room_0_1:RoomD_Connected > Room_0_2:Room_Forest > Room_0_3:RoomB_Square > Room_1_0:RoomA_Corridor > Room_1_1:RoomB_Square > Room_1_2:RoomD_Connected > Room_1_3:RoomA_Corridor > Room_2_0:RoomC_LShape > Room_2_1:Room_Field > Room_2_2:RoomC_LShape > Room_2_3:Room_Graveyard | 바닥 6302칸 | 씬 로드 696ms | NavMesh 6.5ms | 마스크 86883정점 해시 a564203b4e9fdcbd | Play 프레임 평균 0.45ms 최악 3.99ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomB_Square(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1374칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(56.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run07_map.png
+  #08 Room_0_0:Room_Graveyard > Room_0_1:Room_Forest > Room_0_2:RoomB_Square > Room_0_3:RoomA_Corridor > Room_1_0:Room_Field > Room_1_1:RoomC_LShape > Room_1_2:Room_Graveyard > Room_1_3:RoomC_LShape > Room_2_0:RoomB_Square > Room_2_1:Room_Field > Room_2_2:Room_Forest > Room_2_3:RoomD_Connected | 바닥 6619칸 | 씬 로드 675ms | NavMesh 8.4ms | 마스크 85758정점 해시 64a47790b8f3b6fe | Play 프레임 평균 0.53ms 최악 2.89ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomC_LShape(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1344칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(53.5,42.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run08_map.png
+  #09 Room_0_0:Room_Forest > Room_0_1:RoomA_Corridor > Room_0_2:RoomD_Connected > Room_0_3:Room_Field > Room_1_0:Room_Graveyard > Room_1_1:Room_Field > Room_1_2:Room_Forest > Room_1_3:Room_Graveyard > Room_2_0:RoomD_Connected > Room_2_1:RoomC_LShape > Room_2_2:RoomB_Square > Room_2_3:RoomA_Corridor | 바닥 6321칸 | 씬 로드 657ms | NavMesh 7.6ms | 마스크 85661정점 해시 492ba805e1d0e72e | Play 프레임 평균 0.49ms 최악 2.19ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 Room_Field(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1344칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(55.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run09_map.png
+  #10 Room_0_0:RoomD_Connected > Room_0_1:Room_Graveyard > Room_0_2:RoomC_LShape > Room_0_3:RoomB_Square > Room_1_0:RoomC_LShape > Room_1_1:RoomB_Square > Room_1_2:Room_Field > Room_1_3:RoomD_Connected > Room_2_0:RoomA_Corridor > Room_2_1:Room_Graveyard > Room_2_2:Room_Forest > Room_2_3:RoomA_Corridor | 바닥 5972칸 | 씬 로드 669ms | NavMesh 8.1ms | 마스크 84415정점 해시 e093876747dc2c7e | Play 프레임 평균 0.49ms 최악 3.27ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomB_Square(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1368칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(56.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run10_map.png
+  #11 Room_0_0:RoomB_Square > Room_0_1:RoomA_Corridor > Room_0_2:Room_Field > Room_0_3:Room_Graveyard > Room_1_0:Room_Field > Room_1_1:RoomC_LShape > Room_1_2:RoomB_Square > Room_1_3:Room_Forest > Room_2_0:Room_Forest > Room_2_1:RoomA_Corridor > Room_2_2:RoomC_LShape > Room_2_3:RoomD_Connected | 바닥 6467칸 | 씬 로드 682ms | NavMesh 9.1ms | 마스크 86047정점 해시 90a189820b156a62 | Play 프레임 평균 0.53ms 최악 1.29ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomC_LShape(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1398칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(53.5,42.5) 여유 폭 2.5칸 안 바닥 77/77칸
+  #12 Room_0_0:RoomB_Square > Room_0_1:Room_Forest > Room_0_2:Room_Field > Room_0_3:RoomD_Connected > Room_1_0:RoomD_Connected > Room_1_1:RoomA_Corridor > Room_1_2:RoomC_LShape > Room_1_3:Room_Graveyard > Room_2_0:Room_Graveyard > Room_2_1:RoomB_Square > Room_2_2:Room_Forest > Room_2_3:RoomC_LShape | 바닥 6146칸 | 씬 로드 724ms | NavMesh 8.7ms | 마스크 84206정점 해시 e47d1a6e9fc29428 | Play 프레임 평균 0.56ms 최악 1.68ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomC_LShape(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1320칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(53.5,74.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run12_map.png
+  #13 Room_0_0:RoomD_Connected > Room_0_1:RoomA_Corridor > Room_0_2:RoomD_Connected > Room_0_3:RoomC_LShape > Room_1_0:RoomC_LShape > Room_1_1:Room_Field > Room_1_2:RoomB_Square > Room_1_3:Room_Graveyard > Room_2_0:Room_Graveyard > Room_2_1:Room_Forest > Room_2_2:RoomA_Corridor > Room_2_3:RoomB_Square | 바닥 5990칸 | 씬 로드 681ms | NavMesh 7.5ms | 마스크 84465정점 해시 808d940da6df3eef | Play 프레임 평균 0.52ms 최악 3.50ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomB_Square(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1386칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(56.5,75.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run13_map.png
+  #14 Room_0_0:RoomC_LShape > Room_0_1:Room_Forest > Room_0_2:RoomC_LShape > Room_0_3:Room_Graveyard > Room_1_0:Room_Graveyard > Room_1_1:RoomB_Square > Room_1_2:Room_Forest > Room_1_3:RoomB_Square > Room_2_0:RoomD_Connected > Room_2_1:RoomA_Corridor > Room_2_2:RoomD_Connected > Room_2_3:Room_Field | 바닥 6266칸 | 씬 로드 686ms | NavMesh 8.4ms | 마스크 86253정점 해시 b1a636e37b87ec9e | Play 프레임 평균 0.58ms 최악 2.00ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomB_Square(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1440칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(56.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run14_map.png
+  #15 Room_0_0:Room_Forest > Room_0_1:RoomA_Corridor > Room_0_2:Room_Field > Room_0_3:RoomC_LShape > Room_1_0:Room_Graveyard > Room_1_1:RoomD_Connected > Room_1_2:RoomC_LShape > Room_1_3:RoomB_Square > Room_2_0:RoomD_Connected > Room_2_1:Room_Graveyard > Room_2_2:Room_Forest > Room_2_3:RoomA_Corridor | 바닥 6026칸 | 씬 로드 690ms | NavMesh 6.9ms | 마스크 85459정점 해시 cc4e17c72d290af7 | Play 프레임 평균 0.60ms 최악 1.82ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomC_LShape(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1470칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(53.5,74.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run15_map.png
+  #16 Room_0_0:Room_Forest > Room_0_1:RoomA_Corridor > Room_0_2:Room_Graveyard > Room_0_3:Room_Field > Room_1_0:RoomB_Square > Room_1_1:RoomC_LShape > Room_1_2:RoomD_Connected > Room_1_3:RoomC_LShape > Room_2_0:Room_Graveyard > Room_2_1:RoomB_Square > Room_2_2:RoomA_Corridor > Room_2_3:Room_Forest | 바닥 6191칸 | 씬 로드 679ms | NavMesh 6.8ms | 마스크 84209정점 해시 dd9bcd72771b5186 | Play 프레임 평균 0.55ms 최악 1.96ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomC_LShape(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1446칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(53.5,42.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run16_map.png
+  #17 Room_0_0:RoomA_Corridor > Room_0_1:Room_Graveyard > Room_0_2:RoomD_Connected > Room_0_3:Room_Forest > Room_1_0:Room_Field > Room_1_1:RoomC_LShape > Room_1_2:Room_Graveyard > Room_1_3:RoomA_Corridor > Room_2_0:RoomD_Connected > Room_2_1:RoomB_Square > Room_2_2:Room_Field > Room_2_3:RoomC_LShape | 바닥 6166칸 | 씬 로드 671ms | NavMesh 7.6ms | 마스크 85354정점 해시 2e9d7450db951d4a | Play 프레임 평균 0.52ms 최악 1.48ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomC_LShape(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1302칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(53.5,42.5) 여유 폭 2.5칸 안 바닥 77/77칸
+  #18 Room_0_0:Room_Graveyard > Room_0_1:RoomB_Square > Room_0_2:RoomD_Connected > Room_0_3:RoomA_Corridor > Room_1_0:Room_Forest > Room_1_1:Room_Field > Room_1_2:RoomC_LShape > Room_1_3:Room_Field > Room_2_0:RoomD_Connected > Room_2_1:Room_Forest > Room_2_2:RoomB_Square > Room_2_3:Room_Graveyard | 바닥 6573칸 | 씬 로드 684ms | NavMesh 9.0ms | 마스크 86149정점 해시 ae8a97ba89a46e42 | Play 프레임 평균 0.46ms 최악 2.34ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 Room_Field(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1326칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(55.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run18_map.png
+  #19 Room_0_0:RoomA_Corridor > Room_0_1:RoomC_LShape > Room_0_2:RoomB_Square > Room_0_3:Room_Forest > Room_1_0:RoomB_Square > Room_1_1:Room_Field > Room_1_2:Room_Graveyard > Room_1_3:RoomC_LShape > Room_2_0:Room_Forest > Room_2_1:RoomD_Connected > Room_2_2:Room_Field > Room_2_3:RoomA_Corridor | 바닥 6359칸 | 씬 로드 656ms | NavMesh 8.0ms | 마스크 84311정점 해시 815b4e122cb10467 | Play 프레임 평균 0.47ms 최악 1.91ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 Room_Field(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1290칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(55.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run19_map.png
+  #20 Room_0_0:RoomA_Corridor > Room_0_1:Room_Graveyard > Room_0_2:Room_Field > Room_0_3:Room_Forest > Room_1_0:RoomD_Connected > Room_1_1:RoomB_Square > Room_1_2:RoomC_LShape > Room_1_3:Room_Graveyard > Room_2_0:RoomB_Square > Room_2_1:RoomD_Connected > Room_2_2:RoomA_Corridor > Room_2_3:RoomC_LShape | 바닥 6068칸 | 씬 로드 689ms | NavMesh 7.2ms | 마스크 85900정점 해시 6f261ab9f16eb4dc | Play 프레임 평균 0.50ms 최악 1.37ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomC_LShape(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1464칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(53.5,74.5) 여유 폭 2.5칸 안 바닥 77/77칸
+  #21 Room_0_0:RoomD_Connected > Room_0_1:Room_Field > Room_0_2:RoomB_Square > Room_0_3:RoomD_Connected > Room_1_0:Room_Graveyard > Room_1_1:RoomB_Square > Room_1_2:Room_Field > Room_1_3:RoomA_Corridor > Room_2_0:RoomA_Corridor > Room_2_1:RoomC_LShape > Room_2_2:Room_Graveyard > Room_2_3:Room_Forest | 바닥 6363칸 | 씬 로드 906ms | NavMesh 8.0ms | 마스크 86169정점 해시 dd492dbc3f3641af | Play 프레임 평균 0.50ms 최악 1.62ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomB_Square(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1338칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(56.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+  #22 Room_0_0:RoomD_Connected > Room_0_1:Room_Graveyard > Room_0_2:RoomA_Corridor > Room_0_3:RoomD_Connected > Room_1_0:RoomA_Corridor > Room_1_1:RoomB_Square > Room_1_2:Room_Field > Room_1_3:Room_Graveyard > Room_2_0:Room_Forest > Room_2_1:RoomC_LShape > Room_2_2:Room_Forest > Room_2_3:Room_Field | 바닥 6309칸 | 씬 로드 654ms | NavMesh 8.7ms | 마스크 85437정점 해시 42f7da92261a07b4 | Play 프레임 평균 0.52ms 최악 1.43ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 Room_Field(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1332칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(55.5,75.5) 여유 폭 2.5칸 안 바닥 77/77칸
+  #23 Room_0_0:RoomD_Connected > Room_0_1:Room_Forest > Room_0_2:RoomD_Connected > Room_0_3:RoomA_Corridor > Room_1_0:RoomA_Corridor > Room_1_1:Room_Field > Room_1_2:RoomC_LShape > Room_1_3:Room_Forest > Room_2_0:Room_Graveyard > Room_2_1:RoomB_Square > Room_2_2:Room_Graveyard > Room_2_3:Room_Field | 바닥 6267칸 | 씬 로드 663ms | NavMesh 7.4ms | 마스크 85000정점 해시 1e020c42ea260115 | Play 프레임 평균 0.50ms 최악 1.29ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 Room_Field(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1290칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(55.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+  #24 Room_0_0:Room_Field > Room_0_1:RoomC_LShape > Room_0_2:RoomB_Square > Room_0_3:RoomD_Connected > Room_1_0:Room_Graveyard > Room_1_1:RoomB_Square > Room_1_2:Room_Graveyard > Room_1_3:Room_Field > Room_2_0:Room_Forest > Room_2_1:RoomA_Corridor > Room_2_2:RoomC_LShape > Room_2_3:Room_Forest | 바닥 6571칸 | 씬 로드 680ms | NavMesh 7.0ms | 마스크 84453정점 해시 243a9c91d7cf0a18 | Play 프레임 평균 0.57ms 최악 1.82ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomB_Square(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1296칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(56.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+  #25 Room_0_0:Room_Forest > Room_0_1:RoomA_Corridor > Room_0_2:RoomC_LShape > Room_0_3:RoomA_Corridor > Room_1_0:Room_Field > Room_1_1:RoomB_Square > Room_1_2:Room_Field > Room_1_3:Room_Forest > Room_2_0:RoomD_Connected > Room_2_1:Room_Graveyard > Room_2_2:RoomB_Square > Room_2_3:RoomD_Connected | 바닥 6421칸 | 씬 로드 692ms | NavMesh 8.0ms | 마스크 86507정점 해시 6b353b33abfb83dc | Play 프레임 평균 0.50ms 최악 1.35ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomB_Square(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1380칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(56.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+  #26 Room_0_0:RoomD_Connected > Room_0_1:Room_Forest > Room_0_2:RoomA_Corridor > Room_0_3:RoomD_Connected > Room_1_0:RoomA_Corridor > Room_1_1:Room_Field > Room_1_2:RoomC_LShape > Room_1_3:RoomB_Square > Room_2_0:Room_Field > Room_2_1:Room_Graveyard > Room_2_2:Room_Forest > Room_2_3:RoomC_LShape | 바닥 6278칸 | 씬 로드 675ms | NavMesh 7.3ms | 마스크 86347정점 해시 8e603802ec4f5d9a | Play 프레임 평균 0.55ms 최악 1.59ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomC_LShape(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1398칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(53.5,74.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run26_map.png
+  #27 Room_0_0:RoomC_LShape > Room_0_1:RoomD_Connected > Room_0_2:Room_Forest > Room_0_3:Room_Field > Room_1_0:RoomA_Corridor > Room_1_1:RoomB_Square > Room_1_2:Room_Graveyard > Room_1_3:RoomD_Connected > Room_2_0:Room_Forest > Room_2_1:RoomC_LShape > Room_2_2:RoomA_Corridor > Room_2_3:RoomB_Square | 바닥 5994칸 | 씬 로드 680ms | NavMesh 6.7ms | 마스크 84422정점 해시 83bb66a4d2e8cd06 | Play 프레임 평균 0.54ms 최악 1.39ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 RoomB_Square(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1374칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(56.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
+  #28 Room_0_0:RoomB_Square > Room_0_1:Room_Forest > Room_0_2:RoomC_LShape > Room_0_3:Room_Field > Room_1_0:RoomA_Corridor > Room_1_1:RoomD_Connected > Room_1_2:Room_Field > Room_1_3:Room_Forest > Room_2_0:RoomD_Connected > Room_2_1:RoomA_Corridor > Room_2_2:RoomB_Square > Room_2_3:Room_Graveyard | 바닥 6415칸 | 씬 로드 672ms | NavMesh 8.4ms | 마스크 87004정점 해시 d722eab9ffec22cc | Play 프레임 평균 0.49ms 최악 1.44ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 Room_Field(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1374칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(55.5,75.5) 여유 폭 2.5칸 안 바닥 77/77칸
+  #29 Room_0_0:RoomA_Corridor > Room_0_1:Room_Graveyard > Room_0_2:RoomA_Corridor > Room_0_3:RoomB_Square > Room_1_0:RoomB_Square > Room_1_1:Room_Forest > Room_1_2:Room_Field > Room_1_3:Room_Graveyard > Room_2_0:RoomC_LShape > Room_2_1:RoomD_Connected > Room_2_2:RoomC_LShape > Room_2_3:Room_Field | 바닥 6391칸 | 씬 로드 673ms | NavMesh 8.4ms | 마스크 85027정점 해시 018aa9750667e33f | Play 프레임 평균 0.52ms 최악 5.08ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 Room_Field(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1338칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(55.5,75.5) 여유 폭 2.5칸 안 바닥 77/77칸
+      캡처: Logs/VillageRoomCaptures/bugfix30_run29_map.png
+  #30 Room_0_0:RoomD_Connected > Room_0_1:Room_Graveyard > Room_0_2:RoomA_Corridor > Room_0_3:RoomC_LShape > Room_1_0:RoomC_LShape > Room_1_1:Room_Field > Room_1_2:Room_Forest > Room_1_3:Room_Field > Room_2_0:RoomA_Corridor > Room_2_1:RoomB_Square > Room_2_2:Room_Graveyard > Room_2_3:RoomD_Connected | 바닥 6196칸 | 씬 로드 670ms | NavMesh 7.4ms | 마스크 85523정점 해시 b1b6263e51316f81 | Play 프레임 평균 0.48ms 최악 1.32ms | 실패 0 | 경고·에러 0
+      스폰: 동물 41, 몬스터 9, 트럭 방 Room_Field(몬스터 0), Id 중복 0
+      격자 3x4, 연결 14 (고리 3), 길 1332칸, 트럭→방 경로 12/12, 바닥 연결 O, 걸을 수 있는 바닥 연결 O
+      트럭 @(55.5,43.5) 여유 폭 2.5칸 안 바닥 77/77칸
