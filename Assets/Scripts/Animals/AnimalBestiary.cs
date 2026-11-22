@@ -47,7 +47,7 @@ public static class AnimalBestiary
             case AnimalSpecies.Cat:
                 return new Entry { Kind = kind, Name = "고양이", Trait = "가까이 가면 놀라서 달아나요.", Tip = "걷기보다 느려요. 따라가서 [E]!" };
             case AnimalSpecies.RedPanda:
-                return new Entry { Kind = kind, Name = "레서판다", Trait = "놀라면 크게 울어 몬스터를 불러요.", Tip = "살금살금 다가가 [E]! 울면 얼른 떠나요." };
+                return new Entry { Kind = kind, Name = "레서판다", Trait = "놀라면 크게 울어 몬스터를 불러요.", Tip = "따라가서 [E]! 울면 몬스터가 와요." };
             case AnimalSpecies.Turtle:
                 return new Entry
                 {

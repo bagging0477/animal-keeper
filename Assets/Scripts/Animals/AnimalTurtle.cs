@@ -7,7 +7,7 @@ using UnityEngine;
 /// - 배회/도주 속도는 거북이 전용 고정값(turtleWanderSpeed, turtleFleeSpeed)이라 다른 동물보다 훨씬 느리다.
 ///   놀람(turtleAlertDuration) 동안은 제자리에 있다.
 /// - 사방이 막혀 도망칠 방향이 없거나, 막혀서 실제로 못 움직이면 바로 숨는다.
-/// - 숨은 동안(나오는 중 포함)은 들 수 없고, E를 누르면 쿨다운을 두고 자막으로 알려준다(IAnimalPickupGate).
+/// - 숨은 동안(나오는 중 포함)과 놀라는 동안은 들 수 없고(IAnimalPickupGate), 숨은 채 E를 누르면 쿨다운을 두고 자막으로 알려준다.
 /// - 숨을 때 hideSound, 나오기 시작할 때 emergeSound를 AudioManager(SFX 믹서 그룹)로 재생한다. 숨은 채 E를 눌러 거절될 때도
 ///   자막과 같은 쿨다운으로 hideSound를 다시 쓴다. 클립을 비워두면 소리 없이 넘어간다. 일시정지(timeScale 0) 중에는 재생하지 않는다.
 /// - 마취(수면)에 맞으면 도주/숨기를 바로 멈추고 잠들어 들 수 있다(turtleSleepInterruptsHiding). 깨면 배회로 돌아간다.
@@ -16,7 +16,7 @@ using UnityEngine;
 /// - 같은 Day 재진입 때는 마지막 위치에서 배회로 시작한다(도주/숨은 채로 저장돼도 RestoreFleeing을 무시한다).
 /// - 코루틴과 이벤트 구독을 쓰지 않고 Update의 타이머만 쓴다 - 씬 전환이나 일시정지(timeScale 0)에도 정리할 것이 없다.
 /// </summary>
-public class AnimalTurtle : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
+public class AnimalTurtle : AnimalFlee, IAnimalWeightRange
 {
     public enum TurtleState { Wander, Alert, Flee, Hidden, Emerge }
 
@@ -83,7 +83,8 @@ public class AnimalTurtle : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
     public int HideSoundCount { get; private set; }
     public int EmergeSoundCount { get; private set; }
 
-    public bool CanBePickedUp => shell == Shell.None;
+    // 숨은 동안(나오는 중 포함)과 놀라는 동안에는 들 수 없다.
+    public override bool CanBePickedUp => shell == Shell.None && !IsAlertState;
 
     private float DetectRadius => config != null ? config.turtleDetectRadius : 5f;
     private float FleeDistance => config != null ? config.turtleFleeDistance : 2f;
@@ -245,8 +246,9 @@ public class AnimalTurtle : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
         if (FrameAnimator != null) FrameAnimator.ReleaseHold();
     }
 
-    public void OnPickupBlocked()
+    public override void OnPickupBlocked()
     {
+        if (shell == Shell.None) return; // 놀라는 동안 막힌 것은 따로 알리지 않는다(숨었을 때만 자막)
         if (Time.time < nextHiddenMessageTime) return;
         nextHiddenMessageTime = Time.time + (config != null ? config.turtleHiddenMessageCooldown : 2f);
         HiddenMessageCount++;

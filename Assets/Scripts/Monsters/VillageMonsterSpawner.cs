@@ -34,10 +34,18 @@ public class VillageSpawnRecord
 
     public bool TryGet(int phase, int index, out EntryState state) => entries.TryGetValue((phase, index), out state);
 
+    /// <summary>오늘의 박쥐 최소 출현(GameBalanceConfig.batGuaranteedPerDay) 기록. Started는 마을 시간이 batEarliestVillageSeconds에 닿아 대기 수를 넣었는지.</summary>
+    public bool GuaranteedBatStarted { get; set; }
+    public EntryState GuaranteedBat { get; } = new EntryState();
+
     public void Clear()
     {
         EnteredPhase = 0;
         entries.Clear();
+        GuaranteedBatStarted = false;
+        GuaranteedBat.Issued = 0;
+        GuaranteedBat.Pending = 0;
+        GuaranteedBat.IntervalTimer = 0f;
     }
 }
 
@@ -56,6 +64,8 @@ public class VillageSpawnRecord
 /// - 위치: 트럭 방이 아닌 방 바닥, 플레이어에게서 villageSpawnMinPlayerDistance 이상, 플레이어 시야 밖(PlayerVision.IsVisibleToPlayer),
 ///   막는 충돌체·다른 몬스터와 겹치지 않음, NavMesh 위. MaxPositionAttempts번 안에 못 찾으면 이번 소환은 건너뛰고 RetryDelaySeconds 뒤 다시 시도한다.
 /// - 난수는 이 컴포넌트 전용 System.Random이다. 맵 생성이 쓰는 UnityEngine.Random 상태를 읽거나 바꾸지 않는다.
+/// - 박쥐 최소 출현: 마을 시간이 batEarliestVillageSeconds에 닿으면(트럭에서 흐른 시간 포함) 그날 한 번 batGuaranteedPerDay마리를 소환 대기에 넣는다. 늘 박쥐이고
+///   (batSpawnRateMultiplier와 무관), Id는 GeneratedMap/TimedMonsters/{박쥐 프리팹}_TB_{번호}, 자리·상한·재진입 규칙은 시간 소환과 같다.
 /// - Id: 맵 몬스터와 같은 계층 경로 규칙(GeneratedMap/TimedMonsters/{프리팹}_T{구간}_{항목}_{번호}). 방과 무관한 고정 부모라 같은 Day 재진입에서도
 ///   같은 Id가 나오고, 늑대 시체(MonsterCorpsePickup)·소리반응형이 쓰는 "오늘 처치한 몬스터" 기록(GameManager.SaveMonsterCorpse)이 그대로 적용된다.
 /// - 같은 Day 재진입: 이미 번호를 받은 개체를 다시 만든다(처치한 개체는 기록대로 시체/숨김, 납품·보유 중인 늑대 시체는 만들지 않음).
@@ -79,6 +89,7 @@ public class VillageMonsterSpawner : MonoBehaviour
     }
 
     private readonly List<(int phase, int index, int ordinal)> restoreQueue = new List<(int, int, int)>();
+    private readonly List<int> restoreGuaranteed = new List<int>();
     private List<FloorArea> spawnAreas;
     private Tilemap truckGround;
     private Transform player;
@@ -109,6 +120,7 @@ public class VillageMonsterSpawner : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         restoreQueue.Clear();
+        restoreGuaranteed.Clear();
         spawnAreas = null;
         truckGround = null;
         player = null;
@@ -148,6 +160,7 @@ public class VillageMonsterSpawner : MonoBehaviour
         GameBalanceConfig config = AwayConfig();
         if (config == null || dt <= 0f) return;
         TickIntervals(GameManager.Instance.VillageSpawns, config, Today, dt);
+        StartGuaranteedBat(GameManager.Instance.VillageSpawns, config, GameManager.Instance);
     }
 
     private static int Today => GameManager.Instance != null ? GameManager.Instance.CycleCount : 1;
@@ -164,6 +177,7 @@ public class VillageMonsterSpawner : MonoBehaviour
         if (dt <= 0f) return; // 일시정지 중에는 타이머도 소환도 멈춘다
 
         TickIntervals(gm.VillageSpawns, config, Today, dt);
+        StartGuaranteedBat(gm.VillageSpawns, config, gm);
         if (retryTimer > 0f)
         {
             retryTimer -= dt;
@@ -204,6 +218,15 @@ public class VillageMonsterSpawner : MonoBehaviour
             }
         }
 
+        for (int ordinal = 0; ordinal < record.GuaranteedBat.Issued && config.batPrefab != null; ordinal++)
+        {
+            string batName = GuaranteedBatName(config.batPrefab, ordinal);
+            string id = $"{MapRootName}/{ParentName}/{batName}";
+            if (gm.IsAnimalRescuedToday(id) || gm.IsAnimalCurrentlyHeld(id)) continue;
+            if (gm.TryGetMonsterCorpse(id, out Vector3 corpsePosition)) Create(config.batPrefab, corpsePosition, batName);
+            else restoreGuaranteed.Add(ordinal);
+        }
+        StartGuaranteedBat(record, config, gm);
         EnterPhasesUpTo(record, config, Today, gm.VillagePhase);
         return true;
     }
@@ -286,6 +309,23 @@ public class VillageMonsterSpawner : MonoBehaviour
             living++;
         }
 
+        // 박쥐 최소 출현(batGuaranteedPerDay): 재진입 되살리기 → 새로 소환. 시간 소환 항목보다 먼저 한다.
+        while (restoreGuaranteed.Count > 0)
+        {
+            if (living >= cap) return;
+            if (!TrySpawnGuaranteedBat(config, restoreGuaranteed[0])) return;
+            restoreGuaranteed.RemoveAt(0);
+            living++;
+        }
+        while (record.GuaranteedBat.Pending > 0)
+        {
+            if (living >= cap) return;
+            if (!TrySpawnGuaranteedBat(config, record.GuaranteedBat.Issued)) return;
+            record.GuaranteedBat.Pending--;
+            record.GuaranteedBat.Issued++;
+            living++;
+        }
+
         for (int phase = 1; phase <= record.EnteredPhase; phase++)
         {
             GameBalanceConfig.VillageSpawnEntry[] entries = config.GetVillagePhaseSpawns(Today, phase);
@@ -330,6 +370,30 @@ public class VillageMonsterSpawner : MonoBehaviour
 
     private static string InstanceName(GameObject prefab, int phase, int index, int ordinal) =>
         $"{prefab.name}_T{phase}_{index}_{ordinal}";
+
+    /// <summary>박쥐 최소 출현 개체 이름(Id 끝). 시간 소환 이름(_T구간_항목_번호)과 겹치지 않는다.</summary>
+    public static string GuaranteedBatName(GameObject batPrefab, int ordinal) => $"{batPrefab.name}_TB_{ordinal}";
+
+    // 마을 시간이 박쥐가 나올 수 있는 가장 이른 시각에 닿으면 그날 한 번 batGuaranteedPerDay마리를 소환 대기에 넣는다.
+    private static void StartGuaranteedBat(VillageSpawnRecord record, GameBalanceConfig config, GameManager gm)
+    {
+        if (record.GuaranteedBatStarted || config.batPrefab == null || config.batGuaranteedPerDay <= 0 || gm == null) return;
+        if (gm.VillageTime < config.batEarliestVillageSeconds) return;
+        record.GuaranteedBatStarted = true;
+        record.GuaranteedBat.Pending += config.batGuaranteedPerDay;
+    }
+
+    private bool TrySpawnGuaranteedBat(GameBalanceConfig config, int ordinal)
+    {
+        if (!TryFindSpot(config.batPrefab, out Vector3 navPosition))
+        {
+            SkippedSpawns++;
+            retryTimer = RetryDelaySeconds;
+            return false;
+        }
+        Create(config.batPrefab, navPosition, GuaranteedBatName(config.batPrefab, ordinal));
+        return true;
+    }
 
     // VillageMapGenerator.SpawnMonsterAt과 같은 방식: NavMesh에 붙인 자리(x, 0, z)에 회전 없이 만들고 이름에 번호를 붙인다(Id = 계층 경로).
     private void Create(GameObject prefab, Vector3 navPosition, string instanceName)

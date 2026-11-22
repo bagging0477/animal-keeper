@@ -1,0 +1,31 @@
+LogicCheckTemp stuck 2026-11-22 15:03:41
+
+== 16. 동물 도달 가능(트럭에서 걸어서) 시드 1~10, 1·2일차
+[도달] 1일차 시드 1: 동물 41마리 [Cat8 Koala20 Goose6 RedPanda5 Turtle2] 중 못 감 0 , 몬스터 9 [SoundReactive3 Wolf5 Porcupine1] 중 못 감 0
+[도달] 1일차 시드 2: 동물 41마리 [Cat8 Koala16 RedPanda7 Turtle7 Goose3] 중 못 감 0 , 몬스터 9 [Wolf5 SoundReactive3 Porcupine1] 중 못 감 0
+[도달] 1일차 시드 3: 동물 41마리 [Koala15 Goose8 RedPanda8 Turtle3 Cat7] 중 못 감 0 , 몬스터 9 [Porcupine1 Wolf5 SoundReactive3] 중 못 감 0
+[도달] 1일차 시드 4: 동물 41마리 [Koala19 Turtle4 RedPanda8 Cat6 Goose4] 중 못 감 0 , 몬스터 9 [Wolf5 SoundReactive3 Porcupine1] 중 못 감 0
+[도달] 1일차 시드 5: 동물 41마리 [Koala18 RedPanda4 Goose8 Cat8 Turtle3] 중 못 감 0 , 몬스터 9 [SoundReactive3 Wolf5 Porcupine1] 중 못 감 0
+[도달] 1일차 시드 6: 동물 41마리 [Koala16 Cat8 Turtle8 RedPanda5 Goose4] 중 못 감 0 , 몬스터 9 [Wolf5 SoundReactive3 Porcupine1] 중 못 감 0
+[도달] 1일차 시드 7: 동물 41마리 [Goose5 Cat9 RedPanda9 Koala11 Turtle7] 중 못 감 0 , 몬스터 9 [Wolf5 SoundReactive3 Porcupine1] 중 못 감 0
+[도달] 1일차 시드 8: 동물 41마리 [Koala7 Cat14 RedPanda10 Goose5 Turtle5] 중 못 감 0 , 몬스터 9 [Wolf5 SoundReactive3 Porcupine1] 중 못 감 0
+[도달] 1일차 시드 9: 동물 41마리 [RedPanda8 Cat7 Koala14 Goose4 Turtle8] 중 못 감 0 , 몬스터 9 [Wolf5 SoundReactive3 Porcupine1] 중 못 감 0
+[도달] 1일차 시드 10: 동물 41마리 [Turtle5 Koala14 Cat7 Goose8 RedPanda7] 중 못 감 0 , 몬스터 9 [Wolf5 SoundReactive3 Porcupine1] 중 못 감 0
+[도달] 2일차 시드 1: 동물 41마리 [Goose7 RedPanda6 Koala17 Cat7 Turtle4] 중 못 감 0 , 몬스터 12 [SoundReactive3 Wolf5 Porcupine2 Rhino2] 중 못 감 0
+[도달] 2일차 시드 2: 동물 41마리 [Goose9 Koala14 RedPanda7 Turtle3 Cat8] 중 못 감 0 , 몬스터 12 [SoundReactive3 Rhino2 Wolf5 Porcupine2] 중 못 감 0
+[도달] 2일차 시드 3: 동물 41마리 [RedPanda10 Koala11 Turtle5 Cat9 Goose6] 중 못 감 0 , 몬스터 12 [Rhino2 Wolf5 Porcupine2 SoundReactive3] 중 못 감 0
+[도달] 2일차 시드 4: 동물 41마리 [Koala16 Cat6 Turtle4 RedPanda10 Goose5] 중 못 감 0 , 몬스터 12 [Wolf5 SoundReactive3 Rhino2 Porcupine2] 중 못 감 0
+[도달] 2일차 시드 5: 동물 41마리 [Turtle4 Goose6 Koala19 Cat6 RedPanda6] 중 못 감 0 , 몬스터 12 [Wolf5 SoundReactive3 Rhino2 Porcupine2] 중 못 감 0
+[도달] 2일차 시드 6: 동물 41마리 [Goose7 Cat6 Koala13 Turtle4 RedPanda11] 중 못 감 0 , 몬스터 12 [Wolf5 SoundReactive3 Rhino2 Porcupine2] 중 못 감 0
+[도달] 2일차 시드 7: 동물 41마리 [Koala11 Cat9 RedPanda11 Goose4 Turtle6] 중 못 감 0 , 몬스터 12 [SoundReactive3 Wolf5 Porcupine2 Rhino2] 중 못 감 0
+[도달] 2일차 시드 8: 동물 41마리 [Cat8 Turtle4 Koala11 RedPanda9 Goose9] 중 못 감 0 , 몬스터 12 [Porcupine2 Rhino2 SoundReactive3 Wolf5] 중 못 감 0
+[도달] 2일차 시드 9: 동물 41마리 [Cat9 Koala10 RedPanda6 Turtle5 Goose11] 중 못 감 0 , 몬스터 12 [Wolf5 Porcupine2 SoundReactive3 Rhino2] 중 못 감 0
+[도달] 2일차 시드 10: 동물 41마리 [Koala14 Cat10 Goose7 RedPanda8 Turtle2] 중 못 감 0 , 몬스터 12 [SoundReactive3 Wolf5 Rhino2 Porcupine2] 중 못 감 0
+
+== 17. 실제 맵 전체 몬스터 + 방을 도는 플레이어(무적), 180초, 시간 흐름
+[돌기] 1일차 시드 1: 몬스터 10마리 추적, 플레이어 맞음 0회(무적), 의심 0마리, 코뿔소 돌진 0회
+[돌기] 1일차 시드 2: 몬스터 10마리 추적, 플레이어 맞음 0회(무적), 의심 0마리, 코뿔소 돌진 0회
+[돌기] 1일차 시드 3: 몬스터 10마리 추적, 플레이어 맞음 0회(무적), 의심 0마리, 코뿔소 돌진 0회
+[돌기] 2일차 시드 1: 몬스터 14마리 추적, 플레이어 맞음 0회(무적), 의심 0마리, 코뿔소 돌진 1회
+[돌기] 2일차 시드 2: 몬스터 14마리 추적, 플레이어 맞음 0회(무적), 의심 0마리, 코뿔소 돌진 1회
+[돌기] 2일차 시드 3: 몬스터 14마리 추적, 플레이어 맞음 0회(무적), 의심 0마리, 코뿔소 돌진 0회

@@ -212,6 +212,7 @@ public static class VillageSpawnTest
 
         // 이 테스트는 복제 설정으로 돈다. 먼저 모든 구간 목록을 비워 "목록이 비면 아무것도 하지 않는다"를 본다.
         clone = Object.Instantiate(original);
+        clone.batGuaranteedPerDay = 0; // 이 테스트는 구간 목록 소환만 센다 - 박쥐 최소 출현(60초에 1마리)은 BatMonsterTest·MonsterPacingTest가 본다
         clone.name = "VillageSpawnTestConfig";
         for (int p = 1; p <= 5; p++) SetPhase(p);
         ConfigField.SetValue(gm, clone);

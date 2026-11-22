@@ -2,7 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(AnimalRescue))]
 [RequireComponent(typeof(Rigidbody2D))]
-public class AnimalFlee : MonoBehaviour
+public class AnimalFlee : MonoBehaviour, IAnimalPickupGate
 {
     private enum State { Wander, Alert, Fleeing }
 
@@ -109,6 +109,15 @@ public class AnimalFlee : MonoBehaviour
     /// <summary>Alert(놀람) 또는 Fleeing(도주) 중이면 true. 씬을 나가기 직전 이 동물의 "긴장 상태"를
     /// 저장했다가 돌아왔을 때 복원하는 데 쓰인다.</summary>
     public bool IsAlarmed => state == State.Alert || state == State.Fleeing;
+
+    /// <summary>줍기 게이트(IAnimalPickupGate, AnimalRescue가 묻는다): 놀라는 동안(Alert)에는 들 수 없다 - 놀람이 끝나면 도망(레서판다는 울음)이 그대로 일어나고,
+    /// 그 뒤에 따라가서 든다. 거북이·거위는 자기 규칙으로 덮어쓴다.</summary>
+    public virtual bool CanBePickedUp => state != State.Alert;
+
+    /// <summary>들 수 없을 때 E를 누르면 부른다. 고양이·레서판다는 따로 알리지 않는다.</summary>
+    public virtual void OnPickupBlocked()
+    {
+    }
 
     /// <summary>씬 재진입 시, 나갈 때 Alert/Fleeing 중이었던 동물을 처음부터 도주 상태로 즉시
     /// 복원한다. Wander부터 다시 플레이어를 감지하게 두면 겁먹고 있던 걸 까먹은 것처럼 보인다.

@@ -166,10 +166,12 @@ public class MonsterCorpsePickup : MonoBehaviour
         if (!health.IsDead || player == null || GameManager.Instance == null) return;
 
         float distance = Vector2.Distance(health.GamePosition, new Vector2(player.position.x, player.position.y));
-        bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
+        bool withinRange = distance <= interactionRange;
+        // 가방이 찼으면 E 초점을 잡지 않는다(AnimalRescue와 같다) - 트럭 등 다른 지점이 E를 받는다. 가득 참 안내만 띄운다.
+        bool inRange = withinRange && GameManager.Instance.HasInventorySpace && InteractionFocus.TryFocus(this, distance);
 
-        if (inRange && GameManager.Instance.HasInventorySpace) SubtitleManager.Show("E를 눌러 사체를 획득하세요", SubtitleManager.WhileInRange);
-        InventoryFullNotice.Update(inRange, ref fullNoticeShown);
+        if (inRange) SubtitleManager.Show("E를 눌러 사체를 획득하세요", SubtitleManager.WhileInRange);
+        InventoryFullNotice.Update(withinRange, ref fullNoticeShown);
 
         if (!inRange) return;
 

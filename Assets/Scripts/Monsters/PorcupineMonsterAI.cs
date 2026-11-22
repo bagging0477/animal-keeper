@@ -204,12 +204,13 @@ public class PorcupineMonsterAI : MonsterBrain, ICorpseWeight
 
         Vector2 origin = MuzzlePosition;
         int count = QuillCount;
+        PorcupineVolley volley = new PorcupineVolley(); // 한 번 쏠 때 피해는 한 발만
         for (int i = 0; i < count; i++)
         {
             float angle = count > 1 ? -SpreadAngle * 0.5f + SpreadAngle * i / (count - 1) : 0f;
             Vector2 dir = Rotate(aimDirection, angle);
             PorcupineQuill quill = Instantiate(quillPrefab, new Vector3(origin.x, origin.y, 0f), Quaternion.identity);
-            quill.Launch(dir, QuillSpeed, QuillRange, QuillDamage, monsterTypeName);
+            quill.Launch(dir, QuillSpeed, QuillRange, QuillDamage, monsterTypeName, volley);
         }
     }
 

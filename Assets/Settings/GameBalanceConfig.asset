@@ -33,6 +33,9 @@ MonoBehaviour:
   monsterSearchStepSpeed: 1.2
   patrolMonsterCatchRange: 0.7
   soundReactiveMonsterCatchRange: 0.7
+  patrolMonsterAttackInterval: 1.5
+  soundReactiveMonsterAttackInterval: 1.5
+  monsterContactStopRatio: 0.6
   monsterWaypointStopDistance: 0.2
   chaseGiveUpSightLostDuration: 2
   chaseDirectionUpdateInterval: 0.25
@@ -167,12 +170,12 @@ MonoBehaviour:
     \uC88B\uACA0\uB2E4."
   - "\uBC24\uC774 \uAE4A\uC5C8\uB2E4. \uBB34\uC5B8\uAC00 \uAE68\uC5B4\uB098\uACE0
     \uC788\uB2E4."
-  - "\uB354\uB294 \uC774\uACF3\uC5D0 \uBA38\uBB3C \uC218 \uC5C6\uB2E4. \uC9C0\uAE08
-    \uB2F9\uC7A5 \uB5A0\uB098\uC57C \uD55C\uB2E4!"
+  - "\uBC24\uC774 \uAE4A\uC5C8\uB2E4. \uBAAC\uC2A4\uD130\uAC00 \uACC4\uC18D \uBAB0\uB824\uC628\uB2E4!"
   batPrefab: {fileID: 6555077884092434632, guid: 1d6367ff8fdf9d04d8ad7d0591760909, type: 3}
   batSpawnChance: 0.15
   batSpawnRateMultiplier: 0.25
   batEarliestVillageSeconds: 60
+  batGuaranteedPerDay: 1
   batSpawnInLinearMode: 0
   batSpeed: 8.4
   batWanderSpeed: 1.5

@@ -193,11 +193,14 @@ public class AnimalRescue : MonoBehaviour
         if (player == null || GameManager.Instance == null) return;
 
         float distance = Vector2.Distance(transform.position, player.position);
-        bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
+        bool withinRange = distance <= interactionRange;
+        // 가방이 찼으면 E 초점을 잡지 않는다 - 들 수 없는 동물이 더 가까워도 트럭(TruckPoint) 등 다른 지점이 E를 받는다. 가득 참 안내만 띄운다.
+        bool hasSpace = GameManager.Instance.HasInventorySpace;
+        bool inRange = withinRange && hasSpace && InteractionFocus.TryFocus(this, distance);
 
         bool blocked = pickupGate != null && !pickupGate.CanBePickedUp;
-        if (inRange && !blocked && GameManager.Instance.HasInventorySpace) SubtitleManager.Show("E를 눌러 구조하세요", SubtitleManager.WhileInRange);
-        InventoryFullNotice.Update(inRange && !blocked, ref fullNoticeShown);
+        if (inRange && !blocked) SubtitleManager.Show("E를 눌러 구조하세요", SubtitleManager.WhileInRange);
+        InventoryFullNotice.Update(withinRange && !blocked, ref fullNoticeShown);
 
         if (!inRange) return;
 

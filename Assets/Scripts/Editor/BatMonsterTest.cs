@@ -24,7 +24,7 @@ using UnityEngine.Tilemaps;
 /// 접촉 데미지(최대 체력 x 0.8, 굳은 동안 없음), 무기 데미지 = 늑대와 같은 값(기절·마취 없음), 맞으면 도망(거리 = 거위 x 0.5, 속도 = 거위),
 /// 피격 모션(hurt-01 + 늑대와 같은 빨간 깜빡임, 비행·굳음·도망 중 모두, 피격 중에도 바로 도망, 연속 피격 → Logs/Bat/hurt_compare.png),
 /// 도망 중 쳐다봐도 안 멈춤, 도망 중 또 맞으면 그 자리에서 다시 도망, 무적 없음, 도망 뒤 다시 다가옴, 닿아 피해를 준 뒤에도 같은 도망으로 물러났다가 다시 다가와 또 피해(7-2), 체력 0이면 쓰러지고 E로 회수,
-/// 시간 소환(날짜별 표에서 박쥐를 직접 소환하는 첫 항목 - 구간과 시각은 설정에서 찾는다), 재진입, ResetDay/ResetGame. 프레임 시간 1/30초 고정. 다른 몬스터는 기절시켜 둔다(박쥐는 기절하지 않는다).
+/// 시간 소환(날짜별 표에서 박쥐를 직접 소환하는 첫 항목 - 구간과 시각은 설정에서 찾는다), 재진입, ResetDay/ResetGame, 박쥐 최소 출현(날마다 batEarliestVillageSeconds에 batGuaranteedPerDay마리). 프레임 시간 1/30초 고정. 다른 몬스터는 기절시켜 둔다(박쥐는 기절하지 않는다).
 /// 실제 게임 카메라 렌더: Logs/Bat/render/crouch_*.png, view_*.png + manifest.txt(비행 → 웅크림 → 굳음 → 풀림, 주변/정면 시야 장면).
 /// 결과: Logs/BatMonsterTest.txt / batchmode: -executeMethod BatMonsterTest.RunBatch (통과면 0 아니면 1)
 /// </summary>
@@ -127,18 +127,24 @@ public static class BatMonsterTest
     private static readonly FieldInfo GmConfigField = typeof(GameManager).GetField("config", BindingFlags.NonPublic | BindingFlags.Instance);
     private static GameBalanceConfig originalConfig;
     private static float savedBatRate = -1f;
+    private static int savedGuaranteedBats = -1;
 
-    // 시간 소환 검사(12~14) 동안만 박쥐 비율(batSpawnRateMultiplier)을 1로 둔다 - 박쥐 항목이 항상 박쥐로 나와야 소환 동작을 볼 수 있다. 에셋 값은 메모리에서만 바꾸고 되돌린다.
+    // 시간 소환 검사(12~14) 동안만 박쥐 비율(batSpawnRateMultiplier)을 1로 두고 박쥐 최소 출현(batGuaranteedPerDay)을 끈다 - 표의 박쥐 항목이 항상 박쥐로 나와야
+    // 소환 동작을 볼 수 있고, 60초 최소 출현 박쥐가 섞이면 "그 구간 전에는 없다"를 볼 수 없다. 최소 출현은 15에서 따로 본다. 에셋 값은 메모리에서만 바꾸고 되돌린다.
     private static void ForceBatRate()
     {
         if (savedBatRate < 0f) savedBatRate = config.batSpawnRateMultiplier;
+        if (savedGuaranteedBats < 0) savedGuaranteedBats = config.batGuaranteedPerDay;
         config.batSpawnRateMultiplier = 1f;
+        config.batGuaranteedPerDay = 0;
     }
 
     private static void RestoreBatRate()
     {
         if (savedBatRate >= 0f && config != null) config.batSpawnRateMultiplier = savedBatRate;
+        if (savedGuaranteedBats >= 0 && config != null) config.batGuaranteedPerDay = savedGuaranteedBats;
         savedBatRate = -1f;
+        savedGuaranteedBats = -1;
     }
 
     private static void TearDown()
@@ -667,6 +673,34 @@ public static class BatMonsterTest
         yield return WaitFrames(30);
         Check(Bats().Count == 0, "새 게임 마을 0초: 박쥐 없음");
         RestoreBatRate();
+
+        // --- 15. 박쥐 최소 출현: 날마다 마을 시간 batEarliestVillageSeconds에 batGuaranteedPerDay마리(박쥐 비율과 무관)
+        int guaranteed = config.batGuaranteedPerDay;
+        float earliest = config.batEarliestVillageSeconds;
+        sb.AppendLine($"\n== 15. 최소 출현: 날마다 {earliest:F0}초에 박쥐 {guaranteed}마리 (박쥐 비율 {config.batSpawnRateMultiplier}와 무관)");
+        Check(guaranteed >= 1, $"batGuaranteedPerDay = {guaranteed} (1 이상)");
+        yield return Load("TruckScene");
+        gm.ResetDay();
+        yield return Load("VillageScene");
+        SetTime(earliest - 0.5f);
+        yield return WaitFrames(8);
+        Check(gm.VillageTime < earliest && Bats().Count == 0, $"{gm.VillageTime:F2}초: 박쥐 없음");
+        yield return WaitForBats(guaranteed, 45);
+        List<BatMonsterAI> sure = Bats();
+        Check(gm.VillageTime >= earliest && sure.Count == guaranteed && sure.All(b => b.name.Contains("_TB_")) && sure.All(b => !b.IsSurprised),
+            $"{gm.VillageTime:F2}초: 박쥐 {sure.Count}마리, 놀람 전 ({string.Join(", ", sure.Select(b => b.name))})");
+        yield return WaitFrames(90);
+        Check(Bats().Count == guaranteed && gm.VillageSpawns.GuaranteedBat.Issued == guaranteed, $"더 늘지 않는다 (발급 {gm.VillageSpawns.GuaranteedBat.Issued})");
+        yield return Load("TruckScene");
+        yield return WaitFrames(10);
+        yield return Load("VillageScene");
+        yield return WaitForBats(guaranteed, 45);
+        sure = Bats();
+        Check(sure.Count == guaranteed && gm.VillageSpawns.GuaranteedBat.Issued == guaranteed && sure.All(b => b.name.Contains("_TB_")),
+            $"같은 Day 재진입: 같은 이름으로 {sure.Count}마리만 다시 (발급 {gm.VillageSpawns.GuaranteedBat.Issued})");
+        yield return Load("TruckScene");
+        gm.ResetDay();
+        Check(!gm.VillageSpawns.GuaranteedBatStarted && gm.VillageSpawns.GuaranteedBat.Issued == 0 && gm.VillageSpawns.GuaranteedBat.Pending == 0, "ResetDay: 최소 출현 기록이 비었다");
 
         sb.AppendLine($"\n== 콘솔 에러/예외 (Log·Warning 제외): {logs.Count}건");
         foreach (string l in logs.Take(20)) sb.AppendLine("  " + l);

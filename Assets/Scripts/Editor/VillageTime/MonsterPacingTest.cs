@@ -280,6 +280,18 @@ public static class MonsterPacingTest
         Check(map.SequenceEqual(expectedMap) && gen != null && gen.LastGridSpawnShortfall.monsters == 0,
             $"{tag}: 맵 생성 {Fmt(map)} (기대 {Fmt(expectedMap)}, 자리 부족 {gen?.LastGridSpawnShortfall.monsters})");
         Check(TimedMonsters().Count == 0 && gm.VillagePhase == 1, $"{tag}: 1구간에는 추가 소환 없음 ({TimedMonsters().Count}마리)");
+
+        // 박쥐 최소 출현: batEarliestVillageSeconds 0.5초 전에는 없고, 넘으면 batGuaranteedPerDay마리(이름 _TB_). 아래 구간 소환 수는 이 박쥐를 포함한 수에서 센다.
+        if (config.batGuaranteedPerDay > 0)
+        {
+            SetTime(config.batEarliestVillageSeconds - 0.5f);
+            yield return WaitFrames(6);
+            Check(TimedMonsters().Count == 0, $"{tag}: {config.batEarliestVillageSeconds - 0.5f:F1}초에는 최소 출현 박쥐 전 ({TimedMonsters().Count}마리)");
+            yield return WaitUntil(() => TimedMonsters().Count(m => m.name.Contains("_TB_")) >= config.batGuaranteedPerDay, 300);
+            int sure = TimedMonsters().Count(m => m.name.Contains("_TB_") && m.GetComponent<BatMonsterAI>() != null);
+            Check(sure == config.batGuaranteedPerDay && TimedMonsters().Count == sure,
+                $"{tag}: {gm.VillageTime:F1}초 최소 출현 박쥐 {sure}마리 (기대 {config.batGuaranteedPerDay}, 다른 소환 {TimedMonsters().Count - sure})");
+        }
         List<string> row = new List<string> { $"Day {day} 시드 {seed}", $"진입 {Fmt(Total())}" };
 
         // 2~4구간: 경계 0.5초 전에는 그 구간 소환이 없고, 넘으면 표대로 나온다.

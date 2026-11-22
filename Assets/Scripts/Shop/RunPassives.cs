@@ -70,9 +70,9 @@ public static class PassiveEffects
     /// <summary>플레이어 기본 이동속도에 곱하는 배율 (패시브 없으면 1).</summary>
     public static float MoveSpeedMultiplier => Current != null ? Current.MoveSpeedMultiplier : 1f;
 
-    /// <summary>인벤토리 추가 칸 수 (패시브 없으면 0). 아직 인벤토리 칸 수에는 반영하지 않는다.</summary>
+    /// <summary>인벤토리 추가 칸 수 (패시브 없으면 0). GameManager가 인벤토리 칸 수에 더한다(GrowInventoryToCapacity).</summary>
     public static int ExtraInventorySlots => Current != null ? Current.ExtraInventorySlots : 0;
 
-    /// <summary>플래시라이트 보유 여부. 아직 시야에는 반영하지 않는다.</summary>
+    /// <summary>플래시라이트 보유 여부. PlayerVision이 부채꼴 시야 크기에 반영한다(없으면 noFlashlightFocused* 배율).</summary>
     public static bool HasFlashlight => Current != null && Current.HasFlashlight;
 }

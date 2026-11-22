@@ -86,6 +86,19 @@ public class GameBalanceConfig : ScriptableObject
     [Tooltip("소리반응형 몬스터가 이 거리 안으로 들어오면 플레이어를 붙잡은 것으로 판정한다")]
     public float soundReactiveMonsterCatchRange = 0.7f;
 
+    [Tooltip("순찰형(늑대)이 접촉 범위(patrolMonsterCatchRange) 안에 있는 동안 공격하는 간격(초). 처음 닿으면 바로 한 번, 그 뒤 범위 안에 있으면 이 간격마다 " +
+        "다시 피해를 준다. 범위를 잠깐 벗어났다 들어와도 간격은 처음부터 다시 세지 않는다(가만히 있든 조금씩 움직이든 맞는 간격이 같다).")]
+    [Min(0.05f)]
+    public float patrolMonsterAttackInterval = 1.5f;
+
+    [Tooltip("소리반응형이 접촉 범위(soundReactiveMonsterCatchRange) 안에 있는 동안 공격하는 간격(초). 규칙은 patrolMonsterAttackInterval과 같다.")]
+    [Min(0.05f)]
+    public float soundReactiveMonsterAttackInterval = 1.5f;
+
+    [Tooltip("늑대·소리반응형이 추격하다 플레이어 가까이 오면 멈추는 거리 = 각자의 접촉 범위 x 이 비율. 1보다 작아 접촉 범위 안쪽이지만 플레이어 위에 겹쳐 앉지는 않는다.")]
+    [Range(0.1f, 0.95f)]
+    public float monsterContactStopRatio = 0.6f;
+
     [Tooltip("몬스터가 목적지(순찰 웨이포인트/배회 지점 등)에 도착했다고 판정하는 거리 - 두 몬스터 타입이 공통으로 쓴다")]
     public float monsterWaypointStopDistance = 0.2f;
 
@@ -605,7 +618,7 @@ public class GameBalanceConfig : ScriptableObject
         "해가 기울고 있다. 마을 공기가 달라졌다.",
         "어둠이 짙어진다. 서두르는 게 좋겠다.",
         "밤이 깊었다. 무언가 깨어나고 있다.",
-        "더는 이곳에 머물 수 없다. 지금 당장 떠나야 한다!",
+        "밤이 깊었다. 몬스터가 계속 몰려온다!",
     };
 
     /// <summary>그 구간이 시작할 때 띄울 문구. 2~5구간만 있고, 1구간이나 문구가 비어 있으면 null.</summary>
@@ -633,6 +646,10 @@ public class GameBalanceConfig : ScriptableObject
         "그날 다른 몬스터가 지금 비율대로 대신한다. 0이면 제한 없음.")]
     [Min(0f)]
     public float batEarliestVillageSeconds = 60f;
+    [Tooltip("날마다 마을 시간이 batEarliestVillageSeconds가 되면 따로 소환하는 박쥐 수(최소 출현 보장, 0이면 없음). batSpawnRateMultiplier와 상관없이 늘 박쥐로 나온다. " +
+        "나머지 박쥐 자리(날짜별 표)는 그대로 batSpawnRateMultiplier 비율을 따른다. 소환은 VillageMonsterSpawner가 시간 소환과 같은 규칙(자리·상한·재진입)으로 한다.")]
+    [Min(0)]
+    public int batGuaranteedPerDay = 1;
 
     /// <summary>프리팹이 박쥐(BatMonsterAI)인지.</summary>
     public static bool IsBatPrefab(GameObject prefab) => prefab != null && prefab.GetComponent<BatMonsterAI>() != null;

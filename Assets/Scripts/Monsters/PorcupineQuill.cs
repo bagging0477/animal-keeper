@@ -1,11 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>호저가 한 번에 쏜 가시 묶음. 묶음 중 한 발이 플레이어를 맞히면 Hit이 켜지고, 같은 묶음의 나머지 가시는 플레이어에 닿아도 피해 없이 사라진다
+/// (가까이서 3발이 동시에 맞아도 한 번 쏠 때 피해는 한 발).</summary>
+public class PorcupineVolley
+{
+    public bool Hit;
+}
+
 /// <summary>호저(PorcupineMonsterAI)가 쏘는 가시. 마취총 다트(TranquilizerDart)와 같은 구조다:
 /// - Launch에서 방향·속도·사거리를 받고, 사거리만큼 날아가면 사라진다(마지막 프레임은 남은 거리만큼만 움직여 정확히 사거리에서 멈춘다).
 /// - 매 프레임 이번에 지나간 구간 전체를 고정 충돌체(맵 경계, 장애물, 트럭)로 검사한다(StaticBlockerLine - 몬스터 시야·다트와 같은 규칙).
 ///   벽에 닿으면 그 자리에서 사라진다.
-/// - 벽보다 앞에서 플레이어(중심에서 hitRadius 안)를 지나가면 피해를 주고 사라진다. 지나간 구간 전체로 보므로 빨라도 건너뛰지 않는다.
+/// - 벽보다 앞에서 플레이어(중심에서 hitRadius 안)를 지나가면 사라진다. 같은 묶음(PorcupineVolley)에서 처음 맞은 한 발만 피해를 준다. 지나간 구간 전체로 보므로 빨라도 건너뛰지 않는다.
 /// 그림은 quill 2장을 반복하고, 날아가는 방향으로 돌린다. 발 기준 정렬은 땅에서 heightAboveGround만큼 떠 있는 것으로 계산한다.</summary>
 public class PorcupineQuill : MonoBehaviour
 {
@@ -31,6 +38,7 @@ public class PorcupineQuill : MonoBehaviour
     private float range;
     private int damage;
     private string sourceName;
+    private PorcupineVolley volley;
     private float frameTimer;
     private int frameIndex;
 
@@ -45,13 +53,14 @@ public class PorcupineQuill : MonoBehaviour
     private void OnEnable() => Active.Add(this);
     private void OnDisable() => Active.Remove(this);
 
-    public void Launch(Vector2 direction, float launchSpeed, float launchRange, int launchDamage, string launchSourceName)
+    public void Launch(Vector2 direction, float launchSpeed, float launchRange, int launchDamage, string launchSourceName, PorcupineVolley launchVolley = null)
     {
         Direction = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.right;
         speed = Mathf.Max(0f, launchSpeed);
         range = Mathf.Max(0f, launchRange);
         damage = launchDamage;
         sourceName = launchSourceName;
+        volley = launchVolley;
         velocity = Direction * speed;
         Origin = transform.position;
         Traveled = 0f;
@@ -75,7 +84,12 @@ public class PorcupineQuill : MonoBehaviour
 
         if (player != null && SegmentDistance(from, to, player.position) <= hitRadius)
         {
-            GameManager.Instance?.TakeDamage(damage, sourceName);
+            // 같은 묶음에서 이미 한 발이 맞았으면 피해 없이 사라진다.
+            if (volley == null || !volley.Hit)
+            {
+                if (volley != null) volley.Hit = true;
+                GameManager.Instance?.TakeDamage(damage, sourceName);
+            }
             Destroy(gameObject);
             return;
         }

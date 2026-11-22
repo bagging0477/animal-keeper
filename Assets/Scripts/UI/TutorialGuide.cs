@@ -682,7 +682,7 @@ public class TutorialGuide : MonoBehaviour
         switch (step)
         {
             case 1: return "석상 앞에서 [E]로 직업을 골라요. 그냥 출발하면 스카우트!";
-            case 2: return $"오늘 할 일: 동물 {gm.TargetCount}마리를 트럭에 맡기기. 문 앞에서 [E]로 출발!";
+            case 2: return $"오늘 할 일: 동물·사체 {gm.TargetCount}마리를 트럭에 맡기기. 문 앞에서 [E]로 출발!";
             case 3: return "[WASD] 걷기 · 마우스로 앞을 비추기 · [Shift] 달리기";
             case 4: return "반짝이는 눈망울 발견! 다가가서 [E]로 구조해요";
             case 5:

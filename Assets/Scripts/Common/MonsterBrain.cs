@@ -126,7 +126,7 @@ public abstract class MonsterBrain : MonoBehaviour
         return StaticBlockerLine.IsBlocked(from, to, SightBlockingMask);
     }
 
-    /// <summary>각 두뇌의 Update가 플레이어와의 거리를 잰 바로 그 자리에서 부른다(예전 코드가 있던 자리).
+    /// <summary>한 번 닿으면 범위를 벗어날 때까지 다시 피해를 주지 않는 접촉 판정 - 박쥐(BatMonsterAI)가 쓴다(닿으면 물러났다 다시 온다). 늑대·소리반응형은 UpdateContactAttack.
     /// true를 돌려주면 잡기 처리 도중 이 몬스터가 파괴된 것이므로 호출한 Update도 바로 빠져나와야 한다.</summary>
     protected bool UpdateCatch(float distanceToPlayer)
     {
@@ -149,6 +149,42 @@ public abstract class MonsterBrain : MonoBehaviour
             caughtLogged = false;
         }
         return false;
+    }
+
+    // 간격 공격(UpdateContactAttack)이 마지막으로 피해를 준 시각(Time.time). 처음 닿으면 바로 때리도록 아주 이른 값에서 시작한다.
+    private float lastContactAttackTime = float.NegativeInfinity;
+
+    /// <summary>늑대·소리반응형용 접촉 공격: 접촉 범위(CatchRange) 안에 있는 동안 interval초마다 피해를 준다(처음 닿으면 바로 한 번).
+    /// 범위를 잠깐 벗어났다 들어와도 간격을 처음부터 세지 않으므로, 플레이어가 가만히 있든 조금씩 움직이든 맞는 간격이 같다.
+    /// caughtLogged는 "지금 접촉 범위 안인지"로 채운다(기록용). 박쥐는 이 방식 대신 UpdateCatch(닿으면 물러남)를 그대로 쓴다.
+    /// true를 돌려주면 피해로 이 몬스터가 파괴된 것이므로 호출한 Update도 바로 빠져나와야 한다.</summary>
+    protected bool UpdateContactAttack(float distanceToPlayer, float interval)
+    {
+        caughtLogged = distanceToPlayer <= CatchRange;
+        if (!caughtLogged || Time.time - lastContactAttackTime < interval) return false;
+        lastContactAttackTime = Time.time;
+        HandleCatch();
+        return this == null;
+    }
+
+    /// <summary>플레이어가 접촉 범위의 3배 안이면 true. 이때는 추격 목적지를 매 프레임 갱신해(평소 chaseDirectionUpdateInterval 주기 대신)
+    /// 플레이어가 조금씩 움직여도 접촉 범위 안에 붙어 있는다 - 그래야 가만히 있든 움직이든 맞는 간격이 같다.</summary>
+    protected bool NearContact => player != null && Vector2.Distance(GamePosition, PlayerGamePosition) <= CatchRange * 3f;
+
+    private float ContactStopRatio => Config != null ? Config.monsterContactStopRatio : 0.6f;
+
+    /// <summary>추격 목적지(NavMesh 좌표). 플레이어가 가깝고(접촉 범위의 3배 안) 사이가 트여 있으면 플레이어 위가 아니라 플레이어에게서
+    /// 접촉 범위 x monsterContactStopRatio만큼 몬스터 쪽으로 떨어진 자리로 간다 - 접촉 범위 안쪽에 서되 플레이어 위에 겹쳐 앉지 않는다.
+    /// 이미 그 거리보다 안쪽이면 그 자리까지 물러난다. 멀거나 벽 너머면 예전처럼 플레이어 자리로 간다.</summary>
+    protected Vector3 ChaseDestination()
+    {
+        Vector3 target = PlayerNavPosition;
+        Vector2 away = GamePosition - PlayerGamePosition;
+        float distance = away.magnitude;
+        if (distance > CatchRange * 3f || IsSightBlocked(GamePosition, PlayerGamePosition)) return target;
+        Vector2 dir = distance > 0.0001f ? away / distance : Vector2.right;
+        Vector2 stop = PlayerGamePosition + dir * CatchRange * ContactStopRatio;
+        return new Vector3(stop.x, 0f, stop.y);
     }
 
     private void HandleCatch()

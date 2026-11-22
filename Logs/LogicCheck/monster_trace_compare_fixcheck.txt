@@ -1,0 +1,603 @@
+Logs/monster_trace_before.txt vs Logs/monster_trace_fixcheck.txt
+다름: 1774줄 (전 7506줄, 후 7506줄)
+626행
+  전: s1.wolfChase	0019	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.08,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_24	chase=1	caught=1
+  후: s1.wolfChase	0019	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_24	chase=1	caught=1
+627행
+  전: s1.wolfChase	0020	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.22,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+  후: s1.wolfChase	0020	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+628행
+  전: s1.wolfChase	0021	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.37,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+  후: s1.wolfChase	0021	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+629행
+  전: s1.wolfChase	0022	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+  후: s1.wolfChase	0022	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+630행
+  전: s1.wolfChase	0023	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+  후: s1.wolfChase	0023	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+631행
+  전: s1.wolfChase	0024	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+  후: s1.wolfChase	0024	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+632행
+  전: s1.wolfChase	0025	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+  후: s1.wolfChase	0025	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+633행
+  전: s1.wolfChase	0026	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+  후: s1.wolfChase	0026	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+634행
+  전: s1.wolfChase	0027	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+  후: s1.wolfChase	0027	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+635행
+  전: s1.wolfChase	0028	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+  후: s1.wolfChase	0028	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+636행
+  전: s1.wolfChase	0029	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0029	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+637행
+  전: s1.wolfChase	0030	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0030	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+638행
+  전: s1.wolfChase	0031	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0031	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+639행
+  전: s1.wolfChase	0032	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0032	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+640행
+  전: s1.wolfChase	0033	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0033	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+641행
+  전: s1.wolfChase	0034	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0034	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+642행
+  전: s1.wolfChase	0035	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0035	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+643행
+  전: s1.wolfChase	0036	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0036	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+644행
+  전: s1.wolfChase	0037	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0037	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+645행
+  전: s1.wolfChase	0038	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0038	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+646행
+  전: s1.wolfChase	0039	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0039	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+647행
+  전: s1.wolfChase	0040	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0040	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+648행
+  전: s1.wolfChase	0041	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0041	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+649행
+  전: s1.wolfChase	0042	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0042	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+650행
+  전: s1.wolfChase	0043	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0043	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+651행
+  전: s1.wolfChase	0044	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0044	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+652행
+  전: s1.wolfChase	0045	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0045	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+653행
+  전: s1.wolfChase	0046	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0046	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+654행
+  전: s1.wolfChase	0047	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0047	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+655행
+  전: s1.wolfChase	0048	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0048	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+656행
+  전: s1.wolfChase	0049	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0049	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+657행
+  전: s1.wolfChase	0050	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0050	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+658행
+  전: s1.wolfChase	0051	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0051	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+659행
+  전: s1.wolfChase	0052	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0052	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+660행
+  전: s1.wolfChase	0053	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0053	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+661행
+  전: s1.wolfChase	0054	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0054	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+662행
+  전: s1.wolfChase	0055	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0055	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+663행
+  전: s1.wolfChase	0056	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0056	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+664행
+  전: s1.wolfChase	0057	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0057	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+665행
+  전: s1.wolfChase	0058	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0058	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+666행
+  전: s1.wolfChase	0059	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0059	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+667행
+  전: s1.wolfChase	0060	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0060	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+668행
+  전: s1.wolfChase	0061	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0061	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+669행
+  전: s1.wolfChase	0062	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0062	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_24	chase=1	caught=1
+670행
+  전: s1.wolfChase	0063	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0063	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_24	chase=1	caught=1
+671행
+  전: s1.wolfChase	0064	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0064	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_24	chase=1	caught=1
+672행
+  전: s1.wolfChase	0065	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0065	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+673행
+  전: s1.wolfChase	0066	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0066	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+674행
+  전: s1.wolfChase	0067	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0067	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+675행
+  전: s1.wolfChase	0068	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0068	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+676행
+  전: s1.wolfChase	0069	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0069	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+677행
+  전: s1.wolfChase	0070	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0070	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+678행
+  전: s1.wolfChase	0071	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0071	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+679행
+  전: s1.wolfChase	0072	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0072	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+680행
+  전: s1.wolfChase	0073	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0073	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+681행
+  전: s1.wolfChase	0074	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0074	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+682행
+  전: s1.wolfChase	0075	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0075	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+683행
+  전: s1.wolfChase	0076	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0076	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+684행
+  전: s1.wolfChase	0077	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0077	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+685행
+  전: s1.wolfChase	0078	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0078	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+686행
+  전: s1.wolfChase	0079	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0079	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+687행
+  전: s1.wolfChase	0080	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0080	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+688행
+  전: s1.wolfChase	0081	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0081	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+689행
+  전: s1.wolfChase	0082	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0082	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+690행
+  전: s1.wolfChase	0083	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0083	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+691행
+  전: s1.wolfChase	0084	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0084	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+692행
+  전: s1.wolfChase	0085	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0085	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+693행
+  전: s1.wolfChase	0086	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0086	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+694행
+  전: s1.wolfChase	0087	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0087	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+695행
+  전: s1.wolfChase	0088	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0088	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+696행
+  전: s1.wolfChase	0089	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0089	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+697행
+  전: s1.wolfChase	0090	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0090	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+698행
+  전: s1.wolfChase	0091	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0091	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+699행
+  전: s1.wolfChase	0092	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0092	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+700행
+  전: s1.wolfChase	0093	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0093	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+701행
+  전: s1.wolfChase	0094	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0094	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+702행
+  전: s1.wolfChase	0095	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0095	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+703행
+  전: s1.wolfChase	0096	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0096	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+704행
+  전: s1.wolfChase	0097	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+  후: s1.wolfChase	0097	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+705행
+  전: s1.wolfChase	0098	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0098	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+706행
+  전: s1.wolfChase	0099	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=1	caught=1
+  후: s1.wolfChase	0099	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+707행
+  전: s1.wolfChase	0100	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0100	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+708행
+  전: s1.wolfChase	0101	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_23	chase=1	caught=1
+  후: s1.wolfChase	0101	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+709행
+  전: s1.wolfChase	0102	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0102	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+710행
+  전: s1.wolfChase	0103	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0103	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+711행
+  전: s1.wolfChase	0104	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=1	caught=1
+  후: s1.wolfChase	0104	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=1	caught=1
+712행
+  전: s1.wolfChase	0105	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0105	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+713행
+  전: s1.wolfChase	0106	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0106	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+714행
+  전: s1.wolfChase	0107	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0107	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_24	chase=1	caught=1
+715행
+  전: s1.wolfChase	0108	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0108	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_24	chase=1	caught=1
+716행
+  전: s1.wolfChase	0109	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0109	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_24	chase=1	caught=1
+717행
+  전: s1.wolfChase	0110	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0110	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+718행
+  전: s1.wolfChase	0111	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0111	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+719행
+  전: s1.wolfChase	0112	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0112	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+720행
+  전: s1.wolfChase	0113	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0113	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_25	chase=1	caught=1
+721행
+  전: s1.wolfChase	0114	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0114	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+722행
+  전: s1.wolfChase	0115	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0115	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+723행
+  전: s1.wolfChase	0116	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0116	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+724행
+  전: s1.wolfChase	0117	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0117	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+725행
+  전: s1.wolfChase	0118	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0118	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_26	chase=1	caught=1
+726행
+  전: s1.wolfChase	0119	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+  후: s1.wolfChase	0119	GeneratedMap/Room_0_2/PatrolMonster_0	Chase	8.99,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=1	caught=1
+728행
+  전: s1.wolfChase	0120	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0120	GeneratedMap/Room_0_2/PatrolMonster_0	Search	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=0	caught=0
+729행
+  전: s1.wolfChase	0121	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0121	GeneratedMap/Room_0_2/PatrolMonster_0	Search	8.99,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_20	chase=0	caught=0
+730행
+  전: s1.wolfChase	0122	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0122	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.01,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=0	caught=0
+731행
+  전: s1.wolfChase	0123	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0123	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.04,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_21	chase=0	caught=0
+732행
+  전: s1.wolfChase	0124	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0124	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.10,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=0	caught=0
+733행
+  전: s1.wolfChase	0125	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0125	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.17,66.50	hp=5	anim=F:Wolf Cub Sprite Sheet_22	chase=0	caught=0
+734행
+  전: s1.wolfChase	0126	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0126	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.23,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+735행
+  전: s1.wolfChase	0127	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0127	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.29,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+736행
+  전: s1.wolfChase	0128	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0128	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.32,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+737행
+  전: s1.wolfChase	0129	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0129	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_9	chase=0	caught=0
+738행
+  전: s1.wolfChase	0130	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0130	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+739행
+  전: s1.wolfChase	0131	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0131	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+740행
+  전: s1.wolfChase	0132	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0132	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+741행
+  전: s1.wolfChase	0133	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0133	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+742행
+  전: s1.wolfChase	0134	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0134	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+743행
+  전: s1.wolfChase	0135	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0135	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+744행
+  전: s1.wolfChase	0136	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0136	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+745행
+  전: s1.wolfChase	0137	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0137	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+746행
+  전: s1.wolfChase	0138	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0138	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+747행
+  전: s1.wolfChase	0139	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0139	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+748행
+  전: s1.wolfChase	0140	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0140	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+749행
+  전: s1.wolfChase	0141	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0141	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+750행
+  전: s1.wolfChase	0142	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0142	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+751행
+  전: s1.wolfChase	0143	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0143	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+752행
+  전: s1.wolfChase	0144	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0144	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+753행
+  전: s1.wolfChase	0145	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0145	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+754행
+  전: s1.wolfChase	0146	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0146	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+755행
+  전: s1.wolfChase	0147	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0147	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+756행
+  전: s1.wolfChase	0148	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0148	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+757행
+  전: s1.wolfChase	0149	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0149	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+758행
+  전: s1.wolfChase	0150	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0150	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+759행
+  전: s1.wolfChase	0151	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0151	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+760행
+  전: s1.wolfChase	0152	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0152	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+761행
+  전: s1.wolfChase	0153	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0153	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+762행
+  전: s1.wolfChase	0154	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0154	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+763행
+  전: s1.wolfChase	0155	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0155	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+764행
+  전: s1.wolfChase	0156	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0156	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+765행
+  전: s1.wolfChase	0157	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0157	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+766행
+  전: s1.wolfChase	0158	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0158	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+767행
+  전: s1.wolfChase	0159	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0159	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+768행
+  전: s1.wolfChase	0160	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0160	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+769행
+  전: s1.wolfChase	0161	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0161	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+770행
+  전: s1.wolfChase	0162	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0162	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+771행
+  전: s1.wolfChase	0163	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0163	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+772행
+  전: s1.wolfChase	0164	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0164	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+773행
+  전: s1.wolfChase	0165	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0165	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+774행
+  전: s1.wolfChase	0166	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0166	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+775행
+  전: s1.wolfChase	0167	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0167	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+776행
+  전: s1.wolfChase	0168	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0168	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+777행
+  전: s1.wolfChase	0169	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0169	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+778행
+  전: s1.wolfChase	0170	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0170	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+779행
+  전: s1.wolfChase	0171	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0171	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+780행
+  전: s1.wolfChase	0172	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0172	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+781행
+  전: s1.wolfChase	0173	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0173	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+782행
+  전: s1.wolfChase	0174	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0174	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+783행
+  전: s1.wolfChase	0175	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0175	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+784행
+  전: s1.wolfChase	0176	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.43,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0176	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+785행
+  전: s1.wolfChase	0177	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.46,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0177	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+786행
+  전: s1.wolfChase	0178	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.50,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+  후: s1.wolfChase	0178	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+787행
+  전: s1.wolfChase	0179	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.53,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_9	chase=0	caught=0
+  후: s1.wolfChase	0179	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+788행
+  전: s1.wolfChase	0180	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.56,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_9	chase=0	caught=0
+  후: s1.wolfChase	0180	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+789행
+  전: s1.wolfChase	0181	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.59,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_9	chase=0	caught=0
+  후: s1.wolfChase	0181	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.34,66.50	hp=5	anim=:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+790행
+  전: s1.wolfChase	0182	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.62,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_9	chase=0	caught=0
+  후: s1.wolfChase	0182	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.36,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+791행
+  전: s1.wolfChase	0183	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.64,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_10	chase=0	caught=0
+  후: s1.wolfChase	0183	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.38,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+792행
+  전: s1.wolfChase	0184	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.67,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_10	chase=0	caught=0
+  후: s1.wolfChase	0184	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.40,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_8	chase=0	caught=0
+793행
+  전: s1.wolfChase	0185	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.69,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_10	chase=0	caught=0
+  후: s1.wolfChase	0185	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.41,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_9	chase=0	caught=0
+794행
+  전: s1.wolfChase	0186	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.71,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_10	chase=0	caught=0
+  후: s1.wolfChase	0186	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.43,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_9	chase=0	caught=0
+795행
+  전: s1.wolfChase	0187	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.71,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_11	chase=0	caught=0
+  후: s1.wolfChase	0187	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.44,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_9	chase=0	caught=0
+796행
+  전: s1.wolfChase	0188	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.70,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_11	chase=0	caught=0
+  후: s1.wolfChase	0188	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.46,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_9	chase=0	caught=0
+797행
+  전: s1.wolfChase	0189	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.67,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_11	chase=0	caught=0
+  후: s1.wolfChase	0189	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.47,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_10	chase=0	caught=0
+798행
+  전: s1.wolfChase	0190	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.62,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_12	chase=0	caught=0
+  후: s1.wolfChase	0190	GeneratedMap/Room_0_2/PatrolMonster_0	Search	9.48,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_10	chase=0	caught=0
+799행
+  전: s1.wolfChase	0191	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.57,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_12	chase=0	caught=0
+  후: s1.wolfChase	0191	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.50,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_10	chase=0	caught=0
+800행
+  전: s1.wolfChase	0192	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.51,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_12	chase=0	caught=0
+  후: s1.wolfChase	0192	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.51,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_10	chase=0	caught=0
+801행
+  전: s1.wolfChase	0193	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.46,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_12	chase=0	caught=0
+  후: s1.wolfChase	0193	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.51,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_11	chase=0	caught=0
+802행
+  전: s1.wolfChase	0194	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.41,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_13	chase=0	caught=0
+  후: s1.wolfChase	0194	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.48,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_11	chase=0	caught=0
+803행
+  전: s1.wolfChase	0195	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.35,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_13	chase=0	caught=0
+  후: s1.wolfChase	0195	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.44,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_11	chase=0	caught=0
+804행
+  전: s1.wolfChase	0196	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.30,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_13	chase=0	caught=0
+  후: s1.wolfChase	0196	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.39,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_12	chase=0	caught=0
+805행
+  전: s1.wolfChase	0197	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.25,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_13	chase=0	caught=0
+  후: s1.wolfChase	0197	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.33,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_12	chase=0	caught=0
+806행
+  전: s1.wolfChase	0198	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.19,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_14	chase=0	caught=0
+  후: s1.wolfChase	0198	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.28,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_12	chase=0	caught=0
+807행
+  전: s1.wolfChase	0199	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.14,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_14	chase=0	caught=0
+  후: s1.wolfChase	0199	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.23,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_12	chase=0	caught=0
+808행
+  전: s1.wolfChase	0200	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.09,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_14	chase=0	caught=0
+  후: s1.wolfChase	0200	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.17,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_13	chase=0	caught=0
+809행
+  전: s1.wolfChase	0201	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.03,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_14	chase=0	caught=0
+  후: s1.wolfChase	0201	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.12,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_13	chase=0	caught=0
+810행
+  전: s1.wolfChase	0202	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.98,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_15	chase=0	caught=0
+  후: s1.wolfChase	0202	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.07,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_13	chase=0	caught=0
+811행
+  전: s1.wolfChase	0203	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.93,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_15	chase=0	caught=0
+  후: s1.wolfChase	0203	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	9.01,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_13	chase=0	caught=0
+812행
+  전: s1.wolfChase	0204	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.87,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_15	chase=0	caught=0
+  후: s1.wolfChase	0204	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.96,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_14	chase=0	caught=0
+813행
+  전: s1.wolfChase	0205	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.82,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_16	chase=0	caught=0
+  후: s1.wolfChase	0205	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.91,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_14	chase=0	caught=0
+814행
+  전: s1.wolfChase	0206	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.77,66.51	hp=5	anim=M:Wolf Cub Sprite Sheet_16	chase=0	caught=0
+  후: s1.wolfChase	0206	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.85,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_14	chase=0	caught=0
+815행
+  전: s1.wolfChase	0207	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.71,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_16	chase=0	caught=0
+  후: s1.wolfChase	0207	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.80,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_14	chase=0	caught=0
+816행
+  전: s1.wolfChase	0208	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.66,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_16	chase=0	caught=0
+  후: s1.wolfChase	0208	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.75,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_15	chase=0	caught=0
+817행
+  전: s1.wolfChase	0209	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.61,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_17	chase=0	caught=0
+  후: s1.wolfChase	0209	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.69,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_15	chase=0	caught=0
+818행
+  전: s1.wolfChase	0210	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.55,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_17	chase=0	caught=0
+  후: s1.wolfChase	0210	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.64,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_15	chase=0	caught=0
+819행
+  전: s1.wolfChase	0211	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.50,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_17	chase=0	caught=0
+  후: s1.wolfChase	0211	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.59,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_16	chase=0	caught=0
+820행
+  전: s1.wolfChase	0212	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.45,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_17	chase=0	caught=0
+  후: s1.wolfChase	0212	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.53,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_16	chase=0	caught=0
+821행
+  전: s1.wolfChase	0213	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.39,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_18	chase=0	caught=0
+  후: s1.wolfChase	0213	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.48,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_16	chase=0	caught=0
+822행
+  전: s1.wolfChase	0214	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.34,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_18	chase=0	caught=0
+  후: s1.wolfChase	0214	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.43,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_16	chase=0	caught=0
+823행
+  전: s1.wolfChase	0215	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.29,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_18	chase=0	caught=0
+  후: s1.wolfChase	0215	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.37,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_17	chase=0	caught=0
+824행
+  전: s1.wolfChase	0216	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.23,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_18	chase=0	caught=0
+  후: s1.wolfChase	0216	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.32,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_17	chase=0	caught=0
+825행
+  전: s1.wolfChase	0217	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.18,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_19	chase=0	caught=0
+  후: s1.wolfChase	0217	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.27,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_17	chase=0	caught=0
+826행
+  전: s1.wolfChase	0218	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.13,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_19	chase=0	caught=0
+  후: s1.wolfChase	0218	GeneratedMap/Room_0_2/PatrolMonster_0	Patrol	8.21,66.50	hp=5	anim=M:Wolf Cub Sprite Sheet_17	chase=0	caught=0
+… 나머지 1574줄 생략

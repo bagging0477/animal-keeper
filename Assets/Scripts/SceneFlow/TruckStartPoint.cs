@@ -32,19 +32,13 @@ public class TruckStartPoint : MonoBehaviour
     {
         if (player == null) return;
 
-        bool isDown = GameManager.Instance != null && GameManager.Instance.Health <= 0;
-
+        // 체력이 0이 되면 그 자리에서 바로 게임 오버라(GameManager.HandlePlayerDown) 부상 상태로 이 문에 서는 일은 없다.
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactionRange && InteractionFocus.TryFocus(this, distance);
 
-        if (inRange)
-        {
-            SubtitleManager.Show(isDown
-                ? "부상으로 이동할 수 없습니다. 다음 날로 이동해주세요"
-                : "E를 눌러 구조 시작", SubtitleManager.WhileInRange);
-        }
+        if (inRange) SubtitleManager.Show("E를 눌러 구조 시작", SubtitleManager.WhileInRange);
 
-        if (!inRange || isDown) return;
+        if (!inRange) return;
 
         Keyboard kb = GameplayInput.IsBlocked ? null : Keyboard.current;
         if (kb == null || !kb.eKey.wasPressedThisFrame) return;

@@ -20,7 +20,7 @@ using UnityEngine.AI;
 /// - 같은 Day 재진입 때는 마지막 위치에서 배회로 시작한다(도주 중에 저장돼도 RestoreFleeing을 무시한다). 수면은 저장하지 않아 깬 채로 나온다.
 /// - 코루틴과 이벤트 구독을 쓰지 않고 Update의 타이머만 쓴다.
 /// </summary>
-public class AnimalGoose : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
+public class AnimalGoose : AnimalFlee, IAnimalWeightRange
 {
     public enum GooseState { Wander, Alert, Flee, Rest, Down, Asleep }
 
@@ -93,7 +93,7 @@ public class AnimalGoose : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
     /// <summary>맞아서 쓰러지며 소리 이벤트를 낸 횟수(쓰러짐마다 1).</summary>
     public int HitCount { get; private set; }
 
-    public bool CanBePickedUp => IsAsleep;
+    public override bool CanBePickedUp => IsAsleep;
 
     private bool IsAsleep => gooseSleep != null && gooseSleep.IsAsleep;
 
@@ -323,7 +323,7 @@ public class AnimalGoose : AnimalFlee, IAnimalPickupGate, IAnimalWeightRange
     }
 
     // 깨어 있는 거위에게 E를 눌러도 따로 알리지 않는다(줍기 안내도 뜨지 않는다).
-    public void OnPickupBlocked()
+    public override void OnPickupBlocked()
     {
     }
 }

@@ -52,6 +52,7 @@ public class SoundReactiveMonsterAI : MonsterBrain
     // 탐색(Search) 동작 값은 순찰형과 같은 monsterSearch* 필드를 그대로 읽는다.
     protected override float CatchRange => config != null ? config.soundReactiveMonsterCatchRange : 0.7f;
     protected override int CatchDamage => config != null ? config.soundReactiveMonsterDamage : 47;
+    private float AttackInterval => config != null ? config.soundReactiveMonsterAttackInterval : 1.5f;
     protected override LayerMask SightBlockingMask => sightBlockingMask;
     protected override string MonsterTypeName => monsterTypeName;
     protected override Transform Visual => visual;
@@ -214,7 +215,7 @@ public class SoundReactiveMonsterAI : MonsterBrain
                 }
             }
 
-            if (UpdateCatch(distanceToPlayer)) return;
+            if (UpdateContactAttack(distanceToPlayer, AttackInterval)) return;
         }
 
         if (agent.isOnNavMesh) // not yet placed on a baked NavMesh (e.g. spawned before the map's NavMesh is baked) - skip pathing this frame
@@ -229,10 +230,10 @@ public class SoundReactiveMonsterAI : MonsterBrain
                         // 목적지를 매 프레임 갱신하지 않고 일정 주기로만 갱신해서, 플레이어가 급하게
                         // 코너를 꺾었을 때 몬스터가 완벽하게 즉시 따라오지 못하고 살짝 늦게 반응하게 한다.
                         chaseDestinationTimer += Time.deltaTime;
-                        if (chaseDestinationTimer >= ChaseDirectionUpdateInterval)
+                        if (chaseDestinationTimer >= ChaseDirectionUpdateInterval || NearContact)
                         {
                             chaseDestinationTimer = 0f;
-                            Vector3 targetPoint = new Vector3(player.position.x, 0f, player.position.y);
+                            Vector3 targetPoint = ChaseDestination(); // 플레이어 위가 아니라 접촉 범위 안쪽 조금 떨어진 자리
                             if (NavMesh.SamplePosition(targetPoint, out NavMeshHit hit, 2f, NavMesh.AllAreas))
                             {
                                 agent.SetDestination(hit.position);

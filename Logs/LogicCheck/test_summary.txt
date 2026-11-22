@@ -1,0 +1,30 @@
+﻿
+BatMonsterTest exit=1 23s
+BestiaryTest exit=0 18s
+CorpseDropTest exit=0 17s
+CreditsTest exit=0 17s
+DeliveryClerkTest exit=0 19s
+DuskTest exit=0 23s
+FirstEncounterTest exit=0 26s
+LightingTest exit=0 18s
+NetSwingTest exit=0 21s
+PlayerStatusHudTest exit=0 29s
+PlayerVisionQueryTest exit=0 17s
+PorcupineTest exit=0 17s
+RhinoTest exit=0 22s
+TranquilizerDartWallTest exit=0 17s
+TurtleTest exit=0 128s
+TutorialGuideTest exit=0 35s
+VillageMapGenerationTest exit=0 193s
+MonsterPacingTest exit=1 36s
+VillageSpawnTest exit=1 20s
+VillageTimeTest exit=0 20s
+WolfCorpseTest exit=0 26s
+MonsterTraceTest exit=0 27s
+LinearRegressionDump exit=0 18s
+ALL DONE
+ALL DONE
+BatMonsterTest exit=0 29s
+MonsterPacingTest exit=0 33s
+VillageSpawnTest exit=0 21s
+ALL DONE
