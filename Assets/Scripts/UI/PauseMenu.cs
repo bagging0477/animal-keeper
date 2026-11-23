@@ -15,6 +15,10 @@ using UnityEngine.SceneManagement;
 /// 먼저 실행한다(DefaultExecutionOrder).
 ///
 /// 게임플레이 입력(E 상호작용, 공격, 슬롯 선택, 이동 등)을 읽는 스크립트는 IsPaused일 때 입력을 무시한다.
+///
+/// 마을·트럭에서 게임 창이 포커스를 잃으면(Alt+Tab, 최소화) 이 메뉴를 연다 - 돌아왔을 때 게임이 바로 이어지지 않고 일시정지 상태로
+/// 돌아온다. 튜토리얼 멈춤 화면·첫 만남 카드·도감·게임오버·승리 화면·상점·소파 메뉴처럼 다른 화면이 이미 시간을 멈춰 둔 동안에는
+/// 그 화면을 그대로 두고 겹쳐 열지 않는다. 대화형 에디터(Play 모드에서 다른 에디터 창 클릭)에서는 열지 않는다(batch 테스트·빌드에서는 연다).
 /// </summary>
 [DefaultExecutionOrder(-100)]
 public class PauseMenu : MonoBehaviour
@@ -89,6 +93,42 @@ public class PauseMenu : MonoBehaviour
         if (System.Array.IndexOf(disabledScenes, SceneManager.GetActiveScene().name) >= 0) return;
         if (Time.timeScale == 0f) return; // 다른 화면이 이미 게임을 멈춰둔 상태
         Pause();
+    }
+
+    /// <summary>포커스를 잃었을 때 일시정지를 여는 씬.</summary>
+    public static readonly string[] FocusPauseScenes = { "VillageScene", "TruckScene" };
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus) PauseForFocusLoss();
+    }
+
+    private void OnApplicationPause(bool paused)
+    {
+        if (paused) PauseForFocusLoss();
+    }
+
+    /// <summary>창이 포커스를 잃었을 때 부른다. 일시정지를 열었으면 true.</summary>
+    public bool PauseForFocusLoss()
+    {
+        if (Application.isEditor && !Application.isBatchMode) return false;
+        if (!CanPauseForFocusLoss()) return false;
+        Pause();
+        return true;
+    }
+
+    /// <summary>지금 포커스를 잃으면 일시정지를 열어야 하는지: 마을·트럭이고, 이미 일시정지가 아니고, 다른 화면이 시간을 멈춰 두지 않았을 때.</summary>
+    public static bool CanPauseForFocusLoss()
+    {
+        if (IsPaused) return false;
+        if (System.Array.IndexOf(FocusPauseScenes, SceneManager.GetActiveScene().name) < 0) return false;
+        if (Time.timeScale <= 0f) return false; // 튜토리얼 멈춤·첫 만남 카드·도감·게임오버·승리·상점·소파 메뉴가 멈춰 둔 상태
+        GameManager gm = GameManager.Instance;
+        if (gm != null && (gm.IsGameOver || gm.IsGameWon)) return false;
+        if (TutorialGuide.Instance != null && TutorialGuide.Instance.IsIntroActive) return false;
+        if (MonsterEncounterCard.Instance != null && MonsterEncounterCard.Instance.IsShowing) return false;
+        if (BestiaryUI.BlocksInput || ShopMenuUI.IsOpen) return false;
+        return true;
     }
 
     private void Pause()

@@ -1,0 +1,4 @@
+result: Succeeded errors=0 warnings=3 size=160015660 time=00:00:29.7233859
+[Warning] Compile scripts: Assets\Scripts\Core\GameManager.cs(365,99): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+[Warning] Compile scripts: Assets\Scripts\Core\GameManager.cs(365,37): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+[Warning] Compile scripts: Assets\Scripts\Items\MineTrap.cs(21,34): warning CS0414: The field 'MineTrap.flashSortingOrderOffset' is assigned but its value is never used

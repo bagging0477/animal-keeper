@@ -12,6 +12,8 @@ using UnityEngine.SceneManagement;
 /// 크기는 Assets/Audio/Mixer/GameAudioMixer.mixer의 그룹 볼륨으로, 원본 파일마다 녹음 레벨이 달라서
 /// 생기는 차이는 아래의 클립별 볼륨(0~1)으로 보정한다. 효과음 클립별 볼륨 기본값은 각 파일의 실측 음량
 /// (50ms 단위 최대 RMS)이 같은 수준(약 -19dBFS)이 되도록 계산한 값이다.
+/// 플레이어가 설정 창에서 고른 소리 크기(GameVolume, 배경음·효과음)는 믹서의 노출 파라미터(BGMVolume / SFXVolume·UIVolume)에
+/// "믹서에 저장된 원래 값 + 크기의 dB"로 적용한다 - 크기 100%면 원래 믹서 값 그대로다.
 /// </summary>
 public class AudioManager : MonoBehaviour
 {
@@ -82,6 +84,23 @@ public class AudioManager : MonoBehaviour
     [Tooltip("소리가 시작되는 지점보다 이 시간(초)만큼 앞에서 자른다 - 시작음이 툭 끊겨 들리지 않게 남기는 여유분.")]
     [SerializeField, Min(0f)] private float leadingSilencePreRoll = 0.005f;
 
+    // 설정 창 소리 크기를 적용하는 믹서 노출 파라미터(GameAudioMixer.mixer). 추격음(Chase)은 BGM 그룹 아래라 배경음 크기를 따른다.
+    public const string MusicVolumeParam = "BGMVolume";
+    public const string SfxVolumeParam = "SFXVolume";
+    public const string UiVolumeParam = "UIVolume";
+
+    // 믹서에 저장된 원래 그룹 볼륨(dB). 처음 적용하기 전에 한 번 읽어 둔다 - 그 뒤로는 SetFloat 값이 읽히므로.
+    private static readonly Dictionary<string, float> mixerBaseDecibels = new Dictionary<string, float>();
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetMixerBase() => mixerBaseDecibels.Clear();
+
+    /// <summary>소리가 나가는 믹서(GameAudioMixer). 그룹이 비어 있으면 null.</summary>
+    public AudioMixer Mixer => musicGroup != null ? musicGroup.audioMixer : sfxGroup != null ? sfxGroup.audioMixer : uiGroup != null ? uiGroup.audioMixer : null;
+
+    /// <summary>믹서에 저장된 원래 볼륨(dB). 아직 읽지 못했으면 false.</summary>
+    public static bool TryGetMixerBaseDecibels(string param, out float db) => mixerBaseDecibels.TryGetValue(param, out db);
+
     private AudioSource sfxSource;
     private AudioSource segmentSource;
     private AudioSource uiSource;
@@ -144,16 +163,47 @@ public class AudioManager : MonoBehaviour
     private void OnEnable()
     {
         SceneManager.sceneLoaded += HandleSceneLoaded;
+        GameVolume.Changed += ApplyVolumes;
     }
 
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= HandleSceneLoaded;
+        GameVolume.Changed -= ApplyVolumes;
     }
 
     private void Start()
     {
+        // 믹서 SetFloat은 Awake에서는 적용되지 않는 경우가 있어 Start에서 처음 적용한다.
+        ApplyVolumes();
         PlayMusicForScene(SceneManager.GetActiveScene().name);
+    }
+
+    /// <summary>GameVolume(배경음·효과음 크기)을 믹서에 적용한다. 크기가 바뀔 때마다 GameVolume.Changed로 다시 불린다.</summary>
+    public void ApplyVolumes()
+    {
+        if (Instance != this) return;
+        AudioMixer mixer = Mixer;
+        if (mixer == null) return;
+        SetMixerVolume(mixer, MusicVolumeParam, GameVolume.Music);
+        SetMixerVolume(mixer, SfxVolumeParam, GameVolume.Sfx);
+        SetMixerVolume(mixer, UiVolumeParam, GameVolume.Sfx);
+    }
+
+    private static void SetMixerVolume(AudioMixer mixer, string param, float linear)
+    {
+        if (!mixerBaseDecibels.TryGetValue(param, out float baseDb))
+        {
+            if (!mixer.GetFloat(param, out baseDb))
+            {
+                Debug.LogWarning($"AudioManager: 믹서에 노출 파라미터 {param}이 없어 소리 크기를 적용하지 못했다.");
+                return;
+            }
+            mixerBaseDecibels[param] = baseDb;
+        }
+        // 0%면 원래 값과 상관없이 끈다(-80dB). 원래 값이 +3dB인 그룹에 -80을 더하면 -77dB로 아주 작게 남는다.
+        float db = linear <= 0.0001f ? GameVolume.MinDecibels : Mathf.Max(GameVolume.MinDecibels, baseDb + GameVolume.ToDecibels(linear));
+        mixer.SetFloat(param, db);
     }
 
     private void Update()

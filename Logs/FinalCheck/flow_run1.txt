@@ -1,0 +1,159 @@
+최종 점검 연속 플레이 (2026-11-23 오후 4:49:07, captureDeltaTime 1/30)
+--- [처음 실행 타이틀] 씬=TitleScene; timeScale=1; 일시정지=False; 직업=Scout; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=100/100; 마일리지=0; 마을시간=0.0; 구간=1; 오늘 마을 들어감=False; 게임오버/승리=False/False; 클래스 선택 대기=True; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간0,항목0,박쥐보장False/0; 튜토리얼 단계=0; 튜토리얼 완료=000000000; 튜토리얼 카드 본 것=000000000; 튜토리얼 마을방문·동물·몬스터=False/False/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물0 몬스터0; 음악=- 재생False 볼륨1; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,TutorialGuide; 동물 수=0; 몬스터 수(살아있음)=0; 몬스터 시체=0; 자막=
+타이틀: 설정 창 연 뒤 ESC → 설정 창 열림=True, 일시정지=False, timeScale=1
+타이틀: 설정 창 구성 7개 (SettingsPanel,Window,Header,Text,Content,CloseButton,Text) 글자:  조작 UI(Slider/Toggle/Dropdown)=Button:CloseButton 
+타이틀: 크레딧 연 뒤 ESC → 크레딧 열림=False
+타이틀: 아무것도 없을 때 ESC → 씬 TitleScene, 일시정지=False
+타이틀 버튼 CloseButton: TitleMenu.OnCloseSetting active=False
+타이틀 버튼 PlayButton: TitleMenu.OnPlay active=True
+타이틀 버튼 ExitButton: TitleMenu.OnExit active=True
+타이틀 버튼 SettingButton: TitleMenu.OnSetting active=True
+타이틀 버튼 CloseButton: TitleMenu.OnCloseCredits active=False
+타이틀 버튼 CreditsButton: TitleMenu.OnCredits active=True
+
+=== 판 1: 새 게임(스카우트) → 승리 → 타이틀로
+--- [판1 시작(트럭)] 씬=TruckScene; timeScale=1; 일시정지=False; 직업=Scout; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=100/100; 마일리지=0; 마을시간=0.0; 구간=1; 오늘 마을 들어감=False; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Scout; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간0,항목0,박쥐보장False/0; 튜토리얼 단계=2; 튜토리얼 완료=100000000; 튜토리얼 카드 본 것=110000000; 튜토리얼 마을방문·동물·몬스터=False/False/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물0 몬스터0; 음악=cozy ambient 재생True 볼륨0.33; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager:cozy ambient; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=0; 몬스터 수(살아있음)=0; 몬스터 시체=0; 스태미나=85/85; 걷기속도=4.2; 자막=
+--- [판1 마을 첫 진입] 씬=VillageScene; timeScale=1; 일시정지=False; 직업=Scout; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=100/100; 마일리지=0; 마을시간=0.3; 구간=1; 오늘 마을 들어감=True; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Scout; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간1,항목0,박쥐보장False/0; 튜토리얼 단계=3; 튜토리얼 완료=110000000; 튜토리얼 카드 본 것=111000000; 튜토리얼 마을방문·동물·몬스터=True/True/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물2 몬스터0; 음악=VillageScene 재생True 볼륨0.83; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager:VillageScene; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=41; 몬스터 수(살아있음)=9; 몬스터 시체=0; 스태미나=85/85; 걷기속도=4.2; 자막=E를 눌러 트럭에 타기
+  동물 줍기 성공 (가방 동물 1)
+  동물 줍기 성공 (가방 동물 2)
+--- [판1 마을 70초 뒤] 씬=VillageScene; timeScale=1; 일시정지=False; 직업=Scout; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=100/100; 마일리지=0; 마을시간=71.5; 구간=1; 오늘 마을 들어감=True; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBAA] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Scout; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간1,항목0,박쥐보장True/1; 튜토리얼 단계=4; 튜토리얼 완료=111100000; 튜토리얼 카드 본 것=111100000; 튜토리얼 마을방문·동물·몬스터=True/True/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물2 몬스터0; 음악=VillageScene 재생True 볼륨0.83; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager | AudioManager:VillageScene; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=39; 몬스터 수(살아있음)=10; 몬스터 시체=0; 스태미나=85/85; 걷기속도=4.2; 자막=E를 눌러 트럭에 타기
+  맡김 뒤 오늘 구조 7/7 (직접 채운 수 5)
+  패시브 구매 RunningShoes True (마일리지 70)
+--- [판1 2일차 트럭] 씬=TruckScene; timeScale=1; 일시정지=False; 직업=Scout; 날(Cycle)=2; 목표=13; 오늘 구조=0; 체력=100/100; 마일리지=120; 마을시간=0.0; 구간=1; 오늘 마을 들어감=False; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=0; 패시브=1(신발x1.05,칸+0,손전등False); 해금 클래스=Scout; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간0,항목0,박쥐보장False/0; 튜토리얼 단계=0; 튜토리얼 완료=111101110; 튜토리얼 카드 본 것=111100101; 튜토리얼 마을방문·동물·몬스터=True/True/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물2 몬스터0; 음악=cozy ambient 재생True 볼륨0.33; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager | AudioManager:cozy ambient; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=0; 몬스터 수(살아있음)=0; 몬스터 시체=0; 스태미나=85/85; 걷기속도=4.41; 자막=
+  동물 줍기 성공 (가방 동물 1)
+  맡김 뒤 오늘 구조 13/13 (직접 채운 수 12)
+--- [판1 승리 화면] 씬=ShelterScene; timeScale=0; 일시정지=False; 직업=Scout; 날(Cycle)=2; 목표=13; 오늘 구조=13; 체력=100/100; 마일리지=620; 마을시간=22.6; 구간=1; 오늘 마을 들어감=True; 게임오버/승리=False/True; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=0; 패시브=1(신발x1.05,칸+0,손전등False); 해금 클래스=Scout; 화물무게=0; 동물 자리 기록=40; 시체 자리 기록=0; 오늘 구조 Id=1; 시간소환 기록=구간1,항목0,박쥐보장False/0; 튜토리얼 단계=0; 튜토리얼 완료=111101110; 튜토리얼 카드 본 것=111100101; 튜토리얼 마을방문·동물·몬스터=True/True/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물3 몬스터0; 음악=VillageScene 재생True 볼륨0.83; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager | AudioManager | AudioManager:VillageScene; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=0; 몬스터 수(살아있음)=0; 몬스터 시체=0; 스태미나=85/85; 걷기속도=4.41; 자막=E를 눌러 다음날로
+--- [판1 뒤 타이틀] 씬=TitleScene; timeScale=1; 일시정지=False; 직업=Scout; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=100/100; 마일리지=0; 마을시간=0.0; 구간=1; 오늘 마을 들어감=False; 게임오버/승리=False/False; 클래스 선택 대기=True; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간0,항목0,박쥐보장False/0; 튜토리얼 단계=0; 튜토리얼 완료=000000000; 튜토리얼 카드 본 것=000000000; 튜토리얼 마을방문·동물·몬스터=False/False/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물0 몬스터0; 음악=VillageScene 재생False 볼륨0.83; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=0; 몬스터 수(살아있음)=0; 몬스터 시체=0; 자막=
+
+=== 판 2: 새 게임(트래퍼) → 체력 0 게임오버 → 다시 시작
+--- [판2 시작(트럭)] 씬=TruckScene; timeScale=1; 일시정지=False; 직업=Trapper; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=130/130; 마일리지=0; 마을시간=0.0; 구간=1; 오늘 마을 들어감=False; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Trapper; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간0,항목0,박쥐보장False/0; 튜토리얼 단계=2; 튜토리얼 완료=100000000; 튜토리얼 카드 본 것=110000000; 튜토리얼 마을방문·동물·몬스터=False/False/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물0 몬스터0; 음악=cozy ambient 재생True 볼륨0.33; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager:cozy ambient; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=0; 몬스터 수(살아있음)=0; 몬스터 시체=0; 스태미나=85/85; 걷기속도=3.75; 자막=
+--- [판2 마을 첫 진입] 씬=VillageScene; timeScale=1; 일시정지=False; 직업=Trapper; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=130/130; 마일리지=0; 마을시간=0.3; 구간=1; 오늘 마을 들어감=True; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Trapper; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간1,항목0,박쥐보장False/0; 튜토리얼 단계=3; 튜토리얼 완료=110000000; 튜토리얼 카드 본 것=111000000; 튜토리얼 마을방문·동물·몬스터=True/True/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물3 몬스터0; 음악=VillageScene 재생True 볼륨0.83; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager:VillageScene; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=41; 몬스터 수(살아있음)=9; 몬스터 시체=0; 스태미나=85/85; 걷기속도=3.75; 자막=E를 눌러 트럭에 타기
+  동물 줍기 성공 (가방 동물 1)
+--- [판2 게임오버(마을, 체력 0)] 씬=VillageScene; timeScale=0; 일시정지=False; 직업=Trapper; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=0/130; 마일리지=0; 마을시간=41.0; 구간=1; 오늘 마을 들어감=True; 게임오버/승리=True/False; 클래스 선택 대기=False; 가방=5칸 [MMBAN] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Trapper; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간1,항목0,박쥐보장False/0; 튜토리얼 단계=0; 튜토리얼 완료=111100000; 튜토리얼 카드 본 것=111100000; 튜토리얼 마을방문·동물·몬스터=True/True/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물3 몬스터0; 음악=VillageScene 재생True 볼륨0.83; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager | AudioManager | AudioManager:VillageScene; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=40; 몬스터 수(살아있음)=9; 몬스터 시체=0; 스태미나=85/85; 걷기속도=3.75; 자막=E를 눌러 트럭에 타기
+
+=== 판 3: 다시 시작(트래퍼) → 목표 미달 게임오버 → 타이틀로
+--- [판3 시작(트럭)] 씬=TruckScene; timeScale=1; 일시정지=False; 직업=Trapper; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=130/130; 마일리지=0; 마을시간=0.0; 구간=1; 오늘 마을 들어감=False; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Trapper; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간0,항목0,박쥐보장False/0; 튜토리얼 단계=2; 튜토리얼 완료=100000000; 튜토리얼 카드 본 것=110000000; 튜토리얼 마을방문·동물·몬스터=False/False/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물0 몬스터0; 음악=cozy ambient 재생True 볼륨0.33; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager | AudioManager:cozy ambient; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=0; 몬스터 수(살아있음)=0; 몬스터 시체=0; 스태미나=85/85; 걷기속도=3.75; 자막=
+--- [판3 마을 첫 진입] 씬=VillageScene; timeScale=1; 일시정지=False; 직업=Trapper; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=130/130; 마일리지=0; 마을시간=0.3; 구간=1; 오늘 마을 들어감=True; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Trapper; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간1,항목0,박쥐보장False/0; 튜토리얼 단계=3; 튜토리얼 완료=110000000; 튜토리얼 카드 본 것=111000000; 튜토리얼 마을방문·동물·몬스터=True/True/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물2 몬스터0; 음악=VillageScene 재생True 볼륨0.83; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager:VillageScene; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=41; 몬스터 수(살아있음)=9; 몬스터 시체=0; 스태미나=85/85; 걷기속도=3.75; 자막=E를 눌러 트럭에 타기
+  동물 줍기 성공 (가방 동물 1)
+--- [판3 게임오버(트럭, 목표 미달)] 씬=TruckScene; timeScale=0; 일시정지=False; 직업=Trapper; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=130/130; 마일리지=0; 마을시간=31.9; 구간=1; 오늘 마을 들어감=True; 게임오버/승리=True/False; 클래스 선택 대기=False; 가방=5칸 [MMBAN] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Trapper; 화물무게=0; 동물 자리 기록=40; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간1,항목0,박쥐보장False/0; 튜토리얼 단계=0; 튜토리얼 완료=111101000; 튜토리얼 카드 본 것=111100100; 튜토리얼 마을방문·동물·몬스터=True/True/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물2 몬스터0; 음악=cozy ambient 재생True 볼륨0.33; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager | AudioManager | AudioManager:cozy ambient; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=0; 몬스터 수(살아있음)=0; 몬스터 시체=0; 스태미나=85/85; 걷기속도=3.75; 자막=E를 눌러 모두 맡기기 (1마리)
+--- [판3 뒤 타이틀] 씬=TitleScene; timeScale=1; 일시정지=False; 직업=Scout; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=100/100; 마일리지=0; 마을시간=0.0; 구간=1; 오늘 마을 들어감=False; 게임오버/승리=False/False; 클래스 선택 대기=True; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간0,항목0,박쥐보장False/0; 튜토리얼 단계=0; 튜토리얼 완료=000000000; 튜토리얼 카드 본 것=000000000; 튜토리얼 마을방문·동물·몬스터=False/False/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물0 몬스터0; 음악=cozy ambient 재생False 볼륨0.33; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=0; 몬스터 수(살아있음)=0; 몬스터 시체=0; 자막=
+
+=== 판 4: 새 게임(거너) → 승리 → 다시 시작
+--- [판4 시작(트럭)] 씬=TruckScene; timeScale=1; 일시정지=False; 직업=Gunner; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=50/50; 마일리지=0; 마을시간=0.0; 구간=1; 오늘 마을 들어감=False; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=3; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Gunner; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간0,항목0,박쥐보장False/0; 튜토리얼 단계=2; 튜토리얼 완료=100000000; 튜토리얼 카드 본 것=110000000; 튜토리얼 마을방문·동물·몬스터=False/False/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물0 몬스터0; 음악=cozy ambient 재생True 볼륨0.33; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager | AudioManager:cozy ambient; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=0; 몬스터 수(살아있음)=0; 몬스터 시체=0; 스태미나=85/85; 걷기속도=3.75; 자막=
+--- [판4 마을 첫 진입] 씬=VillageScene; timeScale=1; 일시정지=False; 직업=Gunner; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=50/50; 마일리지=0; 마을시간=0.3; 구간=1; 오늘 마을 들어감=True; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=3; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Gunner; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간1,항목0,박쥐보장False/0; 튜토리얼 단계=3; 튜토리얼 완료=110000000; 튜토리얼 카드 본 것=111000000; 튜토리얼 마을방문·동물·몬스터=True/True/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물3 몬스터0; 음악=VillageScene 재생True 볼륨0.83; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager:VillageScene; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=41; 몬스터 수(살아있음)=9; 몬스터 시체=0; 스태미나=85/85; 걷기속도=3.75; 자막=E를 눌러 트럭에 타기
+  동물 줍기 성공 (가방 동물 1)
+  동물 줍기 성공 (가방 동물 2)
+--- [판4 마을 70초 뒤] 씬=VillageScene; timeScale=1; 일시정지=False; 직업=Gunner; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=50/50; 마일리지=0; 마을시간=71.5; 구간=1; 오늘 마을 들어감=True; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBAA] 선택0/무기False; 탄약=3; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Gunner; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간1,항목0,박쥐보장True/1; 튜토리얼 단계=4; 튜토리얼 완료=111100000; 튜토리얼 카드 본 것=111100000; 튜토리얼 마을방문·동물·몬스터=True/True/True; 첫만남 본 종류=Bat 대기1 표시False; 도감 기록=동물3 몬스터1; 음악=VillageScene 재생True 볼륨0.83; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager | AudioManager:VillageScene; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=39; 몬스터 수(살아있음)=10; 몬스터 시체=0; 스태미나=85/85; 걷기속도=3.75; 자막=E를 눌러 트럭에 타기
+  맡김 뒤 오늘 구조 7/7 (직접 채운 수 5)
+  패시브 구매 RunningShoes True (마일리지 90)
+--- [판4 2일차 트럭] 씬=TruckScene; timeScale=1; 일시정지=False; 직업=Gunner; 날(Cycle)=2; 목표=13; 오늘 구조=0; 체력=50/50; 마일리지=140; 마을시간=0.0; 구간=1; 오늘 마을 들어감=False; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=3; 패시브=1(신발x1.05,칸+0,손전등False); 해금 클래스=Gunner; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간0,항목0,박쥐보장False/0; 튜토리얼 단계=0; 튜토리얼 완료=111101110; 튜토리얼 카드 본 것=111100101; 튜토리얼 마을방문·동물·몬스터=True/True/True; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물3 몬스터1; 음악=cozy ambient 재생True 볼륨0.33; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager | AudioManager:cozy ambient; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=0; 몬스터 수(살아있음)=0; 몬스터 시체=0; 스태미나=85/85; 걷기속도=3.938; 자막=
+  동물 줍기 성공 (가방 동물 1)
+  맡김 뒤 오늘 구조 13/13 (직접 채운 수 12)
+--- [판4 승리 화면] 씬=ShelterScene; timeScale=0; 일시정지=False; 직업=Gunner; 날(Cycle)=2; 목표=13; 오늘 구조=13; 체력=50/50; 마일리지=640; 마을시간=22.6; 구간=1; 오늘 마을 들어감=True; 게임오버/승리=False/True; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=3; 패시브=1(신발x1.05,칸+0,손전등False); 해금 클래스=Gunner; 화물무게=0; 동물 자리 기록=40; 시체 자리 기록=0; 오늘 구조 Id=1; 시간소환 기록=구간1,항목0,박쥐보장False/0; 튜토리얼 단계=0; 튜토리얼 완료=111101110; 튜토리얼 카드 본 것=111100101; 튜토리얼 마을방문·동물·몬스터=True/True/True; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물4 몬스터1; 음악=VillageScene 재생True 볼륨0.83; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager | AudioManager | AudioManager:VillageScene; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=0; 몬스터 수(살아있음)=0; 몬스터 시체=0; 스태미나=85/85; 걷기속도=3.938; 자막=E를 눌러 재시작
+
+=== 판 5: 다시 시작(스카우트) 처음 상태
+--- [판5 시작(트럭)] 씬=TruckScene; timeScale=1; 일시정지=False; 직업=Scout; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=100/100; 마일리지=0; 마을시간=0.0; 구간=1; 오늘 마을 들어감=False; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Scout; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간0,항목0,박쥐보장False/0; 튜토리얼 단계=2; 튜토리얼 완료=100000000; 튜토리얼 카드 본 것=110000000; 튜토리얼 마을방문·동물·몬스터=False/False/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물0 몬스터0; 음악=cozy ambient 재생True 볼륨0.33; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager:cozy ambient; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=0; 몬스터 수(살아있음)=0; 몬스터 시체=0; 스태미나=85/85; 걷기속도=4.2; 자막=
+--- [판5 마을 첫 진입] 씬=VillageScene; timeScale=1; 일시정지=False; 직업=Scout; 날(Cycle)=1; 목표=7; 오늘 구조=0; 체력=100/100; 마일리지=0; 마을시간=0.3; 구간=1; 오늘 마을 들어감=True; 게임오버/승리=False/False; 클래스 선택 대기=False; 가방=5칸 [MMBNN] 선택0/무기False; 탄약=0; 패시브=0(신발x1,칸+0,손전등False); 해금 클래스=Scout; 화물무게=0; 동물 자리 기록=0; 시체 자리 기록=0; 오늘 구조 Id=0; 시간소환 기록=구간1,항목0,박쥐보장False/0; 튜토리얼 단계=3; 튜토리얼 완료=110000000; 튜토리얼 카드 본 것=111000000; 튜토리얼 마을방문·동물·몬스터=True/True/False; 첫만남 본 종류= 대기0 표시False; 도감 기록=동물3 몬스터0; 음악=VillageScene 재생True 볼륨0.83; 추격음 수=0; AudioSource(매니저)=4; 재생 중 소리=AudioManager:VillageScene; AudioListener=vol1 pauseFalse; 전환 잠금=False; 입력 막힘=False; DDOL 루트=AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide; 동물 수=41; 몬스터 수(살아있음)=9; 몬스터 시체=0; 스태미나=85/85; 걷기속도=4.2; 자막=E를 눌러 트럭에 타기
+멈춤 화면 닫은 횟수 24, 체력 채움(시험 진행용) 3
+
+=== 프레임 속도별 (captureDeltaTime 1/30·1/60·1/144), 마을 판5 스카우트
+시험 위치 (55.50, 74.50), 방향 (0.00, -1.00), 빈 거리 26.1
+[30fps] 걷기1.5초 6.468칸 | 마을시간 +1.600초 | 달리기 탈진까지 3.97초 19.57칸(시작 85) | 탈진 뒤 2초 회복 +30.5 | 늑대 피격 0회 시각[] 간격[-] | 호저 피격 0회 시각[] 간격[-]
+[60fps] 걷기1.5초 6.384칸 | 마을시간 +1.550초 | 달리기 탈진까지 3.95초 19.58칸(시작 85) | 탈진 뒤 2초 회복 +30.3 | 늑대 피격 0회 시각[] 간격[-] | 호저 피격 0회 시각[] 간격[-]
+[144fps] 걷기1.5초 6.279칸 | 마을시간 +1.520초 | 달리기 탈진까지 3.94초 19.56칸(시작 85) | 탈진 뒤 2초 회복 +30.1 | 늑대 피격 0회 시각[] 간격[-] | 호저 피격 0회 시각[] 간격[-]
+긴 프레임(2초 요청): deltaTime 2, 마을시간 +2.067, 이동 8.484칸
+
+=== 판별 비교표 (같은 시점끼리)
+
+## 시작(트럭): 판1 시작(트럭) | 판2 시작(트럭) | 판3 시작(트럭) | 판4 시작(트럭) | 판5 시작(트럭)
+  씬: TruckScene | TruckScene | TruckScene | TruckScene | TruckScene
+  timeScale: 1 | 1 | 1 | 1 | 1
+  일시정지: False | False | False | False | False
+≠ 직업: Scout | Trapper | Trapper | Gunner | Scout
+  날(Cycle): 1 | 1 | 1 | 1 | 1
+  목표: 7 | 7 | 7 | 7 | 7
+  오늘 구조: 0 | 0 | 0 | 0 | 0
+≠ 체력: 100/100 | 130/130 | 130/130 | 50/50 | 100/100
+  마일리지: 0 | 0 | 0 | 0 | 0
+  마을시간: 0.0 | 0.0 | 0.0 | 0.0 | 0.0
+  구간: 1 | 1 | 1 | 1 | 1
+  오늘 마을 들어감: False | False | False | False | False
+  게임오버/승리: False/False | False/False | False/False | False/False | False/False
+  클래스 선택 대기: False | False | False | False | False
+  가방: 5칸 [MMBNN] 선택0/무기False | 5칸 [MMBNN] 선택0/무기False | 5칸 [MMBNN] 선택0/무기False | 5칸 [MMBNN] 선택0/무기False | 5칸 [MMBNN] 선택0/무기False
+≠ 탄약: 0 | 0 | 0 | 3 | 0
+  패시브: 0(신발x1,칸+0,손전등False) | 0(신발x1,칸+0,손전등False) | 0(신발x1,칸+0,손전등False) | 0(신발x1,칸+0,손전등False) | 0(신발x1,칸+0,손전등False)
+≠ 해금 클래스: Scout | Trapper | Trapper | Gunner | Scout
+  화물무게: 0 | 0 | 0 | 0 | 0
+  동물 자리 기록: 0 | 0 | 0 | 0 | 0
+  시체 자리 기록: 0 | 0 | 0 | 0 | 0
+  오늘 구조 Id: 0 | 0 | 0 | 0 | 0
+  시간소환 기록: 구간0,항목0,박쥐보장False/0 | 구간0,항목0,박쥐보장False/0 | 구간0,항목0,박쥐보장False/0 | 구간0,항목0,박쥐보장False/0 | 구간0,항목0,박쥐보장False/0
+  튜토리얼 단계: 2 | 2 | 2 | 2 | 2
+  튜토리얼 완료: 100000000 | 100000000 | 100000000 | 100000000 | 100000000
+  튜토리얼 카드 본 것: 110000000 | 110000000 | 110000000 | 110000000 | 110000000
+  튜토리얼 마을방문·동물·몬스터: False/False/False | False/False/False | False/False/False | False/False/False | False/False/False
+  첫만남 본 종류:  대기0 표시False |  대기0 표시False |  대기0 표시False |  대기0 표시False |  대기0 표시False
+  도감 기록: 동물0 몬스터0 | 동물0 몬스터0 | 동물0 몬스터0 | 동물0 몬스터0 | 동물0 몬스터0
+  음악: cozy ambient 재생True 볼륨0.33 | cozy ambient 재생True 볼륨0.33 | cozy ambient 재생True 볼륨0.33 | cozy ambient 재생True 볼륨0.33 | cozy ambient 재생True 볼륨0.33
+  추격음 수: 0 | 0 | 0 | 0 | 0
+  AudioSource(매니저): 4 | 4 | 4 | 4 | 4
+≠ 재생 중 소리: AudioManager:cozy ambient | AudioManager:cozy ambient | AudioManager | AudioManager:cozy ambient | AudioManager | AudioManager:cozy ambient | AudioManager:cozy ambient
+  AudioListener: vol1 pauseFalse | vol1 pauseFalse | vol1 pauseFalse | vol1 pauseFalse | vol1 pauseFalse
+  전환 잠금: False | False | False | False | False
+  입력 막힘: False | False | False | False | False
+  DDOL 루트: AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide | AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide | AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide | AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide | AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide
+  동물 수: 0 | 0 | 0 | 0 | 0
+  몬스터 수(살아있음): 0 | 0 | 0 | 0 | 0
+  몬스터 시체: 0 | 0 | 0 | 0 | 0
+  스태미나: 85/85 | 85/85 | 85/85 | 85/85 | 85/85
+≠ 걷기속도: 4.2 | 3.75 | 3.75 | 3.75 | 4.2
+  자막:  |  |  |  | 
+
+## 마을 첫 진입: 판1 마을 첫 진입 | 판2 마을 첫 진입 | 판3 마을 첫 진입 | 판4 마을 첫 진입 | 판5 마을 첫 진입
+  씬: VillageScene | VillageScene | VillageScene | VillageScene | VillageScene
+  timeScale: 1 | 1 | 1 | 1 | 1
+  일시정지: False | False | False | False | False
+≠ 직업: Scout | Trapper | Trapper | Gunner | Scout
+  날(Cycle): 1 | 1 | 1 | 1 | 1
+  목표: 7 | 7 | 7 | 7 | 7
+  오늘 구조: 0 | 0 | 0 | 0 | 0
+≠ 체력: 100/100 | 130/130 | 130/130 | 50/50 | 100/100
+  마일리지: 0 | 0 | 0 | 0 | 0
+  마을시간: 0.3 | 0.3 | 0.3 | 0.3 | 0.3
+  구간: 1 | 1 | 1 | 1 | 1
+  오늘 마을 들어감: True | True | True | True | True
+  게임오버/승리: False/False | False/False | False/False | False/False | False/False
+  클래스 선택 대기: False | False | False | False | False
+  가방: 5칸 [MMBNN] 선택0/무기False | 5칸 [MMBNN] 선택0/무기False | 5칸 [MMBNN] 선택0/무기False | 5칸 [MMBNN] 선택0/무기False | 5칸 [MMBNN] 선택0/무기False
+≠ 탄약: 0 | 0 | 0 | 3 | 0
+  패시브: 0(신발x1,칸+0,손전등False) | 0(신발x1,칸+0,손전등False) | 0(신발x1,칸+0,손전등False) | 0(신발x1,칸+0,손전등False) | 0(신발x1,칸+0,손전등False)
+≠ 해금 클래스: Scout | Trapper | Trapper | Gunner | Scout
+  화물무게: 0 | 0 | 0 | 0 | 0
+  동물 자리 기록: 0 | 0 | 0 | 0 | 0
+  시체 자리 기록: 0 | 0 | 0 | 0 | 0
+  오늘 구조 Id: 0 | 0 | 0 | 0 | 0
+  시간소환 기록: 구간1,항목0,박쥐보장False/0 | 구간1,항목0,박쥐보장False/0 | 구간1,항목0,박쥐보장False/0 | 구간1,항목0,박쥐보장False/0 | 구간1,항목0,박쥐보장False/0
+  튜토리얼 단계: 3 | 3 | 3 | 3 | 3
+  튜토리얼 완료: 110000000 | 110000000 | 110000000 | 110000000 | 110000000
+  튜토리얼 카드 본 것: 111000000 | 111000000 | 111000000 | 111000000 | 111000000
+  튜토리얼 마을방문·동물·몬스터: True/True/False | True/True/False | True/True/False | True/True/False | True/True/False
+  첫만남 본 종류:  대기0 표시False |  대기0 표시False |  대기0 표시False |  대기0 표시False |  대기0 표시False
+≠ 도감 기록: 동물2 몬스터0 | 동물3 몬스터0 | 동물2 몬스터0 | 동물3 몬스터0 | 동물3 몬스터0
+  음악: VillageScene 재생True 볼륨0.83 | VillageScene 재생True 볼륨0.83 | VillageScene 재생True 볼륨0.83 | VillageScene 재생True 볼륨0.83 | VillageScene 재생True 볼륨0.83
+  추격음 수: 0 | 0 | 0 | 0 | 0
+  AudioSource(매니저): 4 | 4 | 4 | 4 | 4
+  재생 중 소리: AudioManager:VillageScene | AudioManager:VillageScene | AudioManager:VillageScene | AudioManager:VillageScene | AudioManager:VillageScene
+  AudioListener: vol1 pauseFalse | vol1 pauseFalse | vol1 pauseFalse | vol1 pauseFalse | vol1 pauseFalse
+  전환 잠금: False | False | False | False | False
+  입력 막힘: False | False | False | False | False
+  DDOL 루트: AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide | AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide | AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide | AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide | AppUIUpdater,AudioManager,BestiaryUI,GameManager,MonsterEncounterCard,PauseMenu,SubtitleManager,TutorialGuide
+  동물 수: 41 | 41 | 41 | 41 | 41
+  몬스터 수(살아있음): 9 | 9 | 9 | 9 | 9
+  몬스터 시체: 0 | 0 | 0 | 0 | 0
+  스태미나: 85/85 | 85/85 | 85/85 | 85/85 | 85/85
+≠ 걷기속도: 4.2 | 3.75 | 3.75 | 3.75 | 4.2
+  자막: E를 눌러 트럭에 타기 | E를 눌러 트럭에 타기 | E를 눌러 트럭에 타기 | E를 눌러 트럭에 타기 | E를 눌러 트럭에 타기
+
+== 콘솔 경고·오류·예외 (6)
+  x6 [Warning] (VillageScene) Failed to create agent because it is not close enough to the NavMesh
