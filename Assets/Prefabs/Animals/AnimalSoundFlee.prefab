@@ -164,7 +164,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   minMovingSpeed: 0.05
-  cryClip: {fileID: 8300000, guid: 67a55558d587a4c4683ad97fdb5cc905, type: 3}
+  cryClip: {fileID: 8300000, guid: ce6cec67b67d4f33b2b6df114d8db691, type: 3}
   cryVolume: 1
 --- !u!50 &6992825298821530901
 Rigidbody2D:

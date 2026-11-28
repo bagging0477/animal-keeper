@@ -32,6 +32,9 @@
 - **Sci-fi Sounds** by Kenney — 폭탄 폭발(lowFrequency_explosion_001). CC0.
   - https://kenney.nl/assets/sci-fi-sounds
   - 라이선스(세 팩 공통): https://creativecommons.org/publicdomain/zero/1.0/
+- **Mouse Rodent Squeak Whistle** by SecureSubset — 레서판다 울음(animal_redpanda_squeak, 크기 +6.7dB 보정). CC0.
+  - https://freesound.org/people/SecureSubset/sounds/800274/
+  - 라이선스: https://creativecommons.org/publicdomain/zero/1.0/
 - 효과음·배경음 16개 — 출처 확인 필요
   - 마을 배경음, 트럭 배경음, 추격 경고음, 마취총, 피격, 포획망, 하루 성공·실패
   - 고양이·코알라·레서판다·거북·거위 소리

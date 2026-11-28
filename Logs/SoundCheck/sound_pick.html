@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Animal Keeper 소리 후보 고르기</title>
+<style>
+:root { --bg:#f6f4ef; --card:#fff; --ink:#22211f; --muted:#77736b; --line:#e3dfd6; --acc:#c2552d; --low:#2f6fb0; }
+@media (prefers-color-scheme: dark) { :root { --bg:#1b1a18; --card:#25241f; --ink:#ece8df; --muted:#9a958a; --line:#38362f; --acc:#e7794f; --low:#6aa5e0; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 "Malgun Gothic","Noto Sans KR",system-ui,sans-serif; }
+main { max-width:920px; margin:0 auto; padding:28px 20px 120px; }
+h1 { font-size:24px; margin:0 0 6px; }
+.lead { color:var(--muted); margin:0 0 20px; }
+.lead b { color:var(--ink); }
+h3.group { font-size:13px; letter-spacing:.08em; color:var(--muted); margin:28px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px; }
+.moment { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px 6px; margin:0 0 12px; }
+.moment.rp { border-color:var(--acc); }
+.moment.done { box-shadow: inset 4px 0 0 var(--acc); }
+.moment h2 { font-size:17px; margin:0; }
+.where { margin:2px 0 6px; font-size:12px; color:var(--muted); font-family:Consolas,monospace; }
+ol { list-style:none; margin:0; padding:0; }
+.cand { display:grid; grid-template-columns:auto auto 1fr auto auto auto; gap:10px; align-items:center; padding:8px 0; border-top:1px solid var(--line); }
+.num { font-weight:700; min-width:2.2em; font-variant-numeric:tabular-nums; }
+.rp .num { min-width:9em; font-weight:600; font-size:13px; }
+.play { width:38px; height:38px; border-radius:50%; border:1.5px solid var(--acc); background:transparent; color:var(--acc); font-size:14px; cursor:pointer; }
+.play.on { background:var(--acc); color:var(--card); }
+.play:focus-visible { outline:2px solid var(--acc); outline-offset:2px; }
+.desc { font-size:14px; }
+.src { font-size:12px; color:var(--muted); }
+.src a { color:inherit; }
+.muted { color:var(--muted); }
+.dur, .lv { font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.lv-low { color:var(--low); font-weight:600; }
+.lv-hi { color:var(--acc); font-weight:600; }
+.pick { font-size:12px; display:flex; gap:4px; align-items:center; cursor:pointer; white-space:nowrap; }
+.bar { position:fixed; left:0; right:0; bottom:0; background:var(--card); border-top:1px solid var(--line); padding:10px 20px; }
+.bar .in { max-width:920px; margin:0 auto; display:flex; gap:12px; align-items:center; }
+.bar output { flex:1; font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.bar button { border:1px solid var(--line); background:var(--bg); color:var(--ink); border-radius:6px; padding:6px 12px; cursor:pointer; font:inherit; font-size:13px; }
+@media (max-width:640px) { .cand { grid-template-columns:auto auto 1fr; } .dur,.lv,.pick { grid-column:3; } }
+</style></head><body><main>
+<h1>소리 후보 고르기</h1>
+<p class="lead">14개 순간 × 후보 3개 = <b>42개</b>. ▶ 를 눌러 듣고 마음에 드는 후보에 <b>고르기</b>를 표시하세요(이 브라우저에 저장됨). 다 고르면 아래 <b>결과 복사</b>로 붙여 넣으면 됩니다.<br>
+크기는 조사 표(sound_survey.md)와 같은 방식의 가장 큰 50ms RMS이며, 게임 효과음 기준은 약 −19dB입니다. <span style="color:var(--low);font-weight:600">파란 숫자</span>는 6dB 이상 작게 녹음된 것으로, 고르면 넣을 때 크기를 맞추면 됩니다. 설명은 제목·파형 기준이며 직접 들어 보진 못했습니다. 모든 후보는 CC0이고 출처는 Candidates/SOURCES.md에도 있습니다.</p>
+<section class="moment rp"><h2>레서판다 울음 — 비교</h2><p class="where">AnimalSoundFlee.prefab cryClip · 도망 시작할 때 (이미 새 소리로 연결함)</p><ol>
+<li class="cand">
+  <span class="num">새 소리 (연결됨)</span>
+  <button class="play" data-src="../../Assets/Audio/animal_redpanda_squeak.wav" aria-label="새 소리 (연결됨) 재생">▶</button>
+  <div class="body"><div class="desc">Freesound HQ 미리듣기에 +6.7dB 보정, 볼륨 1</div><div class="src"><a href="https://freesound.org/people/SecureSubset/sounds/800274/" target="_blank" rel="noopener">Mouse Rodent Squeak Whistle</a> · SecureSubset · CC0</div></div>
+  <span class="dur">0.25초</span><span class="lv " title="기준(−19dB)보다 0dB 큼">-19dB</span>
+  
+</li>
+<li class="cand">
+  <span class="num">새 소리 보정 전</span>
+  <button class="play" data-src="RedPandaCandidates/4%EB%B2%88.mp3" aria-label="새 소리 보정 전 재생">▶</button>
+  <div class="body"><div class="desc">받은 그대로(약 6.7dB 작음)</div><div class="src"><a href="https://freesound.org/people/SecureSubset/sounds/800274/" target="_blank" rel="noopener">Mouse Rodent Squeak Whistle</a> · SecureSubset · CC0</div></div>
+  <span class="dur">0.25초</span><span class="lv lv-low" title="기준(−19dB)보다 7dB 작음">-26dB</span>
+  
+</li>
+<li class="cand">
+  <span class="num">옛 소리 (연결 해제, 파일은 남김)</span>
+  <button class="play" data-src="../../Assets/Audio/animal_redpanda_barking.mp3" aria-label="옛 소리 (연결 해제, 파일은 남김) 재생">▶</button>
+  <div class="body"><div class="desc">animal_redpanda_barking.mp3, 출처 미확인</div><div class="src"><span class="muted">출처 미확인</span></div></div>
+  <span class="dur">0.86초</span><span class="lv " title="기준(−19dB)보다 5dB 큼">-14dB</span>
+  
+</li>
+</ol></section>
+<h3 class="group">몬스터</h3>
+<section class="moment" data-key="코뿔소 돌진 준비"><h2>코뿔소 돌진 준비</h2><p class="where">RhinoMonsterAI.cs:290 — 돌진 직전 예고</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%EC%BD%94%EB%BF%94%EC%86%8C%20%EB%8F%8C%EC%A7%84%20%EC%A4%80%EB%B9%84/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">실제 들소의 콧김 &#x27;훅훅&#x27;. 무겁고 낮음</div><div class="src"><a href="https://freesound.org/people/TheKingOfGeeks360/sounds/867549/" target="_blank" rel="noopener">Bovines - American Bison; Nasal Huffs, Close Perspective</a> · TheKingOfGeeks360 · CC0 <span class="muted">— Freesound — 원본 3.6초 중 1.6~2.7초</span></div></div>
+  <span class="dur">1.10초</span><span class="lv lv-low" title="기준(−19dB)보다 12dB 작음">-31dB</span>
+  <label class="pick"><input type="radio" name="코뿔소 돌진 준비" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%EC%BD%94%EB%BF%94%EC%86%8C%20%EB%8F%8C%EC%A7%84%20%EC%A4%80%EB%B9%84/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">말 콧김 한 번 &#x27;푸르르&#x27;. 짧고 또렷함</div><div class="src"><a href="https://freesound.org/people/bruno.auzet/sounds/538697/" target="_blank" rel="noopener">horse snort.wav</a> · bruno.auzet · CC0 <span class="muted">— Freesound — 원본 10.1초 중 7.6~8.4초</span></div></div>
+  <span class="dur">0.79초</span><span class="lv " title="기준(−19dB)보다 1dB 큼">-18dB</span>
+  <label class="pick"><input type="radio" name="코뿔소 돌진 준비" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%EC%BD%94%EB%BF%94%EC%86%8C%20%EB%8F%8C%EC%A7%84%20%EC%A4%80%EB%B9%84/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">말 콧김, 더 짧고 거칠음. 녹음 크기 작음</div><div class="src"><a href="https://freesound.org/people/o_ciz/sounds/475483/" target="_blank" rel="noopener">Horse(snort)_3.wav</a> · o_ciz · CC0 <span class="muted">— Freesound — 원본 2.5초 중 0~0.6초</span></div></div>
+  <span class="dur">0.62초</span><span class="lv " title="기준(−19dB)보다 5dB 작음">-24dB</span>
+  <label class="pick"><input type="radio" name="코뿔소 돌진 준비" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+<section class="moment" data-key="호저 가시 준비"><h2>호저 가시 준비</h2><p class="where">PorcupineMonsterAI.cs:176 — 가시 발사 직전</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%ED%98%B8%EC%A0%80%20%EA%B0%80%EC%8B%9C%20%EC%A4%80%EB%B9%84/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">실제 호저가 가시를 떠는 &#x27;사르르&#x27; 소리. 2초로 조금 김</div><div class="src"><a href="https://freesound.org/people/TheKingOfGeeks360/sounds/867551/" target="_blank" rel="noopener">Rodents - African Crested Porcupine; Rattling Quills, Close Perspective</a> · TheKingOfGeeks360 · CC0 <span class="muted">— Freesound — 원본 전체</span></div></div>
+  <span class="dur">2.09초</span><span class="lv " title="기준(−19dB)보다 5dB 큼">-14dB</span>
+  <label class="pick"><input type="radio" name="호저 가시 준비" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%ED%98%B8%EC%A0%80%20%EA%B0%80%EC%8B%9C%20%EC%A4%80%EB%B9%84/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">호저 콧김 + 가시 떠는 소리 한 번</div><div class="src"><a href="https://freesound.org/people/craigsmith/sounds/675452/" target="_blank" rel="noopener">S27-31 Porcupine puffing grunting &amp; rattling quills.wav</a> · craigsmith · CC0 <span class="muted">— Freesound — 원본 25.9초 중 4.6~5.8초</span></div></div>
+  <span class="dur">1.19초</span><span class="lv " title="기준(−19dB)보다 2dB 작음">-21dB</span>
+  <label class="pick"><input type="radio" name="호저 가시 준비" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%ED%98%B8%EC%A0%80%20%EA%B0%80%EC%8B%9C%20%EC%A4%80%EB%B9%84/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">칼을 뽑는 &#x27;스릉&#x27; 금속음. 날카로운 예고로 읽힘</div><div class="src"><a href="https://kenney.nl/assets/rpg-audio" target="_blank" rel="noopener">drawKnife1.ogg (RPG Audio)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.40초</span><span class="lv lv-low" title="기준(−19dB)보다 21dB 작음">-40dB</span>
+  <label class="pick"><input type="radio" name="호저 가시 준비" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+<h3 class="group">무기·도구</h3>
+<section class="moment" data-key="지뢰 폭발"><h2>지뢰 폭발</h2><p class="where">MineTrap.cs:59 — 지금은 붉은 섬광만</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%EC%A7%80%EB%A2%B0%20%ED%8F%AD%EB%B0%9C/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">짧고 바삭한 폭발. 폭탄(저음 폭발)과 구별됨</div><div class="src"><a href="https://kenney.nl/assets/sci-fi-sounds" target="_blank" rel="noopener">explosionCrunch_000.ogg (Sci-fi Sounds)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.78초</span><span class="lv lv-hi" title="기준(−19dB)보다 7dB 큼">-12dB</span>
+  <label class="pick"><input type="radio" name="지뢰 폭발" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%EC%A7%80%EB%A2%B0%20%ED%8F%AD%EB%B0%9C/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">같은 세트, 조금 더 묵직함</div><div class="src"><a href="https://kenney.nl/assets/sci-fi-sounds" target="_blank" rel="noopener">explosionCrunch_002.ogg (Sci-fi Sounds)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">1.26초</span><span class="lv " title="기준(−19dB)보다 5dB 큼">-14dB</span>
+  <label class="pick"><input type="radio" name="지뢰 폭발" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%EC%A7%80%EB%A2%B0%20%ED%8F%AD%EB%B0%9C/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">같은 세트, 꼬리가 가장 김</div><div class="src"><a href="https://kenney.nl/assets/sci-fi-sounds" target="_blank" rel="noopener">explosionCrunch_004.ogg (Sci-fi Sounds)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">1.98초</span><span class="lv lv-hi" title="기준(−19dB)보다 8dB 큼">-11dB</span>
+  <label class="pick"><input type="radio" name="지뢰 폭발" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+<h3 class="group">맡기기·가방</h3>
+<section class="moment" data-key="동물 맡기기"><h2>동물 맡기기</h2><p class="where">AnimalDeliveryPoint.cs:52 — 보호소에 넘길 때</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%EB%8F%99%EB%AC%BC%20%EB%A7%A1%EA%B8%B0%EA%B8%B0/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">부드러운 확인음 &#x27;띵동&#x27;</div><div class="src"><a href="https://kenney.nl/assets/interface-sounds" target="_blank" rel="noopener">confirmation_001.ogg (Interface Sounds)</a> · Kenney · CC0 <span class="muted">— Kenney 다른 팩</span></div></div>
+  <span class="dur">0.29초</span><span class="lv lv-hi" title="기준(−19dB)보다 10dB 큼">-9dB</span>
+  <label class="pick"><input type="radio" name="동물 맡기기" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%EB%8F%99%EB%AC%BC%20%EB%A7%A1%EA%B8%B0%EA%B8%B0/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">확인음, 조금 더 밝고 김</div><div class="src"><a href="https://kenney.nl/assets/interface-sounds" target="_blank" rel="noopener">confirmation_003.ogg (Interface Sounds)</a> · Kenney · CC0 <span class="muted">— Kenney 다른 팩</span></div></div>
+  <span class="dur">0.32초</span><span class="lv lv-hi" title="기준(−19dB)보다 8dB 큼">-11dB</span>
+  <label class="pick"><input type="radio" name="동물 맡기기" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%EB%8F%99%EB%AC%BC%20%EB%A7%A1%EA%B8%B0%EA%B8%B0/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">현악 피치카토 짧은 연주(1초). 보상 느낌</div><div class="src"><a href="https://kenney.nl/assets/music-jingles" target="_blank" rel="noopener">jingles_PIZZI01.ogg (Music Jingles)</a> · Kenney · CC0 <span class="muted">— Kenney 다른 팩</span></div></div>
+  <span class="dur">1.00초</span><span class="lv lv-hi" title="기준(−19dB)보다 7dB 큼">-12dB</span>
+  <label class="pick"><input type="radio" name="동물 맡기기" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+<section class="moment" data-key="가방 가득 참"><h2>가방 가득 참</h2><p class="where">InventoryFullNotice.cs:22 — 지금은 자막만</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%EA%B0%80%EB%B0%A9%20%EA%B0%80%EB%93%9D%20%EC%B0%B8/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">짧은 거절음 &#x27;뚝&#x27;</div><div class="src"><a href="https://kenney.nl/assets/interface-sounds" target="_blank" rel="noopener">error_001.ogg (Interface Sounds)</a> · Kenney · CC0 <span class="muted">— Kenney 다른 팩</span></div></div>
+  <span class="dur">0.16초</span><span class="lv " title="기준(−19dB)보다 2dB 큼">-17dB</span>
+  <label class="pick"><input type="radio" name="가방 가득 참" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%EA%B0%80%EB%B0%A9%20%EA%B0%80%EB%93%9D%20%EC%B0%B8/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">낮은 두 번 &#x27;뚜뚜&#x27;</div><div class="src"><a href="https://kenney.nl/assets/interface-sounds" target="_blank" rel="noopener">error_004.ogg (Interface Sounds)</a> · Kenney · CC0 <span class="muted">— Kenney 다른 팩</span></div></div>
+  <span class="dur">0.10초</span><span class="lv " title="기준(−19dB)보다 4dB 큼">-15dB</span>
+  <label class="pick"><input type="radio" name="가방 가득 참" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%EA%B0%80%EB%B0%A9%20%EA%B0%80%EB%93%9D%20%EC%B0%B8/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">부드러운 거절음, 귀에 덜 거슬림</div><div class="src"><a href="https://kenney.nl/assets/interface-sounds" target="_blank" rel="noopener">error_006.ogg (Interface Sounds)</a> · Kenney · CC0 <span class="muted">— Kenney 다른 팩</span></div></div>
+  <span class="dur">0.50초</span><span class="lv " title="기준(−19dB)보다 4dB 큼">-15dB</span>
+  <label class="pick"><input type="radio" name="가방 가득 참" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+<h3 class="group">몬스터</h3>
+<section class="moment" data-key="늑대 공격"><h2>늑대 공격</h2><p class="where">MonsterBrain.cs:192 — 물기(피격음과 함께 남)</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%EB%8A%91%EB%8C%80%20%EA%B3%B5%EA%B2%A9/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">개가 이빨을 드러내며 &#x27;크르릉&#x27; 으르렁</div><div class="src"><a href="https://freesound.org/people/deleted_user_3424813/sounds/190595/" target="_blank" rel="noopener">Dog snarl (Self-made)</a> · deleted_user_3424813 · CC0 <span class="muted">— Freesound — 원본 5.1초 중 1.9~3.25초</span></div></div>
+  <span class="dur">1.35초</span><span class="lv lv-hi" title="기준(−19dB)보다 17dB 큼">-2dB</span>
+  <label class="pick"><input type="radio" name="늑대 공격" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%EB%8A%91%EB%8C%80%20%EA%B3%B5%EA%B2%A9/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">개 으르렁, 크고 짧음</div><div class="src"><a href="https://freesound.org/people/SpaceJoe/sounds/483190/" target="_blank" rel="noopener">Growling Dog 2.wav</a> · SpaceJoe · CC0 <span class="muted">— Freesound — 원본 1.7초 중 0.35~1.45초</span></div></div>
+  <span class="dur">1.09초</span><span class="lv lv-hi" title="기준(−19dB)보다 9dB 큼">-10dB</span>
+  <label class="pick"><input type="radio" name="늑대 공격" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%EB%8A%91%EB%8C%80%20%EA%B3%B5%EA%B2%A9/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">낮은 으르렁 한 번(1초). 녹음 크기 작음</div><div class="src"><a href="https://freesound.org/people/randbsoundbites/sounds/829986/" target="_blank" rel="noopener">Low dog growl</a> · randbsoundbites · CC0 <span class="muted">— Freesound — 원본 전체</span></div></div>
+  <span class="dur">0.95초</span><span class="lv lv-low" title="기준(−19dB)보다 11dB 작음">-30dB</span>
+  <label class="pick"><input type="radio" name="늑대 공격" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+<section class="moment" data-key="소리반응형 공격"><h2>소리반응형 공격</h2><p class="where">MonsterBrain.cs:192 — Blood Monster 공격</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%EC%86%8C%EB%A6%AC%EB%B0%98%EC%9D%91%ED%98%95%20%EA%B3%B5%EA%B2%A9/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">질척한 점액 &#x27;철퍽&#x27;. 핏덩이 몬스터에 어울림</div><div class="src"><a href="https://kenney.nl/assets/sci-fi-sounds" target="_blank" rel="noopener">slime_000.ogg (Sci-fi Sounds)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.50초</span><span class="lv " title="기준(−19dB)보다 6dB 작음">-25dB</span>
+  <label class="pick"><input type="radio" name="소리반응형 공격" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%EC%86%8C%EB%A6%AC%EB%B0%98%EC%9D%91%ED%98%95%20%EA%B3%B5%EA%B2%A9/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">날붙이로 베는 &#x27;슥&#x27;. 할퀴기 느낌</div><div class="src"><a href="https://kenney.nl/assets/rpg-audio" target="_blank" rel="noopener">knifeSlice.ogg (RPG Audio)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.60초</span><span class="lv " title="기준(−19dB)보다 5dB 큼">-14dB</span>
+  <label class="pick"><input type="radio" name="소리반응형 공격" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%EC%86%8C%EB%A6%AC%EB%B0%98%EC%9D%91%ED%98%95%20%EA%B3%B5%EA%B2%A9/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">묵직한 주먹 타격음. 생물 느낌은 없음</div><div class="src"><a href="https://kenney.nl/assets/impact-sounds" target="_blank" rel="noopener">impactPunch_heavy_000.ogg (Impact Sounds)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.65초</span><span class="lv lv-hi" title="기준(−19dB)보다 9dB 큼">-10dB</span>
+  <label class="pick"><input type="radio" name="소리반응형 공격" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+<section class="moment" data-key="박쥐 공격"><h2>박쥐 공격</h2><p class="where">MonsterBrain.cs:192 — 박쥐가 닿을 때</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%EB%B0%95%EC%A5%90%20%EA%B3%B5%EA%B2%A9/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">박쥐 끽끽 울음 연속</div><div class="src"><a href="https://freesound.org/people/Yoyodaman234/sounds/667579/" target="_blank" rel="noopener">Bat Screech</a> · Yoyodaman234 · CC0 <span class="muted">— Freesound — 원본 8.0초 중 3.3~4.5초</span></div></div>
+  <span class="dur">1.20초</span><span class="lv " title="기준(−19dB)보다 5dB 작음">-24dB</span>
+  <label class="pick"><input type="radio" name="박쥐 공격" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%EB%B0%95%EC%A5%90%20%EA%B3%B5%EA%B2%A9/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">날카로운 &#x27;끼이익&#x27; 비명. 크고 김</div><div class="src"><a href="https://freesound.org/people/Phorgador/sounds/788212/" target="_blank" rel="noopener">Screech</a> · Phorgador · CC0 <span class="muted">— Freesound — 원본 1.8초 중 0.1~1.7초</span></div></div>
+  <span class="dur">1.60초</span><span class="lv " title="기준(−19dB)보다 4dB 큼">-15dB</span>
+  <label class="pick"><input type="radio" name="박쥐 공격" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%EB%B0%95%EC%A5%90%20%EA%B3%B5%EA%B2%A9/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">게임풍 &#x27;찍&#x27; 한 번(0.16초). 아주 짧음</div><div class="src"><a href="https://freesound.org/people/Breviceps/sounds/468442/" target="_blank" rel="noopener">Video Game Squeak</a> · Breviceps · CC0 <span class="muted">— Freesound — 원본 전체</span></div></div>
+  <span class="dur">0.16초</span><span class="lv lv-low" title="기준(−19dB)보다 12dB 작음">-31dB</span>
+  <label class="pick"><input type="radio" name="박쥐 공격" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+<h3 class="group">플레이어</h3>
+<section class="moment" data-key="걷기 발소리"><h2>걷기 발소리</h2><p class="where">PlayerMovement.cs:69 — 팩마다 변형 5~10개</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%EA%B1%B7%EA%B8%B0%20%EB%B0%9C%EC%86%8C%EB%A6%AC/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">풀밭 발소리(같은 세트 5개)</div><div class="src"><a href="https://kenney.nl/assets/impact-sounds" target="_blank" rel="noopener">footstep_grass_000.ogg (Impact Sounds)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.77초</span><span class="lv " title="기준(−19dB)보다 1dB 큼">-18dB</span>
+  <label class="pick"><input type="radio" name="걷기 발소리" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%EA%B1%B7%EA%B8%B0%20%EB%B0%9C%EC%86%8C%EB%A6%AC/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">단단한 바닥 발소리(5개). 실내·트럭용</div><div class="src"><a href="https://kenney.nl/assets/impact-sounds" target="_blank" rel="noopener">footstep_concrete_000.ogg (Impact Sounds)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.10초</span><span class="lv " title="기준(−19dB)보다 1dB 큼">-18dB</span>
+  <label class="pick"><input type="radio" name="걷기 발소리" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%EA%B1%B7%EA%B8%B0%20%EB%B0%9C%EC%86%8C%EB%A6%AC/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">흙길 발소리(10개). 가볍고 또렷함</div><div class="src"><a href="https://kenney.nl/assets/rpg-audio" target="_blank" rel="noopener">footstep00.ogg (RPG Audio)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.25초</span><span class="lv " title="기준(−19dB)보다 4dB 큼">-15dB</span>
+  <label class="pick"><input type="radio" name="걷기 발소리" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+<section class="moment" data-key="달리기 발소리"><h2>달리기 발소리</h2><p class="where">PlayerMovement.cs:75 — 걷기와 같은 세트를 빠르게 써도 됨</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%EB%8B%AC%EB%A6%AC%EA%B8%B0%20%EB%B0%9C%EC%86%8C%EB%A6%AC/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">풀밭, 걷기 1번과 같은 세트의 더 센 한 발</div><div class="src"><a href="https://kenney.nl/assets/impact-sounds" target="_blank" rel="noopener">footstep_grass_003.ogg (Impact Sounds)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.67초</span><span class="lv " title="기준(−19dB)보다 1dB 큼">-18dB</span>
+  <label class="pick"><input type="radio" name="달리기 발소리" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%EB%8B%AC%EB%A6%AC%EA%B8%B0%20%EB%B0%9C%EC%86%8C%EB%A6%AC/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">나무 바닥, 통통 울림</div><div class="src"><a href="https://kenney.nl/assets/impact-sounds" target="_blank" rel="noopener">footstep_wood_001.ogg (Impact Sounds)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.25초</span><span class="lv " title="기준(−19dB)보다 6dB 큼">-13dB</span>
+  <label class="pick"><input type="radio" name="달리기 발소리" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%EB%8B%AC%EB%A6%AC%EA%B8%B0%20%EB%B0%9C%EC%86%8C%EB%A6%AC/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">눈 밟는 &#x27;뽀득&#x27;. 거칠고 큼</div><div class="src"><a href="https://kenney.nl/assets/impact-sounds" target="_blank" rel="noopener">footstep_snow_002.ogg (Impact Sounds)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.37초</span><span class="lv lv-hi" title="기준(−19dB)보다 7dB 큼">-12dB</span>
+  <label class="pick"><input type="radio" name="달리기 발소리" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+<h3 class="group">UI</h3>
+<section class="moment" data-key="타이틀 버튼 클릭"><h2>타이틀 버튼 클릭</h2><p class="where">TitleMenu.cs:28 — 시작·설정·크레딧·종료</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%ED%83%80%EC%9D%B4%ED%8B%80%20%EB%B2%84%ED%8A%BC%20%ED%81%B4%EB%A6%AD/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">가벼운 버튼 &#x27;딸깍&#x27;</div><div class="src"><a href="https://kenney.nl/assets/ui-audio" target="_blank" rel="noopener">click1.ogg (UI Audio)</a> · Kenney · CC0 <span class="muted">— Kenney 다른 팩</span></div></div>
+  <span class="dur">0.09초</span><span class="lv " title="기준(−19dB)보다 3dB 작음">-22dB</span>
+  <label class="pick"><input type="radio" name="타이틀 버튼 클릭" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%ED%83%80%EC%9D%B4%ED%8B%80%20%EB%B2%84%ED%8A%BC%20%ED%81%B4%EB%A6%AD/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">더 짧고 부드러운 클릭</div><div class="src"><a href="https://kenney.nl/assets/interface-sounds" target="_blank" rel="noopener">click_002.ogg (Interface Sounds)</a> · Kenney · CC0 <span class="muted">— Kenney 다른 팩</span></div></div>
+  <span class="dur">0.01초</span><span class="lv " title="기준(−19dB)보다 0dB 작음">-19dB</span>
+  <label class="pick"><input type="radio" name="타이틀 버튼 클릭" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%ED%83%80%EC%9D%B4%ED%8B%80%20%EB%B2%84%ED%8A%BC%20%ED%81%B4%EB%A6%AD/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">선택음 &#x27;띡&#x27;, 음높이 있음</div><div class="src"><a href="https://kenney.nl/assets/interface-sounds" target="_blank" rel="noopener">select_001.ogg (Interface Sounds)</a> · Kenney · CC0 <span class="muted">— Kenney 다른 팩</span></div></div>
+  <span class="dur">0.04초</span><span class="lv " title="기준(−19dB)보다 2dB 큼">-17dB</span>
+  <label class="pick"><input type="radio" name="타이틀 버튼 클릭" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+<section class="moment" data-key="카드 닫기"><h2>카드 닫기</h2><p class="where">ClassInfoPopup.cs:31 · MonsterEncounterCard.cs:262</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%EC%B9%B4%EB%93%9C%20%EB%8B%AB%EA%B8%B0/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">창 닫힘 &#x27;쉭&#x27; 내려가는 음</div><div class="src"><a href="https://kenney.nl/assets/interface-sounds" target="_blank" rel="noopener">close_001.ogg (Interface Sounds)</a> · Kenney · CC0 <span class="muted">— Kenney 다른 팩</span></div></div>
+  <span class="dur">0.15초</span><span class="lv " title="기준(−19dB)보다 4dB 큼">-15dB</span>
+  <label class="pick"><input type="radio" name="카드 닫기" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%EC%B9%B4%EB%93%9C%20%EB%8B%AB%EA%B8%B0/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">작아지는 효과음, 더 짧음</div><div class="src"><a href="https://kenney.nl/assets/interface-sounds" target="_blank" rel="noopener">minimize_001.ogg (Interface Sounds)</a> · Kenney · CC0 <span class="muted">— Kenney 다른 팩</span></div></div>
+  <span class="dur">0.26초</span><span class="lv lv-hi" title="기준(−19dB)보다 7dB 큼">-12dB</span>
+  <label class="pick"><input type="radio" name="카드 닫기" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%EC%B9%B4%EB%93%9C%20%EB%8B%AB%EA%B8%B0/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">책 덮는 &#x27;탁&#x27;. 종이 카드 느낌</div><div class="src"><a href="https://kenney.nl/assets/rpg-audio" target="_blank" rel="noopener">bookClose.ogg (RPG Audio)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.23초</span><span class="lv " title="기준(−19dB)보다 6dB 큼">-13dB</span>
+  <label class="pick"><input type="radio" name="카드 닫기" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+<section class="moment" data-key="도감 열기·넘기기"><h2>도감 열기·넘기기</h2><p class="where">BestiaryUI.cs:581 (열기) · :604 (넘기기)</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%EB%8F%84%EA%B0%90%20%EC%97%B4%EA%B8%B0%C2%B7%EB%84%98%EA%B8%B0%EA%B8%B0/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">책 펼치는 소리 — 열기용</div><div class="src"><a href="https://kenney.nl/assets/rpg-audio" target="_blank" rel="noopener">bookOpen.ogg (RPG Audio)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.15초</span><span class="lv lv-low" title="기준(−19dB)보다 11dB 작음">-30dB</span>
+  <label class="pick"><input type="radio" name="도감 열기·넘기기" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%EB%8F%84%EA%B0%90%20%EC%97%B4%EA%B8%B0%C2%B7%EB%84%98%EA%B8%B0%EA%B8%B0/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">책장 한 장 넘기는 소리 — 넘기기용</div><div class="src"><a href="https://kenney.nl/assets/rpg-audio" target="_blank" rel="noopener">bookFlip1.ogg (RPG Audio)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.77초</span><span class="lv " title="기준(−19dB)보다 0dB 큼">-19dB</span>
+  <label class="pick"><input type="radio" name="도감 열기·넘기기" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%EB%8F%84%EA%B0%90%20%EC%97%B4%EA%B8%B0%C2%B7%EB%84%98%EA%B8%B0%EA%B8%B0/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">책장 넘기기, 더 짧고 가벼움 — 넘기기용</div><div class="src"><a href="https://kenney.nl/assets/rpg-audio" target="_blank" rel="noopener">bookFlip2.ogg (RPG Audio)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">0.43초</span><span class="lv lv-low" title="기준(−19dB)보다 14dB 작음">-33dB</span>
+  <label class="pick"><input type="radio" name="도감 열기·넘기기" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+<h3 class="group">날·장면</h3>
+<section class="moment" data-key="해질녘 → 밤 신호"><h2>해질녘 → 밤 신호</h2><p class="where">VillagePhaseNotice.cs:18 — 시간대 바뀜 알림</p><ol>
+<li class="cand">
+  <span class="num">1번</span>
+  <button class="play" data-src="Candidates/%ED%95%B4%EC%A7%88%EB%85%98%E2%86%92%EB%B0%A4%20%EC%8B%A0%ED%98%B8/1%EB%B2%88.ogg" aria-label="1번 재생">▶</button>
+  <div class="body"><div class="desc">무거운 종 &#x27;뎅&#x27; 한 번</div><div class="src"><a href="https://kenney.nl/assets/impact-sounds" target="_blank" rel="noopener">impactBell_heavy_000.ogg (Impact Sounds)</a> · Kenney · CC0 <span class="muted">— 프로젝트에 이미 있는 팩</span></div></div>
+  <span class="dur">1.48초</span><span class="lv " title="기준(−19dB)보다 4dB 큼">-15dB</span>
+  <label class="pick"><input type="radio" name="해질녘 → 밤 신호" value="1번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">2번</span>
+  <button class="play" data-src="Candidates/%ED%95%B4%EC%A7%88%EB%85%98%E2%86%92%EB%B0%A4%20%EC%8B%A0%ED%98%B8/2%EB%B2%88.ogg" aria-label="2번 재생">▶</button>
+  <div class="body"><div class="desc">낮은 &#x27;봉&#x27; 울림, 종보다 가벼움</div><div class="src"><a href="https://kenney.nl/assets/interface-sounds" target="_blank" rel="noopener">bong_001.ogg (Interface Sounds)</a> · Kenney · CC0 <span class="muted">— Kenney 다른 팩</span></div></div>
+  <span class="dur">0.12초</span><span class="lv " title="기준(−19dB)보다 4dB 큼">-15dB</span>
+  <label class="pick"><input type="radio" name="해질녘 → 밤 신호" value="2번"><span>고르기</span></label>
+</li>
+<li class="cand">
+  <span class="num">3번</span>
+  <button class="play" data-src="Candidates/%ED%95%B4%EC%A7%88%EB%85%98%E2%86%92%EB%B0%A4%20%EC%8B%A0%ED%98%B8/3%EB%B2%88.ogg" aria-label="3번 재생">▶</button>
+  <div class="body"><div class="desc">스틸드럼 짧은 연주(1.6초)</div><div class="src"><a href="https://kenney.nl/assets/music-jingles" target="_blank" rel="noopener">jingles_STEEL07.ogg (Music Jingles)</a> · Kenney · CC0 <span class="muted">— Kenney 다른 팩</span></div></div>
+  <span class="dur">1.55초</span><span class="lv lv-hi" title="기준(−19dB)보다 7dB 큼">-12dB</span>
+  <label class="pick"><input type="radio" name="해질녘 → 밤 신호" value="3번"><span>고르기</span></label>
+</li>
+</ol></section>
+</main>
+<div class="bar"><div class="in"><output id="sum">아직 고른 게 없음</output><button id="copy">결과 복사</button><button id="clear">초기화</button></div></div>
+<script>
+const KEY = "animalkeeper.soundpick.v1";
+const audio = new Audio();
+let cur = null;
+function stop() { if (cur) { cur.classList.remove("on"); cur.textContent = "▶"; } cur = null; }
+audio.addEventListener("ended", stop);
+audio.addEventListener("error", () => { if (cur) { cur.textContent = "!"; cur.title = "파일을 못 읽음"; cur.classList.remove("on"); cur = null; } });
+document.querySelectorAll(".play").forEach(b => b.addEventListener("click", () => {
+  if (cur === b) { audio.pause(); stop(); return; }
+  stop(); audio.src = b.dataset.src; audio.currentTime = 0;
+  audio.play().then(() => { cur = b; b.classList.add("on"); b.textContent = "■"; }).catch(() => { b.textContent = "!"; });
+}));
+let picks = {};
+try { picks = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(picks)); } catch (e) {} render(); }
+function render() {
+  const lines = [];
+  document.querySelectorAll(".moment[data-key]").forEach(s => {
+    const k = s.dataset.key, v = picks[k];
+    s.classList.toggle("done", !!v);
+    s.querySelectorAll("input[type=radio]").forEach(r => r.checked = (r.value === v));
+    if (v) lines.push(k + ": " + v);
+  });
+  const n = document.querySelectorAll(".moment[data-key]").length;
+  document.getElementById("sum").textContent = lines.length ? `${lines.length}/${n} 고름 — ` + lines.join(" · ") : "아직 고른 게 없음";
+}
+document.querySelectorAll("input[type=radio]").forEach(r => r.addEventListener("change", () => { picks[r.name] = r.value; save(); }));
+document.getElementById("clear").addEventListener("click", () => { picks = {}; save(); });
+document.getElementById("copy").addEventListener("click", async () => {
+  const txt = Array.from(document.querySelectorAll(".moment[data-key]")).map(s => s.dataset.key + ": " + (picks[s.dataset.key] || "안 고름")).join("\n");
+  try { await navigator.clipboard.writeText(txt); document.getElementById("copy").textContent = "복사됨"; }
+  catch (e) { prompt("아래 글을 복사하세요", txt); }
+  setTimeout(() => document.getElementById("copy").textContent = "결과 복사", 1500);
+});
+render();
+</script></body></html>
